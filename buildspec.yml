@@ -3,19 +3,22 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 22
+      nodejs: 18
     commands:
-      - echo Installing NPM dependencies...
+      - echo "Checking AWS CLI version...."
+      - aws --version
+      - echo "Installing NPM dependencies..."
       - npm install --legacy-peer-deps
   build:
     commands:
-      - echo Building the React app...
+      - echo "Build started on `date`"
       - npm run build
   post_build:
     commands:
-      - echo Build completed
+      - echo "Invalidating CloudFront cache..."
+      - aws cloudfront create-invalidation --distribution-id E3RJXHUX4CJ3LK --paths "/*"
 
 artifacts:
-  base-directory: build
   files:
     - '**/*'
+  base-directory: build
