@@ -54,7 +54,6 @@ import SearchNoResultScreen from "./pages/SearchNoResultScreen";
 import BottomNavigation from "./components/BottomNavigation";
 
 function App() {
-
   const location = useLocation(); // Get the current location
 
   // Define the pages where BottomNavigation is needed
@@ -65,7 +64,6 @@ function App() {
     "/bookmark",
     "/course-ongoing-screen",
   ];
-
 
   return (
     <div className="App">
