@@ -1,11 +1,11 @@
-/*------------------------------------------------------------------
+/* ------------------------------------------------------------------
 Project:Guruji  Online Learning APP
 Author: The_Krishna       
 Last change: 29/12/2023 
 Primary use:  Online Learning & Educational Courses PWA
--------------------------------------------------------------------*/
+------------------------------------------------------------------- */
 
-/*----------------Table of contents Start---------------------------
+/* ----------------Table of contents Start---------------------------
 1.Default CSS
 2.Index Screen
 3.Onboarding Screen
@@ -51,26 +51,26 @@ Primary use:  Online Learning & Educational Courses PWA
 43.Animation
 44.PWA Popup
 
----------Table of contents End-----------------------------------*/
+---------Table of contents End----------------------------------- */
 
-/*------------------------ [Color codes] ------------------------
+/* ------------------------ [Color codes] ------------------------
                         
 Background: #121212     
 Content:   #FFFFFF   
 Heading h1: #FFFFFF       
 paragraph p: #A0A0A0    
--------------------------------------------------------------------*/
+------------------------------------------------------------------- */
 
 /************************ 1.Default CSS ***************************/
 html {
   scroll-behavior: smooth !important;
-  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 *,
 ::after,
 ::before {
-  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
   box-sizing: border-box;
 }
 
@@ -110,9 +110,9 @@ body:not(.dark-mode) {
   --svg-color: invert(97%) sepia(97%) saturate(13%) hue-rotate(186deg)
     brightness(103%) contrast(103%);
   --border-colors: #f0f0f0;
-  --border-box: rgba(0, 0, 0, 0.16);
+  --border-box: rgb(0 0 0 / 16%);
   --background-label: #0d6efd;
-  --box-color: #ffffff;
+  --box-color: #fff;
   --background-progress: #eee;
   --background-input: rgb(102 102 102 / 8%);
   --background-chat: rgb(249 115 22 / 8%);
@@ -277,13 +277,11 @@ textarea {
 .fixed {
   position: fixed;
   z-index: 2;
-  -webkit-box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
-  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
   top: 0%;
-  -webkit-box-shadow: 0 0 22px -4px rgb(0 0 0 / 17%);
   box-shadow: 0 0 22px -4px rgb(0 0 0 / 17%);
-  -webkit-animation: fixedheader 600ms ease 0ms 1 forwards;
+  box-shadow: 0 0 22px -4px rgb(0 0 0 / 17%);
+  animation: fixedheader 600ms ease 0ms 1 forwards;
   animation: fixedheader 600ms ease 0ms 1 forwards;
 }
 
@@ -304,7 +302,7 @@ textarea {
 .logo-txt {
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 48px;
   font-style: normal;
   font-weight: 600;
@@ -349,12 +347,13 @@ textarea {
 .boarding-title h1 {
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 32px;
   font-style: normal;
   font-weight: 500;
   line-height: 36px;
 }
+
 .onboarding-next-btn a,
 .sign-in-password-btn a,
 .sign-in-btn a,
@@ -382,16 +381,16 @@ textarea {
 .next-course a {
   width: 100%;
   border-radius: 8px;
+
   /* background: var(--text-color); Ensure consistent background */
   background: #0d6efd; /* Ensure consistent background */
-
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 15px 0;
   color: var(--primary-color); /* Text color */
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
@@ -430,7 +429,7 @@ textarea {
   bottom: 0;
   margin-bottom: 16px;
   z-index: 5;
-  padding: 0px 16px;
+  padding: 0 16px;
 }
 
 .onboarding-slider .carousel-indicators [data-bs-target] {
@@ -478,7 +477,7 @@ textarea {
 .let-you-txt {
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
@@ -503,7 +502,7 @@ textarea {
 }
 
 .next-course {
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 4px 4px rgb(0 0 0 / 25%));
   padding: 16px;
   position: fixed;
   bottom: 0;
@@ -511,7 +510,7 @@ textarea {
   left: 0;
   right: 0;
   background: var(--box-color);
-  box-shadow: 0px -4px 4px 0px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -4px 4px 0 rgb(0 0 0 / 4%);
   z-index: 99;
 }
 
@@ -526,7 +525,7 @@ textarea {
 .social-txt {
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
@@ -545,18 +544,18 @@ textarea {
   overflow: hidden;
 }
 
-.or-section p:before {
+.or-section p::before {
   right: 8px;
   margin-left: -50%;
 }
 
-.or-section p:after {
+.or-section p::after {
   left: 8px;
   margin-right: -50%;
 }
 
-.or-section p:before,
-.or-section p:after {
+.or-section p::before,
+.or-section p::after {
   background: var(--setting-borer);
   content: "";
   display: inline-block;
@@ -608,7 +607,7 @@ textarea {
 .login-txt {
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
@@ -693,7 +692,7 @@ textarea {
   padding: 0;
 }
 
-.footer-checkbox-input + .footer-chec-txt:before {
+.footer-checkbox-input + .footer-chec-txt::before {
   content: "";
   margin-right: 12px;
   display: inline-block;
@@ -724,11 +723,11 @@ textarea {
   text-decoration: none;
 }
 
-.footer-checkbox-input:checked + .footer-chec-txt:before {
+.footer-checkbox-input:checked + .footer-chec-txt::before {
   background: var(--text-color);
 }
 
-.footer-checkbox-input:checked + .footer-chec-txt:after {
+.footer-checkbox-input:checked + .footer-chec-txt::after {
   content: "";
   position: absolute;
   left: 6px;
@@ -780,7 +779,7 @@ textarea {
 }
 
 #mobile_code {
-  margin-left: 0px;
+  margin-left: 0;
   padding-right: 0;
 }
 
@@ -824,7 +823,7 @@ textarea {
 .header-title p {
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan, sans-serif;
+  font-family: "League Spartan", sans-serif;
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
@@ -845,7 +844,7 @@ textarea {
 .check-mail-content h1 {
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
@@ -899,7 +898,6 @@ textarea {
   width: 100%;
   height: 60px;
   border: 1px solid var(--border-box) !important;
-  text-align: center;
   padding: 10px;
   color: var(--see-all-text);
   text-align: center;
@@ -913,7 +911,7 @@ textarea {
 
 .otp:focus {
   border: 1px solid var(--text-color) !important;
-  filter: drop-shadow(0px 0px 8px rgba(0, 0, 0, 0.24));
+  filter: drop-shadow(0 0 8px rgb(0 0 0 / 24%));
   box-shadow: none !important;
   background: transparent;
   color: var(--see-all-text) !important;
@@ -951,7 +949,6 @@ textarea {
 .otp-timer {
   display: inline-block;
   padding: 25px 18px;
-
   position: relative;
   height: 100px;
   width: 100px;
@@ -959,10 +956,7 @@ textarea {
 
 .otp-timer .border {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  inset: 0;
   background: transparent;
   border-radius: 50%;
   border: 2px dashed #a0a0a0 !important;
@@ -1025,7 +1019,7 @@ textarea {
 .notification-content h1 {
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
@@ -1045,7 +1039,7 @@ textarea {
 /************************ 11.Preferred Language Screen ***************************/
 .hey-txt {
   color: var(--text-color);
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
@@ -1114,7 +1108,7 @@ label.custom-radio-sel-lang {
 .top-navbar-title p {
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
@@ -1168,7 +1162,7 @@ label.custom-radio-sel-lang {
 
 .form-check-input.custom-input-goal:checked {
   background-color: var(--primary-color) !important;
-  background-image: url(../images/goal/orange-tick.svg);
+  background-image: url("../images/goal/orange-tick.svg");
   background-size: cover;
   width: 18px;
   height: 18px;
@@ -1225,8 +1219,6 @@ label.custom-radio-sel-lang {
 
 label.custom-interest-lbl {
   padding: 11px 16px;
-  border: 2px solid #f0f0f0;
-  border-radius: 8px;
   cursor: pointer;
   color: var(--text-color);
   text-align: center;
@@ -1284,12 +1276,12 @@ label.custom-interest-lbl {
   line-height: 20px;
 }
 
-.nested-accordion h3:before {
-  content: url(../svg/plus-icon.svg);
+.nested-accordion h3::before {
+  content: url("../svg/plus-icon.svg");
   position: absolute;
   right: 0;
   color: #ff4c3b;
-  font-family: Space Grotesk;
+  font-family: "Space Grotesk";
   font-size: 20px;
   font-style: normal;
   font-weight: 700;
@@ -1299,29 +1291,29 @@ label.custom-interest-lbl {
 
 .nested-accordion h3.selected {
   color: var(--8, #0d6efd);
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 18px;
   font-style: normal;
   font-weight: 500;
   line-height: 18px;
 }
 
-.faq-txt1:before {
+.faq-txt1::before {
   content: none !important;
 }
 
-.nested-accordion h3.selected:before {
-  content: url(../svg/minus-icon.svg);
+.nested-accordion h3.selected::before {
+  content: url("../svg/minus-icon.svg");
 }
 
-.faq-txt1.selected:before {
-  content: url(../svg/down-arrow.svg) !important;
+.faq-txt1.selected::before {
+  content: url("../svg/down-arrow.svg") !important;
 }
 
 /************************ 15.Privacy Screen  ***************************/
 .privacy-txt3 {
   color: var(--text-color);
-  font-family: League Spartan, sans-serif;
+  font-family: "League Spartan", sans-serif;
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
@@ -1411,13 +1403,13 @@ label.custom-interest-lbl {
 
 /************************ 17.Currency  ***************************/
 .change-lan-sec {
-  padding: 17px 0px !important;
+  padding: 17px 0 !important;
   border-bottom: 1px solid var(--border-colors);
 }
 
 .form-check-input.custom-input:checked {
   background: transparent;
-  background-image: url(../images/icons/lang-select.svg);
+  background-image: url("../images/icons/lang-select.svg");
   background-size: cover;
   width: 20px !important;
   height: 20px !important;
@@ -1482,7 +1474,7 @@ label.custom-interest-lbl {
 .firs-txt1 {
   color: var(--see-all-text);
   text-align: right;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
@@ -1493,7 +1485,7 @@ label.custom-interest-lbl {
 .firs-txt2 {
   color: var(--8, #0d6efd);
   text-align: right;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
@@ -1502,7 +1494,7 @@ label.custom-interest-lbl {
 
 .second-txt1 {
   color: var(--text-color);
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 24px;
   font-style: normal;
   font-weight: 600;
@@ -1541,7 +1533,7 @@ label.custom-interest-lbl {
 
 .third-txt1 {
   color: var(--text-color);
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
@@ -1616,7 +1608,7 @@ label.custom-interest-lbl {
   padding: 10px 0;
   color: var(--see-all-text);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -1634,14 +1626,14 @@ label.custom-interest-lbl {
 .single-courses-tab li button.active {
   color: var(--8, #0d6efd) !important;
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
   line-height: 20px;
 }
 
-.single-courses-tab li button:before {
+.single-courses-tab li button::before {
   content: "";
   background: var(--8, #0d6efd);
   height: 2px;
@@ -1653,13 +1645,13 @@ label.custom-interest-lbl {
   opacity: 0;
 }
 
-.single-courses-tab li button.active:before {
+.single-courses-tab li button.active::before {
   opacity: 1;
 }
 
 .des-con-txt1 {
   color: var(--text-color);
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
@@ -1734,8 +1726,8 @@ ul.desc-learn-sec {
   border-radius: 4px;
   background: linear-gradient(
     97deg,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.2) 100%
+    rgb(0 0 0 / 80%) 0%,
+    rgb(0 0 0 / 20%) 100%
   );
   backdrop-filter: blur(3px);
   width: fit-content;
@@ -1805,11 +1797,11 @@ ul.desc-learn-sec {
 }
 
 .item-bookmark.active {
-  content: url(../images/single-courses/bookmark-fill.svg);
+  content: url("../images/single-courses/bookmark-fill.svg");
 }
 
 .accordion-button.custom_icon.collapsed {
-  background-image: url(../images/single-courses/up-arrow.svg);
+  background-image: url("../images/single-courses/up-arrow.svg");
   background-position: 97% center;
   background-repeat: no-repeat;
   background-color: var(--primary-color) !important;
@@ -1819,13 +1811,13 @@ ul.desc-learn-sec {
   font-style: normal;
   font-weight: 600;
   line-height: 24px;
-  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
   box-shadow: none !important;
   padding: 0;
 }
 
 .accordion-button.custom_icon {
-  background-image: url(../images/single-courses/down-arrow.svg);
+  background-image: url("../images/single-courses/down-arrow.svg");
   background-position: 97% center;
   background-repeat: no-repeat;
   background-color: var(--primary-color) !important;
@@ -1835,7 +1827,7 @@ ul.desc-learn-sec {
   font-weight: 600;
   line-height: 24px;
   color: var(--text-color) !important;
-  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
   box-shadow: none !important;
   padding: 0;
 }
@@ -1851,7 +1843,7 @@ ul.desc-learn-sec {
   font-style: normal;
   font-weight: 400;
   line-height: 20px;
-  padding: 12px 0 0 0px !important;
+  padding: 12px 0 0 !important;
 }
 
 .accordion-button::after {
@@ -1868,7 +1860,7 @@ ul.desc-learn-sec {
 
 .buy-now-description {
   background: var(--background-color);
-  box-shadow: 0px -4px 4px 0px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -4px 4px 0 rgb(0 0 0 / 4%);
   padding: 16px;
   position: fixed;
   bottom: 0;
@@ -1938,7 +1930,7 @@ ul.desc-learn-sec {
 
 .lesson-title {
   color: var(--text-color);
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -2016,7 +2008,7 @@ ul.desc-learn-sec {
 
 .rev1-txt {
   color: var(--text-color);
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
@@ -2231,7 +2223,7 @@ ul.desc-learn-sec {
 }
 
 #select-course .accordion-button::after {
-  background-image: url(../svg/down-arrow-black.svg) !important;
+  background-image: url("../svg/down-arrow-black.svg") !important;
   background-position: 97% center;
   background-repeat: no-repeat;
   filter: var(--svg-color);
@@ -2257,12 +2249,12 @@ ul.desc-learn-sec {
 
 .courses-custom-btn {
   background: transparent !important;
-  padding: 0px !important;
+  padding: 0 !important;
   box-shadow: none !important;
 }
 
 #select-course .accordion-body {
-  padding: 0px !important;
+  padding: 0 !important;
 }
 
 #select-course .accordion-item {
@@ -2284,7 +2276,7 @@ ul.desc-learn-sec {
 
 .form-check-input.custom-input-select:checked {
   background-color: var(--primary-color) !important;
-  background-image: url(../images/goal/orange-tick.svg);
+  background-image: url("../images/goal/orange-tick.svg");
   background-size: cover;
   width: 18px;
   height: 18px;
@@ -2552,7 +2544,7 @@ ul.desc-learn-sec {
 
 .check-txtt5 {
   color: var(--text-color);
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 18px;
   font-style: normal;
   font-weight: 500;
@@ -2591,7 +2583,7 @@ ul.desc-learn-sec {
   height: 49px;
   background: var(--primary-color);
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -2753,7 +2745,7 @@ ul.desc-learn-sec {
 
 .pay-txt1 {
   color: var(--text-color);
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
@@ -2788,7 +2780,7 @@ input {
 
 .switch-sec {
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
   -webkit-box-pack: justify;
   -ms-flex-pack: justify;
@@ -2811,10 +2803,10 @@ input {
 
 .date-picker-sec {
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
-  -webkit-column-gap: 12px;
-  -moz-column-gap: 12px;
+  column-gap: 12px;
+  column-gap: 12px;
   column-gap: 12px;
 }
 
@@ -2865,7 +2857,7 @@ ul.input.date-picker-input {
   padding: 1em;
   background-color: #fff;
   border-radius: 5px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 4px rgb(0 0 0 / 40%);
   z-index: 200 !important;
   display: none;
 }
@@ -2889,7 +2881,7 @@ ul.input.date-picker-input {
   width: 26px;
   top: 50%;
   transform: translateY(-50%);
-  background: url(../images/payment/calender-icon.png) no-repeat center;
+  background: url("../images/payment/calender-icon.png") no-repeat center;
   background-size: 18px;
 }
 
@@ -2922,10 +2914,10 @@ ul.input.date-picker-input {
   color: #333;
   border: none;
   background-color: transparent;
-  background-image: url(../images/payment//calender-icon.png);
+  background-image: url("../images/payment/calender-icon.png");
   background-repeat: no-repeat;
   background-position: center right 2px;
-  font-family: "Inter";
+  font-family: Inter;
 }
 
 .ui-datepicker-year {
@@ -2939,7 +2931,7 @@ ul.input.date-picker-input {
 }
 
 .ui-datepicker-calendar thead th {
-  padding: 16px 0 12px 0;
+  padding: 16px 0 12px;
   font-weight: 500;
 }
 
@@ -2991,7 +2983,7 @@ ul.input.date-picker-input {
   position: fixed;
   top: 0;
   left: 0 !important;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(0 0 0 / 50%);
   z-index: 200 !important;
   display: none;
 }
@@ -3148,35 +3140,31 @@ ul.input.date-picker-input {
 .notification-option-switch .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 4px;
-  right: 0;
-  bottom: 0;
+  inset: 0 0 0 4px;
   border: 1px solid var(--setting-borer);
   border-radius: 40px;
-  -webkit-transition: 0.4s;
+  transition: 0.4s;
   transition: 0.4s;
 }
 
-.notification-option-switch input:checked + .slider:before {
+.notification-option-switch input:checked + .slider::before {
   transform: translateX(16px);
 }
 
-.notification-option-switch .slider:before {
+.notification-option-switch .slider::before {
   position: absolute;
   content: "";
   height: 18px;
   width: 18px;
   background: #fff;
-  border-radius: 22px;
-  left: 0px;
-  bottom: 0px;
-  -webkit-transition: 0.4s;
+  left: 0;
+  bottom: 0;
+  transition: 0.4s;
   transition: 0.4s;
   border-radius: 22px;
   border: 0.5px solid #f0f0f0;
-  box-shadow: 0px 3px 1px 0px rgba(0, 0, 0, 0.05),
-    0px 1px 1px 0px rgba(0, 0, 0, 0.08), 0px 3px 8px 0px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 1px 0 rgb(0 0 0 / 5%), 0 1px 1px 0 rgb(0 0 0 / 8%),
+    0 3px 8px 0 rgb(0 0 0 / 8%);
 }
 
 .notification2-screen-wrap {
@@ -3198,7 +3186,7 @@ ul.input.date-picker-input {
 
 .favourite-top-sec {
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
   -webkit-box-pack: justify;
   -ms-flex-pack: justify;
@@ -3211,7 +3199,7 @@ ul.input.date-picker-input {
 .green-progressbar {
   display: flex;
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
 }
 
 .sort-btn-favoutite {
@@ -3219,7 +3207,7 @@ ul.input.date-picker-input {
   width: 113px;
   height: 48px;
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -3229,26 +3217,26 @@ ul.input.date-picker-input {
   justify-content: center;
   background: #0ea5e9;
   cursor: pointer;
-  border-radius: 8px 0px 0px 8px;
+  border-radius: 8px 0 0 8px;
 }
 
 .sort-btn-favoutite a {
-  font-family: "Poppins";
+  font-family: Poppins;
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
   text-align: center;
-  color: #ffffff;
+  color: #fff;
 }
 
 .sort-btn-favoutite1 {
   border: 2px solid #0ea5e9;
-  border-radius: 0px 8px 8px 0px;
+  border-radius: 0 8px 8px 0;
   width: 113px;
   height: 48px;
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -3259,7 +3247,7 @@ ul.input.date-picker-input {
 }
 
 .sort-btn-favoutite1 a {
-  font-family: "Poppins";
+  font-family: Poppins;
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
@@ -3270,10 +3258,10 @@ ul.input.date-picker-input {
 
 .fav-second-button-wrapper {
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
-  -webkit-column-gap: 8px;
-  -moz-column-gap: 8px;
+  column-gap: 8px;
+  column-gap: 8px;
   column-gap: 8px;
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -3284,7 +3272,7 @@ ul.input.date-picker-input {
 }
 
 .favourite-bottom-sec-wrapper {
-  display: -ms-grid;
+  display: grid;
   display: grid;
   -ms-grid-columns: 1fr 15px 1fr;
   grid-template-columns: repeat(2, 1fr);
@@ -3324,8 +3312,7 @@ ul.input.date-picker-input {
   padding: 0;
   position: relative;
   background: var(--box-color);
-  z-index: 99;
-  filter: drop-shadow(0px -4px 4px rgba(0, 0, 0, 0.04));
+  filter: drop-shadow(0 -4px 4px rgb(0 0 0 / 4%));
   z-index: 1;
   text-align: center;
 }
@@ -3367,7 +3354,7 @@ ul.input.date-picker-input {
   display: block;
 }
 
-.bootom-tabbar li.active:before {
+.bootom-tabbar li.active::before {
   content: "";
   position: absolute;
   width: 64px;
@@ -3389,7 +3376,7 @@ ul.input.date-picker-input {
   height: 64px;
 }
 
-.bootom-tabbar li:before {
+.bootom-tabbar li::before {
   position: relative;
 }
 
@@ -3569,25 +3556,19 @@ ul.input.date-picker-input {
 }
 
 .percent_more .circle_inner {
-  clip: rect(0 0.5em 1em 0em);
+  clip: rect(0 0.5em 1em 0);
 }
 
-.percent_more:after {
+.percent_more::after {
   position: absolute;
-  left: 0.5em;
-  top: 0em;
-  right: 0;
-  bottom: 0;
+  inset: 0 0 0 0.5em;
   background: #c084fc;
   content: "";
 }
 
 .circle_inbox {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  bottom: 10px;
+  inset: 10px;
   background: var(--primary-color);
   z-index: 1;
   border-radius: 50%;
@@ -3595,7 +3576,6 @@ ul.input.date-picker-input {
 
 .percent_text {
   position: absolute;
-  font-size: 36px;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -3609,15 +3589,15 @@ ul.input.date-picker-input {
   line-height: 18px;
 }
 
-.percent_more.green-progressbar:after {
+.percent_more.green-progressbar::after {
   background: #4ade80;
 }
 
-.percent_more.pink-progressbar:after {
+.percent_more.pink-progressbar::after {
   background: #f472b6;
 }
 
-.percent_more.black-progressbar:after {
+.percent_more.black-progressbar::after {
   background: var(--text-color);
 }
 
@@ -3703,7 +3683,7 @@ span.ongoing-txt2 {
   border-bottom: 1px solid rgb(0 0 0 / 8%);
 }
 
-.ongoing-courses-tab li button:before {
+.ongoing-courses-tab li button::before {
   content: "";
   background: var(--8, #0d6efd);
   height: 2px;
@@ -3719,7 +3699,7 @@ span.ongoing-txt2 {
   padding-bottom: 8px;
   color: var(--see-all-text);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -3733,14 +3713,14 @@ span.ongoing-txt2 {
 .ongoing-courses-tab li button.active {
   color: var(--8, #0d6efd) !important;
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
   line-height: 20px;
 }
 
-.ongoing-courses-tab li button.active:before {
+.ongoing-courses-tab li button.active::before {
   opacity: 1;
 }
 
@@ -3766,7 +3746,7 @@ span.ongoing-txt2 {
 
 .tab-lesson1 {
   color: var(--text-color);
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -3776,7 +3756,7 @@ span.ongoing-txt2 {
 .tab-lesson2 {
   color: var(--see-all-text);
   text-align: right;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -3806,7 +3786,7 @@ span.ongoing-txt2 {
 .play-btn-time {
   color: var(--see-all-text);
   text-align: right;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -3814,7 +3794,7 @@ span.ongoing-txt2 {
 }
 
 .start-course-btn {
-  box-shadow: 0px -4px 4px 0px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -4px 4px 0 rgb(0 0 0 / 4%);
   padding: 16px;
   position: fixed;
   width: 100%;
@@ -3843,7 +3823,7 @@ span.ongoing-txt2 {
 .course-txt1 {
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
@@ -3888,7 +3868,7 @@ span.ongoing-txt2 {
   padding: 15px 0;
   color: var(--text-color);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
@@ -3911,7 +3891,7 @@ span.ongoing-txt2 {
   padding: 0;
   font-size: 32px;
   cursor: pointer;
-  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
 }
 
@@ -3973,8 +3953,8 @@ span.ongoing-txt2 {
   border-radius: 4px;
   background: linear-gradient(
     97deg,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.2) 100%
+    rgb(0 0 0 / 80%) 0%,
+    rgb(0 0 0 / 20%) 100%
   );
   backdrop-filter: blur(3px);
   padding: 8px;
@@ -3984,7 +3964,7 @@ span.ongoing-txt2 {
 }
 
 .trending-bookmark {
-  background: #ffffff;
+  background: #fff;
   border-radius: 16px;
   width: 32px;
   height: 32px;
@@ -4054,7 +4034,7 @@ span.ongoing-txt2 {
   margin-top: 8px;
 }
 
-/*------------------------------------- 35.Preloader -------------------------------------*/
+/* ------------------------------------- 35.Preloader ------------------------------------- */
 .loader {
   position: relative;
   width: 2.5em;
@@ -4062,8 +4042,8 @@ span.ongoing-txt2 {
   transform: rotate(165deg);
 }
 
-.loader:before,
-.loader:after {
+.loader::before,
+.loader::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -4075,11 +4055,11 @@ span.ongoing-txt2 {
   transform: translate(-50%, -50%);
 }
 
-.loader:before {
+.loader::before {
   animation: before 2s infinite;
 }
 
-.loader:after {
+.loader::after {
   animation: after 2s infinite;
 }
 
@@ -4092,15 +4072,12 @@ span.ongoing-txt2 {
 .loader-mask,
 .loader-mask1 {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: var(--primary-color) !important;
   z-index: 99999;
 }
 
-/*------------------------------------- 36.Single mentor screen start -------------------------------------*/
+/* ------------------------------------- 36.Single mentor screen start ------------------------------------- */
 .single-mentor-first-wrap {
   display: flex;
   column-gap: 16px;
@@ -4162,8 +4139,7 @@ span.ongoing-txt2 {
   margin-left: auto;
   display: flex;
   flex-wrap: wrap;
-  align-content: space-between;
-  justify-content: flex-end;
+  place-content: space-between flex-end;
 }
 
 .mentor-icon {
@@ -4223,7 +4199,7 @@ span.ongoing-txt2 {
 .single-mentor-tab li button.active {
   color: var(--8, #0d6efd) !important;
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -4237,10 +4213,10 @@ span.ongoing-txt2 {
 }
 
 .single-mentor-tab li button {
-  padding: 24px 0 10px 0;
+  padding: 24px 0 10px;
   color: var(--see-all-text);
   text-align: center;
-  font-family: League Spartan;
+  font-family: "League Spartan";
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -4251,7 +4227,7 @@ span.ongoing-txt2 {
   width: 100%;
 }
 
-.single-mentor-tab li button:before {
+.single-mentor-tab li button::before {
   content: "";
   background: var(--8, #0d6efd);
   height: 2px;
@@ -4263,7 +4239,7 @@ span.ongoing-txt2 {
   opacity: 0;
 }
 
-.single-mentor-tab li button.active:before {
+.single-mentor-tab li button.active::before {
   opacity: 1;
 }
 
@@ -4308,7 +4284,7 @@ span.ongoing-txt2 {
   margin-top: 4px !important;
 }
 
-/*------------------------------------- 37.Profile screen start -------------------------------------*/
+/* ------------------------------------- 37.Profile screen start ------------------------------------- */
 .profile-edit-img {
   text-align: center;
   position: relative;
@@ -4414,11 +4390,11 @@ span.ongoing-txt2 {
   line-height: 24px;
 }
 
-.iti__arrow:before {
-  content: url(../images/icons/faq-up.svg) !important;
+.iti__arrow::before {
+  content: url("../images/icons/faq-up.svg") !important;
   position: absolute;
   left: 0;
-  top: 0px;
+  top: 0;
   padding-left: 20px;
   margin-left: 12px !important;
 }
@@ -4439,7 +4415,7 @@ span.ongoing-txt2 {
 }
 
 .arrow-icon {
-  background: url(../images/icons/faq-up.svg) no-repeat;
+  background: url("../images/icons/faq-up.svg") no-repeat;
   background-position: 96% center;
   font-size: 18px;
   appearance: none;
@@ -4465,10 +4441,10 @@ span.ongoing-txt2 {
   outline: none !important;
 }
 
-/*------------------------------------- 38.Result found screen start -------------------------------------*/
+/* ------------------------------------- 38.Result found screen start ------------------------------------- */
 .serachbar-homepage2 {
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -4483,7 +4459,7 @@ span.ongoing-txt2 {
   width: 24px;
   height: 24px;
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -4503,7 +4479,7 @@ span.ongoing-txt2 {
 
 [type="search"]::-webkit-search-cancel-button,
 [type="search"]::-webkit-search-decoration {
-  -webkit-appearance: none;
+  appearance: none;
   appearance: none;
 }
 
@@ -4766,8 +4742,7 @@ label.custom-radio-sel-filter {
 .select-category {
   display: flex;
   column-gap: 12px;
-  overflow-x: scroll;
-  overflow-y: hidden;
+  overflow: scroll hidden;
 }
 
 .category-sec input[type="radio"] {
@@ -4801,7 +4776,7 @@ label.custom-radio-sel-category {
 .filter-modal .pricing-slider .irs-slider {
   height: 22px;
   width: 22px;
-  background: #ffffff;
+  background: #fff;
   border: 2px solid #fff;
   z-index: 0;
 }
@@ -4852,12 +4827,11 @@ label.custom-radio-sel-category {
   display: flex;
   align-items: center;
   margin-top: 12px;
-  overflow-x: scroll;
-  overflow-y: hidden;
+  overflow: scroll hidden;
 }
 
 .review-sec:first-child {
-  margin-left: 0px;
+  margin-left: 0;
 }
 
 .review-sec {
@@ -4873,7 +4847,6 @@ label.custom-radio-sel-category {
   border-radius: 18px;
   border: 2px solid #fff;
   cursor: pointer;
-  color: #fff;
   text-align: center;
   color: #fff;
   font-family: Lato;
@@ -4949,7 +4922,6 @@ label.custom-radio-sel-category {
   border-radius: 8px;
   background: var(--text-color);
   padding: 15px 0;
-  text-align: center;
   width: 100%;
   text-align: center;
   font-family: "League Spartan";
@@ -4975,7 +4947,7 @@ label.custom-radio-sel-category {
 }
 
 #filterModal .modal-content {
-  border-radius: 16px 16px 0px 0px;
+  border-radius: 16px 16px 0 0;
   background: var(--1, #121212);
 }
 
@@ -5008,7 +4980,6 @@ label.custom-radio-sel-category {
 
 .search-modal .modal-title {
   color: var(--2, #fff);
-  text-align: center;
   font-family: "League Spartan";
   font-size: 20px;
   font-style: normal;
@@ -5018,7 +4989,7 @@ label.custom-radio-sel-category {
 }
 
 .search-modal .modal-body {
-  padding: 0 16px 16px 16px;
+  padding: 0 16px 16px;
 }
 
 .filter-sec {
@@ -5032,7 +5003,7 @@ label.custom-radio-sel-category {
   margin: 0 auto;
 }
 
-/*------------------------------------- 39.New Course screen start -------------------------------------*/
+/* ------------------------------------- 39.New Course screen start ------------------------------------- */
 .new-courses {
   position: relative;
 }
@@ -5047,8 +5018,8 @@ label.custom-radio-sel-category {
   border-radius: 4px;
   background: linear-gradient(
     97deg,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.2) 100%
+    rgb(0 0 0 / 80%) 0%,
+    rgb(0 0 0 / 20%) 100%
   );
   backdrop-filter: blur(3px);
   padding: 8px;
@@ -5102,7 +5073,7 @@ span.new-courses-txt5 {
 }
 
 .new-courses-sec {
-  padding: 0 15px 0px 0px;
+  padding: 0 15px 0 0;
 }
 
 .bookmark-time {
@@ -5183,7 +5154,7 @@ span.new-courses-txt5 {
 .search-iconn:focus-visible,
 .search-text:focus {
   outline: 0;
-  -webkit-box-shadow: none;
+  box-shadow: none;
   box-shadow: none;
 }
 
@@ -5223,7 +5194,7 @@ span.new-courses-txt5 {
   align-items: center;
   column-gap: 16px;
   background: var(--box-color);
-  box-shadow: 0px -4px 4px 0px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -4px 4px 0 rgb(0 0 0 / 4%);
   padding: 16px;
   position: fixed;
   width: 100%;
@@ -5345,7 +5316,7 @@ input:-webkit-autofil {
 }
 
 .shop-now2-sec {
-  background-image: url(../images/homescreen/offer-img.png);
+  background-image: url("../images/homescreen/offer-img.png");
   background-repeat: no-repeat;
   background-size: cover;
   max-width: 100%;
@@ -5511,7 +5482,6 @@ button.accordion-button.courses-custom-btn::after {
 }
 
 .btn-close {
-  background: transparent;
   border: none;
   opacity: 1 !important;
   display: flex;
@@ -5526,7 +5496,7 @@ button.accordion-button.courses-custom-btn::after {
   box-shadow: none !important;
 }
 
-.btn-close:before {
+.btn-close::before {
   content: "\f00d";
   font-weight: 700;
   font-family: "Font Awesome 6 Free";
@@ -5625,13 +5595,12 @@ button.accordion-button.courses-custom-btn::after {
   font-style: normal;
   font-weight: 500;
   line-height: 18px;
-  margin: 15px 0 20px 0;
+  margin: 15px 0 20px;
 }
 
 .messages .message .timestamp {
   position: absolute;
   bottom: -18px;
-  font-size: 10px;
   color: var(--see-all-text);
   right: 0;
   font-family: Lato;
@@ -5653,7 +5622,7 @@ button.accordion-button.courses-custom-btn::after {
   overflow: hidden;
   margin: 0;
   padding: 0;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  border: 2px solid rgb(255 255 255 / 50%);
 }
 
 .messages .message .avatar img {
@@ -5663,10 +5632,9 @@ button.accordion-button.courses-custom-btn::after {
 
 .messages .message.message-personal {
   float: right;
-  text-align: right;
   background: #0d6efd;
   border: none;
-  border-radius: 8px 8px 0 8px;
+  border-radius: 8px 8px 0;
   color: var(--primary-color);
   text-align: right;
   font-family: Lato;
@@ -5679,7 +5647,6 @@ button.accordion-button.courses-custom-btn::after {
 
 .message-box .message-input:focus {
   outline: none !important;
-
   border-radius: 8px;
 }
 
@@ -5693,7 +5660,7 @@ button.accordion-button.courses-custom-btn::after {
 
 .messages .message.new {
   transform-origin: 0 0;
-  -webkit-animation: bounce 500ms linear both;
+  animation: bounce 500ms linear both;
   animation: bounce 500ms linear both;
 }
 
@@ -5806,7 +5773,6 @@ button.accordion-button.courses-custom-btn::after {
 
 .message-submit {
   border-radius: 8px;
-  padding: 0;
   background-color: var(--text-color);
   padding: 12px;
 }
@@ -5817,7 +5783,7 @@ body::-webkit-scrollbar {
 }
 
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 0;
 }
 
 .mCSB_scrollTools {
@@ -5826,7 +5792,7 @@ body::-webkit-scrollbar {
 }
 
 .mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
-  background-color: rgba(0, 0, 0, 0.5) !important;
+  background-color: rgb(0 0 0 / 50%) !important;
 }
 
 /************************ 43.Animation ***************************/
@@ -5855,57 +5821,54 @@ body::-webkit-scrollbar {
 @keyframes before {
   0% {
     width: 0.5em;
-    box-shadow: 1em -0.5em rgba(225, 20, 98, 0.75),
-      -1em 0.5em rgba(111, 202, 220, 0.75);
+    box-shadow: 1em -0.5em rgb(225 20 98 / 75%),
+      -1em 0.5em rgb(111 202 220 / 75%);
   }
 
   35% {
     width: 2.5em;
-    box-shadow: 0 -0.5em rgba(225, 20, 98, 0.75),
-      0 0.5em rgba(111, 202, 220, 0.75);
+    box-shadow: 0 -0.5em rgb(225 20 98 / 75%), 0 0.5em rgb(111 202 220 / 75%);
   }
 
   70% {
     width: 0.5em;
-    box-shadow: -1em -0.5em rgba(225, 20, 98, 0.75),
-      1em 0.5em rgba(111, 202, 220, 0.75);
+    box-shadow: -1em -0.5em rgb(225 20 98 / 75%),
+      1em 0.5em rgb(111 202 220 / 75%);
   }
 
   100% {
-    box-shadow: 1em -0.5em rgba(225, 20, 98, 0.75),
-      -1em 0.5em rgba(111, 202, 220, 0.75);
+    box-shadow: 1em -0.5em rgb(225 20 98 / 75%),
+      -1em 0.5em rgb(111 202 220 / 75%);
   }
 }
 
 @keyframes after {
   0% {
     height: 0.5em;
-    box-shadow: 0.5em 1em rgba(61, 184, 143, 0.75),
-      -0.5em -1em rgba(233, 169, 32, 0.75);
+    box-shadow: 0.5em 1em rgb(61 184 143 / 75%),
+      -0.5em -1em rgb(233 169 32 / 75%);
   }
 
   35% {
     height: 2.5em;
-    box-shadow: 0.5em 0 rgba(61, 184, 143, 0.75),
-      -0.5em 0 rgba(233, 169, 32, 0.75);
+    box-shadow: 0.5em 0 rgb(61 184 143 / 75%), -0.5em 0 rgb(233 169 32 / 75%);
   }
 
   70% {
     height: 0.5em;
-    box-shadow: 0.5em -1em rgba(61, 184, 143, 0.75),
-      -0.5em 1em rgba(233, 169, 32, 0.75);
+    box-shadow: 0.5em -1em rgb(61 184 143 / 75%),
+      -0.5em 1em rgb(233 169 32 / 75%);
   }
 
   100% {
-    box-shadow: 0.5em 1em rgba(61, 184, 143, 0.75),
-      -0.5em -1em rgba(233, 169, 32, 0.75);
+    box-shadow: 0.5em 1em rgb(61 184 143 / 75%),
+      -0.5em -1em rgb(233 169 32 / 75%);
   }
 }
 
 /************************ 44.PWA Popup ***************************/
 .offcanvas.offcanvas-bottom {
   border-radius: 0.625rem 0.625rem 0 0;
-  height: unset;
   border-top: 0;
   transform: none !important;
   height: 330px !important;
@@ -5917,7 +5880,7 @@ body::-webkit-scrollbar {
 
 .popup-close-home {
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -5936,7 +5899,7 @@ body::-webkit-scrollbar {
   margin-right: auto;
   margin-left: auto;
   display: -webkit-box;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
 }
 
@@ -5972,7 +5935,7 @@ body::-webkit-scrollbar {
 }
 
 a.addhome-btn {
-  color: #ffffff;
+  color: #fff;
   margin-top: 20px;
 }
 
@@ -6034,6 +5997,7 @@ h2 {
 
 .accordion-inner {
   background-color: #eee;
+
   /* padding: 15px; */
 }
 
@@ -6055,25 +6019,25 @@ h2 {
   height: 0;
   border-style: solid;
   border-color: transparent;
-  border-width: 8px 8px 0px 8px;
+  border-width: 8px 8px 0;
   border-top-color: #fff;
 }
 
 .accordion-list.actived > .accordion-label > .acd-arrow {
-  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
   transform: rotate(180deg);
 }
 
 .acd-transition > .accordion-label > .acd-arrow {
-  -webkit-transition: -webkit-transform 0.3s ease;
+  transition: -webkit-transform 0.3s ease;
   transition: transform 0.3s ease;
 }
 
-// added by aman
 @keyframes spin {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
