@@ -7,6 +7,8 @@ import EyeiconFill from "../assets/svg/eye-off-fill.svg";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
+import SignInWithSocial from "../components/SignInWithSocial";
+import Footer from "../components/Footer";
 
 const SignUp = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -39,8 +41,11 @@ const SignUp = () => {
     }
 
     try {
-
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       const userData = {
@@ -48,7 +53,7 @@ const SignUp = () => {
         uid: user.uid, // Firebase user ID
         phone_number: `+${phone}`, // Phone number from state
         created_time: new Date().toISOString(), // Current timestamp
-        display_name: document.getElementById("name").value
+        display_name: document.getElementById("name").value,
       };
 
       await setDoc(doc(db, "users", user.uid), userData);
@@ -56,11 +61,11 @@ const SignUp = () => {
       navigate("/signin"); // Redirect to sign-in page after successful signup
     } catch (error) {
       // Check for specific error codes
-      if (error.code === 'auth/email-already-in-use') {
+      if (error.code === "auth/email-already-in-use") {
         setError("The email address is already in use by another account.");
-      } else if (error.code === 'auth/invalid-email') {
+      } else if (error.code === "auth/invalid-email") {
         setError("The email address is not valid.");
-      } else if (error.code === 'auth/weak-password') {
+      } else if (error.code === "auth/weak-password") {
         setError("The password is too weak.");
       } else {
         setError("An unexpected error occurred: " + error.message);
@@ -215,6 +220,9 @@ const SignUp = () => {
                   country={"in"} // Set default country
                   value={phone} // Pass phone state value
                   onChange={setPhone} // Update phone state on change
+                  inputStyle={{
+                    paddingLeft: "60px",
+                  }}
                   inputProps={{
                     name: "phone",
                     required: true,
@@ -362,13 +370,12 @@ const SignUp = () => {
               <div className="or-section mt-32">
                 <p>or continue with</p>
               </div>
-              <div className="sign-in-social-media">
-                {/* Social media icons go here */}
-              </div>
+              <SignInWithSocial />
             </form>
           </div>
         </div>
       </section>
+      <Footer link="/signin" />
     </>
   );
 };
