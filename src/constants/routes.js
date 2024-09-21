@@ -47,4 +47,5 @@ export const ROUTES = {
   REVIEW_SCREEN: "/review-screen",
   SEARCH_RESULT_FOUND: "/search-result-found",
   SEARCH_NO_RESULT_SCREEN: "/search-noresult-screen",
+  ADD_LINKEDIN_PROFILE: "/add-linkedin-profile",
 };

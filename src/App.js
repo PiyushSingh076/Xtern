@@ -54,6 +54,7 @@ import BottomNavigation from "./components/BottomNavigation";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./Protected/ProtectedRoute";
 import Footer from "./components/Footer";
+import AddLinkedInProfile from "./pages/AddLinkedInProfile";
 
 function App() {
   const location = useLocation(); // Get the current location
@@ -297,6 +298,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ProfileEdit />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.ADD_LINKEDIN_PROFILE}
+          element={
+            <ProtectedRoute>
+              <AddLinkedInProfile />
             </ProtectedRoute>
           }
         />
