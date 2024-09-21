@@ -1,26 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import Loading from "../components/Loading";
+import useUserRole from "../hooks/Auth/useUserRole";
+
+// LanguageOption Component: Reusable for each role selection
+const LanguageOption = ({ id, label, checked, onChange }) => (
+  <div
+    className={`form-check select-goal mt-12 ${checked ? "language-sel" : ""}`}
+  >
+    <input
+      className="form-check-input custom-input-goal"
+      name="language"
+      type="radio"
+      id={id}
+      checked={checked}
+      onChange={onChange}
+    />
+    <label className="form-check-label custom-lable-goal" htmlFor={id}>
+      {label}
+    </label>
+  </div>
+);
 
 const PrimaryGoalScreen = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState("language3");
+  const { selectedRole, handleRoleChange, saveRole } = useUserRole(); // Use the hook
 
-  const handleRadioChange = (event) => {
-    setSelectedLanguage(event.target.id);
-  };
+  const roleOptions = [
+    { value: "Entrepreneur", label: "I Am an Entrepreneur" },
+    { value: "Seeker", label: "I Am a Seeker" },
+  ];
 
-  // const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   setTimeout(() => setLoading(false), 500); // Simulate loading time
-  // }, []);
-
-  // if (loading) {
-  //   return <Loading />;
-  // }
   return (
     <>
-      {/* <!-- Header start --> */}
       <header id="top-navbar" className="top-navbar">
         <div className="container">
           <div className="top-navbar_full">
@@ -57,7 +67,7 @@ const PrimaryGoalScreen = () => {
               </Link>
             </div>
             <div className="top-navbar-title">
-              <p>Primary Goal</p>
+              <p>Select Role</p>
             </div>
             <div className="skip-btn-goal">
               <Link to="/spend-learning">Skip</Link>
@@ -66,58 +76,34 @@ const PrimaryGoalScreen = () => {
         </div>
         <div className="navbar-boder"></div>
       </header>
-      {/* <!-- Header end --> */}
-      {/* <!-- Primary goal start --> */}
+
       <section id="primary_goal">
         <div className="container">
-          <h1 className="d-none">Goal</h1>
-          <h2 className="d-none">Hidden</h2>
           <div className="primary_goal-wrap mt-32">
             <div className="goal-title">
-              <p>What is your main goal in learning something new?</p>
+              <p>What is your Role in Xtern</p>
             </div>
-            <div className="primary-goal-content mt-32">
-              <form className="primary-form">
-                {[
-                  { id: "language1", label: "Start a new career and skills" },
-                  { id: "language2", label: "Start a new career" },
-                  { id: "language3", label: "Advance my educational goal" },
-                  { id: "language4", label: "Start a new skills" },
-                  { id: "language5", label: "I love to learn new things" },
-                  { id: "language6", label: "Just for fun" },
-                ].map((option) => (
-                  <div
-                    key={option.id}
-                    className={`form-check select-goal mt-12 ${
-                      selectedLanguage === option.id ? "language-sel" : ""
-                    }`}
-                  >
-                    <input
-                      className="form-check-input custom-input-goal"
-                      name="language"
-                      type="radio"
-                      id={option.id}
-                      checked={selectedLanguage === option.id}
-                      onChange={handleRadioChange}
-                    />
-                    <label
-                      className="form-check-label custom-lable-goal"
-                      htmlFor={option.id}
-                    >
-                      {option.label}
-                    </label>
-                  </div>
-                ))}
-              </form>
-              <div className="next-btn-goal mt-32">
-                <Link to="/homescreen">Next</Link>
-              </div>
+
+            <form className="primary-form mt-32">
+              {roleOptions.map((option) => (
+                <LanguageOption
+                  key={option.value}
+                  id={option.value}
+                  label={option.label}
+                  checked={selectedRole === option.value}
+                  onChange={handleRoleChange}
+                />
+              ))}
+            </form>
+
+            <div className="next-btn-goal mt-32">
+              <button onClick={saveRole}>Next</button>
             </div>
           </div>
         </div>
       </section>
-      {/* <!-- Primary goal end --> */}
     </>
   );
 };
+
 export default PrimaryGoalScreen;

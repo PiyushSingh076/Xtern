@@ -93,13 +93,13 @@ const VerifyScreen = () => {
       // Check if user is new or returning
       const userDoc = await getDoc(doc(db, "users", user.uid));
 
-      if (userDoc.exists()) {
-        // Returning user, navigate to homescreen
-        navigate("/homescreen");
-      } else {
-        // New user, navigate to preferred language screen
-        navigate("/preferredlanguage");
-      }
+      // if (userDoc.exists()) {
+      //   // Returning user, navigate to homescreen
+      //   navigate("/homescreen");
+      // } else {
+      // New user, navigate to preferred language screen
+      navigate("/preferredlanguage");
+      // }
 
       setLoading(false);
     } catch (err) {
