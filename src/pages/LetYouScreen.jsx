@@ -1,35 +1,17 @@
-import React, { useEffect, useState } from "react";
-import LetYouImg from "../assets/images/let-you-screen/let-you-img.png";
+import React from "react";
 import { Link } from "react-router-dom";
+import LetYouImg from "../assets/images/let-you-screen/let-you-img.png";
 import Footer from "../components/Footer";
-import Loader from "../components/Loader";
-import Loading from "../components/Loading";
+import {
+  googleProvider,
+  facebookProvider,
+  appleProvider,
+} from "../firebaseConfig"; // Import Firebase setup
+import useOAuthLogin from "../hooks/Auth/useOAuthLogin";
+
 const LetYouScreen = () => {
-  // const [loading, setLoading] = useState(true);
+  const { handleOAuthLogin, loading } = useOAuthLogin();
 
-  // useEffect(() => {
-  //   window.addEventListener("load", () => {
-  //     setTimeout(() => {
-  //       setLoading(false);
-  //     }, 300); // 350ms delay before hiding loader
-  //   });
-
-  //   return () => {
-  //     window.removeEventListener("load", () => {
-  //       setLoading(false);
-  //     });
-  //   };
-  // }, []);
-
-  // const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   setTimeout(() => setLoading(false), 500); // Simulate loading time
-  // }, []);
-
-  // if (loading) {
-  //   return <Loading />;
-  // }
   return (
     <>
       <header id="let-you-screen">
@@ -71,59 +53,20 @@ const LetYouScreen = () => {
         </div>
       </header>
 
-      <section
-        id="let-you-screen-content"
-        // className={loading ? "hidden-content" : ""}
-      >
+      <section id="let-you-screen-content">
         <div className="container">
           <div className="let-you-screen-content-wrap">
             <div className="let-you-screen-img mt-32">
               <img src={LetYouImg} alt="let-you-img" />
               <h1 className="let-you-txt mt-32">Let’s You In</h1>
             </div>
+
             <div className="let-you-social-media mt-24">
-              <Link
-                to="https://www.facebook.com/"
-                target="_blank"
+              {/* Continue with Google */}
+              <button
+                onClick={() => handleOAuthLogin(googleProvider)}
                 className="social-icon social-links"
-              >
-                <span className="social-icon-img">
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <mask
-                      id="mask0_330_7255"
-                      style={{ maskType: "alpha" }}
-                      maskUnits="userSpaceOnUse"
-                      x="0"
-                      y="0"
-                      width="24"
-                      height="24"
-                    >
-                      <rect width="24" height="24" fill="white" />
-                    </mask>
-                    <g mask="url(#mask0_330_7255)">
-                      <path
-                        d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z"
-                        fill="#1977F3"
-                      />
-                      <path
-                        d="M16.6711 15.4696L17.2027 12H13.8749V9.74884C13.8749 8.80045 14.3389 7.874 15.8307 7.874H17.3444V4.92083C17.3444 4.92083 15.9708 4.68626 14.6579 4.68626C11.9173 4.68626 10.1252 6.34679 10.1252 9.35565V12H7.07751V15.4696H10.1252V23.8549C10.7361 23.9511 11.3621 24 12 24C12.6379 24 13.264 23.9494 13.8749 23.8549V15.4696H16.6711Z"
-                        fill="white"
-                      />
-                    </g>
-                  </svg>
-                </span>
-                <span className="social-txt">Continue with Facebook</span>
-              </Link>
-              <Link
-                to="https://www.google.com/"
-                target="_blank"
-                className="social-icon mt-12 social-links"
+                disabled={loading}
               >
                 <span className="social-icon-img">
                   <svg
@@ -164,12 +107,58 @@ const LetYouScreen = () => {
                     </g>
                   </svg>
                 </span>
-                <span className="social-txt">Continue with Google</span>
-              </Link>
-              <Link
-                to="https://www.icloud.com/"
-                target="_blank"
+                <span className="social-txt">
+                  {loading ? "Loading..." : "Continue with Google"}
+                </span>
+              </button>
+
+              {/* Continue with Facebook */}
+              <button
+                onClick={() => handleOAuthLogin(facebookProvider)}
                 className="social-icon mt-12 social-links"
+                disabled={loading}
+              >
+                <span className="social-icon-img">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <mask
+                      id="mask0_330_7255"
+                      style={{ maskType: "alpha" }}
+                      maskUnits="userSpaceOnUse"
+                      x="0"
+                      y="0"
+                      width="24"
+                      height="24"
+                    >
+                      <rect width="24" height="24" fill="white" />
+                    </mask>
+                    <g mask="url(#mask0_330_7255)">
+                      <path
+                        d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z"
+                        fill="#1977F3"
+                      />
+                      <path
+                        d="M16.6711 15.4696L17.2027 12H13.8749V9.74884C13.8749 8.80045 14.3389 7.874 15.8307 7.874H17.3444V4.92083C17.3444 4.92083 15.9708 4.68626 14.6579 4.68626C11.9173 4.68626 10.1252 6.34679 10.1252 9.35565V12H7.07751V15.4696H10.1252V23.8549C10.7361 23.9511 11.3621 24 12 24C12.6379 24 13.264 23.9494 13.8749 23.8549V15.4696H16.6711Z"
+                        fill="white"
+                      />
+                    </g>
+                  </svg>
+                </span>
+                <span className="social-txt">
+                  {loading ? "Loading..." : "Continue with Facebook"}
+                </span>
+              </button>
+
+              {/* Continue with Apple */}
+              <button
+                onClick={() => handleOAuthLogin(appleProvider)}
+                className="social-icon mt-12 social-links"
+                disabled={loading}
               >
                 <span className="social-icon-img apple-icon">
                   <svg
@@ -198,9 +187,12 @@ const LetYouScreen = () => {
                     </g>
                   </svg>
                 </span>
-                <span className="social-txt">Continue with Apple</span>
-              </Link>
+                <span className="social-txt">
+                  {loading ? "Loading..." : "Continue with Apple"}
+                </span>
+              </button>
             </div>
+
             <div className="or-section mt-24">
               <p>or</p>
             </div>
@@ -210,12 +202,11 @@ const LetYouScreen = () => {
           </div>
         </div>
       </section>
-      {/* <!-- Let you screen end --> */}
 
-      {/* <!-- Footer section start --> */}
+      {/* Footer */}
       <Footer />
-      {/* <!-- Footer end --> */}
     </>
   );
 };
+
 export default LetYouScreen;

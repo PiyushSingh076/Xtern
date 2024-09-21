@@ -4,6 +4,8 @@ import "react-phone-input-2/lib/style.css"; // Import the required CSS for Phone
 import { Link, useNavigate } from "react-router-dom";
 import Eyeicon from "../assets/svg/eye-fill.svg"; // Importing Eyeicon
 import EyeiconFill from "../assets/svg/eye-off-fill.svg";
+import SignInWithSocial from "../components/SignInWithSocial";
+import Footer from "../components/Footer";
 
 const SignUp = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -312,11 +314,11 @@ const SignUp = () => {
           <div className="or-section mt-32">
             <p>or continue with</p>
           </div>
-          <div className="sign-in-social-media">
-            {/* Social media icons go here */}
-          </div>
+          <SignInWithSocial />
         </div>
       </section>
+
+      <Footer link="/signin" />
     </>
   );
 };

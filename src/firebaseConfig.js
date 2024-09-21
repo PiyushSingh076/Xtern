@@ -1,6 +1,14 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, RecaptchaVerifier } from "firebase/auth";
+import {
+  getAuth,
+  RecaptchaVerifier,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  OAuthProvider,
+} from "firebase/auth";
+import { getFirestore } from "firebase/firestore"; // Import Firestore
 
+// Firebase configuration object
 const firebaseConfig = {
   apiKey: "AIzaSyCpzZHQ5R-fjc3Y8eH2rakvvRNRyYRWu6c",
   authDomain: "startup-a54cf.firebaseapp.com",
@@ -11,14 +19,12 @@ const firebaseConfig = {
   measurementId: "G-TS4ZN2DBB0",
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app); // Initialize Firestore
 
-// Remove this if you're trying to use real phone numbers in a production environment
-if (window.location.hostname === "localhost") {
-  // auth.settings.appVerificationDisabledForTesting = true;
-}
-
+// ReCAPTCHA setup for phone authentication
 const setUpRecaptcha = () => {
   if (!window.recaptchaVerifier) {
     window.recaptchaVerifier = new RecaptchaVerifier(
@@ -42,4 +48,17 @@ const setUpRecaptcha = () => {
   }
 };
 
-export { auth, setUpRecaptcha };
+// Initialize the providers for Google, Facebook, and Apple
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
+const appleProvider = new OAuthProvider("apple.com");
+
+// Export auth, Firestore (db), providers, and ReCAPTCHA setup
+export {
+  auth,
+  db, // Export Firestore
+  setUpRecaptcha,
+  googleProvider,
+  facebookProvider,
+  appleProvider,
+};
