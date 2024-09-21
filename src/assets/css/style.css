@@ -364,6 +364,7 @@ textarea {
 .verify-btn button, /* Target button */
 .allow-btn a,
 .next-btn a,
+.next-btn button,
 .next-btn-goal a,
 .inter-next-btn a,
 .feedback-submit a,

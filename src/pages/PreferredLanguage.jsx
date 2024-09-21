@@ -1,26 +1,86 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Loading from "../components/Loading";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { doc, updateDoc } from "firebase/firestore";
+import { db, auth } from "../firebaseConfig"; // Import Firestore and Auth config
+import { onAuthStateChanged } from "firebase/auth"; // Import the auth state change listener
+import toast from "react-hot-toast";
+
+// Modular component for a single language option
+const LanguageOption = ({ value, checked, onChange, label }) => (
+  <div className="lang-sec">
+    <input
+      type="radio"
+      id={`select-lang-${value}`}
+      name="select-language"
+      value={value}
+      checked={checked === value}
+      onChange={onChange}
+      aria-label={`Select ${label}`}
+    />
+    <label className="custom-radio-sel-lang" htmlFor={`select-lang-${value}`}>
+      {label}
+    </label>
+  </div>
+);
 
 const PreferredLanguage = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const [userName, setUserName] = useState(""); // State to store the user's name
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Set up the auth state change listener
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserName(user.displayName || "User"); // Default to "User" if displayName is not available
+      } else {
+        setUserName(""); // Clear the name if the user is not logged in
+      }
+    });
+
+    // Clean up the listener when the component unmounts
+    return () => unsubscribe();
+  }, []);
 
   const handleLanguageChange = (event) => {
     setSelectedLanguage(event.target.value);
   };
 
-  // const [loading, setLoading] = useState(true);
+  const savePreferredLanguage = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("No authenticated user found");
 
-  // useEffect(() => {
-  //   setTimeout(() => setLoading(false), 500); // Simulate loading time
-  // }, []);
+      const userRef = doc(db, "users", user.uid);
 
-  // if (loading) {
-  //   return <Loading />;
-  // }
+      // Update the user's preferred language in Firestore
+      await updateDoc(userRef, {
+        preferredLanguage: selectedLanguage,
+      });
+
+      toast.success("Language preference saved!");
+      navigate("/primarygoalscreen"); // Redirect to Primary Goal Screen
+    } catch (error) {
+      console.error("Error saving preferred language:", error);
+      toast.error("Failed to save language preference");
+    }
+  };
+
+  const languageOptions = [
+    { value: "English", label: "English" },
+    { value: "Chinese", label: "Chinese" },
+    { value: "Hindi", label: "Hindi" },
+    { value: "Portuguese", label: "Portuguese" },
+    { value: "Spanish", label: "Spanish" },
+    { value: "Arabic", label: "Arabic" },
+    { value: "Bulgarian", label: "Bulgarian" },
+    { value: "French", label: "French" },
+    { value: "Russian", label: "Russian" },
+  ];
+
   return (
     <>
-      {/* <!-- Header start --> */}
+      {/* Header with Skip button */}
       <header id="top-header">
         <div className="container">
           <div className="skip-section">
@@ -30,140 +90,38 @@ const PreferredLanguage = () => {
           </div>
         </div>
       </header>
-      {/* <!-- Header end --> */}
-      {/* <!-- Preferred language screen start --> */}
+
+      {/* Preferred Language Selection Section */}
       <section id="select-language-page">
         <div className="container">
-          <h1 className="hey-txt">Hey, Jesica</h1>
+          <h1 className="hey-txt">Hey, {userName}</h1>{" "}
+          {/* Display the user's name dynamically */}
           <p className="select-lang">
             Please select your preferred language to facilitate communication.
           </p>
           <form className="select-lang-sec mt-32">
-            <div className="lang-sec">
-              <input
-                type="radio"
-                id="select-lang1"
-                name="select-language"
-                value="English"
-                checked={selectedLanguage === "English"}
+            {languageOptions.map((option) => (
+              <LanguageOption
+                key={option.value}
+                value={option.value}
+                checked={selectedLanguage}
                 onChange={handleLanguageChange}
+                label={option.label}
               />
-              <label className="custom-radio-sel-lang" htmlFor="select-lang1">
-                English
-              </label>
-            </div>
-            <div className="lang-sec">
-              <input
-                type="radio"
-                id="select-lang2"
-                name="select-language"
-                value="Chinese"
-                checked={selectedLanguage === "Chinese"}
-                onChange={handleLanguageChange}
-              />
-              <label className="custom-radio-sel-lang " htmlFor="select-lang2">
-                Chinese
-              </label>
-            </div>
-            <div className="lang-sec">
-              <input
-                type="radio"
-                id="select-lang3"
-                name="select-language"
-                value="Hindi"
-                checked={selectedLanguage === "Hindi"}
-                onChange={handleLanguageChange}
-              />
-              <label className="custom-radio-sel-lang " htmlFor="select-lang3">
-                Hindi
-              </label>
-            </div>
-            <div className="lang-sec">
-              <input
-                type="radio"
-                id="select-lang4"
-                name="select-language"
-                value="Portugese"
-                checked={selectedLanguage === "Portugese"}
-                onChange={handleLanguageChange}
-              />
-              <label className="custom-radio-sel-lang " htmlFor="select-lang4">
-                Portuguese
-              </label>
-            </div>
-            <div className="lang-sec">
-              <input
-                type="radio"
-                id="select-lang5"
-                name="select-language"
-                value="Spanish"
-                checked={selectedLanguage === "Spanish"}
-                onChange={handleLanguageChange}
-              />
-              <label className="custom-radio-sel-lang " htmlFor="select-lang5">
-                Spanish
-              </label>
-            </div>
-            <div className="lang-sec">
-              <input
-                type="radio"
-                id="select-lang6"
-                name="select-language"
-                value="Arabic"
-                checked={selectedLanguage === "Arabic"}
-                onChange={handleLanguageChange}
-              />
-              <label className="custom-radio-sel-lang " htmlFor="select-lang6">
-                Arabic
-              </label>
-            </div>
-            <div className="lang-sec">
-              <input
-                type="radio"
-                id="select-lang7"
-                name="select-language"
-                value="Bulgarian"
-                checked={selectedLanguage === "Bulgarian"}
-                onChange={handleLanguageChange}
-              />
-              <label className="custom-radio-sel-lang " htmlFor="select-lang7">
-                Bulgarian
-              </label>
-            </div>
-            <div className="lang-sec">
-              <input
-                type="radio"
-                id="select-lang8"
-                name="select-language"
-                value="French"
-                checked={selectedLanguage === "French"}
-                onChange={handleLanguageChange}
-              />
-              <label className="custom-radio-sel-lang " htmlFor="select-lang8">
-                French
-              </label>
-            </div>
-            <div className="lang-sec">
-              <input
-                type="radio"
-                id="select-lang9"
-                name="select-language"
-                value="Russian"
-                checked={selectedLanguage === "Russian"}
-                onChange={handleLanguageChange}
-              />
-              <label className="custom-radio-sel-lang " htmlFor="select-lang9">
-                Russian
-              </label>
-            </div>
+            ))}
           </form>
           <div className="next-btn mt-32">
-            <Link to="/primarygoalscreen">Select</Link>
+            <button
+              onClick={savePreferredLanguage}
+              aria-label="Save selected language"
+            >
+              Select
+            </button>
           </div>
         </div>
       </section>
-      {/* <!-- Preferred language screen end --> */}
     </>
   );
 };
+
 export default PreferredLanguage;

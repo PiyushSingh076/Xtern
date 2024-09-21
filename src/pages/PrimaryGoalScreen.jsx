@@ -110,7 +110,7 @@ const PrimaryGoalScreen = () => {
                 ))}
               </form>
               <div className="next-btn-goal mt-32">
-                <Link to="/spendlearning">Next</Link>
+                <Link to="/homescreen">Next</Link>
               </div>
             </div>
           </div>
