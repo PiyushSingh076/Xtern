@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig"; // Import Firestore and Auth config
 import { onAuthStateChanged } from "firebase/auth"; // Import the auth state change listener
 import toast from "react-hot-toast";
@@ -26,21 +26,25 @@ const LanguageOption = ({ value, checked, onChange, label }) => (
 const PreferredLanguage = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [userName, setUserName] = useState(""); // State to store the user's name
+  const [userId, setUserId] = useState(null); // State to store user ID
   const navigate = useNavigate();
 
   useEffect(() => {
     // Set up the auth state change listener
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        setUserId(user.uid); // Store the user ID
         setUserName(user.displayName || "User"); // Default to "User" if displayName is not available
       } else {
         setUserName(""); // Clear the name if the user is not logged in
+        setUserId(null); // Clear the user ID
+        navigate("/signin"); // Redirect to sign-in if not authenticated
       }
     });
 
     // Clean up the listener when the component unmounts
     return () => unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const handleLanguageChange = (event) => {
     setSelectedLanguage(event.target.value);
@@ -53,6 +57,12 @@ const PreferredLanguage = () => {
 
       const userRef = doc(db, "users", user.uid);
 
+      // Check if the user exists in Firestore before updating
+      const userDoc = await getDoc(userRef);
+      if (!userDoc.exists()) {
+        throw new Error("User does not exist in Firestore.");
+      }
+
       // Update the user's preferred language in Firestore
       await updateDoc(userRef, {
         preferredLanguage: selectedLanguage,
@@ -61,8 +71,8 @@ const PreferredLanguage = () => {
       toast.success("Language preference saved!");
       navigate("/primarygoalscreen"); // Redirect to Primary Goal Screen
     } catch (error) {
-      console.error("Error saving preferred language:", error);
-      toast.error("Failed to save language preference");
+      console.error("Error saving preferred language:", error.message);
+      toast.error("Failed to save language preference: " + error.message);
     }
   };
 

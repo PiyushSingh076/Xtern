@@ -10,7 +10,7 @@ import {
 import useOAuthLogin from "../hooks/Auth/useOAuthLogin";
 
 const LetYouScreen = () => {
-  const { handleOAuthLogin, loading } = useOAuthLogin();
+  const { handleOAuthLogin, loadingProvider } = useOAuthLogin();
 
   return (
     <>
@@ -64,9 +64,9 @@ const LetYouScreen = () => {
             <div className="let-you-social-media mt-24">
               {/* Continue with Google */}
               <button
-                onClick={() => handleOAuthLogin(googleProvider)}
+                onClick={() => handleOAuthLogin(googleProvider, "google")}
                 className="social-icon social-links"
-                disabled={loading}
+                disabled={loadingProvider === "google"}
               >
                 <span className="social-icon-img">
                   <svg
@@ -108,15 +108,17 @@ const LetYouScreen = () => {
                   </svg>
                 </span>
                 <span className="social-txt">
-                  {loading ? "Loading..." : "Continue with Google"}
+                  {loadingProvider === "google"
+                    ? "Loading..."
+                    : "Continue with Google"}
                 </span>
               </button>
 
               {/* Continue with Facebook */}
               <button
-                onClick={() => handleOAuthLogin(facebookProvider)}
+                onClick={() => handleOAuthLogin(facebookProvider, "facebook")}
                 className="social-icon mt-12 social-links"
-                disabled={loading}
+                disabled={loadingProvider === "facebook"}
               >
                 <span className="social-icon-img">
                   <svg
@@ -150,15 +152,17 @@ const LetYouScreen = () => {
                   </svg>
                 </span>
                 <span className="social-txt">
-                  {loading ? "Loading..." : "Continue with Facebook"}
+                  {loadingProvider === "facebook"
+                    ? "Loading..."
+                    : "Continue with Facebook"}
                 </span>
               </button>
 
               {/* Continue with Apple */}
               <button
-                onClick={() => handleOAuthLogin(appleProvider)}
+                onClick={() => handleOAuthLogin(appleProvider, "apple")}
                 className="social-icon mt-12 social-links"
-                disabled={loading}
+                disabled={loadingProvider === "apple"}
               >
                 <span className="social-icon-img apple-icon">
                   <svg
@@ -188,7 +192,9 @@ const LetYouScreen = () => {
                   </svg>
                 </span>
                 <span className="social-txt">
-                  {loading ? "Loading..." : "Continue with Apple"}
+                  {loadingProvider === "apple"
+                    ? "Loading..."
+                    : "Continue with Apple"}
                 </span>
               </button>
             </div>
@@ -204,7 +210,7 @@ const LetYouScreen = () => {
       </section>
 
       {/* Footer */}
-      <Footer />
+      <Footer link="/signup" />
     </>
   );
 };

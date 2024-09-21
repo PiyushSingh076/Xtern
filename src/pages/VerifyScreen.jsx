@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, setUpRecaptcha } from "../firebaseConfig";
+import { auth, db, setUpRecaptcha } from "../firebaseConfig";
 import { signInWithPhoneNumber } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore"; // Import Firestore methods
 import OtpInputGroup from "../components/OtpGroup"; // Custom OTP component
 import PhoneInput from "react-phone-input-2"; // Phone input with country selector
 import "react-phone-input-2/lib/style.css";
@@ -30,13 +31,15 @@ const VerifyScreen = () => {
       return () => clearTimeout(timerId);
     }
   }, [seconds]);
+
   const disposeRecaptcha = () => {
     if (window.recaptchaVerifier) {
       window.recaptchaVerifier.clear(); // Dispose of the ReCAPTCHA verifier instance
       delete window.recaptchaVerifier; // Remove the reference
     }
   };
-  // Avoid clearing or resetting recaptcha if it hasn't been initialized or is destroyed
+
+  // Reset recaptcha if it hasn't been initialized or is destroyed
   const resetRecaptcha = () => {
     if (window.recaptchaVerifier && !window.recaptchaVerifier.destroyed) {
       window.recaptchaVerifier.render().then((widgetId) => {
@@ -84,11 +87,21 @@ const VerifyScreen = () => {
     try {
       const confirmationResult = window.confirmationResult;
       const result = await confirmationResult.confirm(otp); // Verify OTP
+      const user = result.user;
       disposeRecaptcha();
 
-      console.log("User signed in successfully:", result.user);
+      // Check if user is new or returning
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+
+      if (userDoc.exists()) {
+        // Returning user, navigate to homescreen
+        navigate("/homescreen");
+      } else {
+        // New user, navigate to preferred language screen
+        navigate("/preferredlanguage");
+      }
+
       setLoading(false);
-      navigate("/homescreen"); // Navigate after successful verification
     } catch (err) {
       setError("Invalid OTP. Please try again.");
       setLoading(false);
