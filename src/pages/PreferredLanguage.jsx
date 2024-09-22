@@ -34,7 +34,7 @@ const PreferredLanguage = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid); // Store the user ID
-        setUserName(user.displayName || "User"); // Default to "User" if displayName is not available
+        setUserName(user.display_name || "User"); // Default to "User" if displayName is not available
       } else {
         setUserName(""); // Clear the name if the user is not logged in
         setUserId(null); // Clear the user ID

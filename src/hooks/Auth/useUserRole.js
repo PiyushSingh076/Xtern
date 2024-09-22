@@ -29,10 +29,10 @@ const useUserRole = () => {
   const saveRole = async () => {
     if (!userId) return;
 
-    const role = selectedRole;
+    const typeUser = selectedRole;
     try {
       const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, { role });
+      await updateDoc(userRef, { typeUser });
       toast.success("Role saved successfully!");
       navigate("/homescreen");
     } catch (error) {
