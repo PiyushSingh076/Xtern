@@ -7,7 +7,7 @@ import {
   OAuthProvider,
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore"; // Import Firestore
-import { getFunctions } from "firebase/functions";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 // Firebase configuration object
 const firebaseConfig = {
@@ -24,7 +24,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app); // Initialize Firestore
-const functions = getFunctions(app)
+const functions = getFunctions(app); 
 
 // ReCAPTCHA setup for phone authentication
 const setUpRecaptcha = () => {
@@ -59,6 +59,7 @@ const appleProvider = new OAuthProvider("apple.com");
 export {
   auth,
   db, // Export Firestore
+  functions,
   setUpRecaptcha,
   googleProvider,
   facebookProvider,
