@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { auth, db } from "../../firebaseConfig";
 
 const useUserRole = () => {
-  const [selectedRole, setSelectedRole] = useState("Seeker");
+  const [selectedRole, setSelectedRole] = useState("Intern");
   const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
 
@@ -34,7 +34,13 @@ const useUserRole = () => {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, { typeUser });
       toast.success("Role saved successfully!");
-      navigate("/homescreen");
+
+      // Redirect after saving the role
+      if (selectedRole === "Intern") {
+        navigate("/select-skills");
+      } else {
+        navigate("/homescreen");
+      }
     } catch (error) {
       console.error("Error saving role:", error);
       toast.error("Failed to save role. Please try again.");

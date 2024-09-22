@@ -368,7 +368,9 @@ textarea {
 .next-btn a,
 .next-btn button,
 .next-btn-goal a,
+.next-btn-goal button,
 .inter-next-btn a,
+.inter-next-btn button,
 .feedback-submit a,
 .go-courses-btn a,
 .buy-now-description a,
@@ -3988,7 +3990,8 @@ span.ongoing-txt2 {
   position: relative;
 }
 
-.trending-bookmark a {
+.trending-bookmark a,
+.trending-bookmark button {
   display: flex;
 }
 
@@ -6044,6 +6047,12 @@ h2 {
   100% {
     transform: rotate(360deg);
   }
+}
+
+// ----------------------------- By Aman --------------------------
+
+.interest-sec {
+  flex: 1 0 150px; /* Adjust the size as needed */
 }
 
 .animate-spin {

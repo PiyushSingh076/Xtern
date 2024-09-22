@@ -14,7 +14,7 @@ import NotificationAllow from "./pages/NotificationAllow";
 import PreferredLanguage from "./pages/PreferredLanguage";
 import PrimaryGoalScreen from "./pages/PrimaryGoalScreen";
 import SpendLearning from "./pages/SpendLearning";
-import InterestScreen from "./pages/InterestScreen";
+import SelectSkills from "./pages/SkillSelectionScreen";
 import SelectCoursesScreen from "./pages/SelectCoursesScreen";
 import HomeScreen from "./pages/HomeScreen";
 import Notification from "./pages/Notification";
@@ -121,7 +121,7 @@ function App() {
           path={ROUTES.INTEREST_SCREEN}
           element={
             <ProtectedRoute>
-              <InterestScreen />
+              <SelectSkills />
             </ProtectedRoute>
           }
         />
@@ -166,7 +166,7 @@ function App() {
           }
         />
         <Route
-          path={ROUTES.SINGLE_COURSE_DESCRIPTION}
+          path={ROUTES.SINGLE_COURSE_DESCRIPTION + "/:projectId"}
           element={
             <ProtectedRoute>
               <SingleCourseDescription />
