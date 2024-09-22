@@ -27,7 +27,7 @@ const useOAuthLogin = () => {
         // If user doesn't exist, store user data and navigate to verification screen
         const userData = {
           uid: user.uid,
-          name: user.displayName,
+          display_name: user.displayName,
           email: user.email,
           profilePicture: user.photoURL,
           provider: user.providerData[0].providerId,
