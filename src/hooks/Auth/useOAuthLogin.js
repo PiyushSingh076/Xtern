@@ -36,7 +36,7 @@ const useOAuthLogin = () => {
 
         // Store user data in Firestore
         await setDoc(userDocRef, userData);
-
+        sessionStorage.setItem('uid', userData.uid)
         toast.success("Verification Successful", { position: "bottom-left" });
         // navigate("/verifyscreen");
         navigate("/preferredlanguage");

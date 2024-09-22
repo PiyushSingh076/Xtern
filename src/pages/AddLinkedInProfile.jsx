@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link, useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
+import { functions } from '../firebaseConfig';
+import { httpsCallable } from 'firebase/functions';
 
 const AddLinkedInProfile = () => {
     const navigate = useNavigate();
@@ -9,13 +12,42 @@ const AddLinkedInProfile = () => {
         ''
     );
 
-    const handleContinue = () => {
-        // Handle the Continue button click
-        console.log('LinkedIn URL Submitted:', linkedinURL);
+    const handleContinue = async () => {
+        try {
+            if (!linkedinURL) {
+                toast.error('Please enter a valid LinkedIn URL');
+                return;
+            }
+            const profileId = linkedinURL
+            const linkedInApiUrl = `https://nubela.co/proxycurl/api/v2/linkedin?linkedin_profile_url=https://www.linkedin.com/in/siddhant-yerandkar/`;
+
+            const data = await fetch(linkedInApiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer hQijaWPUgdr7CC4yFwCz1A'  // Add your API key here
+                }
+            });
+
+            console.log("data---", data);
+
+            // Call Firebase function
+            // const fetchLinkedInProfileAndSaveExperience = httpsCallable(functions, 'fetchLinkedInProfileAndSaveExperience');
+            // const response = await fetchLinkedInProfileAndSaveExperience({ linkedinURL });
+
+            // if (response.data.success) {
+            //     toast.success('LinkedIn profile fetched and saved:', response.data.data);
+            //     //navigate('/next-step'); // Redirect to next step or show success message
+            // } else {
+            //     toast.error('Failed to fetch LinkedIn profile. Please try again.');
+            // }
+        } catch (error) {
+            toast.error('An error occurred. Please try again later.');
+            console.error('Error fetching LinkedIn profile:', error);
+        }
     };
 
     const handleBackClick = () => {
-        navigate(-1); // This will navigate to the previous page in the history stack
+        navigate(-1);
     };
     return (
         <>

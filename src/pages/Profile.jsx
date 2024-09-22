@@ -4,10 +4,13 @@ import ProfileImg from "../assets/images/courses/profile-img.png";
 import CloseIcon from "../assets/svg/close-line.svg";
 import Loading from "../components/Loading";
 import DarkLightmode from "../components/DarkLightMode";
+import { auth, db } from "../firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
+import toast from "react-hot-toast";
 
 const Profile = () => {
   // const [loading, setLoading] = useState(true);
-
+  const [userData, setUserData] = useState(null);
   // useEffect(() => {
   //   setTimeout(() => setLoading(false), 500); // Simulate loading time
   // }, []);
@@ -15,6 +18,35 @@ const Profile = () => {
   // if (loading) {
   //   return <Loading />;
   // }
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = auth.currentUser; // Get the currently signed-in user
+
+      if (user) {
+        try {
+          // Reference to the user's document in Firestore using their UID
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userDocRef); // Fetch the document
+
+          if (userDoc.exists()) {
+            setUserData(userDoc.data()); // Store user data in state
+  
+          } else {
+            toast.error('No user profile found.');
+          }
+        } catch (err) {
+          toast.error('Failed to fetch user data.');
+          console.error(err); // Log the error for debugging purposes
+        }
+      } else {
+        toast.error('User is not signed in.');
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   return (
     <>
       {/* <!-- Header start --> */}
@@ -114,7 +146,7 @@ const Profile = () => {
           <div className="profile-screen-wrap mt-32">
             <div className="profile-first">
               <div className="profile-edit-img">
-                <img src={ProfileImg} alt="profile-img" />
+                <img src={userData?.image || ProfileImg} alt="profile-img" />
                 <div className="image-input">
                   <Link to="/profile-edit" className="image-button">
                     <svg
@@ -163,8 +195,8 @@ const Profile = () => {
                 </div>
               </div>
               <div className="profile-details mt-24">
-                <h1>Jessica Smith</h1>
-                <p>Freelancer</p>
+                <h1>{userData?.display_name}</h1>
+                <p>{userData?.typeUser}</p>
               </div>
             </div>
             {/* <div className="profile-second mt-32">
