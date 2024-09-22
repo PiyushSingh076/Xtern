@@ -32,60 +32,27 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Link } from "react-router-dom";
 //import Loading from "../components/Loading";
 import DarkLightmode from "../components/DarkLightMode";
-import { auth, db } from "../firebaseConfig"; // Adjust the path as necessary
-import { collection, query, where, getDocs } from "firebase/firestore";
+
 const HomeScreen = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [projects, setProjects] = useState([]);
-
   // const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    if (auth.currentUser) {
-      setUserName(auth.currentUser.displayName);
-    }
-  }, []);
 
-  const [realWorldTasks, setRealWorldTasks] = useState([]);
-  const [bookmarkedTasks, setBookmarkedTasks] = useState([]);
-
-  useEffect(() => {
-    const fetchRealWorldTasks = async () => {
-      try {
-        const q = query(collection(db, "RealWorldTask"));
-        const querySnapshot = await getDocs(q);
-        const tasksData = [];
-        querySnapshot.forEach((doc) => {
-          tasksData.push({ id: doc.id, ...doc.data() });
-        });
-        setRealWorldTasks(tasksData);
-      } catch (error) {
-        console.error("Error fetching RealWorldTasks: ", error);
-      }
-    };
-
-    fetchRealWorldTasks();
-  }, []);
-
-  const toggleBookmark = (taskId) => {
-    setBookmarkedTasks((prevState) =>
-      prevState.includes(taskId)
-        ? prevState.filter((id) => id !== taskId)
-        : [...prevState, taskId]
-    );
-  };
-
-  const toggleBookmarkIcon = () => {
-    setIsBookmarkIcon((prevState) => !prevState);
+  const toggleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
   };
 
   const toggleBookmarkedIcon = () => {
-    setIsBookmarkedIcon((prevState) => !prevState);
+    setIsBookmarkedIcon(!isBookmarkedIcon);
   };
+
+  const toggleBookmarkIcon = () => {
+    setIsBookmarkIcon(!isBookmarkIcon);
+  };
+
   const handleClose = () => {
     setIsOpen(false);
   };
@@ -263,8 +230,7 @@ const HomeScreen = () => {
         <div className="home-first-sec mt-32">
           <div className="container">
             <div className="home-first-sec-wrap">
-              <h1>Hey, {userName}</h1>
-
+              <h1>Hey, Jesica</h1>
               <p className="mt-8">Find a course you want to learn</p>
             </div>
             <div className="serachbar-homepage2 mt-24">
@@ -483,10 +449,10 @@ const HomeScreen = () => {
           <div className="home-category-wrap container">
             <div className="homescreen-second-wrapper-top">
               <div className="categories-first">
-                <h2 className="home1-txt3">🙌 Real World Projects</h2>
+                <h2 className="home1-txt3">🙌 Projects</h2>
               </div>
               <div className="view-all-second">
-                <Link to="/all-projects">
+                <Link to="/new-release-course">
                   <p className="see-all-txt">
                     See all
                     <span>
@@ -499,60 +465,126 @@ const HomeScreen = () => {
           </div>
           <div className="home-release-bottom-sec mt-16">
             <Slider {...settingsNew}>
-              {realWorldTasks.map((task) => (
-                <div className="new-courses-sec" key={task.id}>
-                  <div className="new-courses">
-                    <Link to={`/project/${task.id}`}>
-                      <img
-                        src={task.imageUrl || ReleaseImg2}
-                        alt="course-img"
-                      />
-                    </Link>
-                    <div className="trending-bookmark">
-                      <a
-                        role="button"
-                        className={`item-bookmark ${
-                          bookmarkedTasks.includes(task.id) ? "active" : ""
-                        }`}
-                        onClick={() => toggleBookmark(task.id)}
-                        tabIndex="0"
-                        aria-label="Bookmark"
-                      >
-                        <img src={BookmarkSvg} alt="bookmark-icon" />
-                      </a>
-                    </div>
-                    {/* {task.category && ( */}
-                    <div className="new-courses-txt">
-                      <p>{task.category || "Web Dev"}</p>
-                    </div>
-                    {/* )} */}
+              <div className="new-courses-sec">
+                <div className="new-courses">
+                  <Link to="/single-course-description">
+                    <img src={ReleaseImg1} alt="course-img" />
+                  </Link>
+                  <div className="trending-bookmark">
+                    <a
+                      href="#"
+                      className={`item-bookmark ${
+                        isBookmarked ? "active" : ""
+                      }`}
+                      onClick={toggleBookmark}
+                      tabIndex="0"
+                    >
+                      <img src={BookmarkSvg} alt="bookmark-icon" />
+                    </a>
                   </div>
-                  <div className="trending-course-bottom mt-12">
+                  <div className="new-courses-txt">
+                    <p>Business</p>
+                  </div>
+                </div>
+                <div className="trending-course-bottom mt-12">
+                  <div>
+                    <p className="new-courses-txt1">
+                      Master Your Mindset & Brain: Framestorm Your...
+                    </p>
+                  </div>
+                  <div className="trending-course-price">
                     <div>
-                      <p className="new-courses-txt1">
-                        {task.title || "Untitled Task"}
-                      </p>
+                      <span className="new-courses-txt3">$210.00</span>
                     </div>
-                    <div className="trending-course-price">
-                      <div>
-                        <span className="new-courses-txt3">
-                          ${task.price || "10.00"}
-                        </span>
-                      </div>
-                      {/* {task.duration && ( */}
-                      <div>
-                        <span className="new-courses-txt4">
-                          <img src={GreayTimeIcon} alt="time-icon" />
-                        </span>
-                        <span className="new-courses-txt5">
-                          {task.duration || "5h 20m"}
-                        </span>
-                      </div>
-                      {/* )} */}
+                    <div>
+                      <span className="new-courses-txt4">
+                        <img src={GreayTimeIcon} alt="time-icon" />
+                      </span>
+                      <span className="new-courses-txt5">3h 20m</span>
                     </div>
                   </div>
                 </div>
-              ))}
+              </div>
+              <div className="new-courses-sec">
+                <div className="new-courses">
+                  <Link to="/single-course-description">
+                    <img src={ReleaseImg2} alt="course-img" />
+                  </Link>
+                  <div className="trending-bookmark">
+                    <a
+                      href="#"
+                      className={`item-bookmark ${
+                        isBookmarked ? "active" : ""
+                      }`}
+                      onClick={toggleBookmark}
+                      tabIndex="0"
+                    >
+                      <img src={BookmarkSvg} alt="bookmark-icon" />
+                    </a>
+                  </div>
+                  <div className="new-courses-txt">
+                    <p>Game Design</p>
+                  </div>
+                </div>
+                <div className="trending-course-bottom mt-12">
+                  <div>
+                    <p className="new-courses-txt1">
+                      Introduction to Game Localization
+                    </p>
+                  </div>
+                  <div className="trending-course-price">
+                    <div>
+                      <span className="new-courses-txt3">$65.00</span>
+                    </div>
+                    <div>
+                      <span className="new-courses-txt4">
+                        <img src={GreayTimeIcon} alt="time-icon" />
+                      </span>
+                      <span className="new-courses-txt5">1h 30m</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="new-courses-sec">
+                <div className="new-courses">
+                  <Link to="/single-course-description">
+                    <img src={ReleaseImg3} alt="course-img" />
+                  </Link>
+                  <div className="trending-bookmark">
+                    <a
+                      href="#"
+                      className={`item-bookmark ${
+                        isBookmarked ? "active" : ""
+                      }`}
+                      onClick={toggleBookmark}
+                      tabIndex="0"
+                    >
+                      <img src={BookmarkSvg} alt="bookmark-icon" />
+                    </a>
+                  </div>
+                  <div className="new-courses-txt">
+                    <p>Development</p>
+                  </div>
+                </div>
+                <div className="trending-course-bottom mt-12">
+                  <div>
+                    <p className="new-courses-txt1">
+                      The Complete 2023 Fullstack Web Develope...
+                    </p>
+                  </div>
+                  <div className="trending-course-price">
+                    <div>
+                      <span className="new-courses-txt3">$210.00</span>
+                    </div>
+                    <div>
+                      <span className="new-courses-txt4">
+                        <img src={GreayTimeIcon} alt="time-icon" />
+                      </span>
+                      <span className="new-courses-txt5">3h 20m</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </Slider>
           </div>
         </div>

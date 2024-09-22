@@ -2,20 +2,25 @@ import React from "react";
 import { Link } from "react-router-dom";
 import useUserRole from "../hooks/Auth/useUserRole";
 
-// LanguageOption Component: Reusable for each role selection
-const LanguageOption = ({ id, label, checked, onChange }) => (
+// RoleOption Component: Reusable for each role selection
+const RoleOption = ({ id, label, checked, onChange }) => (
   <div
     className={`form-check select-goal mt-12 ${checked ? "language-sel" : ""}`}
   >
     <input
       className="form-check-input custom-input-goal"
-      name="language"
+      name="role"
       type="radio"
       id={id}
       checked={checked}
       onChange={onChange}
+      aria-labelledby={`${id}-label`}
     />
-    <label className="form-check-label custom-lable-goal" htmlFor={id}>
+    <label
+      className="form-check-label custom-label-goal"
+      htmlFor={id}
+      id={`${id}-label`}
+    >
       {label}
     </label>
   </div>
@@ -26,7 +31,7 @@ const PrimaryGoalScreen = () => {
 
   const roleOptions = [
     { value: "Entrepreneur", label: "I Am an Entrepreneur" },
-    { value: "Seeker", label: "I Am a Seeker" },
+    { value: "Intern", label: "I Am a Seeker" },
   ];
 
   return (
@@ -35,7 +40,10 @@ const PrimaryGoalScreen = () => {
         <div className="container">
           <div className="top-navbar_full">
             <div className="back-btn">
-              <Link to="/preferredlanguage">
+              <Link
+                to="/preferredlanguage"
+                aria-label="Back to Preferred Language Selection"
+              >
                 <svg
                   width="24"
                   height="24"
@@ -70,7 +78,7 @@ const PrimaryGoalScreen = () => {
               <p>Select Role</p>
             </div>
             <div className="skip-btn-goal">
-              <Link to="/spend-learning">Skip</Link>
+              {/* <Link to="/spend-learning">Skip</Link> */}
             </div>
           </div>
         </div>
@@ -80,24 +88,29 @@ const PrimaryGoalScreen = () => {
       <section id="primary_goal">
         <div className="container">
           <div className="primary_goal-wrap mt-32">
-            <div className="goal-title">
-              <p>What is your Role in Xtern</p>
+            <div className="goal-title mt-32">
+              <p>Select Your Role in Xtern</p>
             </div>
 
             <form className="primary-form mt-32">
-              {roleOptions.map((option) => (
-                <LanguageOption
-                  key={option.value}
-                  id={option.value}
-                  label={option.label}
-                  checked={selectedRole === option.value}
-                  onChange={handleRoleChange}
-                />
-              ))}
+              <fieldset>
+                <legend className="sr-only">Select your role in Xtern</legend>
+                {roleOptions.map((option) => (
+                  <RoleOption
+                    key={option.value}
+                    id={option.value}
+                    label={option.label}
+                    checked={selectedRole === option.value}
+                    onChange={handleRoleChange}
+                  />
+                ))}
+              </fieldset>
             </form>
 
             <div className="next-btn-goal mt-32">
-              <button onClick={saveRole}>Next</button>
+              <button type="button" onClick={saveRole}>
+                Next
+              </button>
             </div>
           </div>
         </div>

@@ -26,21 +26,20 @@ const Profile = () => {
       if (user) {
         try {
           // Reference to the user's document in Firestore using their UID
-          const userDocRef = doc(db, 'users', user.uid);
+          const userDocRef = doc(db, "users", user.uid);
           const userDoc = await getDoc(userDocRef); // Fetch the document
-
+          console.log(userDoc.data());
           if (userDoc.exists()) {
             setUserData(userDoc.data()); // Store user data in state
-  
           } else {
-            toast.error('No user profile found.');
+            toast.error("No user profile found.");
           }
         } catch (err) {
-          toast.error('Failed to fetch user data.');
+          toast.error("Failed to fetch user data.");
           console.error(err); // Log the error for debugging purposes
         }
       } else {
-        toast.error('User is not signed in.');
+        toast.error("User is not signed in.");
       }
     };
 
@@ -146,7 +145,7 @@ const Profile = () => {
           <div className="profile-screen-wrap mt-32">
             <div className="profile-first">
               <div className="profile-edit-img">
-                <img src={userData?.image || ProfileImg} alt="profile-img" />
+                <img src={userData.profilePicture} alt="profile-img" />
                 <div className="image-input">
                   <Link to="/profile-edit" className="image-button">
                     <svg
@@ -195,7 +194,9 @@ const Profile = () => {
                 </div>
               </div>
               <div className="profile-details mt-24">
+                {/* <h1>{userData?.display_name}</h1> */}
                 <h1>{userData?.display_name}</h1>
+
                 <p>{userData?.typeUser}</p>
               </div>
             </div>
@@ -321,7 +322,7 @@ const Profile = () => {
                           />
                           <path
                             d="M9 15.2663L15 8.97814L9 15.2663Z"
-                          // fill="#121212"
+                            // fill="#121212"
                           />
                           <path
                             d="M9 15.2663L15 8.97814"
