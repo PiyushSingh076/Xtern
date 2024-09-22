@@ -9,15 +9,8 @@ import { doc, getDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 
 const Profile = () => {
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
-  // useEffect(() => {
-  //   setTimeout(() => setLoading(false), 500); // Simulate loading time
-  // }, []);
-
-  // if (loading) {
-  //   return <Loading />;
-  // }
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -37,6 +30,8 @@ const Profile = () => {
         } catch (err) {
           toast.error("Failed to fetch user data.");
           console.error(err); // Log the error for debugging purposes
+        } finally {
+          setLoading(false);
         }
       } else {
         toast.error("User is not signed in.");
@@ -45,7 +40,9 @@ const Profile = () => {
 
     fetchUserData();
   }, []);
-
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <>
       {/* <!-- Header start --> */}
@@ -145,7 +142,10 @@ const Profile = () => {
           <div className="profile-screen-wrap mt-32">
             <div className="profile-first">
               <div className="profile-edit-img">
-                <img src={userData.profilePicture} alt="profile-img" />
+                <img
+                  src={userData?.profilePicture || ProfileImg}
+                  alt="profile-img"
+                />
                 <div className="image-input">
                   <Link to="/profile-edit" className="image-button">
                     <svg

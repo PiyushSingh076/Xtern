@@ -33,26 +33,55 @@ import { Link } from "react-router-dom";
 //import Loading from "../components/Loading";
 import DarkLightmode from "../components/DarkLightMode";
 import { auth, db } from "../firebaseConfig"; // Adjust the path as necessary
+import { doc, getDoc } from "firebase/firestore";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import toast from "react-hot-toast";
 const HomeScreen = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [userData, setUserData] = useState("");
   const [projects, setProjects] = useState([]);
-
+  const [realWorldTasks, setRealWorldTasks] = useState([]);
+  const [bookmarkedTasks, setBookmarkedTasks] = useState([]);
   // const [loading, setLoading] = useState(true);
   useEffect(() => {
+    console.log("user", auth);
     if (auth.currentUser) {
-      setUserName(auth.currentUser.displayName);
+      setUserData(auth?.currentUser?.displayName);
     }
   }, []);
 
-  const [realWorldTasks, setRealWorldTasks] = useState([]);
-  const [bookmarkedTasks, setBookmarkedTasks] = useState([]);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = auth.currentUser; // Get the currently signed-in user
 
+      if (user) {
+        try {
+          // Reference to the user's document in Firestore using their UID
+          const userDocRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userDocRef); // Fetch the document
+          console.log(userDoc.data());
+          if (userDoc.exists()) {
+            setUserData(userDoc.data()); // Store user data in state
+          } else {
+            // toast.error("No user profile found.");
+          }
+        } catch (err) {
+          // toast.error("Failed to fetch user data.");
+          console.error(err); // Log the error for debugging purposes
+        } finally {
+          // setLoading(false);
+        }
+      } else {
+        toast.error("User is not signed in.");
+      }
+    };
+
+    fetchUserData();
+  }, []);
   useEffect(() => {
     const fetchRealWorldTasks = async () => {
       try {
@@ -263,7 +292,7 @@ const HomeScreen = () => {
         <div className="home-first-sec mt-32">
           <div className="container">
             <div className="home-first-sec-wrap">
-              <h1>Hey, {userName}</h1>
+              <h1>Hey, {userData?.display_name || "User"}</h1>
 
               <p className="mt-8">Find a course you want to learn</p>
             </div>
@@ -1148,41 +1177,61 @@ const HomeScreen = () => {
                 <div className="home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
                     <div>
-                      <img src={Mentor1} alt="mentor-img" />
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://media.licdn.com/dms/image/v2/D4D0BAQHWliOH_HLw_g/company-logo_200_200/company-logo_200_200/0/1706646202518/s_treasury_logo?e=1735171200&v=beta&t=F970-7FqWdc0Gjp8BOyNRDsNU-jnr_9VRyNRq3-T8HE"
+                        alt="mentor-img"
+                      />
                     </div>
                   </div>
                   <div className="home-mentor-name">
-                    <p>Jacob</p>
+                    <p>Student Diwan</p>
                   </div>
                 </div>
                 <div className="home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
                     <div>
-                      <img src={Mentor2} alt="mentor-img" />
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://media.licdn.com/dms/image/v2/D4D0BAQEssJxvVzhW2Q/company-logo_200_200/company-logo_200_200/0/1716271857252/edobo_logo?e=1735171200&v=beta&t=iB0IIYE5FEwVPu5vKYElTPY_p7CXidpow_equn1a-LQ"
+                        alt="mentor-img"
+                      />
                     </div>
                   </div>
                   <div className="home-mentor-name">
-                    <p>Claire</p>
+                    <p>Edobo</p>
                   </div>
                 </div>
                 <div className="home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
                     <div>
-                      <img src={Mentor3} alt="mentor-img" />
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://media.licdn.com/dms/image/v2/C4D0BAQHiNSL4Or29cg/company-logo_200_200/company-logo_200_200/0/1631311446380?e=1735171200&v=beta&t=Za_-RfpybNMYSuC3QtnukL8SarqJJfYbK-h88BjWnDY"
+                        alt="mentor-img"
+                      />
                     </div>
                   </div>
                   <div className="home-mentor-name">
-                    <p>Priscilla</p>
+                    <p>Google</p>
                   </div>
                 </div>
                 <div className="home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
                     <div>
-                      <img src={Mentor4} alt="mentor-img" />
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://media.licdn.com/dms/image/v2/C560BAQE88xCsONDULQ/company-logo_200_200/company-logo_200_200/0/1630652622688/microsoft_logo?e=1735171200&v=beta&t=MZPfpagCHCoPSFOmDIKwfxa71NKmdKrN4LOgDlNr9tw"
+                        alt="mentor-img"
+                      />
                     </div>
                   </div>
                   <div className="home-mentor-name">
-                    <p>Wade</p>
+                    <p>Microsoft</p>
                   </div>
                 </div>
               </Slider>
