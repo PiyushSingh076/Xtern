@@ -36,14 +36,18 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
+import { db } from "../firebaseConfig"; // Adjust the path as necessary
+import { doc, getDoc } from "firebase/firestore";
 
 const SingleCourseDescription = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
   const navigate = useNavigate();
-  //const [loading, setLoading] = useState(true);
+  const { projectId } = useParams();
+  const [projectData, setProjectData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const handleBackClick = () => {
     navigate(-1); // This will navigate to the previous page in the history stack
@@ -66,14 +70,30 @@ const SingleCourseDescription = () => {
     dots: false,
     arrows: false,
   };
+  useEffect(() => {
+    const fetchProjectData = async () => {
+      try {
+        const docRef = doc(db, "RealWorldTask", projectId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setProjectData(docSnap.data());
+          console.log("project data", docSnap.data());
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching project data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // useEffect(() => {
-  //   setTimeout(() => setLoading(false), 500); // Simulate loading time
-  // }, []);
+    fetchProjectData();
+  }, [projectId]);
 
-  // if (loading) {
-  //   return <Loading />;
-  // }
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <>
       {/* <!-- Single description section start --> */}
@@ -81,7 +101,7 @@ const SingleCourseDescription = () => {
         <div className="first-desc-img-sec">
           <div className="hero-img-desc">
             <img
-              src={HeaderImg}
+              src={projectData?.imageUrl || HeaderImg}
               alt="social-media-img"
               className="img-fluid w-100"
             />
@@ -142,7 +162,9 @@ const SingleCourseDescription = () => {
             <div className="single-courses-description">
               <div className="first-decs-sec mt-16">
                 <div className="first-decs-sec-wrap">
-                  <div className="first-left-sec">Design</div>
+                  <div className="first-left-sec">
+                    {projectData?.skill || "Design"}
+                  </div>
                   <div className="first-right-sec">
                     <div>
                       <span className="firs-txt1 mr-8">$199.00</span>
@@ -155,7 +177,8 @@ const SingleCourseDescription = () => {
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
                     <h1 className="second-txt1">
-                      Responsive Design with Grids. A Guide for UX/UI Designer
+                      {projectData?.title ||
+                        " Responsive Design with Grids. A Guide for UX/UI Designer"}
                     </h1>
                   </div>
                   <div className="second-decs-sec-bottom">
@@ -190,10 +213,10 @@ const SingleCourseDescription = () => {
               </div>
               <div className="third-decs-sec mt-32">
                 <div className="third-decs-sec-wrap">
-                  <div className="third-decs-sec-top">
+                  {/* <div className="third-decs-sec-top">
                     <h2 className="third-txt1">This Course Includes</h2>
-                  </div>
-                  <div className="third-decs-sec-bottom">
+                  </div> */}
+                  {/* <div className="third-decs-sec-bottom">
                     <div className="third-decs-sec-bottom-wrap mt-16">
                       <span className="third-txt2 mr-8">
                         <img src={CourseIconImg1} alt="course-img" />
@@ -224,10 +247,10 @@ const SingleCourseDescription = () => {
                         Certificate of Completion
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
-              <div className="fourth-decs-sec mt-32">
+              {/* <div className="fourth-decs-sec mt-32">
                 <div className="fourth-decs-sec-wrap">
                   <h2 className="third-txt1">Mentor</h2>
                   <div className="fourth-decs-sec-top mt-16">
@@ -255,7 +278,7 @@ const SingleCourseDescription = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
               <div className="fifth-decs-sec mt-32">
                 <div className="fifth-decs-sec-wrap">
                   <ul
@@ -314,33 +337,42 @@ const SingleCourseDescription = () => {
                         <div className="description-first-content">
                           <h3 className="des-con-txt1">Details</h3>
                           <div>
-                            <p className="des-con-txt2">
-                              In this className, you'll learn everything about
-                              using grids for your UI Design.Grids are not only
-                              your best friend when it comes to creating a
-                              consistent layout. They are also the backbone when
-                              it comes to responsive design and making your
-                              product shine across all screen sizes.
-                            </p>
-                            <p className="des-con-txt2">
-                              Besides the classNameic Grids like Bootstrap and
-                              co, I will tell you a bit about my favorite grid,
-                              the CSS Grid, full of possibilities.
-                            </p>
-                            <p className="des-con-txt2">
-                              And yes, we will go the extra mile and look at
-                              some basic code, all set up for UX/UI Designers to
-                              really understand the technicality behind the
-                              product you are building.
-                            </p>
-                            <p className="des-con-txt2">
-                              The Figma and code template that I will show you
-                              are part of the course material to make sure you
-                              can dive right into the making
-                            </p>
+                            {projectData?.detail || (
+                              <>
+                                {" "}
+                                <p className="des-con-txt2">
+                                  {" "}
+                                  In this className, you'll learn everything
+                                  about using grids for your UI Design.Grids are
+                                  not only your best friend when it comes to
+                                  creating a consistent layout. They are also
+                                  the backbone when it comes to responsive
+                                  design and making your product shine across
+                                  all screen sizes.
+                                </p>
+                                <p className="des-con-txt2">
+                                  Besides the classNameic Grids like Bootstrap
+                                  and co, I will tell you a bit about my
+                                  favorite grid, the CSS Grid, full of
+                                  possibilities.
+                                </p>
+                                <p className="des-con-txt2">
+                                  And yes, we will go the extra mile and look at
+                                  some basic code, all set up for UX/UI
+                                  Designers to really understand the
+                                  technicality behind the product you are
+                                  building.
+                                </p>
+                                <p className="des-con-txt2">
+                                  The Figma and code template that I will show
+                                  you are part of the course material to make
+                                  sure you can dive right into the making
+                                </p>{" "}
+                              </>
+                            )}
                           </div>
                         </div>
-                        <div className="description-second-content mt-24">
+                        {/* <div className="description-second-content mt-24">
                           <h3 className="des-con-txt1">What You'll Learn</h3>
                           <div className="mt-12">
                             <ul className="desc-learn-sec">
@@ -384,8 +416,8 @@ const SingleCourseDescription = () => {
                               </li>
                             </ul>
                           </div>
-                        </div>
-                        <div className="description-second-content mt-24">
+                        </div> */}
+                        {/* <div className="description-second-content mt-24">
                           <h3 className="des-con-txt1">
                             Who This Course is For
                           </h3>
@@ -408,8 +440,8 @@ const SingleCourseDescription = () => {
                               </li>
                             </ul>
                           </div>
-                        </div>
-                        <div className="description-second-content mt-24">
+                        </div> */}
+                        {/* <div className="description-second-content mt-24">
                           <h3 className="des-con-txt1">Requirements</h3>
                           <div className="mt-12">
                             <ul className="desc-learn-sec">
@@ -423,11 +455,11 @@ const SingleCourseDescription = () => {
                               </li>
                             </ul>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
-                  <div className="tab-content" id="lessons-tabContent">
+                  {/* <div className="tab-content" id="lessons-tabContent">
                     <div
                       className="tab-pane fade show"
                       id="lesson-content"
@@ -967,8 +999,8 @@ const SingleCourseDescription = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="tab-content" id="review-tabContent">
+                  </div> */}
+                  {/* <div className="tab-content" id="review-tabContent">
                     <div
                       className="tab-pane fade show"
                       id="reviews-content"
@@ -1530,10 +1562,10 @@ const SingleCourseDescription = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
-              <div className="sixth-decs-sec mt-32">
+              {/* <div className="sixth-decs-sec mt-32">
                 <div className="sixth-decs-sec-wrap">
                   <h2 className="third-txt1">Share</h2>
                   <div className="single-courses-share mt-16">
@@ -1570,10 +1602,10 @@ const SingleCourseDescription = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
-          <div className="seventh-decs-sec mt-32">
+          {/* <div className="seventh-decs-sec mt-32">
             <div className="seventh-decs-sec-wrap">
               <h2 className="third-txt1">Students Also Bought</h2>
               <div className="seventh-decs-sec-wrap-slider mt-16">
@@ -1639,8 +1671,8 @@ const SingleCourseDescription = () => {
                 </Slider>
               </div>
             </div>
-          </div>
-          <div className="eight-decs-sec mt-32">
+          </div> */}
+          {/* <div className="eight-decs-sec mt-32">
             <div className="container">
               <div className="eight-decs-sec-wrap">
                 <h2 className="third-txt1">FAQs</h2>
@@ -1749,9 +1781,9 @@ const SingleCourseDescription = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className="buy-now-description">
-            <Link to="/checkoutscreen">Buy Now</Link>
+            <Link to="/checkoutscreen">Apply Now</Link>
           </div>
         </div>
       </section>

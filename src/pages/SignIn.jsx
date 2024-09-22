@@ -36,14 +36,23 @@ const SignIn = () => {
 
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          // You can now use `userData` to populate the user profile or store it in state
-          console.log("User profile data:", userData);
-          navigate("/preferredlanguage"); // Redirect on successful sign-in
+          // Check if 'preferredLanguage' and 'typeUser' fields exist
+          if (userData.preferredLanguage && userData.typeUser) {
+            // Both fields exist, redirect to home screen
+            navigate("/homescreen"); // Adjust the route as necessary
+          } else {
+            // One or both fields are missing, redirect to preferred language page
+            navigate("/preferredlanguage");
+          }
         } else {
           console.error("No such user profile!");
+          // Handle the case where the user document doesn't exist
+          // You might want to redirect to a registration page or show an error
         }
+      } else {
+        console.error("User is null after sign-in!");
+        // Handle the case where the user is not properly signed in
       }
-      //navigate('/preferredlanguage'); // Redirect on successful sign-in
     } catch (err) {
       setError(err.message); // Handle errors, such as incorrect credentials
     }

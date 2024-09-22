@@ -7,11 +7,12 @@ import PlaceholderImage from "../assets/images/new-course/cousre1.png"; // Add a
 import { db } from "../firebaseConfig"; // Adjust the path as necessary
 import { collection, query, getDocs } from "firebase/firestore";
 import BookmarkFillSvg from "../assets/images/single-courses/bookmark-fill.svg";
+import Loading from "../components/Loading";
 const ProjectListPage = () => {
   const [isFixed, setIsFixed] = useState(false);
   const [projects, setProjects] = useState([]);
   const [bookmarkedProjects, setBookmarkedProjects] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const handleScroll = () => {
       setIsFixed(window.scrollY >= 20);
@@ -39,6 +40,8 @@ const ProjectListPage = () => {
         setProjects(projectsData);
       } catch (error) {
         console.error("Error fetching projects: ", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -52,6 +55,10 @@ const ProjectListPage = () => {
         : [...prevState, projectId]
     );
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -123,7 +130,7 @@ const ProjectListPage = () => {
                     tabIndex="0"
                   >
                     <img
-                      src={project.imgSrc || PlaceholderImage}
+                      src={project.imageUrl || PlaceholderImage}
                       alt="project-img"
                     />
                   </Link>
