@@ -6049,12 +6049,12 @@ h2 {
   }
 }
 
-// ----------------------------- By Aman --------------------------
+/* ----------------------------- By Aman -------------------------- */
 
 .interest-sec {
-  flex: 1 0 150px; /* Adjust the size as needed */
+  flex: 1 0 150px;
 }
 
 .animate-spin {
-  animation: spin 1s linear infinite; /* 1s for one full rotation, infinite for continuous spinning */
+  animation: spin 1s linear infinite;
 }
