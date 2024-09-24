@@ -1475,6 +1475,10 @@ label.custom-interest-lbl {
   border-radius: 4px;
   padding: 8px;
 }
+.skills-left-sec {
+  display: flex;
+  gap: 5px;
+}
 
 .firs-txt1 {
   color: var(--see-all-text);

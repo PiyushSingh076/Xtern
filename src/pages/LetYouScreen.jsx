@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import LetYouImg from "../assets/images/let-you-screen/let-you-img.png";
+// import LetYouImg from "../assets/images/let-you-screen/let-you-img.png";
+import LetYouImg from "../assets/svg/letyouin.svg";
+
 import Footer from "../components/Footer";
 import {
   googleProvider,
@@ -57,7 +59,7 @@ const LetYouScreen = () => {
         <div className="container">
           <div className="let-you-screen-content-wrap">
             <div className="let-you-screen-img mt-32">
-              <img src={LetYouImg} alt="let-you-img" />
+              <img src={LetYouImg} height="200" width="200" alt="let-you-img" />
               <h1 className="let-you-txt mt-32">Let’s You In</h1>
             </div>
 
