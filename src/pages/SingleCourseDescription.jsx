@@ -162,9 +162,18 @@ const SingleCourseDescription = () => {
             <div className="single-courses-description">
               <div className="first-decs-sec mt-16">
                 <div className="first-decs-sec-wrap">
-                  <div className="first-left-sec">
-                    {projectData?.skill || "Design"}
+                  <div className="skills-left-sec">
+                    <div className="first-left-sec">
+                      <div> {projectData?.skill || "Design"}</div>
+                    </div>
+                    <div className="first-left-sec">
+                      <div> {projectData?.skill || "UI/UX"}</div>
+                    </div>
+                    <div className="first-left-sec">
+                      <div> {projectData?.skill || "Figma"}</div>
+                    </div>
                   </div>
+
                   <div className="first-right-sec">
                     <div>
                       <span className="firs-txt1 mr-8">$199.00</span>
@@ -187,26 +196,33 @@ const SingleCourseDescription = () => {
                         <span className="student-img mr-8">
                           <img src={StudentIcon} alt="student-icon" />
                         </span>
-                        <span className="second-txt2">104.2k students</span>
+                        <span className="second-txt2">104.2k Application</span>
                       </div>
                       <div className="mt-12">
                         <span className="student-img mr-8 fillStar">
                           <img src={FillStar} alt="student-icon" />
                         </span>
-                        <span className="second-txt2">4.3 (3.7k ratings)</span>
+                        {/* <span className="second-txt2">4.3 (3.7k ratings)</span> */}
+                        <span className="second-txt2">Level: Medium</span>
                       </div>
                       <div className="mt-12">
                         <span className="student-img mr-8">
                           <img src={TimeIcon} alt="student-icon" />
                         </span>
-                        <span className="second-txt2">1h 30m</span>
+                        <span className="second-txt2">41h 30m</span>
                       </div>
                       <div className="mt-12">
+                        <span className="student-img mr-8">
+                          <img src={TimeIcon} alt="student-icon" />
+                        </span>
+                        <span className="second-txt2">Due: 25-09-2024</span>
+                      </div>
+                      {/* <div className="mt-12">
                         <span className="student-img mr-8">
                           <img src={LanguageIcon} alt="student-icon" />
                         </span>
                         <span className="second-txt2">English</span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -309,11 +325,11 @@ const SingleCourseDescription = () => {
                         role="tab"
                         aria-selected="false"
                       >
-                        Lessons
+                        Assessment
                       </button>
                     </li>
                     <li className="nav-item" role="presentation">
-                      <button
+                      {/* <button
                         className="nav-link"
                         id="reviews-tab-btn"
                         data-bs-toggle="pill"
@@ -323,7 +339,7 @@ const SingleCourseDescription = () => {
                         aria-selected="false"
                       >
                         Reviews
-                      </button>
+                      </button> */}
                     </li>
                   </ul>
                   <div className="tab-content" id="description-tabContent">
@@ -459,7 +475,7 @@ const SingleCourseDescription = () => {
                       </div>
                     </div>
                   </div>
-                  {/* <div className="tab-content" id="lessons-tabContent">
+                  <div className="tab-content" id="lessons-tabContent">
                     <div
                       className="tab-pane fade show"
                       id="lesson-content"
@@ -610,7 +626,7 @@ const SingleCourseDescription = () => {
                                   </div>
                                 </div>
                               </div>
-                              <div className="accordion-item mt-16">
+                              {/* <div className="accordion-item mt-16">
                                 <h2
                                   className="accordion-header"
                                   id="lesson-title3"
@@ -993,13 +1009,13 @@ const SingleCourseDescription = () => {
                                     </div>
                                   </div>
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div> */}
+                  </div>
                   {/* <div className="tab-content" id="review-tabContent">
                     <div
                       className="tab-pane fade show"

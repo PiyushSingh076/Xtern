@@ -136,6 +136,7 @@ const Profile = () => {
         <div className="navbar-boder"></div>
       </header>
       {/* <!-- Header end --> */}
+
       {/* <!-- Profile screen content start --> */}
       <section id="profile-screen">
         <div className="container">
@@ -143,8 +144,9 @@ const Profile = () => {
             <div className="profile-first">
               <div className="profile-edit-img">
                 <img
-                  src={userData?.profilePicture || ProfileImg}
-                  alt="profile-img"
+                  // src={userData.profilePicture || ProfileImg}
+                  src={ProfileImg}
+                  alt={userData.display_name || "profile image"}
                 />
                 <div className="image-input">
                   <Link to="/profile-edit" className="image-button">
