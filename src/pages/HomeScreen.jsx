@@ -47,17 +47,84 @@ const HomeScreen = () => {
   const [realWorldTasks, setRealWorldTasks] = useState([]);
   const [bookmarkedTasks, setBookmarkedTasks] = useState([]);
   // const [loading, setLoading] = useState(true);
+  const [userSkills, setUserSkills] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [activeSkill, setActiveSkill] = useState(null);
+
   useEffect(() => {
-    console.log("user", auth);
-    if (auth.currentUser) {
-      setUserData(auth?.currentUser?.displayName);
+    const fetchUserSkills = async () => {
+      try {
+        const user = auth?.currentUser
+        const userDocRef = doc(db, "users", user.uid)
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          setUserSkills(userData.skillSet || []);
+        }
+      } catch (error) {
+        console.error("Error fetching user skills:", error);
+      }
+    };
+
+    if (auth?.currentUser) {
+      fetchUserSkills();
     }
-  }, []);
+  }, [auth?.currentUser]);
+
+  useEffect(() => {
+    const fetchFilteredJobs = async () => {
+      if (userSkills.length === 0 || !activeSkill) return;
+      console.log("userSkills--", userSkills);
+
+      try {
+        const jobsRef = collection(db, "jobPosting");
+        let q;
+
+        if (activeSkill === null) {
+          // When "All" is selected, use array-contains-any to match any user skill
+          q = query(jobsRef, where("skills", "array-contains-any", userSkills));
+        } else {
+          console.log('activeSkills--', activeSkill)
+          // When a specific skill is selected, use array-contains for that single skill
+          q = query(jobsRef, where("skills", "array-contains", activeSkill));
+        }
+
+        const querySnapshot = await getDocs(q);
+
+        const matchingJobs = [];
+        querySnapshot.forEach((doc) => {
+          console.log(`Document found: ${doc.id}`, doc.data());
+          matchingJobs.push({ id: doc.id, ...doc.data() });
+        });
+        console.log("matchingJobs---", matchingJobs);
+
+        setFilteredJobs(matchingJobs);
+
+      } catch (error) {
+        console.error("Error fetching job postings:", error);
+      }
+    };
+
+    fetchFilteredJobs();
+  }, [activeSkill, userSkills]);
+
+  const handleSkillClick = (skill) => {
+    if (skill !== activeSkill) {
+      setActiveSkill(skill);
+    }
+  };
+
+  const handleAllClick = () => {
+    setActiveSkill(null);
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
       const user = auth.currentUser; // Get the currently signed-in user
-
+      if (auth.currentUser) {
+        setUserData(auth?.currentUser?.displayName);
+      }
       if (user) {
         try {
           // Reference to the user's document in Firestore using their UID
@@ -82,6 +149,7 @@ const HomeScreen = () => {
 
     fetchUserData();
   }, []);
+
   useEffect(() => {
     const fetchRealWorldTasks = async () => {
       try {
@@ -540,9 +608,8 @@ const HomeScreen = () => {
                     <div className="trending-bookmark">
                       <a
                         role="button"
-                        className={`item-bookmark ${
-                          bookmarkedTasks.includes(task.id) ? "active" : ""
-                        }`}
+                        className={`item-bookmark ${bookmarkedTasks.includes(task.id) ? "active" : ""
+                          }`}
                         onClick={() => toggleBookmark(task.id)}
                         tabIndex="0"
                         aria-label="Bookmark"
@@ -586,7 +653,7 @@ const HomeScreen = () => {
           </div>
         </div>
 
-        <div className="home-course mt-32">
+        {/* <div className="home-course mt-32">
           <div className="home-course-wrapper-top">
             <div className="container">
               <div className="categories-first">
@@ -1151,6 +1218,114 @@ const HomeScreen = () => {
               </div>
             </div>
           </div>
+        </div> */}
+        <div className="home-course mt-32">
+          <div className="home-course-wrapper-top">
+            <div className="container">
+              <div className="categories-first">
+                <h2 className="home1-txt3">🧿 All Internships</h2>
+              </div>
+            </div>
+          </div>
+          <div className="home-course-wrapper-bottom mt-16">
+            <div className="home-course-wrapper-bottom-full">
+              <ul className="nav nav-pills" id="homepage1-tab" role="tablist">
+                <li className="nav-item" role="presentation">
+                  <button
+                    className={`nav-link ${activeSkill === null ? "active" : ""} custom-home1-tab-btn`}
+                    id="pills-all-tab"
+                    data-bs-toggle="pill"
+                    data-bs-target="#pills-all"
+                    type="button"
+                    role="tab"
+                    aria-selected={activeSkill === null ? "true" : "false"}
+                    onClick={handleAllClick} // Reset filter to show all jobs when "All" is clicked
+                  >
+                    🔥All
+                  </button>
+                </li>
+                {userSkills.map((skill, index) => (
+                  <li className="nav-item" role="presentation" key={index}>
+                    <button
+                      className={`nav-link custom-home1-tab-btn ${activeSkill === skill ? "active" : ""}`}
+                      id={`pills-skill-${skill}`}
+                      data-bs-toggle="pill"
+                      data-bs-target={`#pills-skill-${skill}`}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeSkill === skill ? "true" : "false"}
+                      onClick={() => handleSkillClick(skill)}
+                    >
+                      {`💡${skill}`}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="tab-content" id="pills-tabContent">
+                <div className="tab-pane show active" id="pills-all" role="tabpanel" tabIndex="0">
+                  <div className="container">
+                    {filteredJobs.length > 0 ? (
+                      filteredJobs.map((job, index) => (
+                        <div className="result-found-bottom-wrap mt-16 single-course" key={job.id}>
+                          <div className="result-img-sec">
+                            <img src={job?.imageUrl || CourseImg3} alt={job.title} />
+                          </div>
+                          <div className="result-content-sec">
+                            <div className="result-content-sec-wrap">
+                              <div className="content-first">
+                                <div className="result-bottom-txt">
+                                  <p>{job.companyName || "Category"}</p>
+                                </div>
+                                <div className="result-bookmark">
+                                  <a
+                                    href="#"
+                                    className={`item-bookmark ${isBookmarked ? "active" : ""}`}
+                                    onClick={toggleBookmark}
+                                    tabIndex="0"
+                                  >
+                                    <img src={BookmarkUnfillSvg} alt="bookmark-icon" />
+                                  </a>
+                                </div>
+                              </div>
+                              <Link to={`/job/${job.id}`}>
+                                <div className="content-second mt-12">
+                                  <h2>{job.title}</h2>
+                                </div>
+                              </Link>
+                              <div className="content-third mt-12">
+                                <div>
+                                  <p className="result-price">{job.location ? `$${job.location}` : "N/A"}</p>
+                                </div>
+                                <div className="result-time-sec">
+                                  <div>
+                                    <img src={GreayTimeIcon} alt="time-icon" />
+                                  </div>
+                                  <div className="result-time">{job?.assessmentDuration || "N/A"}</div>
+                                </div>
+                              </div>
+                              <div className="content-fourth">
+                                <div className="result-rating-sec">
+                                  <div className="result-rating-sec-img">
+                                    <img src={OrangeStar} alt="star-img" />
+                                  </div>
+                                  <div className="result-rating-txt">
+                                    {job?.experienceLevel}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No internships found matching your skills.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="home-mentor mt-32">
@@ -1334,9 +1509,8 @@ const HomeScreen = () => {
                       <div className="trending-bookmark">
                         <a
                           href="#"
-                          className={`item-bookmark ${
-                            isBookmarked ? "active" : ""
-                          }`}
+                          className={`item-bookmark ${isBookmarked ? "active" : ""
+                            }`}
                           onClick={toggleBookmark}
                           tabIndex="0"
                         >
@@ -1379,9 +1553,8 @@ const HomeScreen = () => {
                       <div className="trending-bookmark">
                         <a
                           href="#"
-                          className={`item-bookmark ${
-                            isBookmarked ? "active" : ""
-                          }`}
+                          className={`item-bookmark ${isBookmarked ? "active" : ""
+                            }`}
                           onClick={toggleBookmark}
                           tabIndex="0"
                         >
