@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { functions } from "../firebaseConfig";
 import { httpsCallable } from "firebase/functions";
+import { getAuth } from "firebase/auth";
 
 const AddLinkedInProfile = () => {
   const navigate = useNavigate();
@@ -12,31 +13,37 @@ const AddLinkedInProfile = () => {
 
   const handleContinue = async () => {
     try {
+      const auth = getAuth(); // Get the authentication object
+      const currentUser = auth.currentUser; // Get the currently signed-in user
+
+      if (!currentUser) {
+        toast.error("User not authenticated");
+        return;
+      }
+      const UserUid = currentUser.uid;
+
       if (!linkedinURL) {
         toast.error("Please enter a valid LinkedIn URL");
         return;
       }
-      //   const profileId = linkedinURL;
-      //   const linkedInApiUrl = `https://nubela.co/proxycurl/api/v2/linkedin?linkedin_profile_url=https://www.linkedin.com/in/siddhant-yerandkar/`;
 
-      //   const data = await fetch(linkedInApiUrl, {
-      //     method: "GET",
-      //     headers: {
-      //       Authorization: "Bearer hQijaWPUgdr7CC4yFwCz1A", // Add your API key here
-      //     },
-      //   });
+      const profileIdMatch = linkedinURL.match(/linkedin\.com\/in\/([^\/?]+)/);
+      if (!profileIdMatch || profileIdMatch.length < 2) {
+        toast.error("Please enter a valid LinkedIn profile URL");
+        return;
+      }
 
-    //   console.log("data---", data);
-
+      const profileId = profileIdMatch[1];
       //   Call Firebase function
       const fetchLinkedInProfileAndSaveExperience = httpsCallable(
         functions,
         "fetchLinkedInProfileAndSaveExperience"
       );
       const response = await fetchLinkedInProfileAndSaveExperience({
-        linkedinURL,
+        profileId,
+        UserUid
       });
-
+      console.log("response---", response)
       if (response.data.success) {
         toast.success(
           "LinkedIn profile fetched and saved:",
