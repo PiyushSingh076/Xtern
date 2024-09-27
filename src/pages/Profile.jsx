@@ -4,42 +4,11 @@ import ProfileImg from "../assets/images/courses/profile-img.png";
 import CloseIcon from "../assets/svg/close-line.svg";
 import Loading from "../components/Loading";
 import DarkLightmode from "../components/DarkLightMode";
-import { auth, db } from "../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
-import toast from "react-hot-toast";
+import useFetchUserData from "../hooks/Auth/useFetchUserData";
 
 const Profile = () => {
-  const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState(null);
+  const { userData, loading, error } = useFetchUserData();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const user = auth.currentUser; // Get the currently signed-in user
-
-      if (user) {
-        try {
-          // Reference to the user's document in Firestore using their UID
-          const userDocRef = doc(db, "users", user.uid);
-          const userDoc = await getDoc(userDocRef); // Fetch the document
-          console.log(userDoc.data());
-          if (userDoc.exists()) {
-            setUserData(userDoc.data()); // Store user data in state
-          } else {
-            toast.error("No user profile found.");
-          }
-        } catch (err) {
-          toast.error("Failed to fetch user data.");
-          console.error(err); // Log the error for debugging purposes
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        toast.error("User is not signed in.");
-      }
-    };
-
-    fetchUserData();
-  }, []);
   if (loading) {
     return <Loading />;
   }
@@ -146,7 +115,7 @@ const Profile = () => {
                 <img
                   // src={userData.profilePicture || ProfileImg}
                   src={ProfileImg}
-                  alt={userData.display_name || "profile image"}
+                  alt={userData?.display_name || "profile image"}
                 />
                 <div className="image-input">
                   <Link to="/profile-edit" className="image-button">
