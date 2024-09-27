@@ -37,7 +37,7 @@ const AddLinkedInProfile = () => {
       //   Call Firebase function
       const fetchLinkedInProfileAndSaveExperience = httpsCallable(
         functions,
-        "fetchLinkedInProfileAndSaveExperience"
+        "fetchLinkedInProfileAndSaveExperiences"
       );
       const response = await fetchLinkedInProfileAndSaveExperience({
         profileId,
