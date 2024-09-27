@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Slider from "react-slick";
 import RightArrow from "../assets/svg/right-arrow.svg";
 import CategoryImg1 from "../assets/images/category/category1.png";
@@ -32,141 +32,39 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Link } from "react-router-dom";
 //import Loading from "../components/Loading";
 import DarkLightmode from "../components/DarkLightMode";
-import { auth, db } from "../firebaseConfig"; // Adjust the path as necessary
-import { doc, getDoc } from "firebase/firestore";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import toast from "react-hot-toast";
+import useFetchFilteredJobs from "../hooks/Auth/useFetchFilteredJobs";
+import useFetchUserSkills from "../hooks/Auth/useFetchUserSkills";
+import useFetchUserData from "../hooks/Auth/useFetchUserData";
+import useFetchRealWorldTasks from "../hooks/Auth/useFetchRealWorldTasks";
 const HomeScreen = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
-  const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
-  const [userData, setUserData] = useState("");
-  const [projects, setProjects] = useState([]);
-  const [realWorldTasks, setRealWorldTasks] = useState([]);
   const [bookmarkedTasks, setBookmarkedTasks] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  const [userSkills, setUserSkills] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([]);
   const [activeSkill, setActiveSkill] = useState(null);
+  const {
+    realWorldTasks,
+    loading: rwtloading,
+    error: rwterror,
+  } = useFetchRealWorldTasks();
 
-  useEffect(() => {
-    const fetchUserSkills = async () => {
-      try {
-        const user = auth?.currentUser
-        const userDocRef = doc(db, "users", user.uid)
-        const userDoc = await getDoc(userDocRef);
+  const { userData, loading, error } = useFetchUserData();
 
-        if (userDoc.exists) {
-          const userData = userDoc.data();
-          setUserSkills(userData.skillSet || []);
-        }
-      } catch (error) {
-        console.error("Error fetching user skills:", error);
+  const { userSkills } = useFetchUserSkills() || [];
+
+  const filteredJobs = useFetchFilteredJobs(userSkills, activeSkill);
+  const handleSkillClick = useCallback(
+    (skill) => {
+      if (skill !== activeSkill) {
+        setActiveSkill(skill); // Only update state if the skill changes
       }
-    };
+    },
+    [activeSkill]
+  );
 
-    if (auth?.currentUser) {
-      fetchUserSkills();
-    }
-  }, [auth?.currentUser]);
-
-  useEffect(() => {
-    const fetchFilteredJobs = async () => {
-      if (userSkills.length === 0 || !activeSkill) return;
-      console.log("userSkills--", userSkills);
-
-      try {
-        const jobsRef = collection(db, "jobPosting");
-        let q;
-
-        if (activeSkill === null) {
-          // When "All" is selected, use array-contains-any to match any user skill
-          q = query(jobsRef, where("skills", "array-contains-any", userSkills));
-        } else {
-          console.log('activeSkills--', activeSkill)
-          // When a specific skill is selected, use array-contains for that single skill
-          q = query(jobsRef, where("skills", "array-contains", activeSkill));
-        }
-
-        const querySnapshot = await getDocs(q);
-
-        const matchingJobs = [];
-        querySnapshot.forEach((doc) => {
-          console.log(`Document found: ${doc.id}`, doc.data());
-          matchingJobs.push({ id: doc.id, ...doc.data() });
-        });
-        console.log("matchingJobs---", matchingJobs);
-
-        setFilteredJobs(matchingJobs);
-
-      } catch (error) {
-        console.error("Error fetching job postings:", error);
-      }
-    };
-
-    fetchFilteredJobs();
-  }, [activeSkill, userSkills]);
-
-  const handleSkillClick = (skill) => {
-    if (skill !== activeSkill) {
-      setActiveSkill(skill);
-    }
-  };
-
+  // Handle click for "All" to reset skill filter
   const handleAllClick = () => {
     setActiveSkill(null);
   };
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const user = auth.currentUser; // Get the currently signed-in user
-      if (auth.currentUser) {
-        setUserData(auth?.currentUser?.displayName);
-      }
-      if (user) {
-        try {
-          // Reference to the user's document in Firestore using their UID
-          const userDocRef = doc(db, "users", user.uid);
-          const userDoc = await getDoc(userDocRef); // Fetch the document
-          console.log(userDoc.data());
-          if (userDoc.exists()) {
-            setUserData(userDoc.data()); // Store user data in state
-          } else {
-            // toast.error("No user profile found.");
-          }
-        } catch (err) {
-          // toast.error("Failed to fetch user data.");
-          console.error(err); // Log the error for debugging purposes
-        } finally {
-          // setLoading(false);
-        }
-      } else {
-        toast.error("User is not signed in.");
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  useEffect(() => {
-    const fetchRealWorldTasks = async () => {
-      try {
-        const q = query(collection(db, "RealWorldTask"));
-        const querySnapshot = await getDocs(q);
-        const tasksData = [];
-        querySnapshot.forEach((doc) => {
-          tasksData.push({ id: doc.id, ...doc.data() });
-        });
-        setRealWorldTasks(tasksData);
-      } catch (error) {
-        console.error("Error fetching RealWorldTasks: ", error);
-      }
-    };
-
-    fetchRealWorldTasks();
-  }, []);
 
   const toggleBookmark = (taskId) => {
     setBookmarkedTasks((prevState) =>
@@ -175,30 +73,6 @@ const HomeScreen = () => {
         : [...prevState, taskId]
     );
   };
-
-  const toggleBookmarkIcon = () => {
-    setIsBookmarkIcon((prevState) => !prevState);
-  };
-
-  const toggleBookmarkedIcon = () => {
-    setIsBookmarkedIcon((prevState) => !prevState);
-  };
-  const handleClose = () => {
-    setIsOpen(false);
-  };
-  const handleInstallApp = () => {
-    // Logic to prompt the user to install the app
-    alert("Add to home screen functionality goes here.");
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-    }, 2500);
-
-    // Clear the timer when the component unmounts or when isOpen becomes true
-    return () => clearTimeout(timer);
-  }, []);
 
   const settings = {
     slidesToShow: 1,
@@ -608,8 +482,9 @@ const HomeScreen = () => {
                     <div className="trending-bookmark">
                       <a
                         role="button"
-                        className={`item-bookmark ${bookmarkedTasks.includes(task.id) ? "active" : ""
-                          }`}
+                        className={`item-bookmark ${
+                          bookmarkedTasks.includes(task.id) ? "active" : ""
+                        }`}
                         onClick={() => toggleBookmark(task.id)}
                         tabIndex="0"
                         aria-label="Bookmark"
@@ -653,572 +528,6 @@ const HomeScreen = () => {
           </div>
         </div>
 
-        {/* <div className="home-course mt-32">
-          <div className="home-course-wrapper-top">
-            <div className="container">
-              <div className="categories-first">
-                <h2 className="home1-txt3">🧿 All Internships</h2>
-              </div>
-            </div>
-          </div>
-          <div className="home-course-wrapper-bottom mt-16">
-            <div className="home-course-wrapper-bottom-full">
-              <ul className="nav nav-pills" id="homepage1-tab" role="tablist">
-                <li className="nav-item" role="presentation">
-                  <button
-                    className="nav-link active custom-home1-tab-btn"
-                    id="pills-all-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#pills-all"
-                    type="button"
-                    role="tab"
-                    aria-selected="true"
-                  >
-                    🔥All
-                  </button>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <button
-                    className="nav-link custom-home1-tab-btn"
-                    id="pills-clothes-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#pills-clothes"
-                    type="button"
-                    role="tab"
-                    aria-selected="false"
-                  >
-                    💡3D Design
-                  </button>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <button
-                    className="nav-link custom-home1-tab-btn"
-                    id="pills-electronics-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#pills-electronics"
-                    type="button"
-                    role="tab"
-                    aria-selected="false"
-                  >
-                    💰Business
-                  </button>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <button
-                    className="nav-link custom-home1-tab-btn"
-                    id="pills-cosmetics-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#pills-cosmetics"
-                    type="button"
-                    role="tab"
-                    aria-selected="false"
-                  >
-                    📢Marketing
-                  </button>
-                </li>
-              </ul>
-              <div className="tab-content" id="pills-tabContent">
-                <div
-                  className="tab-pane show active"
-                  id="pills-all"
-                  role="tabpanel"
-                  tabIndex="0"
-                >
-                  <div className="container">
-                    <div className="result-found-bottom-wrap mt-16 single-course">
-                      <div className="result-img-sec">
-                        <img src={CourseImg3} alt="course-img" />
-                      </div>
-                      <div className="result-content-sec">
-                        <h1 className="d-none">Search</h1>
-                        <div className="result-content-sec-wrap">
-                          <div className="content-first">
-                            <div className="result-bottom-txt">
-                              <p>Life Style</p>
-                            </div>
-                            <div className="result-bookmark">
-                              <a
-                                href="#"
-                                className={`item-bookmark ${
-                                  isBookmarked ? "active" : ""
-                                }`}
-                                onClick={toggleBookmark}
-                                tabIndex="0"
-                              >
-                                <img
-                                  src={BookmarkUnfillSvg}
-                                  alt="bookmark-icon"
-                                />
-                              </a>
-                            </div>
-                          </div>
-                          <Link to="/single-course-description">
-                            <div className="content-second mt-12">
-                              <h2>
-                                Make-up for Beginners: learn doing make-up like
-                                a Pro
-                              </h2>
-                            </div>
-                          </Link>
-                          <div className="content-third mt-12">
-                            <div>
-                              <p className="result-price">$210.00</p>
-                            </div>
-                            <div className="result-time-sec">
-                              <div>
-                                <img src={GreayTimeIcon} alt="time-icon" />
-                              </div>
-                              <div className="result-time">6h 40m</div>
-                            </div>
-                          </div>
-                          <div className="content-fourth">
-                            <div className="result-rating-sec">
-                              <div className="result-rating-sec-img">
-                                <img src={OrangeStar} alt="star-img" />
-                              </div>
-                              <div className="result-rating-txt">
-                                4.8 (6.5k ratings) | 2.7k students
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="result-found-bottom-wrap mt-16 single-course ">
-                      <div className="result-img-sec">
-                        <img src={CourseImg4} alt="course-img" />
-                      </div>
-                      <div className="result-content-sec">
-                        <h1 className="d-none">Search</h1>
-                        <div className="result-content-sec-wrap">
-                          <div className="content-first">
-                            <div className="result-bottom-txt">
-                              <p>Music</p>
-                            </div>
-                            <div className="result-bookmark">
-                              <a
-                                href="#"
-                                className={`item-bookmark ${
-                                  isBookmarkIcon ? "active" : ""
-                                }`}
-                                onClick={toggleBookmarkIcon}
-                                tabIndex="0"
-                              >
-                                <img
-                                  src={BookmarkUnfillSvg}
-                                  alt="bookmark-icon"
-                                />
-                              </a>
-                            </div>
-                          </div>
-                          <Link to="/single-course-description">
-                            <div className="content-second mt-12">
-                              <h2>
-                                Acoustic Guitar and Electric Guitar Lessons:
-                                Getting Started
-                              </h2>
-                            </div>
-                          </Link>
-                          <div className="content-third mt-12">
-                            <div>
-                              <p className="result-price">$170.00</p>
-                            </div>
-                            <div className="result-time-sec">
-                              <div>
-                                <img src={GreayTimeIcon} alt="time-icon" />
-                              </div>
-                              <div className="result-time">3h 30m</div>
-                            </div>
-                          </div>
-                          <div className="content-fourth">
-                            <div className="result-rating-sec">
-                              <div className="result-rating-sec-img">
-                                <img src={OrangeStar} alt="star-img" />
-                              </div>
-                              <div className="result-rating-txt">
-                                4.3 (3.7k ratings) | 104.2k students
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="result-found-bottom-wrap mt-16 single-course">
-                      <div className="result-img-sec">
-                        <img src={CourseImg5} alt="course-img" />
-                      </div>
-                      <div className="result-content-sec">
-                        <h1 className="d-none">Search</h1>
-                        <div className="result-content-sec-wrap">
-                          <div className="content-first">
-                            <div className="result-bottom-txt">
-                              <p>Photography</p>
-                            </div>
-                            <div className="result-bookmark">
-                              <a
-                                href="#"
-                                className={`item-bookmark ${
-                                  isBookmarkedIcon ? "active" : ""
-                                }`}
-                                onClick={toggleBookmarkedIcon}
-                                tabIndex="0"
-                              >
-                                <img
-                                  src={BookmarkUnfillSvg}
-                                  alt="bookmark-icon"
-                                />
-                              </a>
-                            </div>
-                          </div>
-                          <Link to="/single-course-description">
-                            <div className="content-second mt-12">
-                              <h2>
-                                Night Photography: You Can Shoot Stunning Night
-                                Photos
-                              </h2>
-                            </div>
-                          </Link>
-                          <div className="content-third mt-12">
-                            <div>
-                              <p className="result-price">$210.00</p>
-                            </div>
-                            <div className="result-time-sec">
-                              <div>
-                                <img src={GreayTimeIcon} alt="time-icon" />
-                              </div>
-                              <div className="result-time">6h 40m</div>
-                            </div>
-                          </div>
-                          <div className="content-fourth">
-                            <div className="result-rating-sec">
-                              <div className="result-rating-sec-img">
-                                <img src={OrangeStar} alt="star-img" />
-                              </div>
-                              <div className="result-rating-txt">
-                                4.6 (2.1k ratings) | 86.7k students
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="result-found-bottom-wrap mt-16 single-course">
-                      <div className="result-img-sec">
-                        <img src={CourseImg6} alt="course-img" />
-                      </div>
-                      <div className="result-content-sec">
-                        <h1 className="d-none">Search</h1>
-                        <div className="result-content-sec-wrap">
-                          <div className="content-first">
-                            <div className="result-bottom-txt">
-                              <p>Design</p>
-                            </div>
-                            <div className="result-bookmark">
-                              <a
-                                href="#"
-                                className="item-bookmark"
-                                tabIndex="0"
-                              >
-                                <img
-                                  src={BookmarkUnfillSvg}
-                                  alt="bookmark-icon"
-                                />
-                              </a>
-                            </div>
-                          </div>
-                          <Link to="/single-course-description">
-                            <div className="content-second mt-12">
-                              <h2>
-                                Learn Figma - UI/UX Design Essential Training
-                              </h2>
-                            </div>
-                          </Link>
-                          <div className="content-third mt-12">
-                            <div>
-                              <p className="result-price">$140.00</p>
-                            </div>
-                            <div className="result-time-sec">
-                              <div>
-                                <img src={GreayTimeIcon} alt="time-icon" />
-                              </div>
-                              <div className="result-time">3h 20m</div>
-                            </div>
-                          </div>
-                          <div className="content-fourth">
-                            <div className="result-rating-sec">
-                              <div className="result-rating-sec-img">
-                                <img src={OrangeStar} alt="star-img" />
-                              </div>
-                              <div className="result-rating-txt">
-                                4.8 (12.5k ratings) | 52.9k students
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="result-found-bottom-wrap mt-16 single-course">
-                      <div className="result-img-sec">
-                        <img src={CourseImg7} alt="course-img" />
-                      </div>
-                      <div className="result-content-sec">
-                        <h1 className="d-none">Search</h1>
-                        <div className="result-content-sec-wrap">
-                          <div className="content-first">
-                            <div className="result-bottom-txt">
-                              <p>Marketing</p>
-                            </div>
-                            <div className="result-bookmark">
-                              <a
-                                href="#"
-                                className={`item-bookmark ${
-                                  isBookmarked ? "active" : ""
-                                }`}
-                                onClick={toggleBookmarkIcon}
-                                tabIndex="0"
-                              >
-                                <img
-                                  src={BookmarkUnfillSvg}
-                                  alt="bookmark-icon"
-                                />
-                              </a>
-                            </div>
-                          </div>
-                          <Link to="/single-course-description">
-                            <div className="content-second mt-12">
-                              <h2>YouTube SEO: How to Rank #1 on YouTube</h2>
-                            </div>
-                          </Link>
-                          <div className="content-third mt-12">
-                            <div>
-                              <p className="result-price">$99.00</p>
-                            </div>
-                            <div className="result-time-sec">
-                              <div>
-                                <img src={GreayTimeIcon} alt="time-icon" />
-                              </div>
-                              <div className="result-time">6h 40m</div>
-                            </div>
-                          </div>
-                          <div className="content-fourth">
-                            <div className="result-rating-sec">
-                              <div className="result-rating-sec-img">
-                                <img src={OrangeStar} alt="star-img" />
-                              </div>
-                              <div className="result-rating-txt">
-                                4.9 (1.2k ratings) | 5.3k students
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="tab-pane"
-                  id="pills-clothes"
-                  role="tabpanel"
-                  tabIndex="0"
-                >
-                  <div className="container">
-                    <div className="result-found-bottom-wrap mt-16 single-course">
-                      <div className="result-img-sec">
-                        <img src={CourseImg6} alt="course-img" />
-                      </div>
-                      <div className="result-content-sec">
-                        <h1 className="d-none">Search</h1>
-                        <div className="result-content-sec-wrap">
-                          <div className="content-first">
-                            <div className="result-bottom-txt">
-                              <p>Design</p>
-                            </div>
-                            <div className="result-bookmark">
-                              <a
-                                href="#"
-                                className={`item-bookmark ${
-                                  isBookmarked ? "active" : ""
-                                }`}
-                                onClick={toggleBookmark}
-                                tabIndex="0"
-                              >
-                                <img
-                                  src={BookmarkUnfillSvg}
-                                  alt="bookmark-icon"
-                                />
-                              </a>
-                            </div>
-                          </div>
-                          <Link to="/single-course-description">
-                            <div className="content-second mt-12">
-                              <h2>
-                                Learn Figma - UI/UX Design Essential Training
-                              </h2>
-                            </div>
-                          </Link>
-                          <div className="content-third mt-12">
-                            <div>
-                              <p className="result-price">$140.00</p>
-                            </div>
-                            <div className="result-time-sec">
-                              <div>
-                                <img src={GreayTimeIcon} alt="time-icon" />
-                              </div>
-                              <div className="result-time">3h 20m</div>
-                            </div>
-                          </div>
-                          <div className="content-fourth">
-                            <div className="result-rating-sec">
-                              <div className="result-rating-sec-img">
-                                <img src={OrangeStar} alt="star-img" />
-                              </div>
-                              <div className="result-rating-txt">
-                                4.8 (12.5k ratings) | 52.9k students
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="tab-pane"
-                  id="pills-electronics"
-                  role="tabpanel"
-                  tabIndex="0"
-                >
-                  <div className="container">
-                    <div className="result-found-bottom-wrap mt-16 single-course">
-                      <div className="result-img-sec">
-                        <img src={CourseImg4} alt="course-img" />
-                      </div>
-                      <div className="result-content-sec">
-                        <h1 className="d-none">Search</h1>
-                        <div className="result-content-sec-wrap">
-                          <div className="content-first">
-                            <div className="result-bottom-txt">
-                              <p>Music</p>
-                            </div>
-                            <div className="result-bookmark">
-                              <a
-                                href="#"
-                                className={`item-bookmark ${
-                                  isBookmarked ? "active" : ""
-                                }`}
-                                onClick={toggleBookmark}
-                                tabIndex="0"
-                              >
-                                <img
-                                  src={BookmarkUnfillSvg}
-                                  alt="bookmark-icon"
-                                />
-                              </a>
-                            </div>
-                          </div>
-                          <Link to="/single-course-description">
-                            <div className="content-second mt-12">
-                              <h2>
-                                Acoustic Guitar and Electric Guitar Lessons:
-                                Getting Started
-                              </h2>
-                            </div>
-                          </Link>
-                          <div className="content-third mt-12">
-                            <div>
-                              <p className="result-price">$170.00</p>
-                            </div>
-                            <div className="result-time-sec">
-                              <div>
-                                <img src={GreayTimeIcon} alt="time-icon" />
-                              </div>
-                              <div className="result-time">3h 30m</div>
-                            </div>
-                          </div>
-                          <div className="content-fourth">
-                            <div className="result-rating-sec">
-                              <div className="result-rating-sec-img">
-                                <img src={OrangeStar} alt="star-img" />
-                              </div>
-                              <div className="result-rating-txt">
-                                4.3 (3.7k ratings) | 104.2k students
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="tab-pane"
-                  id="pills-cosmetics"
-                  role="tabpanel"
-                  tabIndex="0"
-                >
-                  <div className="container">
-                    <div className="result-found-bottom-wrap mt-16 single-course">
-                      <div className="result-img-sec">
-                        <img src={CourseImg7} alt="course-img" />
-                      </div>
-                      <div className="result-content-sec">
-                        <h1 className="d-none">Search</h1>
-                        <div className="result-content-sec-wrap">
-                          <div className="content-first">
-                            <div className="result-bottom-txt">
-                              <p>Marketing</p>
-                            </div>
-                            <div className="result-bookmark">
-                              <a
-                                href="#"
-                                className={`item-bookmark ${
-                                  isBookmarkedIcon ? "active" : ""
-                                }`}
-                                onClick={toggleBookmark}
-                                tabIndex="0"
-                              >
-                                <img
-                                  src={BookmarkUnfillSvg}
-                                  alt="bookmark-icon"
-                                />
-                              </a>
-                            </div>
-                          </div>
-                          <Link to="/single-course-description">
-                            <div className="content-second mt-12">
-                              <h2>YouTube SEO: How to Rank #1 on YouTube</h2>
-                            </div>
-                          </Link>
-                          <div className="content-third mt-12">
-                            <div>
-                              <p className="result-price">$99.00</p>
-                            </div>
-                            <div className="result-time-sec">
-                              <div>
-                                <img src={GreayTimeIcon} alt="time-icon" />
-                              </div>
-                              <div className="result-time">6h 40m</div>
-                            </div>
-                          </div>
-                          <div className="content-fourth">
-                            <div className="result-rating-sec">
-                              <div className="result-rating-sec-img">
-                                <img src={OrangeStar} alt="star-img" />
-                              </div>
-                              <div className="result-rating-txt">
-                                4.9 (1.2k ratings) | 5.3k students
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
         <div className="home-course mt-32">
           <div className="home-course-wrapper-top">
             <div className="container">
@@ -1232,7 +541,9 @@ const HomeScreen = () => {
               <ul className="nav nav-pills" id="homepage1-tab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
-                    className={`nav-link ${activeSkill === null ? "active" : ""} custom-home1-tab-btn`}
+                    className={`nav-link ${
+                      activeSkill === null ? "active" : ""
+                    } custom-home1-tab-btn`}
                     id="pills-all-tab"
                     data-bs-toggle="pill"
                     data-bs-target="#pills-all"
@@ -1241,35 +552,45 @@ const HomeScreen = () => {
                     aria-selected={activeSkill === null ? "true" : "false"}
                     onClick={handleAllClick} // Reset filter to show all jobs when "All" is clicked
                   >
-                    🔥All
+                    🚀All
                   </button>
                 </li>
-                {userSkills.map((skill, index) => (
+
+                {userSkills?.map((skill, index) => (
                   <li className="nav-item" role="presentation" key={index}>
                     <button
-                      className={`nav-link custom-home1-tab-btn ${activeSkill === skill ? "active" : ""}`}
                       id={`pills-skill-${skill}`}
-                      data-bs-toggle="pill"
-                      data-bs-target={`#pills-skill-${skill}`}
+                      className={`nav-link custom-home1-tab-btn ${
+                        activeSkill === skill ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-selected={activeSkill === skill ? "true" : "false"}
                       onClick={() => handleSkillClick(skill)}
                     >
-                      {`💡${skill}`}
+                      {`🚀${skill}`}
                     </button>
                   </li>
                 ))}
               </ul>
 
               <div className="tab-content" id="pills-tabContent">
-                <div className="tab-pane show active" id="pills-all" role="tabpanel" tabIndex="0">
+                <div
+                  className="tab-pane show active"
+                  id="pills-all"
+                  role="tabpanel"
+                  tabIndex="0"
+                >
                   <div className="container">
                     {filteredJobs.length > 0 ? (
                       filteredJobs.map((job, index) => (
-                        <div className="result-found-bottom-wrap mt-16 single-course" key={job.id}>
+                        <div
+                          className="result-found-bottom-wrap mt-16 single-course"
+                          key={job.id}
+                        >
                           <div className="result-img-sec">
-                            <img src={job?.imageUrl || CourseImg3} alt={job.title} />
+                            <img
+                              src={job?.imageUrl || CourseImg3}
+                              alt={job.title}
+                            />
                           </div>
                           <div className="result-content-sec">
                             <div className="result-content-sec-wrap">
@@ -1280,11 +601,16 @@ const HomeScreen = () => {
                                 <div className="result-bookmark">
                                   <a
                                     href="#"
-                                    className={`item-bookmark ${isBookmarked ? "active" : ""}`}
+                                    className={`item-bookmark ${
+                                      isBookmarked ? "active" : ""
+                                    }`}
                                     onClick={toggleBookmark}
                                     tabIndex="0"
                                   >
-                                    <img src={BookmarkUnfillSvg} alt="bookmark-icon" />
+                                    <img
+                                      src={BookmarkUnfillSvg}
+                                      alt="bookmark-icon"
+                                    />
                                   </a>
                                 </div>
                               </div>
@@ -1295,13 +621,17 @@ const HomeScreen = () => {
                               </Link>
                               <div className="content-third mt-12">
                                 <div>
-                                  <p className="result-price">{job.location ? `$${job.location}` : "N/A"}</p>
+                                  <p className="result-price">
+                                    {job.location ? `$${job.location}` : "N/A"}
+                                  </p>
                                 </div>
                                 <div className="result-time-sec">
                                   <div>
                                     <img src={GreayTimeIcon} alt="time-icon" />
                                   </div>
-                                  <div className="result-time">{job?.assessmentDuration || "N/A"}</div>
+                                  <div className="result-time">
+                                    {job?.assessmentDuration || "N/A"}
+                                  </div>
                                 </div>
                               </div>
                               <div className="content-fourth">
@@ -1319,7 +649,7 @@ const HomeScreen = () => {
                         </div>
                       ))
                     ) : (
-                      <p>No internships found matching your skills.</p>
+                      <p className="ps-2">No internships found!</p>
                     )}
                   </div>
                 </div>
@@ -1509,8 +839,9 @@ const HomeScreen = () => {
                       <div className="trending-bookmark">
                         <a
                           href="#"
-                          className={`item-bookmark ${isBookmarked ? "active" : ""
-                            }`}
+                          className={`item-bookmark ${
+                            isBookmarked ? "active" : ""
+                          }`}
                           onClick={toggleBookmark}
                           tabIndex="0"
                         >
@@ -1553,8 +884,9 @@ const HomeScreen = () => {
                       <div className="trending-bookmark">
                         <a
                           href="#"
-                          className={`item-bookmark ${isBookmarked ? "active" : ""
-                            }`}
+                          className={`item-bookmark ${
+                            isBookmarked ? "active" : ""
+                          }`}
                           onClick={toggleBookmark}
                           tabIndex="0"
                         >
@@ -1591,242 +923,7 @@ const HomeScreen = () => {
           </div>
         </div>
       </section>
-      {/* <!-- Homescreen content end --> */}
-      {/* <!-- Tabbar start --> */}
-      {/* <div id="bottom-navigation">
-        <div className="container">
-          <div className="home-navigation-menu">
-            <div className="bottom-panel nagivation-menu-wrap">
-              <ul className="bootom-tabbar">
-                <li className="active">
-                  <Link to="/homescreen" className="active">
-                    <svg
-                      className="active"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <mask
-                        id="mask0_202_7251"
-                        style={{ maskType: "alpha" }}
-                        maskUnits="userSpaceOnUse"
-                        x="0"
-                        y="0"
-                        width="24"
-                        height="24"
-                      >
-                        <rect width="24" height="24" fill="white" />
-                      </mask>
-                      <g mask="url(#mask0_202_7251)">
-                        <path
-                          d="M8.12602 14C8.57006 15.7252 10.1362 17 12 17C13.8638 17 15.4299 15.7252 15.874 14M11.0177 2.764L4.23539 8.03912C3.78202 8.39175 3.55534 8.56806 3.39203 8.78886C3.24737 8.98444 3.1396 9.20478 3.07403 9.43905C3 9.70352 3 9.9907 3 10.5651V17.8C3 18.9201 3 19.4801 3.21799 19.908C3.40973 20.2843 3.71569 20.5903 4.09202 20.782C4.51984 21 5.07989 21 6.2 21H17.8C18.9201 21 19.4802 21 19.908 20.782C20.2843 20.5903 20.5903 20.2843 20.782 19.908C21 19.4801 21 18.9201 21 17.8V10.5651C21 9.9907 21 9.70352 20.926 9.43905C20.8604 9.20478 20.7526 8.98444 20.608 8.78886C20.4447 8.56806 20.218 8.39175 19.7646 8.03913L12.9823 2.764C12.631 2.49075 12.4553 2.35412 12.2613 2.3016C12.0902 2.25526 11.9098 2.25526 11.7387 2.3016C11.5447 2.35412 11.369 2.49075 11.0177 2.764Z"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </g>
-                    </svg>
-                  </Link>
-                  <div className="orange-boder active"></div>
-                </li>
-                <li>
-                  <Link to="/bookmark">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <mask
-                        id="mask0_202_2005"
-                        style={{ maskType: "alpha" }}
-                        maskUnits="userSpaceOnUse"
-                        x="0"
-                        y="0"
-                        width="24"
-                        height="24"
-                      >
-                        <rect width="24" height="24" fill="white" />
-                      </mask>
-                      <g mask="url(#mask0_202_2005)">
-                        <path
-                          d="M13 7C13.5304 7 14.0391 7.21071 14.4142 7.58579C14.7893 7.96086 15 8.46957 15 9V21L10 18L5 21V9C5 8.46957 5.21071 7.96086 5.58579 7.58579C5.96086 7.21071 6.46957 7 7 7H13Z"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M9.26514 4C9.44092 3.69553 9.69386 3.44278 9.99846 3.26721C10.3031 3.09165 10.6486 2.99948 11.0001 3H17.0001C17.5306 3 18.0393 3.21072 18.4143 3.58579C18.7894 3.96086 19.0001 4.46957 19.0001 5V17L18.0001 16.4"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </g>
-                    </svg>
-                  </Link>
-                  <div className="orange-boder"></div>
-                </li>
-                <li>
-                  <Link to="/course-ongoing-screen">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <mask
-                        id="mask0_202_1996"
-                        style={{ maskType: "alpha" }}
-                        maskUnits="userSpaceOnUse"
-                        x="0"
-                        y="0"
-                        width="24"
-                        height="24"
-                      >
-                        <rect width="24" height="24" fill="white" />
-                      </mask>
-                      <g mask="url(#mask0_202_1996)">
-                        <path
-                          d="M3 19.2058C4.36817 18.4159 5.92017 18 7.5 18C9.07983 18 10.6318 18.4159 12 19.2058C13.3682 18.4159 14.9202 18 16.5 18C18.0798 18 19.6318 18.4159 21 19.2058"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M3 6.20577C4.36817 5.41586 5.92017 5 7.5 5C9.07983 5 10.6318 5.41586 12 6.20577C13.3682 5.41586 14.9202 5 16.5 5C18.0798 5 19.6318 5.41586 21 6.20577"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M3 6.20581V19.2058"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M12 6.20581V19.2058"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M21 6.20581V19.2058"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </g>
-                    </svg>
-                  </Link>
-                  <div className="orange-boder"></div>
-                </li>
-                <li>
-                  <Link to="/chat-screen">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <mask
-                        id="mask0_202_1988"
-                        style={{ maskType: "alpha" }}
-                        maskUnits="userSpaceOnUse"
-                        x="0"
-                        y="0"
-                        width="24"
-                        height="24"
-                      >
-                        <rect width="24" height="24" fill="white" />
-                      </mask>
-                      <g mask="url(#mask0_202_1988)">
-                        <path
-                          d="M3 20L4.3 16.1C3.17644 14.4382 2.76999 12.4704 3.15622 10.5623C3.54244 8.65415 4.69506 6.93563 6.39977 5.72623C8.10447 4.51683 10.2453 3.89885 12.4241 3.9872C14.6029 4.07554 16.6715 4.86419 18.2453 6.20652C19.819 7.54884 20.7909 9.3535 20.9801 11.2849C21.1693 13.2164 20.563 15.1432 19.2739 16.7071C17.9848 18.271 16.1007 19.3656 13.9718 19.7873C11.8429 20.2091 9.6142 19.9293 7.7 19L3 20"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M12 12V12.01"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M8 12V12.01"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M16 12V12.01"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </g>
-                    </svg>
-                  </Link>
-                  <div className="orange-boder "></div>
-                </li>
-                <li>
-                  <Link to="/profile">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <mask
-                        id="mask0_202_1984"
-                        style={{ maskType: "alpha" }}
-                        maskUnits="userSpaceOnUse"
-                        x="0"
-                        y="0"
-                        width="24"
-                        height="24"
-                      >
-                        <rect width="24" height="24" fill="white" />
-                      </mask>
-                      <g mask="url(#mask0_202_1984)">
-                        <path
-                          d="M20 21C20 19.6044 20 18.9067 19.8278 18.3389C19.44 17.0605 18.4395 16.06 17.1611 15.6722C16.5933 15.5 15.8956 15.5 14.5 15.5H9.5C8.10444 15.5 7.40665 15.5 6.83886 15.6722C5.56045 16.06 4.56004 17.0605 4.17224 18.3389C4 18.9067 4 19.6044 4 21M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </g>
-                    </svg>
-                  </Link>
-                  <div className="orange-boder"></div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div> */}
-      {/* <!-- Tabbar end --> */}
-      {/* <!--SideBar setting menu start--> */}
+
       <div className="menu-sidebar details">
         <div
           className="offcanvas offcanvas-start custom-offcanvas-noti"
