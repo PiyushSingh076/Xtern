@@ -13,8 +13,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
-import { db } from "../firebaseConfig"; // Adjust the path as necessary
-import { doc, getDoc } from "firebase/firestore";
 import useFetchProjectData from "../hooks/Auth/useFetchProjectData";
 const SingleCourseDescription = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);

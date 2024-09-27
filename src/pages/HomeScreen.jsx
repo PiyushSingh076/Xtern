@@ -182,7 +182,7 @@ const HomeScreen = () => {
               </a>
             </div>
             <div className="top-navbar-title">
-              <p>Guruji</p>
+              <p>Xtern</p>
             </div>
             <div className="skip-btn-goal">
               <Link to="/notification">
@@ -236,7 +236,7 @@ const HomeScreen = () => {
             <div className="home-first-sec-wrap">
               <h1>Hey, {userData?.display_name || "User"}</h1>
 
-              <p className="mt-8">Find a course you want to learn</p>
+              <p className="mt-8">Find the Match you want </p>
             </div>
             <div className="serachbar-homepage2 mt-24">
               <div className="input-group search-page-searchbar ">
@@ -552,7 +552,7 @@ const HomeScreen = () => {
                     aria-selected={activeSkill === null ? "true" : "false"}
                     onClick={handleAllClick} // Reset filter to show all jobs when "All" is clicked
                   >
-                    🚀All
+                    All
                   </button>
                 </li>
 
@@ -565,8 +565,11 @@ const HomeScreen = () => {
                       }`}
                       type="button"
                       onClick={() => handleSkillClick(skill)}
+                      title={skill} // Tooltip showing the full skill name
                     >
-                      {`🚀${skill}`}
+                      {`${
+                        skill.length > 12 ? skill.slice(0, 12) + "..." : skill
+                      }`}
                     </button>
                   </li>
                 ))}
@@ -649,7 +652,7 @@ const HomeScreen = () => {
                         </div>
                       ))
                     ) : (
-                      <p className="ps-2">No internships found</p>
+                      <p className="ps-2 text-danger">No internships found</p>
                     )}
                   </div>
                 </div>
