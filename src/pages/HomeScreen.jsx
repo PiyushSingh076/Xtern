@@ -649,7 +649,7 @@ const HomeScreen = () => {
                         </div>
                       ))
                     ) : (
-                      <p className="ps-2">No internships found!</p>
+                      <p className="ps-2">No internships found</p>
                     )}
                   </div>
                 </div>
