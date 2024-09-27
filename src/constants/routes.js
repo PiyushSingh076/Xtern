@@ -3,6 +3,7 @@ export const ROUTES = {
   HOME: "/",
   SIGN_UP: "/signup",
   SIGN_IN: "/signin",
+  APPLY_PROJECT: "/applyproject",
   FORGET_PASSWORD: "/forgetpassword",
   CHECK_MAIL_SCREEN: "/checkmailscreen",
   RESET_PASSWORD_SCREEN: "/resetpasswordscreen",
@@ -48,5 +49,8 @@ export const ROUTES = {
   SEARCH_RESULT_FOUND: "/search-result-found",
   SEARCH_NO_RESULT_SCREEN: "/search-noresult-screen",
   ADD_LINKEDIN_PROFILE: "/add-linkedin-profile",
-  INTERNSHIP:"/internship"
+
+  INTERNSHIP: "/internship",
+
+
 };

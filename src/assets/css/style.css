@@ -6062,3 +6062,46 @@ h2 {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+/* ApplyProject specific input field styles */
+.apply-form-details {
+  border-radius: 8px;
+  background: rgba(
+    102,
+    102,
+    102,
+    0.08
+  ); /* Background for the input container */
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Spacing between icon and input */
+}
+
+/* SVG Icon color set to black */
+.apply-form-details svg {
+  color: #000 !important;
+  filter: none; /* Ensure no filters affect the icon color */
+}
+
+/* Input field styles */
+.apply-form-details input {
+  width: 100%;
+  padding: 8px;
+  border: none; /* Remove the border */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.7
+  ); /* Light background for the input field */
+  outline: none; /* Remove the outline */
+  font-size: 16px;
+  border-radius: 4px; /* Slight rounding for the input itself */
+  color: #000; /* Text color */
+}
+
+/* Add a subtle border-bottom effect for focus */
+.apply-form-details input:focus {
+  border-bottom: 2px solid #007bff; /* Subtle bottom border on focus */
+}

@@ -30,8 +30,8 @@ const PrimaryGoalScreen = () => {
   const { selectedRole, handleRoleChange, saveRole } = useUserRole(); // Use the hook
 
   const roleOptions = [
-    { value: "Entrepreneur", label: "I Am an Entrepreneur" },
-    { value: "Intern", label: "I Am a Seeker" },
+    { value: "Entrepreneur", label: "I Am Part of a Venture" },
+    { value: "Intern", label: "I Am an Intern" },
   ];
 
   return (

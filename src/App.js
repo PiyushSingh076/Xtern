@@ -55,6 +55,7 @@ import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./Protected/ProtectedRoute";
 import Footer from "./components/Footer";
 import AddLinkedInProfile from "./pages/AddLinkedInProfile";
+import ApplyProject from "./pages/ApplyProject";
 
 function App() {
   const location = useLocation(); // Get the current location
@@ -170,6 +171,14 @@ function App() {
           element={
             <ProtectedRoute>
               <SingleCourseDescription />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.APPLY_PROJECT + "/:projectId"}
+          element={
+            <ProtectedRoute>
+              <ApplyProject />
             </ProtectedRoute>
           }
         />
