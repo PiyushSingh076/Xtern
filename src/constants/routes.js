@@ -50,5 +50,6 @@ export const ROUTES = {
   SEARCH_NO_RESULT_SCREEN: "/search-noresult-screen",
   ADD_LINKEDIN_PROFILE: "/add-linkedin-profile",
   INTERNSHIP: "/internship",
+  APPLY_INTERNSHIP:"/applyinternship",
   USER_PROFILE: "/userprofile"
 };
