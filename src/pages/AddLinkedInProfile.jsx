@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { functions } from "../firebaseConfig";
+import { db, functions } from "../firebaseConfig";
 import { httpsCallable } from "firebase/functions";
 import { getAuth } from "firebase/auth";
+import { collection, doc, getDocs, query, where, writeBatch } from "firebase/firestore";
+import axios from "axios";
 
 const AddLinkedInProfile = () => {
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ const AddLinkedInProfile = () => {
         toast.error("User not authenticated");
         return;
       }
-      const UserUid = currentUser.uid;
+      const userUid = currentUser.uid;
 
       if (!linkedinURL) {
         toast.error("Please enter a valid LinkedIn URL");
@@ -34,14 +36,14 @@ const AddLinkedInProfile = () => {
       }
 
       const profileId = profileIdMatch[1];
-      //   Call Firebase function
+      
       const fetchLinkedInProfileAndSaveExperience = httpsCallable(
         functions,
         "fetchLinkedInProfileAndSaveExperiences"
       );
       const response = await fetchLinkedInProfileAndSaveExperience({
         profileId,
-        UserUid
+        userUid
       });
       console.log("response---", response)
       if (response.data.success) {
@@ -53,11 +55,13 @@ const AddLinkedInProfile = () => {
       } else {
         toast.error("Failed to fetch LinkedIn profile. Please try again.");
       }
+
     } catch (error) {
       toast.error("An error occurred. Please try again later.");
       console.error("Error fetching LinkedIn profile:", error);
     }
   };
+
 
   const handleBackClick = () => {
     navigate(-1);
