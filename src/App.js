@@ -55,6 +55,7 @@ import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./Protected/ProtectedRoute";
 import Footer from "./components/Footer";
 import AddLinkedInProfile from "./pages/AddLinkedInProfile";
+import UserProfile from "./pages/UserProfile";
 import ApplyProject from "./pages/ApplyProject";
 
 function App() {
@@ -315,6 +316,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AddLinkedInProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.USER_PROFILE}
+          element={
+            <ProtectedRoute>
+              <UserProfile />
             </ProtectedRoute>
           }
         />
