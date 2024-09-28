@@ -52,6 +52,8 @@ const HomeScreen = () => {
   const { userSkills } = useFetchUserSkills() || [];
 
   const filteredJobs = useFetchFilteredJobs(userSkills, activeSkill);
+  console.log("filteredJobs", filteredJobs);
+
   const handleSkillClick = useCallback(
     (skill) => {
       if (skill !== activeSkill) {
@@ -482,9 +484,8 @@ const HomeScreen = () => {
                     <div className="trending-bookmark">
                       <a
                         role="button"
-                        className={`item-bookmark ${
-                          bookmarkedTasks.includes(task.id) ? "active" : ""
-                        }`}
+                        className={`item-bookmark ${bookmarkedTasks.includes(task.id) ? "active" : ""
+                          }`}
                         onClick={() => toggleBookmark(task.id)}
                         tabIndex="0"
                         aria-label="Bookmark"
@@ -541,9 +542,8 @@ const HomeScreen = () => {
               <ul className="nav nav-pills" id="homepage1-tab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
-                    className={`nav-link ${
-                      activeSkill === null ? "active" : ""
-                    } custom-home1-tab-btn`}
+                    className={`nav-link ${activeSkill === null ? "active" : ""
+                      } custom-home1-tab-btn`}
                     id="pills-all-tab"
                     data-bs-toggle="pill"
                     data-bs-target="#pills-all"
@@ -560,16 +560,14 @@ const HomeScreen = () => {
                   <li className="nav-item" role="presentation" key={index}>
                     <button
                       id={`pills-skill-${skill}`}
-                      className={`nav-link custom-home1-tab-btn ${
-                        activeSkill === skill ? "active" : ""
-                      }`}
+                      className={`nav-link custom-home1-tab-btn ${activeSkill === skill ? "active" : ""
+                        }`}
                       type="button"
                       onClick={() => handleSkillClick(skill)}
                       title={skill} // Tooltip showing the full skill name
                     >
-                      {`${
-                        skill.length > 12 ? skill.slice(0, 12) + "..." : skill
-                      }`}
+                      {`${skill.length > 12 ? skill.slice(0, 12) + "..." : skill
+                        }`}
                     </button>
                   </li>
                 ))}
@@ -591,7 +589,9 @@ const HomeScreen = () => {
                         >
                           <div className="result-img-sec">
                             <img
-                              src={job?.imageUrl || CourseImg3}
+                              className="img-fluid"
+                              style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                              src={job?.image || CourseImg3}
                               alt={job.title}
                             />
                           </div>
@@ -604,9 +604,8 @@ const HomeScreen = () => {
                                 <div className="result-bookmark">
                                   <a
                                     href="#"
-                                    className={`item-bookmark ${
-                                      isBookmarked ? "active" : ""
-                                    }`}
+                                    className={`item-bookmark ${isBookmarked ? "active" : ""
+                                      }`}
                                     onClick={toggleBookmark}
                                     tabIndex="0"
                                   >
@@ -617,7 +616,7 @@ const HomeScreen = () => {
                                   </a>
                                 </div>
                               </div>
-                              <Link to={`/job/${job.id}`}>
+                              <Link to={`/internship/${job.id}`}>
                                 <div className="content-second mt-12">
                                   <h2>{job.title}</h2>
                                 </div>
@@ -842,9 +841,8 @@ const HomeScreen = () => {
                       <div className="trending-bookmark">
                         <a
                           href="#"
-                          className={`item-bookmark ${
-                            isBookmarked ? "active" : ""
-                          }`}
+                          className={`item-bookmark ${isBookmarked ? "active" : ""
+                            }`}
                           onClick={toggleBookmark}
                           tabIndex="0"
                         >
@@ -887,9 +885,8 @@ const HomeScreen = () => {
                       <div className="trending-bookmark">
                         <a
                           href="#"
-                          className={`item-bookmark ${
-                            isBookmarked ? "active" : ""
-                          }`}
+                          className={`item-bookmark ${isBookmarked ? "active" : ""
+                            }`}
                           onClick={toggleBookmark}
                           tabIndex="0"
                         >
