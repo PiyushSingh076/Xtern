@@ -1,53 +1,27 @@
 import React, { useEffect, useState } from "react";
-import Slider from "react-slick";
 import BookmarkSvg from "../assets/svg/white-bookmark.svg";
-import BookmarkBlackSvg from "../assets/svg/black-bookmark.svg";
 import PlayIcon from "../assets/images/single-courses/play-icon.svg";
 import HeaderImg from "../assets/images/single-courses/header-img.png";
 import FillStar from "../assets/images/single-courses/orange-fill-star.svg";
 import StudentIcon from "../assets/images/single-courses/student-icon.svg";
-import LanguageIcon from "../assets/images/single-courses/language-icon.svg";
-import CourseIconImg1 from "../assets/images/single-courses/course-icon1.svg";
-import CourseIconImg2 from "../assets/images/single-courses/course-icon2.svg";
-import CourseIconImg3 from "../assets/images/single-courses/course-icon3.svg";
-import CourseIconImg4 from "../assets/images/single-courses/course-icon4.svg";
 import TimeIcon from "../assets/images/single-courses/time-icon.svg";
-import MentorImg from "../assets/images/single-courses/mentor-img.png";
-import FacebookSvg from "../assets/images/single-courses/facebook.svg";
-import WhatsappSvg from "../assets/images/single-courses/whatsup.svg";
-import TwitterSvg from "../assets/images/single-courses/twitter.svg";
-import LinkedInSvg from "../assets/images/single-courses/linkedin.svg";
-import CourseImg1 from "../assets/images/single-courses/course-img1.png";
-import CourseImg2 from "../assets/images/single-courses/course-img2.png";
 import LockIconSvg from "../assets/images/single-courses/lock-icon.svg";
 import DisableLockSvg from "../assets/images/single-courses/disable-lock.svg";
-import OrangeSmallStarFillSvg from "../assets/images/single-courses/orange-small-star-fill.svg";
-import OrangeStarUnfillSvg from "../assets/images/single-courses/orange-star-unfill.svg";
-import CommentIcon from "../assets/images/single-courses/comment-icon.svg";
-import LeftArrowSvg from "../assets/images/single-courses/left-arrow.svg";
-import LikeIcon from "../assets/images/single-courses/like-icon.svg";
-import DislikeIcon from "../assets/images/single-courses/dislike-icon.svg";
-import OrangeStar from "../assets/images/single-courses/orange-star.svg";
-import ClientImg1 from "../assets/images/single-courses/client1.png";
-import ClientImg2 from "../assets/images/single-courses/client2.png";
-import ClientImg3 from "../assets/images/single-courses/client3.png";
-import ClientImg4 from "../assets/images/single-courses/client4.png";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
-import { db } from "../firebaseConfig"; // Adjust the path as necessary
-import { doc, getDoc } from "firebase/firestore";
-
+import useFetchProjectData from "../hooks/Auth/useFetchProjectData";
 const SingleCourseDescription = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
   const navigate = useNavigate();
   const { projectId } = useParams();
-  const [projectData, setProjectData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { projectData, loading, error } = useFetchProjectData(projectId);
+
+  if (error) return <p>Error: {error.message}</p>;
 
   const handleBackClick = () => {
     navigate(-1); // This will navigate to the previous page in the history stack
@@ -70,41 +44,67 @@ const SingleCourseDescription = () => {
     dots: false,
     arrows: false,
   };
-  useEffect(() => {
-    const fetchProjectData = async () => {
-      try {
-        const docRef = doc(db, "RealWorldTask", projectId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setProjectData(docSnap.data());
-          console.log("project data", docSnap.data());
-        } else {
-          console.log("No such document!");
-        }
-      } catch (error) {
-        console.error("Error fetching project data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjectData();
-  }, [projectId]);
 
   if (loading) {
     return <Loading />;
   }
   return (
     <>
+      <header id="top-navbar" className="top-navbar">
+        <div className="container">
+          <div className="top-navbar_full">
+            <div className="back-btn" onClick={handleBackClick}>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <mask
+                  id="mask0_330_7385"
+                  style={{ maskType: "alpha" }}
+                  maskUnits="userSpaceOnUse"
+                  x="0"
+                  y="0"
+                  width="24"
+                  height="24"
+                >
+                  <rect width="24" height="24" fill="white"></rect>
+                </mask>
+                <g mask="url(#mask0_330_7385)">
+                  <path
+                    d="M15 18L9 12L15 6"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></path>
+                </g>
+              </svg>
+            </div>
+            <div className="top-navbar-title">
+              <p>Project Details</p>
+            </div>
+            <div></div>
+          </div>
+        </div>
+        <div className="navbar-boder"></div>
+      </header>
       {/* <!-- Single description section start --> */}
       <section id="single-description-screen">
         <div className="first-desc-img-sec">
           <div className="hero-img-desc">
-            <img
-              src={projectData?.imageUrl || HeaderImg}
-              alt="social-media-img"
-              className="img-fluid w-100"
-            />
+            <div className="d-flex justify-content-center">
+              <img
+                src={projectData?.imageUrl || HeaderImg}
+                alt="social-media-img"
+                height="350"
+                width="350"
+                className="img-fluid"
+              />
+            </div>
+
             <div className="single-courses-top">
               <div className="course-back-icon">
                 <svg
@@ -1799,7 +1799,7 @@ const SingleCourseDescription = () => {
             </div>
           </div> */}
           <div className="buy-now-description">
-            <Link to="/checkoutscreen">Apply Now</Link>
+            <Link to={`/applyproject/${projectId}`}>Apply Now</Link>
           </div>
         </div>
       </section>
