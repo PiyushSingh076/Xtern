@@ -14,7 +14,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
 import useFetchProjectData from "../hooks/Auth/useFetchProjectData";
-const SingleCourseDescription = () => {
+const ProjectDetails = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
   const navigate = useNavigate();
@@ -1836,4 +1836,4 @@ const SingleCourseDescription = () => {
     </>
   );
 };
-export default SingleCourseDescription;
+export default ProjectDetails;

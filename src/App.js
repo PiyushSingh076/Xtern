@@ -20,7 +20,6 @@ import HomeScreen from "./pages/HomeScreen";
 import Notification from "./pages/Notification";
 import CategoryScreen from "./pages/CategoryScreen";
 import Business from "./pages/Business";
-import SingleCourseDescription from "./pages/SingleCourseDescription";
 import TrendingCourse from "./pages/TrendingCourse";
 import CheckOutScreen from "./pages/CheckOutScreen";
 import PaymentScreen from "./pages/PaymentScreen";
@@ -58,6 +57,9 @@ import AddLinkedInProfile from "./pages/AddLinkedInProfile";
 import UserProfile from "./pages/UserProfile";
 import ApplyProject from "./pages/ApplyProject";
 import SingleJobDescription from "./pages/SingleJobDescription";
+import CreateProject from "./pages/CreateProject";
+import ProjectDetails from "./pages/ProjectDetail";
+import CreateJob from "./pages/CreateJob";
 
 function App() {
   const location = useLocation(); // Get the current location
@@ -101,6 +103,14 @@ function App() {
           element={
             <ProtectedRoute>
               <PreferredLanguage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.CREATE_JOB}
+          element={
+            <ProtectedRoute>
+              <CreateJob />
             </ProtectedRoute>
           }
         />
@@ -169,10 +179,18 @@ function App() {
           }
         />
         <Route
+          path={ROUTES.CREATE_PROJECT}
+          element={
+            <ProtectedRoute>
+              <CreateProject />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path={ROUTES.SINGLE_COURSE_DESCRIPTION + "/:projectId"}
           element={
             <ProtectedRoute>
-              <SingleCourseDescription />
+              <ProjectDetails />
             </ProtectedRoute>
           }
         />

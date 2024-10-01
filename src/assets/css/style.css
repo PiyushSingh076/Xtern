@@ -374,6 +374,7 @@ textarea {
 .feedback-submit a,
 .go-courses-btn a,
 .buy-now-description a,
+.buy-now-description button,
 .pay-now-btn a,
 .apply-coupon-btn a,
 .save-btn-payment a,
@@ -6104,4 +6105,20 @@ h2 {
 /* Add a subtle border-bottom effect for focus */
 .apply-form-details input:focus {
   border-bottom: 2px solid #007bff; /* Subtle bottom border on focus */
+}
+.level-badge {
+  background-color: #e0e0e0;
+  color: #000;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.level-badge:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.badge-active {
+  background-color: #007bff;
+  color: #fff;
 }
