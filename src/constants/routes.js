@@ -4,6 +4,8 @@ export const ROUTES = {
   SIGN_UP: "/signup",
   SIGN_IN: "/signin",
   APPLY_PROJECT: "/applyproject",
+  CREATE_PROJECT: "/createproject",
+  CREATE_JOB: "/createjob",
   FORGET_PASSWORD: "/forgetpassword",
   CHECK_MAIL_SCREEN: "/checkmailscreen",
   RESET_PASSWORD_SCREEN: "/resetpasswordscreen",
@@ -50,6 +52,6 @@ export const ROUTES = {
   SEARCH_NO_RESULT_SCREEN: "/search-noresult-screen",
   ADD_LINKEDIN_PROFILE: "/add-linkedin-profile",
   INTERNSHIP: "/internship",
-  APPLY_INTERNSHIP:"/applyinternship",
-  USER_PROFILE: "/userprofile"
+  APPLY_INTERNSHIP: "/applyinternship",
+  USER_PROFILE: "/userprofile",
 };

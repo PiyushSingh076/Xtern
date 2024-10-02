@@ -194,7 +194,8 @@ const ApplyProject = () => {
               {/* Steps Section */}
               <div
                 id="steps-section"
-                className="steps-section bg-light p-4 rounded mb-4"
+                className="steps-section bg-light p-4 rounded"
+                style={{ marginBottom: "100px" }}
               >
                 <p>
                   <strong>Step 1:</strong> Enter the{" "}
@@ -219,10 +220,11 @@ const ApplyProject = () => {
               {loading && <p>Submitting...</p>}
 
               {/* Submit Button */}
-              <div className="sign-up-btn mt-32">
-                <Button type="submit" className="px-5 py-3" disabled={loading}>
+
+              <div className="buy-now-description mt-4">
+                <button type="submit" className="px-5 py-3" disabled={loading}>
                   {loading ? "Submitting..." : "Submit Project"}
-                </Button>
+                </button>
               </div>
             </form>
           </div>
