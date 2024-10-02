@@ -57,6 +57,7 @@ import AddLinkedInProfile from "./pages/AddLinkedInProfile";
 import UserProfile from "./pages/UserProfile";
 import ApplyProject from "./pages/ApplyProject";
 import SingleJobDescription from "./pages/SingleJobDescription";
+import ApplyInternship from "./pages/ApplyInternship";
 import CreateProject from "./pages/CreateProject";
 import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
@@ -207,6 +208,14 @@ function App() {
           element={
             <ProtectedRoute>
               <SingleJobDescription />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.APPLY_INTERNSHIP + "/:internshipId"}
+          element={
+            <ProtectedRoute>
+              <ApplyInternship />
             </ProtectedRoute>
           }
         />

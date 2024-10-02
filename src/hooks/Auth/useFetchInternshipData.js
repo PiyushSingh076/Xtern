@@ -13,12 +13,14 @@ const useFetchInternshipData = (internshipId) => {
                 const docRef = doc(db, "jobPosting", internshipId);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    setInternshipData(docSnap.data());
+                    const data = docSnap.data();
+                    const jobref = docSnap.ref.path;
+                    setInternshipData({ ...data, jobref });
                 } else {
                     console.log("No such document!");
                 }
             } catch (error) {
-                console.error("Error fetching project data:", error);
+                console.error("Error fetching internship data:", error);
                 setError(error);
             } finally {
                 setLoading(false);

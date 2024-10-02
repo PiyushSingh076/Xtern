@@ -78,7 +78,7 @@ const SingleJobDescription = () => {
                                     <strong>Location:</strong> {internshipData?.location}
                                 </p>
                                 <p className="card-text">
-                                    <strong>Duration:</strong> {internshipData?.duration}
+                                    <strong>Duration:</strong> {internshipData?.assessmentDuration}
                                 </p>
 
                                 <ul
