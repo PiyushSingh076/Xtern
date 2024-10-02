@@ -15,7 +15,7 @@ const useFetchFilteredJobs = (userSkills, activeSkill) => {
 
         if (activeSkill === null) {
           // Fetch jobs that match any of the user's skills
-          q = query(jobsRef, where("skills", "array-contains-any", userSkills));
+          q = query(jobsRef);
         } else {
           // Fetch jobs that match the selected skill
           q = query(jobsRef, where("skills", "array-contains", activeSkill));
