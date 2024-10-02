@@ -58,6 +58,7 @@ import AddLinkedInProfile from "./pages/AddLinkedInProfile";
 import UserProfile from "./pages/UserProfile";
 import ApplyProject from "./pages/ApplyProject";
 import SingleJobDescription from "./pages/SingleJobDescription";
+import ApplyInternship from "./pages/ApplyInternship";
 
 function App() {
   const location = useLocation(); // Get the current location
@@ -189,6 +190,14 @@ function App() {
           element={
             <ProtectedRoute>
               <SingleJobDescription />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.APPLY_INTERNSHIP + "/:internshipId"}
+          element={
+            <ProtectedRoute>
+              <ApplyInternship />
             </ProtectedRoute>
           }
         />
