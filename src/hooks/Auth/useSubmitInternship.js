@@ -41,6 +41,19 @@ const useSubmitInternship = () => {
 
       await setDoc(internshipDocRef, internshipData);
 
+      const submittedTaskRef = doc(collection(db, "submittedTasks"));
+
+      const submittedTasksData = {
+        codeUrl: githubUrl,
+        createdAt: new Date().toISOString(),
+        outputUrl: deploymentUrl,
+        videoUrl: videoDemoUrl,
+        job: jobref,
+        uid: user.uid,
+      }
+
+      await setDoc(submittedTaskRef, submittedTasksData);
+
       const jobPostingRef = doc(db, jobref); // Reference to the job posting
 
       const jobPostingDoc = await getDoc(jobPostingRef);
