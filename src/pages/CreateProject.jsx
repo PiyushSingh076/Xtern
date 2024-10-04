@@ -15,6 +15,7 @@ import { addDoc, collection } from "firebase/firestore";
 import Loading from "../components/Loading";
 import ProjectLevelSelection from "../components/ProjectLevelSelection";
 import useImageUpload from "../hooks/Auth/useImageUpload";
+import { getAuth } from "firebase/auth";
 
 const CreateProject = () => {
   const [projectTitle, setProjectTitle] = useState("");
@@ -84,7 +85,15 @@ const CreateProject = () => {
     }
 
     try {
-      // Save the project details along with the image URL and skills to Firestore
+      // Get the current user using Firebase Authentication
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        throw new Error("User not authenticated");
+      }
+
+      // Save the project details along with the image URL, skills, and userref to Firestore
       await addDoc(collection(db, "RealWorldTask"), {
         title: projectTitle,
         skills,
@@ -94,6 +103,8 @@ const CreateProject = () => {
         details: projectDetails,
         domain: projectDomain, // Include domain in form data
         imageUrl: imageURL,
+        createdAt: new Date(),
+        userref: `/users/${currentUser.uid}`, // Storing the reference to the user who created the project
       });
 
       setSubmitLoading(false);
@@ -103,10 +114,6 @@ const CreateProject = () => {
       setSubmitLoading(false);
     }
   };
-
-  if (loading || submitLoading) {
-    return <Loading />;
-  }
 
   return (
     <>

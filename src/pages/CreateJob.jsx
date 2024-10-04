@@ -16,6 +16,7 @@ import { db } from "./../firebaseConfig";
 import { addDoc, collection } from "firebase/firestore";
 import Loading from "../components/Loading";
 import useImageUpload from "../hooks/Auth/useImageUpload"; // Custom hook for image upload
+import { getAuth } from "firebase/auth";
 
 const CreateJob = () => {
   const [jobTitle, setJobTitle] = useState("");
@@ -82,6 +83,15 @@ const CreateJob = () => {
     }
 
     try {
+      // Get the current user using Firebase Authentication
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        throw new Error("User not authenticated");
+      }
+
+      // Adding job to Firestore with userref
       await addDoc(collection(db, "jobPosting"), {
         title: jobTitle,
         companyName,
@@ -94,7 +104,9 @@ const CreateJob = () => {
         duration,
         image: imageURL,
         createdAt: new Date(),
+        userref: `/users/${currentUser.uid}`, // Storing the reference to the user who created the job
       });
+
       setSubmitLoading(false);
       navigate("/homescreen");
     } catch (err) {
@@ -102,10 +114,6 @@ const CreateJob = () => {
       setSubmitLoading(false);
     }
   };
-
-  //   if (loading || submitLoading) {
-  //     return <Loading />;
-  //   }
 
   return (
     <>
@@ -125,7 +133,7 @@ const CreateJob = () => {
               </svg>
             </div>
             <div className="top-navbar-title">
-              <p>Create New Job</p>
+              <p>Job Posting</p>
             </div>
             <div></div>
           </div>
