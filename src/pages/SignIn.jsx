@@ -17,7 +17,7 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    navigate(-1); // This will navigate to the previous page in the history stack
+    navigate("/"); // This will navigate to the previous page in the history stack
   };
 
   const togglePasswordVisibility = () => {

@@ -1,112 +1,70 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { auth, db, setUpRecaptcha } from "../firebaseConfig";
-import { signInWithPhoneNumber } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore"; // Import Firestore methods
-import OtpInputGroup from "../components/OtpGroup"; // Custom OTP component
-import PhoneInput from "react-phone-input-2"; // Phone input with country selector
+import { useNavigate } from "react-router-dom";
+import { auth } from "../firebaseConfig"; // You are using only auth, removed db
+import OtpInputGroup from "../components/OtpGroup";
+import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { CgSpinner } from "react-icons/cg"; // Spinner for loading
+import { CgSpinner } from "react-icons/cg";
 import { toast, Toaster } from "react-hot-toast";
+import useSendOtp from "../hooks/Auth/useSendOtp";
+import useVerifyOtp from "../hooks/Auth/useVerifyOtp";
+import useRecaptcha from "../hooks/Auth/useRecaptcha";
 
 const VerifyScreen = () => {
-  const [seconds, setSeconds] = useState(50);
-  const [otp, setOtp] = useState(""); // OTP state
+  const [seconds, setSeconds] = useState(50); // Timer for OTP resend
+  const [otp, setOtp] = useState("");
   const [ph, setPh] = useState(""); // Phone number state
-  const [loading, setLoading] = useState(false); // Loading state
-  const [showOTP, setShowOTP] = useState(false); // Show OTP input
-  const [error, setError] = useState("");
+  const [showOTP, setShowOTP] = useState(false); // Toggle to show OTP input
+  const [error, setError] = useState(""); // Error state
   const navigate = useNavigate();
 
-  // ReCAPTCHA should be initialized when the component mounts
-  useEffect(() => {
-    setUpRecaptcha(); // Call the setup function when the component mounts
-  }, []);
+  // Initialize Recaptcha hook
+  const { resetRecaptcha, initRecaptchaVerifier } = useRecaptcha(auth);
+
+  // Hooks for sending and verifying OTP
+  const { sendOtp, loading: sendingOtp } = useSendOtp(auth);
+  const { verifyOtp, loading: verifyingOtp } = useVerifyOtp(auth);
 
   useEffect(() => {
-    if (seconds > 0) {
-      const timerId = setTimeout(() => {
-        setSeconds(seconds - 1);
-      }, 1000);
+    if (seconds > 0 && showOTP) {
+      const timerId = setTimeout(() => setSeconds((prev) => prev - 1), 1000);
       return () => clearTimeout(timerId);
     }
-  }, [seconds]);
-
-  const disposeRecaptcha = () => {
-    if (window.recaptchaVerifier) {
-      window.recaptchaVerifier.clear(); // Dispose of the ReCAPTCHA verifier instance
-      delete window.recaptchaVerifier; // Remove the reference
-    }
-  };
-
-  // Reset recaptcha if it hasn't been initialized or is destroyed
-  const resetRecaptcha = () => {
-    if (window.recaptchaVerifier && !window.recaptchaVerifier.destroyed) {
-      window.recaptchaVerifier.render().then((widgetId) => {
-        window.recaptchaWidgetId = widgetId;
-      });
-    }
-  };
+  }, [seconds, showOTP]);
 
   const handlePhoneNumberSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
     if (!ph || ph.length < 10) {
       setError("Please enter a valid phone number");
-      setLoading(false);
       return;
     }
 
     try {
-      const appVerifier = window.recaptchaVerifier; // Only set this once, when initialized
-      const formatPh = "+" + ph; // Phone number with country code
-
-      const confirmationResult = await signInWithPhoneNumber(
-        auth,
-        formatPh,
-        appVerifier
-      );
-      window.confirmationResult = confirmationResult;
-      setLoading(false);
-      setShowOTP(true);
-      toast.success("OTP sent successfully!");
+      await initRecaptchaVerifier(); // Initialize Recaptcha
+      await sendOtp(ph, setShowOTP, setError); // Send OTP
     } catch (err) {
-      resetRecaptcha(); // Only reset if there's an issue
-      setError("Error sending OTP. Please try again.");
-      setLoading(false);
-      console.error("Error in sending OTP:", err);
+      console.error("Error during OTP sending:", err);
+      setError("Failed to send OTP. Please try again.");
     }
   };
 
-  const handleVerifyOtp = async (otp) => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const confirmationResult = window.confirmationResult;
-      const result = await confirmationResult.confirm(otp); // Verify OTP
-      const user = result.user;
-      disposeRecaptcha();
-
-      // Check if user is new or returning
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-
-      // if (userDoc.exists()) {
-      //   // Returning user, navigate to homescreen
-      //   navigate("/homescreen");
-      // } else {
-      // New user, navigate to preferred language screen
-      navigate("/preferredlanguage");
-      // }
-
-      setLoading(false);
-    } catch (err) {
-      setError("Invalid OTP. Please try again.");
-      setLoading(false);
-      console.error("Error in verifying OTP:", err);
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    if (!otp || otp.length !== 6) {
+      setError("Please enter a valid 6-digit OTP");
+      return;
     }
+
+    // Verify OTP
+    await verifyOtp(otp, setError, navigate);
+  };
+
+  const handleResendOtp = async () => {
+    setSeconds(50);
+    setOtp("");
+    setError("");
+    await resetRecaptcha(); // Reset Recaptcha before resending OTP
+    await sendOtp(ph, setShowOTP, setError, setSeconds, initRecaptchaVerifier); // Resend OTP
   };
 
   const handleBackClick = () => {
@@ -118,35 +76,15 @@ const VerifyScreen = () => {
       <header id="top-header">
         <div className="container">
           <div className="top-header-full">
-            <div className="back-btn">
-              <svg
-                onClick={handleBackClick}
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <mask
-                  id="mask0_330_7385"
-                  style={{ maskType: "alpha" }}
-                  maskUnits="userSpaceOnUse"
-                  x="0"
-                  y="0"
-                  width="24"
-                  height="24"
-                >
-                  <rect width="24" height="24" fill="black" />
-                </mask>
-                <g mask="url(#mask0_330_7385)">
-                  <path
-                    d="M15 18L9 12L15 6"
-                    stroke="black"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </g>
+            <div className="back-btn" onClick={handleBackClick}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M15 18L9 12L15 6"
+                  stroke="black"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
             <div className="header-title">
@@ -164,26 +102,21 @@ const VerifyScreen = () => {
               {showOTP ? (
                 <>
                   <p className="title-sec">Enter your OTP</p>
-                  <form
-                    className="mt-32"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleVerifyOtp(otp);
-                    }}
-                  >
+                  <form className="mt-32" onSubmit={handleVerifyOtp}>
                     <OtpInputGroup
                       length={6}
-                      onAutoSubmit={() => handleVerifyOtp(otp)}
-                      onComplete={(completedOtp) => {
-                        setOtp(completedOtp); // Store OTP
-                      }}
+                      onComplete={(completedOtp) => setOtp(completedOtp)}
                     />
                     <div className="verify-btn mt-32">
-                      <button type="submit" className="btn" disabled={loading}>
-                        {loading ? (
+                      <button
+                        type="submit"
+                        className="btn"
+                        disabled={verifyingOtp}
+                      >
+                        {verifyingOtp ? (
                           <span>
                             <CgSpinner size={20} className="animate-spin" />{" "}
-                            Verifying..
+                            Verifying...
                           </span>
                         ) : (
                           "Verify"
@@ -194,6 +127,17 @@ const VerifyScreen = () => {
                   {error && (
                     <p style={{ color: "red", marginTop: "10px" }}>{error}</p>
                   )}
+                  <div className="otp-resend mt-16">
+                    {seconds > 0 ? (
+                      <span className="resend-txt1">
+                        You can resend OTP in {seconds} seconds
+                      </span>
+                    ) : (
+                      <span className="resend-txt2" onClick={handleResendOtp}>
+                        Resend OTP
+                      </span>
+                    )}
+                  </div>
                 </>
               ) : (
                 <>
@@ -223,7 +167,6 @@ const VerifyScreen = () => {
                         margin: "0 auto",
                       }}
                     />
-
                     {error && (
                       <p
                         style={{
@@ -238,8 +181,12 @@ const VerifyScreen = () => {
                     )}
                     <div id="recaptcha-container"></div>
                     <div className="verify-btn mt-32">
-                      <button type="submit" className="btn" disabled={loading}>
-                        {loading ? (
+                      <button
+                        type="submit"
+                        className="btn"
+                        disabled={sendingOtp}
+                      >
+                        {sendingOtp ? (
                           <span>
                             <CgSpinner size={20} className="animate-spin" />{" "}
                             Sending...
@@ -251,35 +198,6 @@ const VerifyScreen = () => {
                     </div>
                   </form>
                 </>
-              )}
-              {showOTP ? (
-                <>
-                  <div className="otp-resend mt-16">
-                    <span className="resend-txt1">Not yet received?</span>
-                    <span className="resend-txt2">
-                      <Link to="/verifyscreen">Resend OTP</Link>
-                    </span>
-                  </div>
-                  <div className="text-center counter-sec">
-                    <div className="otp-timer timer">
-                      <div className="border"></div>
-                      <div className="d-flex timer-counter-content">
-                        <div className="time-left" id="counter">
-                          {seconds > 0 ? seconds : ""}
-                        </div>
-                        <div className="timer-text">Sec</div>
-                      </div>
-                      <p className="otp-left mb-0">left</p>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="otp-resend mt-16">
-                  <span className="resend-txt1">Not yet received?</span>
-                  <span className="resend-txt2">
-                    <Link to="/verifyscreen">Resend OTP</Link>
-                  </span>
-                </div>
               )}
             </div>
           </div>

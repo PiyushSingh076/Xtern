@@ -36,6 +36,7 @@ import useFetchFilteredJobs from "../hooks/Auth/useFetchFilteredJobs";
 import useFetchUserSkills from "../hooks/Auth/useFetchUserSkills";
 import useFetchUserData from "../hooks/Auth/useFetchUserData";
 import useFetchRealWorldTasks from "../hooks/Auth/useFetchRealWorldTasks";
+import useOAuthLogout from "../hooks/Auth/useOAuthLogout";
 const HomeScreen = () => {
   const [isFixed, setIsFixed] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -50,6 +51,7 @@ const HomeScreen = () => {
   const { userData, loading, error } = useFetchUserData();
 
   const { userSkills } = useFetchUserSkills() || [];
+  const { handleLogout, loading: logoutloading } = useOAuthLogout(); // Use the logout hook
 
   const filteredJobs = useFetchFilteredJobs(userSkills, activeSkill);
   console.log("filteredJobs", filteredJobs);
@@ -484,8 +486,9 @@ const HomeScreen = () => {
                     <div className="trending-bookmark">
                       <a
                         role="button"
-                        className={`item-bookmark ${bookmarkedTasks.includes(task.id) ? "active" : ""
-                          }`}
+                        className={`item-bookmark ${
+                          bookmarkedTasks.includes(task.id) ? "active" : ""
+                        }`}
                         onClick={() => toggleBookmark(task.id)}
                         tabIndex="0"
                         aria-label="Bookmark"
@@ -542,8 +545,9 @@ const HomeScreen = () => {
               <ul className="nav nav-pills" id="homepage1-tab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
-                    className={`nav-link ${activeSkill === null ? "active" : ""
-                      } custom-home1-tab-btn`}
+                    className={`nav-link ${
+                      activeSkill === null ? "active" : ""
+                    } custom-home1-tab-btn`}
                     id="pills-all-tab"
                     data-bs-toggle="pill"
                     data-bs-target="#pills-all"
@@ -560,14 +564,16 @@ const HomeScreen = () => {
                   <li className="nav-item" role="presentation" key={index}>
                     <button
                       id={`pills-skill-${skill}`}
-                      className={`nav-link custom-home1-tab-btn ${activeSkill === skill ? "active" : ""
-                        }`}
+                      className={`nav-link custom-home1-tab-btn ${
+                        activeSkill === skill ? "active" : ""
+                      }`}
                       type="button"
                       onClick={() => handleSkillClick(skill)}
                       title={skill} // Tooltip showing the full skill name
                     >
-                      {`${skill.length > 12 ? skill.slice(0, 12) + "..." : skill
-                        }`}
+                      {`${
+                        skill.length > 12 ? skill.slice(0, 12) + "..." : skill
+                      }`}
                     </button>
                   </li>
                 ))}
@@ -590,7 +596,11 @@ const HomeScreen = () => {
                           <div className="result-img-sec">
                             <img
                               className="img-fluid"
-                              style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                objectFit: "cover",
+                              }}
                               src={job?.image || CourseImg3}
                               alt={job.title}
                             />
@@ -604,8 +614,9 @@ const HomeScreen = () => {
                                 <div className="result-bookmark">
                                   <a
                                     href="#"
-                                    className={`item-bookmark ${isBookmarked ? "active" : ""
-                                      }`}
+                                    className={`item-bookmark ${
+                                      isBookmarked ? "active" : ""
+                                    }`}
                                     onClick={toggleBookmark}
                                     tabIndex="0"
                                   >
@@ -841,8 +852,9 @@ const HomeScreen = () => {
                       <div className="trending-bookmark">
                         <a
                           href="#"
-                          className={`item-bookmark ${isBookmarked ? "active" : ""
-                            }`}
+                          className={`item-bookmark ${
+                            isBookmarked ? "active" : ""
+                          }`}
                           onClick={toggleBookmark}
                           tabIndex="0"
                         >
@@ -885,8 +897,9 @@ const HomeScreen = () => {
                       <div className="trending-bookmark">
                         <a
                           href="#"
-                          className={`item-bookmark ${isBookmarked ? "active" : ""
-                            }`}
+                          className={`item-bookmark ${
+                            isBookmarked ? "active" : ""
+                          }`}
                           onClick={toggleBookmark}
                           tabIndex="0"
                         >
@@ -1801,7 +1814,10 @@ const HomeScreen = () => {
                     </div>
                     <div className="setting-border mt-8"></div>
                   </Link>
-                  <Link to="/" className="mt-8">
+                  <Link
+                    onClick={handleLogout} // Trigger the logout on click
+                    className="mt-8"
+                  >
                     <div className="setting-deatils">
                       <div className="setting-icon">
                         <svg

@@ -14,50 +14,6 @@ const SignInWithSocial = () => {
     <div>
       <div className="sign-in-social-media">
         <div className="sign-in-social-media-full">
-          {/* Sign in with Facebook */}
-          <button
-            onClick={() => handleOAuthLogin(facebookProvider, "facebook")}
-            className="sign-in-social-media-deatails"
-            disabled={loadingProvider === "facebook"}
-            style={buttonStyles}
-          >
-            {loadingProvider === "facebook" ? (
-              <ImSpinner3 className="spin-icon " />
-            ) : (
-              <span className="social-icon-img" style={iconContainerStyles}>
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <mask
-                    id="mask0_330_7255"
-                    style={{ maskType: "alpha" }}
-                    maskUnits="userSpaceOnUse"
-                    x="0"
-                    y="0"
-                    width="24"
-                    height="24"
-                  >
-                    <rect width="24" height="24" fill="white" />
-                  </mask>
-                  <g mask="url(#mask0_330_7255)">
-                    <path
-                      d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z"
-                      fill="#1977F3"
-                    />
-                    <path
-                      d="M16.6711 15.4696L17.2027 12H13.8749V9.74884C13.8749 8.80045 14.3389 7.874 15.8307 7.874H17.3444V4.92083C17.3444 4.92083 15.9708 4.68626 14.6579 4.68626C11.9173 4.68626 10.1252 6.34679 10.1252 9.35565V12H7.07751V15.4696H10.1252V23.8549C10.7361 23.9511 11.3621 24 12 24C12.6379 24 13.264 23.9494 13.8749 23.8549V15.4696H16.6711Z"
-                      fill="white"
-                    />
-                  </g>
-                </svg>
-              </span>
-            )}
-          </button>
-
           {/* Sign in with Google */}
           <button
             onClick={() => handleOAuthLogin(googleProvider, "google")}
@@ -109,9 +65,52 @@ const SignInWithSocial = () => {
               </span>
             )}
           </button>
+          {/* Sign in with Facebook */}
+          <button
+            onClick={() => handleOAuthLogin(facebookProvider, "facebook")}
+            className="sign-in-social-media-deatails"
+            disabled={loadingProvider === "facebook"}
+            style={buttonStyles}
+          >
+            {loadingProvider === "facebook" ? (
+              <ImSpinner3 className="spin-icon " />
+            ) : (
+              <span className="social-icon-img" style={iconContainerStyles}>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <mask
+                    id="mask0_330_7255"
+                    style={{ maskType: "alpha" }}
+                    maskUnits="userSpaceOnUse"
+                    x="0"
+                    y="0"
+                    width="24"
+                    height="24"
+                  >
+                    <rect width="24" height="24" fill="white" />
+                  </mask>
+                  <g mask="url(#mask0_330_7255)">
+                    <path
+                      d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z"
+                      fill="#1977F3"
+                    />
+                    <path
+                      d="M16.6711 15.4696L17.2027 12H13.8749V9.74884C13.8749 8.80045 14.3389 7.874 15.8307 7.874H17.3444V4.92083C17.3444 4.92083 15.9708 4.68626 14.6579 4.68626C11.9173 4.68626 10.1252 6.34679 10.1252 9.35565V12H7.07751V15.4696H10.1252V23.8549C10.7361 23.9511 11.3621 24 12 24C12.6379 24 13.264 23.9494 13.8749 23.8549V15.4696H16.6711Z"
+                      fill="white"
+                    />
+                  </g>
+                </svg>
+              </span>
+            )}
+          </button>
 
           {/* Sign in with Apple */}
-          <button
+          {/* <button
             onClick={() => handleOAuthLogin(appleProvider, "apple")}
             className="sign-in-social-media-deatails apple-icon"
             disabled={loadingProvider === "apple"}
@@ -148,7 +147,7 @@ const SignInWithSocial = () => {
                 </svg>
               </span>
             )}
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

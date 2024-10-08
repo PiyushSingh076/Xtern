@@ -1,6 +1,9 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import useUserRole from "../hooks/Auth/useUserRole";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebaseConfig";
+import useFetchUserData from "../hooks/Auth/useFetchUserData";
 
 // RoleOption Component: Reusable for each role selection
 const RoleOption = ({ id, label, checked, onChange }) => (
@@ -28,6 +31,24 @@ const RoleOption = ({ id, label, checked, onChange }) => (
 
 const PrimaryGoalScreen = () => {
   const { selectedRole, handleRoleChange, saveRole } = useUserRole(); // Use the hook
+  const [userName, setUserName] = useState(""); // State to store the user's name
+  const navigate = useNavigate();
+  const { userData } = useFetchUserData();
+  console.log("user Data : ", userData);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Check if displayName is available, otherwise fallback to email or "User"
+        const name = user.displayName || user.email || "User";
+        setUserName(name); // Update the state with the name
+      } else {
+        setUserName(""); // Clear the name if the user is not logged in
+        navigate("/signin"); // Redirect to sign-in if not authenticated
+      }
+    });
+
+    return () => unsubscribe(); // Clean up the listener when the component unmounts
+  }, [navigate]);
 
   const roleOptions = [
     { value: "Entrepreneur", label: "I Am Part of a Venture" },
@@ -41,7 +62,7 @@ const PrimaryGoalScreen = () => {
           <div className="top-navbar_full">
             <div className="back-btn">
               <Link
-                to="/preferredlanguage"
+                onClick={() => navigate(-1)}
                 aria-label="Back to Preferred Language Selection"
               >
                 <svg
@@ -88,13 +109,15 @@ const PrimaryGoalScreen = () => {
       <section id="primary_goal">
         <div className="container">
           <div className="primary_goal-wrap mt-32">
-            <div className="goal-title mt-32">
+            {/* <div className="goal-title mt-32">
               <p>Select Your Role in Xtern</p>
-            </div>
+            </div> */}
 
             <form className="primary-form mt-32">
               <fieldset>
-                <legend className="sr-only">Select your role in Xtern</legend>
+                <legend className="sr-only">
+                  Hey <b>{userName} </b> , Select your role in Xtern
+                </legend>
                 {roleOptions.map((option) => (
                   <RoleOption
                     key={option.value}

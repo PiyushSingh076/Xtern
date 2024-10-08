@@ -1,51 +1,67 @@
 import { useState } from "react";
 import { signInWithPopup } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { auth, db } from "../../firebaseConfig";
 
 const useOAuthLogin = () => {
-  const [loadingProvider, setLoadingProvider] = useState(null); // Track loading per provider
+  const [loadingProvider, setLoadingProvider] = useState(null);
   const navigate = useNavigate();
 
   const handleOAuthLogin = async (provider, providerName) => {
-    setLoadingProvider(providerName); // Set loading state for the specific provider
+    setLoadingProvider(providerName);
     try {
+      // Sign in with the selected provider
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Check if the user already exists in Firestore
+      // Reference to the user's document in Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
-        // If user already exists, redirect them to the home screen
-        toast.success("Welcome back!", { position: "bottom-left" });
-        navigate("/homescreen");
+        const userData = userDoc.data();
+
+        // Check if the phone number is verified
+        if (!userData.phone_number || !userData.isPhoneVerified) {
+          toast("Please verify your phone number", { position: "bottom-left" });
+          navigate("/verifyscreen");
+        } else if (!userData.typeUser) {
+          navigate("/roleselect");
+        } else if (userData.typeUser === "entrepreneur") {
+          toast.success("Welcome back, Entrepreneur!", {
+            position: "bottom-left",
+          });
+          navigate("/homescreen");
+        } else if (userData.typeUser === "Intern") {
+          if (!userData.skillSet || userData.skillSet.length === 0) {
+            navigate("/select-skills");
+          } else {
+            navigate("/homescreen");
+          }
+        }
       } else {
-        // If user doesn't exist, store user data and navigate to verification screen
-        const userData = {
+        // Create a new user document if it doesn't exist
+        const newUserData = {
           uid: user.uid,
-          display_name: user.displayName,
+          display_name: user.displayName || "User",
           email: user.email,
           profilePicture: user.photoURL,
-          provider: user.providerData[0].providerId,
+          provider: user.providerData[0]?.providerId,
           lastLogin: new Date(),
+          isPhoneVerified: false, // Set phone verification flag to false initially
         };
-
-        // Store user data in Firestore
-        await setDoc(userDocRef, userData);
-        sessionStorage.setItem('uid', userData.uid)
+        await setDoc(userDocRef, newUserData);
+        sessionStorage.setItem("uid", newUserData.uid);
         toast.success("Verification Successful", { position: "bottom-left" });
-        // navigate("/verifyscreen");
-        navigate("/preferredlanguage");
+        navigate("/verifyscreen");
       }
     } catch (error) {
-      console.error("Error during sign-in", error);
+      console.error("Error during sign-in:", error);
       toast.error("Sign-in failed", { position: "bottom-left" });
     } finally {
-      setLoadingProvider(null); // Reset the loading state after completion
+      setLoadingProvider(null);
     }
   };
 

@@ -88,7 +88,14 @@ function App() {
           path={ROUTES.RESET_PASSWORD_SCREEN}
           element={<ResetPasswordScreen />}
         />
-        <Route path={ROUTES.VERIFY_SCREEN} element={<VerifyScreen />} />
+        <Route
+          path={ROUTES.VERIFY_SCREEN}
+          element={
+            <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
+              <VerifyScreen />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected Routes */}
         <Route
@@ -99,14 +106,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path={ROUTES.PREFERRED_LANGUAGE}
           element={
             <ProtectedRoute>
               <PreferredLanguage />
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path={ROUTES.CREATE_JOB}
           element={
@@ -118,7 +125,7 @@ function App() {
         <Route
           path={ROUTES.PRIMARY_GOAL_SCREEN}
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
               <PrimaryGoalScreen />
             </ProtectedRoute>
           }
@@ -134,7 +141,7 @@ function App() {
         <Route
           path={ROUTES.INTEREST_SCREEN}
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Intern"]}>
               <SelectSkills />
             </ProtectedRoute>
           }
@@ -150,7 +157,7 @@ function App() {
         <Route
           path={ROUTES.HOME_SCREEN}
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
               <HomeScreen />
             </ProtectedRoute>
           }

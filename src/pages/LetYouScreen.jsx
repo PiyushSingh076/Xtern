@@ -1,22 +1,39 @@
-import React from "react";
-import { Link } from "react-router-dom";
-// import LetYouImg from "../assets/images/let-you-screen/let-you-img.png";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import LetYouImg from "../assets/svg/letyouin.svg";
 
 import Footer from "../components/Footer";
-import {
-  googleProvider,
-  facebookProvider,
-  appleProvider,
-} from "../firebaseConfig"; // Import Firebase setup
+import { googleProvider, facebookProvider } from "../firebaseConfig"; // Import Firebase setup
 import useOAuthLogin from "../hooks/Auth/useOAuthLogin";
+import { ROUTES } from "../constants/routes";
+import useFetchUserData from "../hooks/Auth/useFetchUserData";
+import Loading from "../components/Loading";
 
 const LetYouScreen = () => {
   const { handleOAuthLogin, loadingProvider } = useOAuthLogin();
+  const navigate = useNavigate();
+  const { userData, loading, error } = useFetchUserData();
+
+  // Redirect if phone is verified
+  useEffect(() => {
+    if (userData?.isPhoneVerified) {
+      navigate(ROUTES.VERIFY_SCREEN); // Redirect to verify screen
+    }
+  }, [userData, navigate]);
+
+  // Show loading state while fetching user data
+  if (loading) {
+    return <Loading />; // You can replace this with a loading spinner if needed
+  }
+
+  // Handle error case if user data fails to load
+  if (error) {
+    return <p>Error fetching user data: {error.message}</p>;
+  }
 
   return (
     <>
-      <header id="let-you-screen">
+      {/* <header id="let-you-screen">
         <div className="container">
           <div className="let-yoy-page-section-full pt-30">
             <div className="back-btn-page">
@@ -53,7 +70,7 @@ const LetYouScreen = () => {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       <section id="let-you-screen-content">
         <div className="container">
@@ -160,51 +177,32 @@ const LetYouScreen = () => {
                 </span>
               </button>
 
-              {/* Continue with Apple */}
-              <button
-                onClick={() => handleOAuthLogin(appleProvider, "apple")}
-                className="social-icon mt-12 social-links"
-                disabled={loadingProvider === "apple"}
+              {/* <button
+                onClick={() => navigate(ROUTES.VERIFY_SCREEN)}
+                className="social-icon mt-12 social-links "
               >
                 <span className="social-icon-img apple-icon">
                   <svg
+                    xmlns="http://www.w3.org/2000/svg"
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
                     fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <mask
-                      id="mask0_330_7241"
-                      style={{ maskType: "alpha" }}
-                      maskUnits="userSpaceOnUse"
-                      x="0"
-                      y="0"
-                      width="24"
-                      height="24"
-                    >
-                      <rect width="24" height="24" fill="white" />
-                    </mask>
-                    <g mask="url(#mask0_330_7241)">
-                      <path
-                        d="M20.9144 8.1816C20.7752 8.2896 18.3176 9.6744 18.3176 12.7536C18.3176 16.3152 21.4448 17.5752 21.5384 17.6064C21.524 17.6832 21.0416 19.332 19.8896 21.012C18.8624 22.4904 17.7896 23.9664 16.1576 23.9664C14.5256 23.9664 14.1056 23.0184 12.2216 23.0184C10.3856 23.0184 9.7328 23.9976 8.24 23.9976C6.7472 23.9976 5.7056 22.6296 4.508 20.9496C3.1208 18.9768 2 15.912 2 13.0032C2 8.3376 5.0336 5.8632 8.0192 5.8632C9.6056 5.8632 10.928 6.9048 11.924 6.9048C12.872 6.9048 14.3504 5.8008 16.1552 5.8008C16.8392 5.8008 19.2968 5.8632 20.9144 8.1816ZM15.2984 3.8256C16.0448 2.94 16.5728 1.7112 16.5728 0.4824C16.5728 0.312 16.5584 0.1392 16.5272 0C15.3128 0.0456 13.868 0.8088 12.9968 1.8192C12.3128 2.5968 11.6744 3.8256 11.6744 5.0712C11.6744 5.2584 11.7056 5.4456 11.72 5.5056C11.7968 5.52 11.9216 5.5368 12.0464 5.5368C13.136 5.5368 14.5064 4.8072 15.2984 3.8256Z"
-                        fill="white"
-                      />
-                    </g>
+                    <path
+                      d="M22 16.92v3.67a2.24 2.24 0 0 1-2.42 2.24A21.94 21.94 0 0 1 2.5 3.42 2.24 2.24 0 0 1 4.72 1h3.68A2.25 2.25 0 0 1 10.65 3.12c.23 1.43.7 2.8 1.34 4.04a2.25 2.25 0 0 1-.51 2.51l-1.55 1.55a17.08 17.08 0 0 0 7.24 7.24l1.55-1.55a2.25 2.25 0 0 1 2.51-.51c1.24.64 2.6 1.11 4.04 1.34a2.25 2.25 0 0 1 2.12 2.29Z"
+                      fill="white"
+                    />
                   </svg>
                 </span>
-                <span className="social-txt">
-                  {loadingProvider === "apple"
-                    ? "Loading..."
-                    : "Continue with Apple"}
-                </span>
-              </button>
+                <span className="social-txt">Continue with Mobile</span>
+              </button> */}
             </div>
 
-            <div className="or-section mt-24">
+            <div className="or-section mt-2">
               <p>or</p>
             </div>
-            <div className="sign-in-password-btn mt-24">
+            <div className="sign-in-password-btn mt-2">
               <Link to="/signin">Sign In with Password</Link>
             </div>
           </div>

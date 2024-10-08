@@ -454,7 +454,7 @@ const SingleJobDescription = () => {
           </div>
 
           <div className="buy-now-description text-center mt-4">
-            {userData.typeUser === "Intern " ? (
+            {userData?.typeUser === "Intern " ? (
               <Link
                 to={`/applyinternship/${internshipId}`}
                 className="btn btn-primary btn-lg"

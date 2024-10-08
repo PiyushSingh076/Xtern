@@ -113,8 +113,7 @@ const Profile = () => {
             <div className="profile-first">
               <div className="profile-edit-img">
                 <img
-                  // src={userData.profilePicture || ProfileImg}
-                  src={ProfileImg}
+                  src={userData?.profilePicture || ProfileImg}
                   alt={userData?.display_name || "profile image"}
                 />
                 <div className="image-input">
