@@ -1,8 +1,29 @@
 import { Route, Routes, useLocation } from "react-router-dom";
+
 import "./assets/css/style.css";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+
 import "./assets/css/media-query.css";
 import { ROUTES } from "./constants/routes"; // Import the route constants
+
+
+//  Desktop View
+
+import DesktopHomeScreen  from './pages/Desktop/HomeScreen/index';
+import Header from "./pages/Desktop/Header/Header";
+import DesktopProjectDetails from "./pages/Desktop/ProjectDetail";
+import DesktopCreateProject from "./pages/Desktop/ProjectDetail/ApplyProject";
+import DesktopProfile from './pages/Desktop/Profile/index.jsx'
+import DesktopWallet from './pages/Desktop/Profile/Wallet'
+
+
+
+
+
+
+
+// Mobile View
+
 import LetYouScreen from "./pages/LetYouScreen";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
@@ -61,9 +82,27 @@ import ApplyInternship from "./pages/ApplyInternship";
 import CreateProject from "./pages/CreateProject";
 import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
+import { useEffect, useState } from "react";
 
 function App() {
   const location = useLocation(); // Get the current location
+ 
+
+const [isMobileView, setIsMobileView] = useState(false);
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobileView(window.innerWidth <= 768); 
+  };
+
+
+  handleResize();
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
 
   // Define the pages where BottomNavigation is needed
   const pagesWithBottomNavigation = [
@@ -76,6 +115,12 @@ function App() {
 
   return (
     <div className="App">
+  { !isMobileView
+      &&
+   (<Header />) }
+    
+       
+   
       <Toaster />
       <Routes>
         {/* Public Routes */}
@@ -158,7 +203,7 @@ function App() {
           path={ROUTES.HOME_SCREEN}
           element={
             <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
-              <HomeScreen />
+             {isMobileView ? <HomeScreen /> : <DesktopHomeScreen/>}
             </ProtectedRoute>
           }
         />
@@ -190,7 +235,7 @@ function App() {
           path={ROUTES.CREATE_PROJECT}
           element={
             <ProtectedRoute>
-              <CreateProject />
+      {isMobileView ?        <CreateProject /> : ''}
             </ProtectedRoute>
           }
         />
@@ -198,7 +243,7 @@ function App() {
           path={ROUTES.SINGLE_COURSE_DESCRIPTION + "/:projectId"}
           element={
             <ProtectedRoute>
-              <ProjectDetails />
+         {isMobileView ?     <ProjectDetails /> : <DesktopProjectDetails/>}
             </ProtectedRoute>
           }
         />
@@ -206,7 +251,7 @@ function App() {
           path={ROUTES.APPLY_PROJECT + "/:projectId"}
           element={
             <ProtectedRoute>
-              <ApplyProject />
+            {isMobileView ?  <ApplyProject /> : <DesktopCreateProject/>}
             </ProtectedRoute>
           }
         />
@@ -342,7 +387,7 @@ function App() {
           path={ROUTES.PROFILE}
           element={
             <ProtectedRoute>
-              <Profile />
+      {isMobileView ?        <Profile /> : <DesktopProfile/>}
             </ProtectedRoute>
           }
         />
@@ -374,7 +419,7 @@ function App() {
           path={ROUTES.WALLET_SCREEN}
           element={
             <ProtectedRoute>
-              <WalletScreen />
+           {isMobileView ?    <WalletScreen />  : <DesktopWallet/>}
             </ProtectedRoute>
           }
         />
@@ -480,9 +525,10 @@ function App() {
       </Routes>
 
       {/* Conditionally render BottomNavigation based on the current path */}
-      {pagesWithBottomNavigation.includes(location.pathname) && (
+      {pagesWithBottomNavigation.includes(location.pathname)&& isMobileView && (
         <BottomNavigation />
       )}
+    
     </div>
   );
 }

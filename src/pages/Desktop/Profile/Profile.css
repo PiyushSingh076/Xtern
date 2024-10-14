@@ -1,0 +1,21 @@
+.des-profile-container{
+    margin-top: 50px;
+    width: 70%;
+}
+
+#profile-screen{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.des-profile-details{
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+ 
+    h1{ 
+        font-size: 24px;
+        
+    }
+}

@@ -1,0 +1,73 @@
+.des-project-detail-container{
+    margin-top: 100px;
+  
+  }
+.des-buy-now-description{
+    box-shadow: none;
+    position: initial;
+    margin-top: 20px;
+    background-color: #024CAA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+}
+
+.buy-now{
+    text-decoration: none;
+    color: white;
+}
+
+.des-first-desc-img-sec{
+    display: flex;
+    flex-direction: row;
+
+}
+
+.des-img-fluid{
+    margin-left: 50px;
+    margin-right: 100px;
+}
+
+.desc-container{
+    width: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.apply-project-conatainer{
+    margin-top: 100px;
+    display: flex;
+    flex-direction: row;
+   
+}
+
+.des-steps-section{
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    height: 390px;
+
+
+}
+
+.skill-project-section{
+    flex: 1.2;
+    
+}
+
+.submit-btn{
+    width: 150px;
+    height: 50px;
+    background-color: #024CAA;
+    border-radius: 10px;
+    color: white;
+    border: none;
+   
+
+}

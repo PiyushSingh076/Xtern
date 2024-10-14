@@ -1,24 +1,14 @@
 import React, { useEffect, useState } from "react";
-import PlusIcon from "../assets/images/checkout-screen/plus-icon.svg";
+import PlusIcon from "../../../../assets/images/checkout-screen/plus-icon.svg";
 import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
-import Loading from "../components/Loading";
+import Loading from "../../../../components/Loading";
+import './Wallet.css'
 
 const WallletScreen = () => {
-  const [isMobileView, setIsMobileView] = useState(false);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobileView(window.innerWidth <= 768); 
-    };
-  
-  
-    handleResize();
-  
-    window.addEventListener("resize", handleResize);
-  
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+
+
 
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(true);
@@ -58,7 +48,7 @@ const WallletScreen = () => {
       {/* <!-- Header end --> */}
       {/* <!-- Wallet screen start --> */}
       <section id="wallet-screen">
-        <div className="container">
+        <div className="des-wallet-container">
           <div className="wallet-screen-wrap">
             <div className="wallet-first mt-32">
               <div className="wallet-first-content">
@@ -66,6 +56,7 @@ const WallletScreen = () => {
                   <h1 className="wallet-title">Wallet</h1>
                 </div>
                 <div className="wallet-price">
+                  <span>Balance:</span>
                   <p className="wallet-price1">$220.50</p>
                 </div>
               </div>
@@ -128,7 +119,7 @@ const WallletScreen = () => {
           </div>
         </div>
         <div className="checkout-screen-content">
-          <div className="container">
+          <div className="des-wallet-container">
             <div className="review-first-sec-wrap mt-32">
               <div className="overall-review">
                 <p className="wallet-screen-name">Select Payment Method</p>

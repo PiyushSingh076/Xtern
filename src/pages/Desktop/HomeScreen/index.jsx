@@ -1,40 +1,184 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import Slider from "react-slick";
+import './HomeScreen.css'
+import banner from '../../../assets/images/banner/banner.png'
+import RightArrow from "../../../assets/svg/right-arrow.svg";
+import CategoryImg1 from "../../../assets/images/category/category1.png";
+import CategoryImg2 from "../../../assets/images/category/category2.png";
+import CategoryImg3 from "../../../assets/images/category/category3.png";
+import CourseImg1 from "../../../assets/images/trending-course/course1.png";
+import CourseImg2 from "../../../assets/images/trending-course/course2.png";
+import CourseImg3 from "../../../assets/images/homescreen/course3.png";
+import CourseImg4 from "../../../assets/images/homescreen/course4.png";
+import CourseImg5 from "../../../assets/images/homescreen/course5.png";
+import CourseImg6 from "../../../assets/images/homescreen/course6.png";
+import CourseImg7 from "../../../assets/images/homescreen/course7.png";
+import OrangeStar from "../../../assets/images/result-found/orange-star.svg";
+import BookmarkSvg from "../../../assets/svg/black-bookmark.svg";
+import BookmarkUnfillSvg from "../../../assets/images/single-courses/bookmark-unfill.svg";
+import FillStar from "../../../assets/images/single-courses/orange-fill-star.svg";
+import Mentor1 from "../../../assets/images/homescreen/mentor1.png";
+import Mentor2 from "../../../assets/images/homescreen/mentor2.png";
+import Mentor3 from "../../../assets/images/homescreen/mentor3.png";
+import Mentor4 from "../../../assets/images/homescreen/mentor4.png";
+import ReleaseImg1 from "../../../assets/images/homescreen/release1.png";
+import ReleaseImg2 from "../../../assets/images/homescreen/release2.png";
+import ReleaseImg3 from "../../../assets/images/homescreen/release3.png";
+import GreayTimeIcon from "../../../assets/images/result-found/grey-time-icon.svg";
+import GurujiLogo from "../../../assets/images/logo/logo.png";
+import CloseIcon from "../../../assets/svg/close-line.svg";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Link } from "react-router-dom";
-import ProfileImg from "../assets/images/courses/profile-img.png";
-import CloseIcon from "../assets/svg/close-line.svg";
-import Loading from "../components/Loading";
-import DarkLightmode from "../components/DarkLightMode";
-import useFetchUserData from "../hooks/Auth/useFetchUserData";
+//import Loading from "../../../components/Loading";
+import DarkLightmode from "../../../components/DarkLightMode";
+import useFetchFilteredJobs from "../../../hooks/Auth/useFetchFilteredJobs";
+import useFetchUserSkills from "../../../hooks/Auth/useFetchUserSkills";
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
+import useFetchRealWorldTasks from "../../../hooks/Auth/useFetchRealWorldTasks";
+import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
+import Header from "../Header/Header";
+const HomeScreen = () => {
+  const [isFixed, setIsFixed] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkedTasks, setBookmarkedTasks] = useState([]);
+  const [activeSkill, setActiveSkill] = useState(null);
+  const {
+    realWorldTasks,
+    loading: rwtloading,
+    error: rwterror,
+  } = useFetchRealWorldTasks();
 
-
-const Profile = () => {
   const { userData, loading, error } = useFetchUserData();
-  const [isMobileView, setIsMobileView] = useState(false);
 
-useEffect(() => {
-  const handleResize = () => {
-    setIsMobileView(window.innerWidth <= 768); 
+  const { userSkills } = useFetchUserSkills() || [];
+  const { handleLogout, loading: logoutloading } = useOAuthLogout(); // Use the logout hook
+
+  const filteredJobs = useFetchFilteredJobs(userSkills, activeSkill);
+  console.log("filteredJobs", filteredJobs);
+
+  const handleSkillClick = useCallback(
+    (skill) => {
+      if (skill !== activeSkill) {
+        setActiveSkill(skill); // Only update state if the skill changes
+      }
+    },
+    [activeSkill]
+  );
+
+  // Handle click for "All" to reset skill filter
+  const handleAllClick = () => {
+    setActiveSkill(null);
   };
 
+  const toggleBookmark = (taskId) => {
+    setBookmarkedTasks((prevState) =>
+      prevState.includes(taskId)
+        ? prevState.filter((id) => id !== taskId)
+        : [...prevState, taskId]
+    );
+  };
 
-  handleResize();
+  const settings = {
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    swipeToSlide: true,
+    infinite: true,
+    variableWidth: true,
+    autoplaySpeed: 2000,
+    dots: true,
+    arrows: false,
+  };
 
-  window.addEventListener("resize", handleResize);
+  const CompanySettings = {
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    swipeToSlide: true,
+    infinite: true,
+    variableWidth: true,
+    autoplaySpeed: 2000,
+    dots: false,
+    arrows: false,
+  };
 
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
+  const settingsNew = {
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    autoplay: true,
+    swipeToSlide: true,
+    infinite: true,
+    variableWidth: true,
+    autoplaySpeed: 1500,
+    dots: false,
+    arrows: false,
+  };
 
-  if (loading) {
-    return <Loading />;
-  }
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY >= 20) {
+        setIsFixed(true);
+      } else {
+        setIsFixed(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   setTimeout(() => setLoading(false), 500); // Simulate loading time
+  // }, []);
+
+  // if (loading) {
+  //   return <Loading />;
+  // }
   return (
-    <>
+    <div className="homescreen-container">
       {/* <!-- Header start --> */}
-  {isMobileView &&    <header id="top-navbar" className="top-navbar">
-        <div className="container">
-          <div className="top-navbar_full">
-            <div className="back-btn">
-              <a href="#offcanvasExample" data-bs-toggle="offcanvas">
+ 
+      {/* <!-- Header end --> */}
+      {/* <!-- Homescreen content start --> */}
+      <section id="homescreen">
+        <div className="des-home-first-sec mt-32">
+          <div className="container">
+            <div className="home-first-sec-wrap">
+              <h1>Hey, {userData?.display_name || "User"}</h1>
+
+              <p className="mt-8">Find the Match you want </p>
+            </div>
+            <div className="serachbar-homepage2 mt-24">
+              {/* <div className="input-group search-page-searchbar ">
+                <span className="input-group-text search-iconn">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10.9395 1.9313C5.98074 1.9313 1.94141 5.97063 1.94141 10.9294C1.94141 15.8881 5.98074 19.9353 10.9395 19.9353C13.0575 19.9353 15.0054 19.193 16.5449 17.9606L20.293 21.7067C20.4821 21.888 20.7347 21.988 20.9967 21.9854C21.2587 21.9827 21.5093 21.8775 21.6947 21.6924C21.8801 21.5073 21.9856 21.2569 21.9886 20.9949C21.9917 20.7329 21.892 20.4802 21.7109 20.2908L17.9629 16.5427C19.1963 15.0008 19.9395 13.0498 19.9395 10.9294C19.9395 5.97063 15.8982 1.9313 10.9395 1.9313ZM10.9395 3.93134C14.8173 3.93134 17.9375 7.05153 17.9375 10.9294C17.9375 14.8072 14.8173 17.9352 10.9395 17.9352C7.06162 17.9352 3.94141 14.8072 3.94141 10.9294C3.94141 7.05153 7.06162 3.93134 10.9395 3.93134Z"
+                      fill="white"
+                    ></path>
+                  </svg>
+                </span>
+                <input
+                  type="search"
+                  placeholder="Search Here"
+                  className="form-control search-text-result"
+                  id="search-input"
+                />
+              </div> */}
+              <button className="close-btn">
                 <svg
                   width="24"
                   height="24"
@@ -43,7 +187,7 @@ useEffect(() => {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <mask
-                    id="mask0_230_107"
+                    id="mask0_210_244"
                     style={{ maskType: "alpha" }}
                     maskUnits="userSpaceOnUse"
                     x="0"
@@ -51,491 +195,657 @@ useEffect(() => {
                     width="24"
                     height="24"
                   >
-                    <rect width="24" height="24" fill="white"></rect>
+                    <rect width="24" height="24" fill="white" />
                   </mask>
-                  <g mask="url(#mask0_230_107)">
+                  <g mask="url(#mask0_210_244)">
                     <path
-                      d="M19 6.87301C19.3062 7.04981 19.5601 7.30464 19.7358 7.61153C19.9115 7.91843 20.0026 8.26641 20 8.62001V15.156C19.9999 15.5127 19.9045 15.8628 19.7235 16.1701C19.5426 16.4775 19.2828 16.7309 18.971 16.904L12.971 20.737C12.674 20.902 12.3398 20.9885 12 20.9885C11.6602 20.9885 11.326 20.902 11.029 20.737L5.029 16.904C4.71736 16.7309 4.45763 16.4777 4.27671 16.1706C4.0958 15.8634 4.00026 15.5135 4 15.157V8.62001C4.00008 8.26337 4.09553 7.91323 4.27646 7.60589C4.45739 7.29854 4.71721 7.04516 5.029 6.87201L11.029 3.30001C11.3348 3.12978 11.679 3.04044 12.029 3.04044C12.379 3.04044 12.7232 3.12978 13.029 3.30001L19.029 6.87301H19V6.87301Z"
-                      stroke="black"
+                      d="M14 8C15.1046 8 16 7.10457 16 6C16 4.89543 15.1046 4 14 4C12.8954 4 12 4.89543 12 6C12 7.10457 12.8954 8 14 8Z"
+                      stroke="#F97316"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                    ></path>
+                    />
                     <path
-                      d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
-                      stroke="black"
+                      d="M4 6H12"
+                      stroke="#F97316"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                    ></path>
+                    />
+                    <path
+                      d="M16 6H20"
+                      stroke="#F97316"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M8 14C9.10457 14 10 13.1046 10 12C10 10.8954 9.10457 10 8 10C6.89543 10 6 10.8954 6 12C6 13.1046 6.89543 14 8 14Z"
+                      stroke="#F97316"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M4 12H6"
+                      stroke="#F97316"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M10 12H20"
+                      stroke="#F97316"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M17 20C18.1046 20 19 19.1046 19 18C19 16.8954 18.1046 16 17 16C15.8954 16 15 16.8954 15 18C15 19.1046 15.8954 20 17 20Z"
+                      stroke="#F97316"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M4 18H15"
+                      stroke="#F97316"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M19 18H20"
+                      stroke="#F97316"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </g>
                 </svg>
-              </a>
+              </button>
             </div>
-            <div className="top-navbar-title">
-              <p>Profile</p>
+          </div>
+        </div>
+        <div className="home-offer-sec mt-32">
+          <div className="container">
+            <div
+              id="carouselExampleIndicators"
+              className="carousel slide carousel slide-shop-now2"
+              data-bs-ride="carousel"
+            >
+             
+              {/* <div className="carousel-inner">
+                <div className="carousel-item active">
+                  <div className="shop-now2-sec">
+                    <div className="offer-details">
+                      <div className="offer-details-wrap">
+                        <div className="offer-price">
+                          <p>40% OFF</p>
+                          <h2 className="mt-12">Today’s Special</h2>
+                        </div>
+                        <div className="home1-shop-now-btn">
+                          <p>USE CODE G40</p>
+                        </div>
+                      </div>
+                      <div className="discount-txt mt-16">
+                        <p>
+                          Get a discount for every course order! Only valid for
+                          today!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="carousel-item">
+                  <div className="shop-now2-sec">
+                    <div className="offer-details">
+                      <div className="offer-details-wrap">
+                        <div className="offer-price">
+                          <p>40% OFF</p>
+                          <h2 className="mt-12">Today’s Special</h2>
+                        </div>
+                        <div className="home1-shop-now-btn">
+                          <p>USE CODE G40</p>
+                        </div>
+                      </div>
+                      <div className="discount-txt mt-16">
+                        <p>
+                          Get a discount for every course order! Only valid for
+                          today!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="carousel-item">
+                  <div className="shop-now2-sec">
+                    <div className="offer-details">
+                      <div className="offer-details-wrap">
+                        <div className="offer-price">
+                          <p>40% OFF</p>
+                          <h2 className="mt-12">Today’s Special</h2>
+                        </div>
+                        <div className="home1-shop-now-btn">
+                          <p>USE CODE G40</p>
+                        </div>
+                      </div>
+                      <div className="discount-txt mt-16">
+                        <p>
+                          Get a discount for every course order! Only valid for
+                          today!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> */}
+            
+
+             
+            <div className="promotion-banner-slider">
+ 
+        {
+          [1, 2, 3].map((item) => (
+            <div key={item}>
+              <img className="promotion-banner" src={banner} alt={`Banner ${item}`} width="400px" />
             </div>
-            <div className="skip-btn-goal">
-              <Link to="/notification">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+          ))
+        }
+     
+    </div>
+            
+
+
+            </div>
+          </div>
+        </div>
+
+        <div className="home-release mt-32">
+          <div className="home-category-wrap container">
+            <div className="homescreen-second-wrapper-top">
+              <div className="categories-first">
+                <h2 className="home1-txt3">🙌 Real World Projects</h2>
+              </div>
+              <div className="view-all-second">
+                <Link to="/all-projects">
+                  <p className="see-all-txt">
+                    See all
+                    <span>
+                      <img src={RightArrow} alt="right-arrow" />
+                    </span>
+                  </p>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div className="home-release-bottom-sec mt-16">
+            <Slider {...settingsNew}>
+              {realWorldTasks.map((task) => (
+                <div className="new-courses-sec" key={task.id}>
+                  <div className="new-courses">
+                    <Link to={`/project/${task.id}`}>
+                      <img
+                       width={'100px'}
+                       height={'200px'}
+                        src={task.imageUrl || ReleaseImg2}
+                        alt="course-img"
+                      />
+                    </Link>
+                    <div className="trending-bookmark">
+                      <a
+                        role="button"
+                        className={`item-bookmark ${
+                          bookmarkedTasks.includes(task.id) ? "active" : ""
+                        }`}
+                        onClick={() => toggleBookmark(task.id)}
+                        tabIndex="0"
+                        aria-label="Bookmark"
+                      >
+                        <img src={BookmarkSvg} alt="bookmark-icon" />
+                      </a>
+                    </div>
+                    {/* {task.category && ( */}
+                    <div className="new-courses-txt">
+                      <p>{task.category || "Web Dev"}</p>
+                    </div>
+                    {/* )} */}
+                  </div>
+                  <div className="trending-course-bottom mt-12">
+                    <div>
+                      <p className="new-courses-txt1">
+                        {task.title || "Untitled Task"}
+                      </p>
+                    </div>
+                    <div className="trending-course-price">
+                      <div>
+                        <span className="new-courses-txt3">
+                          ${task.price || "10.00"}
+                        </span>
+                      </div>
+                      {/* {task.duration && ( */}
+                      <div>
+                        <span className="new-courses-txt4">
+                          <img src={GreayTimeIcon} alt="time-icon" />
+                        </span>
+                        <span className="new-courses-txt5">
+                          {task.duration || "5h 20m"}
+                        </span>
+                      </div>
+                      {/* )} */}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
+          </div>
+        </div>
+
+        <div className="home-course mt-32">
+          <div className="home-course-wrapper-top">
+            <div className="container">
+              <div className="categories-first">
+                <h2 className="home1-txt3">🧿 All Internships</h2>
+              </div>
+            </div>
+          </div>
+          <div className="home-course-wrapper-bottom mt-16">
+            <div className="home-course-wrapper-bottom-full">
+              <ul className="nav nav-pills" id="homepage1-tab" role="tablist">
+                <li className="nav-item" role="presentation">
+                  <button
+                    className={`nav-link ${
+                      activeSkill === null ? "active" : ""
+                    } custom-home1-tab-btn`}
+                    id="pills-all-tab"
+                    data-bs-toggle="pill"
+                    data-bs-target="#pills-all"
+                    type="button"
+                    role="tab"
+                    aria-selected={activeSkill === null ? "true" : "false"}
+                    onClick={handleAllClick} // Reset filter to show all jobs when "All" is clicked
+                  >
+                    All
+                  </button>
+                </li>
+
+                {userSkills?.map((skill, index) => (
+                  <li className="nav-item" role="presentation" key={index}>
+                    <button
+                      id={`pills-skill-${skill}`}
+                      className={`nav-link custom-home1-tab-btn ${
+                        activeSkill === skill ? "active" : ""
+                      }`}
+                      type="button"
+                      onClick={() => handleSkillClick(skill)}
+                      title={skill} // Tooltip showing the full skill name
+                    >
+                      {`${
+                        skill.length > 12 ? skill.slice(0, 12) + "..." : skill
+                      }`}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="tab-content" id="pills-tabContent">
+                <div
+                  className="tab-pane show active"
+                  id="pills-all"
+                  role="tabpanel"
+                  tabIndex="0"
                 >
-                  <mask
-                    id="mask0_230_100"
-                    style={{ maskType: "alpha" }}
-                    maskUnits="userSpaceOnUse"
-                    x="0"
-                    y="0"
-                    width="24"
-                    height="24"
-                  >
-                    <rect width="24" height="24" fill="white"></rect>
-                  </mask>
-                  <g mask="url(#mask0_230_100)">
-                    <path
-                      d="M10 5C10 4.46957 10.2107 3.96086 10.5858 3.58579C10.9609 3.21071 11.4696 3 12 3C12.5304 3 13.0391 3.21071 13.4142 3.58579C13.7893 3.96086 14 4.46957 14 5C15.1484 5.54303 16.1274 6.38833 16.8321 7.4453C17.5367 8.50227 17.9404 9.73107 18 11V14C18.0753 14.6217 18.2954 15.2171 18.6428 15.7381C18.9902 16.2592 19.4551 16.6914 20 17H4C4.54494 16.6914 5.00981 16.2592 5.35719 15.7381C5.70457 15.2171 5.92474 14.6217 6 14V11C6.05956 9.73107 6.4633 8.50227 7.16795 7.4453C7.8726 6.38833 8.85159 5.54303 10 5"
-                      stroke="black"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                    <path
-                      d="M9 17V18C9 18.7956 9.31607 19.5587 9.87868 20.1213C10.4413 20.6839 11.2044 21 12 21C12.7956 21 13.5587 20.6839 14.1213 20.1213C14.6839 19.5587 15 18.7956 15 18V17"
-                      stroke="black"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                  </g>
-                  <circle cx="18" cy="6" r="4" fill="#F97316"></circle>
-                </svg>
+                  <div className="container">
+                    {filteredJobs.length > 0 ? (
+                      filteredJobs.map((job, index) => (
+                        <div
+                          className="result-found-bottom-wrap mt-16 single-course"
+                          key={job.id}
+                        >
+                          <div className="result-img-sec">
+                            <img
+                              className="img-fluid"
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                objectFit: "cover",
+                              }}
+                              src={job?.image || CourseImg3}
+                              alt={job.title}
+                            />
+                          </div>
+                          <div className="result-content-sec">
+                            <div className="result-content-sec-wrap">
+                              <div className="content-first">
+                                <div className="result-bottom-txt">
+                                  <p>{job.companyName || "Category"}</p>
+                                </div>
+                                <div className="result-bookmark">
+                                  <a
+                                    href="#"
+                                    className={`item-bookmark ${
+                                      isBookmarked ? "active" : ""
+                                    }`}
+                                    onClick={toggleBookmark}
+                                    tabIndex="0"
+                                  >
+                                    <img
+                                      src={BookmarkUnfillSvg}
+                                      alt="bookmark-icon"
+                                    />
+                                  </a>
+                                </div>
+                              </div>
+                              <Link to={`/internship/${job.id}`}>
+                                <div className="content-second mt-12">
+                                  <h2>{job.title}</h2>
+                                </div>
+                              </Link>
+                              <div className="content-third mt-12">
+                                <div>
+                                  <p className="result-price">
+                                    {job.location ? `$${job.location}` : "N/A"}
+                                  </p>
+                                </div>
+                                <div className="result-time-sec">
+                                  <div>
+                                    <img src={GreayTimeIcon} alt="time-icon" />
+                                  </div>
+                                  <div className="result-time">
+                                    {job?.assessmentDuration || "N/A"}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="content-fourth">
+                                <div className="result-rating-sec">
+                                  <div className="result-rating-sec-img">
+                                    <img src={OrangeStar} alt="star-img" />
+                                  </div>
+                                  <div className="result-rating-txt">
+                                    {job?.experienceLevel}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="ps-2 text-danger">No internships found</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="home-mentor mt-32">
+          <div className="home-category-wrap container">
+            <div className="homescreen-second-wrapper-top">
+              <div className="categories-first">
+                <h2 className="home1-txt3">👨‍🏫 Top Companies hiring</h2>
+              </div>
+              {/*<div className="view-all-second">
+                <Link to="/mentor-screen">
+                  <p className="see-all-txt">
+                    See all
+                    <span>
+                      <img src={RightArrow} alt="right-arrow" />
+                    </span>
+                  </p>
+                </Link>
+              </div>*/}
+            </div>
+          </div>
+          <div className="home-mentor-bottom mt-16">
+            <Link to="/single-mentor">
+              <Slider {...CompanySettings}>
+                <div className="home-mentor-sec-wrap redirect-mentor">
+                  <div className="home-mentor-sec">
+                    <div>
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://media.licdn.com/dms/image/v2/D4D0BAQHWliOH_HLw_g/company-logo_200_200/company-logo_200_200/0/1706646202518/s_treasury_logo?e=1735171200&v=beta&t=F970-7FqWdc0Gjp8BOyNRDsNU-jnr_9VRyNRq3-T8HE"
+                        alt="mentor-img"
+                      />
+                    </div>
+                  </div>
+                  <div className="home-mentor-name">
+                    <p>Student Diwan</p>
+                  </div>
+                </div>
+                <div className="home-mentor-sec-wrap redirect-mentor">
+                  <div className="home-mentor-sec">
+                    <div>
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://media.licdn.com/dms/image/v2/D4D0BAQEssJxvVzhW2Q/company-logo_200_200/company-logo_200_200/0/1716271857252/edobo_logo?e=1735171200&v=beta&t=iB0IIYE5FEwVPu5vKYElTPY_p7CXidpow_equn1a-LQ"
+                        alt="mentor-img"
+                      />
+                    </div>
+                  </div>
+                  <div className="home-mentor-name">
+                    <p>Edobo</p>
+                  </div>
+                </div>
+                <div className="home-mentor-sec-wrap redirect-mentor">
+                  <div className="home-mentor-sec">
+                    <div>
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://media.licdn.com/dms/image/v2/C4D0BAQHiNSL4Or29cg/company-logo_200_200/company-logo_200_200/0/1631311446380?e=1735171200&v=beta&t=Za_-RfpybNMYSuC3QtnukL8SarqJJfYbK-h88BjWnDY"
+                        alt="mentor-img"
+                      />
+                    </div>
+                  </div>
+                  <div className="home-mentor-name">
+                    <p>Google</p>
+                  </div>
+                </div>
+                <div className="home-mentor-sec-wrap redirect-mentor">
+                  <div className="home-mentor-sec">
+                    <div>
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://media.licdn.com/dms/image/v2/C560BAQE88xCsONDULQ/company-logo_200_200/company-logo_200_200/0/1630652622688/microsoft_logo?e=1735171200&v=beta&t=MZPfpagCHCoPSFOmDIKwfxa71NKmdKrN4LOgDlNr9tw"
+                        alt="mentor-img"
+                      />
+                    </div>
+                  </div>
+                  <div className="home-mentor-name">
+                    <p>Microsoft</p>
+                  </div>
+                </div>
+              </Slider>
+            </Link>
+          </div>
+        </div>
+
+        <div className="home-category mt-32">
+          <div className="home-category-wrap container">
+            <div className="homescreen-second-wrapper-top">
+              <div className="categories-first">
+                <h2 className="home1-txt3">📙 Concept Quiz</h2>
+              </div>
+              <div className="view-all-second">
+                <Link to="/categoryscreen">
+                  <p className="see-all-txt">
+                    See all
+                    <span>
+                      <img src={RightArrow} alt="right-arrow" />
+                    </span>
+                  </p>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div className="categories-slider mt-16">
+            <Link to="/single-course-description">
+              <Slider {...settings}>
+                <div className="categories-content single-course">
+                  <div>
+                    <img
+                      src={CategoryImg1}
+                      alt="category-img"
+                      className="w-100"
+                    />
+                  </div>
+                  <div className="categories-title">
+                    <h3 className="category-txt1">Business</h3>
+                    <p className="category-txt2">120 Courses</p>
+                  </div>
+                </div>
+                <div className="categories-content single-course">
+                  <div>
+                    <img
+                      src={CategoryImg2}
+                      alt="category-img"
+                      className="w-100"
+                    />
+                  </div>
+                  <div className="categories-title">
+                    <h3 className="category-txt1">Science</h3>
+                    <p className="category-txt2">266 Courses</p>
+                  </div>
+                </div>
+                <div className="categories-content single-course">
+                  <div>
+                    <img
+                      src={CategoryImg3}
+                      alt="category-img"
+                      className="w-100"
+                    />
+                  </div>
+                  <div className="categories-title">
+                    <h3 className="category-txt1">UI/UX Design</h3>
+                    <p className="category-txt2">144 Courses</p>
+                  </div>
+                </div>
+              </Slider>
+            </Link>
+          </div>
+        </div>
+
+        <div className="home-trending-course mt-32">
+          <div className="homescreen-second-wrapper-top container">
+            <div className="categories-first">
+              <h2 className="home1-txt3">🔥 Coding Challenges</h2>
+            </div>
+            <div className="view-all-second">
+              <Link to="/trending-course">
+                <p className="see-all-txt">
+                  See all
+                  <span>
+                    <img src={RightArrow} alt="right-arrow" />
+                  </span>
+                </p>
               </Link>
             </div>
           </div>
-        </div>
-        <div className="navbar-boder"></div>
-      </header>}
-      {/* <!-- Header end --> */}
-
-      {/* <!-- Profile screen content start --> */}
-      <section id="profile-screen">
-        <div className="container">
-          <div className="profile-screen-wrap mt-32">
-            <div className="profile-first">
-              <div className="profile-edit-img">
-                <img
-                  src={userData?.profilePicture || ProfileImg}
-                  alt={userData?.display_name || "profile image"}
-                />
-                <div className="image-input">
-                  <Link to="/profile-edit" className="image-button">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <mask
-                        id="mask0_202_7514"
-                        style={{ maskType: "alpha" }}
-                        maskUnits="userSpaceOnUse"
-                        x="0"
-                        y="0"
-                        width="24"
-                        height="24"
-                      >
-                        <rect width="24" height="24" fill="white" />
-                      </mask>
-                      <g mask="url(#mask0_202_7514)">
-                        <path
-                          d="M8 20L18.5 9.5C18.7626 9.23735 18.971 8.92555 19.1131 8.58239C19.2553 8.23923 19.3284 7.87143 19.3284 7.5C19.3284 7.12856 19.2553 6.76077 19.1131 6.4176C18.971 6.07444 18.7626 5.76264 18.5 5.5C18.2374 5.23735 17.9256 5.02901 17.5824 4.88687C17.2392 4.74473 16.8714 4.67157 16.5 4.67157C16.1286 4.67157 15.7608 4.74473 15.4176 4.88687C15.0744 5.02901 14.7626 5.23735 14.5 5.5L4 16V20H8Z"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M13.5 6.5L17.5 10.5"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M16 18H20M18 16V20"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </g>
-                    </svg>
-                  </Link>
+          <div className="trending-course-bottom-wrap mt-16">
+            <Link to="/single-course-description">
+              <Slider {...settings}>
+                <div className="trending-course-details single-course">
+                  <div className="trending-course-details">
+                    <div className="trending-course-img">
+                      <img
+                        src={CourseImg1}
+                        alt="course-img"
+                        className="w-100"
+                      />
+                      <div className="trending-bookmark">
+                        <a
+                          href="#"
+                          className={`item-bookmark ${
+                            isBookmarked ? "active" : ""
+                          }`}
+                          onClick={toggleBookmark}
+                          tabIndex="0"
+                        >
+                          <img src={BookmarkSvg} alt="bookmark-icon" />
+                        </a>
+                      </div>
+                      <div className="trending-name">
+                        <p>Design</p>
+                      </div>
+                    </div>
+                    <div className="trending-course-bottom mt-12">
+                      <div>
+                        <p className="trending-txt1">
+                          Create & Design a Modern 3D House in...
+                        </p>
+                      </div>
+                      <div className="trending-course-price">
+                        <div>
+                          <span className="trending-txt2">$180.00</span>
+                          <span className="trending-txt3">$210.00</span>
+                        </div>
+                        <div>
+                          <span className="trending-txt4">
+                            <img src={FillStar} alt="star-img" />
+                          </span>
+                          <span className="trending-txt5">5.0</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="profile-details mt-24">
-                {/* <h1>{userData?.display_name}</h1> */}
-                <h1>{userData?.display_name}</h1>
-
-                <p>{userData?.typeUser}</p>
-              </div>
-            </div>
-            {/* <div className="profile-second mt-32">
-              <div className="boder-top-profile"></div>
-              <div className="profile-second-wrap">
-                <div className="profile-follower">
-                  <h2>6.3k</h2>
-                  <p>Followers</p>
+                <div className="trending-course-details single-course">
+                  <div className="trending-course-details">
+                    <div className="trending-course-img">
+                      <img
+                        src={CourseImg2}
+                        alt="course-img"
+                        className="w-100"
+                      />
+                      <div className="trending-bookmark">
+                        <a
+                          href="#"
+                          className={`item-bookmark ${
+                            isBookmarked ? "active" : ""
+                          }`}
+                          onClick={toggleBookmark}
+                          tabIndex="0"
+                        >
+                          <img src={BookmarkSvg} alt="bookmark-icon" />
+                        </a>
+                      </div>
+                      <div className="trending-name">
+                        <p>Development</p>
+                      </div>
+                    </div>
+                    <div className="trending-course-bottom mt-12">
+                      <div>
+                        <p className="trending-txt1">
+                          Learning Python For Data Analy...
+                        </p>
+                      </div>
+                      <div className="trending-course-price">
+                        <div>
+                          <span className="trending-txt2">$150.00</span>
+                          <span className="trending-txt3">$210.00</span>
+                        </div>
+                        <div>
+                          <span className="trending-txt4">
+                            <img src={FillStar} alt="star-img" />
+                          </span>
+                          <span className="trending-txt5">5.0</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="profile-following">
-                  <h2>10.5k</h2>
-                  <p>Following</p>
-                </div>
-              </div>
-              <div className="boder-bottom-profile"></div>
-            </div> */}
-            <div className="profile-third">
-              <div className="setting-screen-wrap mt-32">
-                <Link to="/wallet-screen">
-                  <div className="setting-deatils">
-                    <div className="setting-icon">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          id="mask0_231_872"
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_231_872)">
-                          <path
-                            d="M17 8V5C17 4.73478 16.8946 4.48043 16.7071 4.29289C16.5196 4.10536 16.2652 4 16 4H6C5.46957 4 4.96086 4.21071 4.58579 4.58579C4.21071 4.96086 4 5.46957 4 6C4 6.53043 4.21071 7.03914 4.58579 7.41421C4.96086 7.78929 5.46957 8 6 8H18C18.2652 8 18.5196 8.10536 18.7071 8.29289C18.8946 8.48043 19 8.73478 19 9V12M19 16V19C19 19.2652 18.8946 19.5196 18.7071 19.7071C18.5196 19.8946 18.2652 20 18 20H6C5.46957 20 4.96086 19.7893 4.58579 19.4142C4.21071 19.0391 4 18.5304 4 18V6"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M20 12V16H16C15.4696 16 14.9609 15.7893 14.5858 15.4142C14.2107 15.0391 14 14.5304 14 14C14 13.4696 14.2107 12.9609 14.5858 12.5858C14.9609 12.2107 15.4696 12 16 12H20Z"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                    <div className="icon-name">
-                      <p>My Wallet</p>
-                    </div>
-                    <div className="icon-back-btn">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_330_777)">
-                          <path
-                            d="M9 18L15 12L9 6"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="setting-border mt-16"></div>
-                </Link>
-                <Link to="/apply-coupon">
-                  <div className="setting-deatils">
-                    <div className="setting-icon">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          id="mask0_260_1099"
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_260_1099)">
-                          <path
-                            d="M19.5 12.9083C19.5 11.462 20.62 10.2882 22 10.2882V9.24015C22 5.04803 21 4 17 4H7C3 4 2 5.04803 2 9.24015V9.76416C3.38 9.76416 4.5 10.938 4.5 12.3842C4.5 13.8305 3.38 15.0043 2 15.0043V15.5283C2 19.7204 3 20.7685 7 20.7685H17C21 20.7685 22 19.7204 22 15.5283C20.62 15.5283 19.5 14.3545 19.5 12.9083Z"
-                            // fill="#121212"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M9 15.2663L15 8.97814L9 15.2663Z"
-                            // fill="#121212"
-                          />
-                          <path
-                            d="M9 15.2663L15 8.97814"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M14.9945 15.2663H15.0035H14.9945Z"
-                            fill="#121212"
-                          />
-                          <path
-                            d="M14.9945 15.2663H15.0035"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M8.99451 9.50216H9.00349H8.99451Z"
-                            fill="#121212"
-                          />
-                          <path
-                            d="M8.99451 9.50216H9.00349"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                    <div className="icon-name">
-                      <p>My Coupons</p>
-                    </div>
-                    <div className="icon-back-btn">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_330_777)">
-                          <path
-                            d="M9 18L15 12L9 6"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="setting-border mt-16"></div>
-                </Link>
-                <Link to="/bookmark">
-                  <div className="setting-deatils">
-                    <div className="setting-icon">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          id="mask0_231_879"
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_231_879)">
-                          <path
-                            d="M13 7C13.5304 7 14.0391 7.21071 14.4142 7.58579C14.7893 7.96086 15 8.46957 15 9V21L10 18L5 21V9C5 8.46957 5.21071 7.96086 5.58579 7.58579C5.96086 7.21071 6.46957 7 7 7H13Z"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M9.26562 4C9.44141 3.69553 9.69435 3.44278 9.99895 3.26721C10.3036 3.09165 10.6491 2.99948 11.0006 3H17.0006C17.5311 3 18.0398 3.21072 18.4148 3.58579C18.7899 3.96086 19.0006 4.46957 19.0006 5V17L18.0006 16.4"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                    <div className="icon-name">
-                      <p>Bookmarks</p>
-                    </div>
-                    <div className="icon-back-btn">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_330_777)">
-                          <path
-                            d="M9 18L15 12L9 6"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                  </div>
-                </Link>
-                <Link to="/add-linkedin-profile">
-                  <div className="setting-deatils">
-                    <div className="setting-icon">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          id="mask0_linkedin"
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_linkedin)">
-                          <path
-                            d="M16 8C16.5523 8 17 7.55228 17 7V4C17 3.44772 16.5523 3 16 3H8C7.44772 3 7 3.44772 7 4V7C7 7.55228 7.44772 8 8 8H16Z"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M12 12V17M9 17H15M10.5 10.5H13.5"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                    <div className="icon-name">
-                      <p>Add LinkedIn Profile</p>
-                    </div>
-                    <div className="icon-back-btn">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_330_777)">
-                          <path
-                            d="M9 18L15 12L9 6"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="setting-border mt-16"></div>
-                </Link>
-              </div>
-            </div>
+              </Slider>
+            </Link>
           </div>
         </div>
       </section>
-      {/* <!-- Profile screen content end --> */}
-      {/* <!-- Tabbar start --> */}
-      {/* <!-- Tabbar end --> */}
-      {/* <!--SideBar setting menu start--> */}
+
       <div className="menu-sidebar details">
         <div
           className="offcanvas offcanvas-start custom-offcanvas-noti"
@@ -547,7 +857,7 @@ useEffect(() => {
               className="btn-close text-reset"
               data-bs-dismiss="offcanvas"
               aria-label="Close"
-            />
+            ></img>
           </div>
           <div className="offcanvas-body">
             <div className="dropdown">
@@ -1413,7 +1723,10 @@ useEffect(() => {
                     </div>
                     <div className="setting-border mt-8"></div>
                   </Link>
-                  <Link to="/" className="mt-8">
+                  <Link
+                    onClick={handleLogout} // Trigger the logout on click
+                    className="mt-8"
+                  >
                     <div className="setting-deatils">
                       <div className="setting-icon">
                         <svg
@@ -1495,7 +1808,42 @@ useEffect(() => {
       </div>
       <div className="dark-overlay"></div>
       {/* <!--SideBar setting menu end--> */}
-    </>
+      {/* <!-- pwa install app popup Start --> */}
+      {/* {isOpen && (
+        <div
+          className="offcanvas offcanvas-bottom addtohome-popup theme-offcanvas"
+          tabIndex="-1"
+          id="offcanvas"
+          aria-modal="true"
+          role="dialog"
+        >
+          <img
+            src={CloseIcon}
+            className="btn-close text-reset popup-close-home"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+            onClick={handleClose}
+          ></img>
+          <div className="offcanvas-body small">
+            <img src={GurujiLogo} alt="logo" className="logo-popup" />
+            <p className="title font-w600">Guruji</p>
+            <p className="install-txt">
+              Install Guruji - Online Learning & Educational Courses PWA to your
+              home screen for easy access, just like any other app
+            </p>
+            <a
+              href="#"
+              className="theme-btn install-app btn-inline addhome-btn"
+              id="installApp"
+              onClick={handleInstallApp}
+            >
+              Add to Home Screen
+            </a>
+          </div>
+        </div>
+      )} */}
+      {/* <!-- pwa install app popup End --> */}
+    </div>
   );
 };
-export default Profile;
+export default HomeScreen;

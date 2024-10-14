@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import ProfileImg from "../assets/images/courses/profile-img.png";
-import CloseIcon from "../assets/svg/close-line.svg";
-import Loading from "../components/Loading";
-import DarkLightmode from "../components/DarkLightMode";
-import useFetchUserData from "../hooks/Auth/useFetchUserData";
+import ProfileImg from "../../../assets/images/courses/profile-img.png";
+import CloseIcon from "../../../assets/svg/close-line.svg";
+import Loading from "../../../components/Loading";
+import DarkLightmode from "../../../components/DarkLightMode";
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
+import './Profile.css'
 
 
 const Profile = () => {
@@ -30,100 +31,12 @@ useEffect(() => {
   return (
     <>
       {/* <!-- Header start --> */}
-  {isMobileView &&    <header id="top-navbar" className="top-navbar">
-        <div className="container">
-          <div className="top-navbar_full">
-            <div className="back-btn">
-              <a href="#offcanvasExample" data-bs-toggle="offcanvas">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <mask
-                    id="mask0_230_107"
-                    style={{ maskType: "alpha" }}
-                    maskUnits="userSpaceOnUse"
-                    x="0"
-                    y="0"
-                    width="24"
-                    height="24"
-                  >
-                    <rect width="24" height="24" fill="white"></rect>
-                  </mask>
-                  <g mask="url(#mask0_230_107)">
-                    <path
-                      d="M19 6.87301C19.3062 7.04981 19.5601 7.30464 19.7358 7.61153C19.9115 7.91843 20.0026 8.26641 20 8.62001V15.156C19.9999 15.5127 19.9045 15.8628 19.7235 16.1701C19.5426 16.4775 19.2828 16.7309 18.971 16.904L12.971 20.737C12.674 20.902 12.3398 20.9885 12 20.9885C11.6602 20.9885 11.326 20.902 11.029 20.737L5.029 16.904C4.71736 16.7309 4.45763 16.4777 4.27671 16.1706C4.0958 15.8634 4.00026 15.5135 4 15.157V8.62001C4.00008 8.26337 4.09553 7.91323 4.27646 7.60589C4.45739 7.29854 4.71721 7.04516 5.029 6.87201L11.029 3.30001C11.3348 3.12978 11.679 3.04044 12.029 3.04044C12.379 3.04044 12.7232 3.12978 13.029 3.30001L19.029 6.87301H19V6.87301Z"
-                      stroke="black"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                    <path
-                      d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
-                      stroke="black"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                  </g>
-                </svg>
-              </a>
-            </div>
-            <div className="top-navbar-title">
-              <p>Profile</p>
-            </div>
-            <div className="skip-btn-goal">
-              <Link to="/notification">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <mask
-                    id="mask0_230_100"
-                    style={{ maskType: "alpha" }}
-                    maskUnits="userSpaceOnUse"
-                    x="0"
-                    y="0"
-                    width="24"
-                    height="24"
-                  >
-                    <rect width="24" height="24" fill="white"></rect>
-                  </mask>
-                  <g mask="url(#mask0_230_100)">
-                    <path
-                      d="M10 5C10 4.46957 10.2107 3.96086 10.5858 3.58579C10.9609 3.21071 11.4696 3 12 3C12.5304 3 13.0391 3.21071 13.4142 3.58579C13.7893 3.96086 14 4.46957 14 5C15.1484 5.54303 16.1274 6.38833 16.8321 7.4453C17.5367 8.50227 17.9404 9.73107 18 11V14C18.0753 14.6217 18.2954 15.2171 18.6428 15.7381C18.9902 16.2592 19.4551 16.6914 20 17H4C4.54494 16.6914 5.00981 16.2592 5.35719 15.7381C5.70457 15.2171 5.92474 14.6217 6 14V11C6.05956 9.73107 6.4633 8.50227 7.16795 7.4453C7.8726 6.38833 8.85159 5.54303 10 5"
-                      stroke="black"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                    <path
-                      d="M9 17V18C9 18.7956 9.31607 19.5587 9.87868 20.1213C10.4413 20.6839 11.2044 21 12 21C12.7956 21 13.5587 20.6839 14.1213 20.1213C14.6839 19.5587 15 18.7956 15 18V17"
-                      stroke="black"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                  </g>
-                  <circle cx="18" cy="6" r="4" fill="#F97316"></circle>
-                </svg>
-              </Link>
-            </div>
-          </div>
-        </div>
-        <div className="navbar-boder"></div>
-      </header>}
+  
       {/* <!-- Header end --> */}
 
       {/* <!-- Profile screen content start --> */}
       <section id="profile-screen">
-        <div className="container">
+        <div className="des-profile-container">
           <div className="profile-screen-wrap mt-32">
             <div className="profile-first">
               <div className="profile-edit-img">
@@ -178,7 +91,7 @@ useEffect(() => {
                   </Link>
                 </div>
               </div>
-              <div className="profile-details mt-24">
+              <div className="des-profile-details mt-24">
                 {/* <h1>{userData?.display_name}</h1> */}
                 <h1>{userData?.display_name}</h1>
 
@@ -201,185 +114,10 @@ useEffect(() => {
             </div> */}
             <div className="profile-third">
               <div className="setting-screen-wrap mt-32">
-                <Link to="/wallet-screen">
-                  <div className="setting-deatils">
-                    <div className="setting-icon">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          id="mask0_231_872"
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_231_872)">
-                          <path
-                            d="M17 8V5C17 4.73478 16.8946 4.48043 16.7071 4.29289C16.5196 4.10536 16.2652 4 16 4H6C5.46957 4 4.96086 4.21071 4.58579 4.58579C4.21071 4.96086 4 5.46957 4 6C4 6.53043 4.21071 7.03914 4.58579 7.41421C4.96086 7.78929 5.46957 8 6 8H18C18.2652 8 18.5196 8.10536 18.7071 8.29289C18.8946 8.48043 19 8.73478 19 9V12M19 16V19C19 19.2652 18.8946 19.5196 18.7071 19.7071C18.5196 19.8946 18.2652 20 18 20H6C5.46957 20 4.96086 19.7893 4.58579 19.4142C4.21071 19.0391 4 18.5304 4 18V6"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M20 12V16H16C15.4696 16 14.9609 15.7893 14.5858 15.4142C14.2107 15.0391 14 14.5304 14 14C14 13.4696 14.2107 12.9609 14.5858 12.5858C14.9609 12.2107 15.4696 12 16 12H20Z"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                    <div className="icon-name">
-                      <p>My Wallet</p>
-                    </div>
-                    <div className="icon-back-btn">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_330_777)">
-                          <path
-                            d="M9 18L15 12L9 6"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="setting-border mt-16"></div>
-                </Link>
-                <Link to="/apply-coupon">
-                  <div className="setting-deatils">
-                    <div className="setting-icon">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          id="mask0_260_1099"
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_260_1099)">
-                          <path
-                            d="M19.5 12.9083C19.5 11.462 20.62 10.2882 22 10.2882V9.24015C22 5.04803 21 4 17 4H7C3 4 2 5.04803 2 9.24015V9.76416C3.38 9.76416 4.5 10.938 4.5 12.3842C4.5 13.8305 3.38 15.0043 2 15.0043V15.5283C2 19.7204 3 20.7685 7 20.7685H17C21 20.7685 22 19.7204 22 15.5283C20.62 15.5283 19.5 14.3545 19.5 12.9083Z"
-                            // fill="#121212"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M9 15.2663L15 8.97814L9 15.2663Z"
-                            // fill="#121212"
-                          />
-                          <path
-                            d="M9 15.2663L15 8.97814"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M14.9945 15.2663H15.0035H14.9945Z"
-                            fill="#121212"
-                          />
-                          <path
-                            d="M14.9945 15.2663H15.0035"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M8.99451 9.50216H9.00349H8.99451Z"
-                            fill="#121212"
-                          />
-                          <path
-                            d="M8.99451 9.50216H9.00349"
-                            stroke="#F97316"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                    <div className="icon-name">
-                      <p>My Coupons</p>
-                    </div>
-                    <div className="icon-back-btn">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <mask
-                          style={{ maskType: "alpha" }}
-                          maskUnits="userSpaceOnUse"
-                          x="0"
-                          y="0"
-                          width="24"
-                          height="24"
-                        >
-                          <rect width="24" height="24" fill="white" />
-                        </mask>
-                        <g mask="url(#mask0_330_777)">
-                          <path
-                            d="M9 18L15 12L9 6"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="setting-border mt-16"></div>
-                </Link>
+      
+               
+               
+           
                 <Link to="/bookmark">
                   <div className="setting-deatils">
                     <div className="setting-icon">

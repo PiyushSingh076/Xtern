@@ -12,7 +12,7 @@ import {
   FaRegListAlt,
 } from "react-icons/fa";
 import { FiXCircle } from "react-icons/fi";
-import { db } from "./../firebaseConfig";
+import { db } from "../firebaseConfig";
 import { addDoc, collection } from "firebase/firestore";
 import Loading from "../components/Loading";
 import useImageUpload from "../hooks/Auth/useImageUpload"; // Custom hook for image upload

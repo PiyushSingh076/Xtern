@@ -1,0 +1,161 @@
+.nav-bar-container{
+    position: fixed;
+  
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: 100vw;
+    height: 60px;
+    border-bottom: 1px rgb(226, 226, 226) solid;
+    z-index: 3489;
+    top: 0;
+   
+
+
+background: rgba(255, 255, 255, 0.75);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(5px);
+border: 1px solid rgba(255, 255, 255, 0.3);
+
+
+}
+
+.logo-search-container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo{
+    font-size: 24px;
+    font-weight: 600;
+    color: rgb(167, 167, 167);
+}
+
+.logo:hover{
+  cursor: pointer;
+}
+
+.input-search-wrap-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 200px;
+    padding: 10px 10px 10px 35px; /* Adjusting left padding for the icon */
+    height: 35px;
+    border: 1px rgb(226, 226, 226) solid;
+    border-radius: 20px;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px; /* Positioning the icon inside the input */
+    font-size: 18px;
+    color: rgb(150, 150, 150);
+}
+
+.internships-jobs-option-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.options-list{
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Adjust spacing between items */
+    justify-content: flex-end; /* Align items to the right */
+    margin: 5px;
+    padding: 0;
+    
+  }
+  
+  .option-item{
+    display: inline-block;
+    font-size: 16px; 
+    padding: 10px;
+    font-weight: 600;
+  }
+
+.option-item.active{
+  
+    border: 1px #024CAA solid;
+    border-radius: 25px;
+    background-color: transparent;
+    color: #024CAA;
+    font-weight: 600;
+  }
+  
+  .option-item:hover{
+    background-color: #f4f2f2;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+
+  .option-button-login {
+    background-color: #024CAA; 
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 38px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: ease-in-out .5s;
+    
+
+  }
+  
+  .option-button-login:hover {
+    background-color: #013881; 
+    transition: ease-in-out .5s;
+  }
+
+
+  
+  
+
+
+  .option-button-host{
+    gap: 2px;
+    width: 75px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    background-color: transparent;
+    border: 1px  black solid;
+    font-weight: 500;
+  }
+
+
+  .profile-icon{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #024CAA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-left: 40px;
+
+  }
+
+  .profile-icon:hover{
+    cursor: pointer;
+  }

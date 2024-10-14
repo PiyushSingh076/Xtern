@@ -10,7 +10,7 @@ import {
   FaGlobe,
 } from "react-icons/fa"; // React Icons
 import { FiXCircle } from "react-icons/fi";
-import { db } from "./../firebaseConfig"; // Your firebase configuration file
+import { db } from "../firebaseConfig"; // Your firebase configuration file
 import { addDoc, collection } from "firebase/firestore";
 import Loading from "../components/Loading";
 import ProjectLevelSelection from "../components/ProjectLevelSelection";

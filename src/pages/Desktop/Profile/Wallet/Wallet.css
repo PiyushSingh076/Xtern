@@ -1,0 +1,11 @@
+.des-wallet-container{
+ margin-top: 100px;
+  width: 80%;
+}
+
+#wallet-screen{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
