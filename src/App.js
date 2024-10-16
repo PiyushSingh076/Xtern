@@ -14,7 +14,11 @@ import Header from "./pages/Desktop/Header/Header";
 import DesktopProjectDetails from "./pages/Desktop/ProjectDetail";
 import DesktopCreateProject from "./pages/Desktop/ProjectDetail/ApplyProject";
 import DesktopProfile from './pages/Desktop/Profile/index.jsx'
-import DesktopWallet from './pages/Desktop/Profile/Wallet'
+import DesktopPrefferRole from './pages/Desktop/Prefference/PrefferRole.jsx'
+import DesktopSignIn from './pages/Desktop/Auth/SignIn'
+import DesktopSignUp from './pages/Desktop/Auth/SignUp'
+import DesktopPrefferedServiceIntern from './pages/Desktop/Prefference/PrefferServiceIntern.jsx'
+import DesktopPrefferServiceVenture from './pages/Desktop/Prefference/PrefferServiceVenture.jsx'
 
 
 
@@ -23,7 +27,8 @@ import DesktopWallet from './pages/Desktop/Profile/Wallet'
 
 
 // Mobile View
-
+import PrefferedServiceVenture from "./pages/PrefferedServiceVenture.jsx";
+import PrefferedServiceIntern from "./pages/PrefferedServiceIntern.jsx";
 import LetYouScreen from "./pages/LetYouScreen";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
@@ -54,7 +59,7 @@ import CourseOngoingScreen from "./pages/CourseOngoingScreen";
 import SingleCourseOngoing from "./pages/SingleCourseOngoing";
 import ChatScreen from "./pages/ChatScreen";
 import SingleChatScreen from "./pages/SingleChatScreen";
-import Profile from "./pages/Profile";
+import Profile from "./pages/Profile2";
 import ProfileEdit from "./pages/ProfileEdit";
 import WalletScreen from "./pages/WalletScreen";
 import SingleMentor from "./pages/SingleMentor";
@@ -83,6 +88,8 @@ import CreateProject from "./pages/CreateProject";
 import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
 import { useEffect, useState } from "react";
+import PrefferedRole from "./pages/PrefferedRole.jsx";
+
 
 function App() {
   const location = useLocation(); // Get the current location
@@ -125,8 +132,8 @@ useEffect(() => {
       <Routes>
         {/* Public Routes */}
         <Route path={ROUTES.HOME} element={<LetYouScreen />} />
-        <Route path={ROUTES.SIGN_UP} element={<SignUp />} />
-        <Route path={ROUTES.SIGN_IN} element={<SignIn />} />
+        <Route path={ROUTES.SIGN_UP} element={isMobileView ?  <SignUp /> : <DesktopSignUp/>} />
+      <Route path={ROUTES.SIGN_IN} element={isMobileView ? <SignIn /> : <DesktopSignIn/>} />
         <Route path={ROUTES.FORGET_PASSWORD} element={<ForgetPassword />} />
         <Route path={ROUTES.CHECK_MAIL_SCREEN} element={<CheckMailScreen />} />
         <Route
@@ -141,6 +148,23 @@ useEffect(() => {
             </ProtectedRoute>
           }
         />
+
+
+       <Route
+       path={ROUTES.PREFERRED_ROLE}
+       element={isMobileView ? <PrefferedRole/> : <DesktopPrefferRole/>}
+       />
+
+<Route
+path={ROUTES.INTERN}
+element={isMobileView ? <PrefferedServiceIntern/> : <DesktopPrefferedServiceIntern/>}
+/>
+
+<Route
+path={ROUTES.VENTURE}
+element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVenture/>}
+/>
+
 
         {/* Protected Routes */}
         <Route
@@ -167,14 +191,14 @@ useEffect(() => {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path={ROUTES.PRIMARY_GOAL_SCREEN}
           element={
             <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
               <PrimaryGoalScreen />
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path={ROUTES.SPEND_LEARNING}
           element={
@@ -415,14 +439,14 @@ useEffect(() => {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path={ROUTES.WALLET_SCREEN}
           element={
             <ProtectedRoute>
            {isMobileView ?    <WalletScreen />  : <DesktopWallet/>}
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path={ROUTES.SINGLE_MENTOR}
           element={

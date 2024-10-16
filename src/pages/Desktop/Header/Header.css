@@ -89,10 +89,10 @@ border: 1px solid rgba(255, 255, 255, 0.3);
 
 .option-item.active{
   
-    border: 1px #024CAA solid;
+    border: 1px #3374AE solid;
     border-radius: 25px;
     background-color: transparent;
-    color: #024CAA;
+    color: #3374AE;
     font-weight: 600;
   }
   
@@ -103,7 +103,7 @@ border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
   .option-button-login {
-    background-color: #024CAA; 
+    background-color: #3374AE; 
     border: none;
     display: flex;
     align-items: center;
@@ -147,7 +147,7 @@ border: 1px solid rgba(255, 255, 255, 0.3);
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background-color: #024CAA;
+    background-color: #3374AE;
     display: flex;
     align-items: center;
     justify-content: center;

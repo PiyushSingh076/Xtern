@@ -67,6 +67,14 @@ html {
   text-size-adjust: 100%;
 }
 
+.top-navbar_full{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
 *,
 ::after,
 ::before {
@@ -177,6 +185,7 @@ textarea {
 }
 
 .container {
+ 
   background: var(--primary-color);
   padding: 0 16px;
 }
@@ -645,11 +654,48 @@ textarea {
   margin-top: 24px;
 }
 
+.mentor-skill-sec{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mentor-medal-sec{
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  padding: 1px;
+  border-radius: 20px;
+  border: 1px solid black;
+  width: 70px;
+
+  & span{
+    
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 500;
+
+  }
+}
+
 .mentor-img img,
 .fourth-decs-img img,
 .mentor-img-sec img {
   border-radius: 50px;
+
 }
+
+.mentor-img-sec{
+  position: relative;
+}
+
+.mentor-medal{
+ 
+  top: 0px;
+  left: 0;
+  }
 
 .sign-in-custom-input {
   border: none;
@@ -1056,29 +1102,79 @@ textarea {
   line-height: 24px;
 }
 
-/************************ 11.Preferred Language Screen ***************************/
+/************************ 11.Preferred role Screen ***************************/
+
+.preffered-role-container{
+  margin-top: 20px;
+  padding-left: 10px ;
+  padding-right: 10px;
+}
+
 .hey-txt {
   color: var(--text-color);
   font-family: "League Spartan";
-  font-size: 32px;
+  font-size: 30px;
   font-style: normal;
   font-weight: 600;
   line-height: 36px;
 }
 
 .select-lang {
-  color: var(--see-all-text);
-  font-family: Lato;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
+  font-weight: 500; /* Make the label bold */
+  margin-bottom: 5px; /* Space between label and select */
+  display: block; 
 }
 
 .select-lang-sec {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+}
+
+.lang-sec{
+  
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.role-sec{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 30px;
+  padding: 0 10px;
+  height: 60vh;
+}
+
+.intern-container , .venture-container{
+  border: 1px #3374AE solid ;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 10px;
+
+  & span {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  & p{
+    font-size: 12px;
+  }  
+
+  &:hover{
+    background-color: #e9f5ff;
+  }
+
+  
+
 }
 
 .lang-sec input[type="radio"] {
@@ -1100,19 +1196,179 @@ label.custom-radio-sel-lang {
 }
 
 .lang-sec input[type="radio"]:checked + label {
-  background: var(--background-label);
+  background: #3374AE;
   border-radius: 8px;
   color: var(--primary-color);
   border: 2px solid transparent;
 }
 
-/************************ 12.Primary Goal Screen  ***************************/
-.top-navbar_full {
+.select-btn{
+  border: none;
+  width: 100%;
+  height: 50px;
+  background-color: #3374AE;
+  color: white;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
+  justify-content: center;
+  border-radius: 10px;
+  margin-top: 20px;
+  font-size: 20px;
 }
+
+.continue-btn{
+  position: absolute;
+  bottom: 10px;
+  left: 5%;
+  border: none;
+  width: 90%;
+  height: 50px;
+  background-color: #3374AE;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  margin-top: 50px;
+  font-size: 20px;
+}
+
+
+
+/************************ 12.Primary Goal Screen  ***************************/
+
+
+.select-skill-sec{
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.select-option-container{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+}
+
+.select-option-input-skill{
+  width: 100px;
+  height: 40px;
+  border: 2px gray solid;
+  border-radius: 10px;
+
+}
+
+.select-option-input-rating{
+  width: 70px;
+  height: 40px;
+  border: 2px grey solid;
+  border-radius: 10px;
+
+
+}
+
+.add-btn{
+  background-color: #3374AE;
+  color: white;
+  border: none;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+
+}
+
+.skill-card-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  height: auto;
+  padding: 5px 10px;
+  gap: 10px;
+}
+
+.skill-card{
+  background-color: #3374AE;
+  border-radius: 15px;
+  padding: 2px 5px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+ }
+
+
+
+
+ .availability-container{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 10px;
+ }
+
+ .from , .to{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+ }
+
+ .date-input{
+  display: flex;
+  flex-direction: row;
+  border: 2px #3374AE solid;
+  height: 30px;
+  border-radius: 10px;
+ }
+
+ input[type="date"] {
+  font-size: 14px;
+}
+
+
+.basic-info-container{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.basic-info-options{
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+ 
+}
+
+
+.basic-info-options select {
+  width: 100%; /* Make the select element take full width of its container */
+  padding: 10px; /* Add padding for better appearance */
+  border-radius: 5px; /* Rounded corners */
+  border: 1px solid #ccc; /* Light border */
+  background-color: #f9f9f9; /* Background color */
+  font-size: 16px; /* Font size */
+  margin-top: 8px; /* Space between label and select */
+}
+
+.basic-info-options label {
+
+}
+
 
 .skip-btn-goal a {
   color: var(--see-all-text);
@@ -4139,7 +4395,7 @@ span.ongoing-txt2 {
   max-width: 40px;
   width: 100%;
   height: 40px;
-  background: var(--text-color);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4147,17 +4403,21 @@ span.ongoing-txt2 {
 }
 
 .mentor-follow-btn img {
-  filter: var(--svg-color);
+
 }
 
+
+
 .mentor-comment {
-  background: var(--background-input) !important;
-  width: 40px;
-  height: 40px;
+
+  border: 1px solid var(--border-colors);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  padding: 1px 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border-radius: 15px;
+  border: 1px solid black;
 }
 
 .mentor-follow-sec {
@@ -4216,9 +4476,11 @@ span.ongoing-txt2 {
 }
 
 .single-mentor-second-wrap-sec {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
+  display: flex;
+  flex-direction: row;
+  overflow-x: hidden;
+  
+  margin-top: 10px;
 }
 
 .single-mentor-tab li button.active {
@@ -4373,6 +4635,18 @@ span.ongoing-txt2 {
   width: 50%;
   text-align: center;
 }
+
+.experience-sec{
+  margin-top: 16px;
+  border: 1px solid var(--border-colors);
+  padding: 12px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: var(--background-input);
+  margin-bottom: 16px;
+
+}
+
 
 .profile-follower h2,
 .profile-following h2 {

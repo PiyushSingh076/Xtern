@@ -19,3 +19,21 @@
         
     }
 }
+
+.logout-btn{
+    margin-top: 50px;
+    width: 100px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px grey solid;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+
+}
+
+.logout-btn:hover{
+    transform: scale(1.08);
+    cursor: pointer;
+}

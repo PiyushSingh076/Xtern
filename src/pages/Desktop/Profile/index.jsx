@@ -6,12 +6,13 @@ import Loading from "../../../components/Loading";
 import DarkLightmode from "../../../components/DarkLightMode";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import './Profile.css'
+import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 
 
 const Profile = () => {
   const { userData, loading, error } = useFetchUserData();
   const [isMobileView, setIsMobileView] = useState(false);
-
+  const { handleLogout, loading: logoutloading } = useOAuthLogout(); 
 useEffect(() => {
   const handleResize = () => {
     setIsMobileView(window.innerWidth <= 768); 
@@ -114,10 +115,8 @@ useEffect(() => {
             </div> */}
             <div className="profile-third">
               <div className="setting-screen-wrap mt-32">
-      
-               
-               
-           
+             
+            
                 <Link to="/bookmark">
                   <div className="setting-deatils">
                     <div className="setting-icon">
@@ -269,12 +268,18 @@ useEffect(() => {
             </div>
           </div>
         </div>
+
+        <div
+        onClick={handleLogout} 
+        className="logout-btn">
+          Logout
+        </div>
       </section>
       {/* <!-- Profile screen content end --> */}
       {/* <!-- Tabbar start --> */}
       {/* <!-- Tabbar end --> */}
       {/* <!--SideBar setting menu start--> */}
-      <div className="menu-sidebar details">
+      {/* <div className="menu-sidebar details">
         <div
           className="offcanvas offcanvas-start custom-offcanvas-noti"
           id="offcanvasExample"
@@ -1230,7 +1235,7 @@ useEffect(() => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="dark-overlay"></div>
       {/* <!--SideBar setting menu end--> */}
     </>

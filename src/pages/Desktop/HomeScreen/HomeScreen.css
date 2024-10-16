@@ -99,7 +99,7 @@
 }
 
 .find-job-button{
-    background-color: #024CAA;
+    background-color: #3374AE;
     padding: 10px;
     border-radius: 25px;
     font-size: 20px;
@@ -108,8 +108,8 @@
 }
 
 .post-job-button{
-    border: 1px  solid #024CAA;
-    color: #024CAA;
+    border: 1px  solid #3374AE;
+    color: #3374AE;
     background-color: transparent;
     border-radius: 25px;
     padding: 10px;
@@ -210,8 +210,8 @@
     width: auto;
     padding: 0 20px;
     height: 60px;
-    border: #024CAA 1px solid;
-    color: #024CAA;
+    border: #3374AE 1px solid;
+    color: #3374AE;
     border-radius: 30px;
     background-color: transparent;
   }

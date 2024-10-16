@@ -18,7 +18,7 @@ const useOAuthLogout = () => {
       // If you store other user data, consider clearing it here
 
       toast.success("Successfully logged out", { position: "bottom-left" });
-      navigate("/signin"); // Redirect the user to the login page
+      navigate("/homescreen"); // Redirect the user to the login page
     } catch (error) {
       console.error("Error during logout:", error);
       toast.error("Logout failed", { position: "bottom-left" });

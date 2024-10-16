@@ -1,0 +1,15 @@
+.des-signup-container{
+    margin-top: 100px;
+    width: 40%;
+    border: 1px grey solid;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+}
+
+#sign-up-screen-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

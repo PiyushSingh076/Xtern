@@ -7,22 +7,11 @@ import DarkLightmode from "../components/DarkLightMode";
 import useFetchUserData from "../hooks/Auth/useFetchUserData";
 
 
+
 const Profile = () => {
   const { userData, loading, error } = useFetchUserData();
-  const [isMobileView, setIsMobileView] = useState(false);
-
-useEffect(() => {
-  const handleResize = () => {
-    setIsMobileView(window.innerWidth <= 768); 
-  };
 
 
-  handleResize();
-
-  window.addEventListener("resize", handleResize);
-
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
 
   if (loading) {
     return <Loading />;
