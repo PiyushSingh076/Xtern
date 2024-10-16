@@ -411,7 +411,7 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
           path={ROUTES.PROFILE}
           element={
             <ProtectedRoute>
-      {isMobileView ?        <Profile /> : <DesktopProfile/>}
+      {isMobileView ?        <Profile /> : <Profile/>}
             </ProtectedRoute>
           }
         />
