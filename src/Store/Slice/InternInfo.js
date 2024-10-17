@@ -1,6 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem('internInfo');
+    if (serializedState === null) {
+      return undefined;
+    }
+    return JSON.parse(serializedState);
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const saveState = (state) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem('internInfo', serializedState);
+  } catch {
+    // Ignore write errors
+  }
+};
+
+const initialState = loadState() || {
   internType: '',
   skillSet: [],
   availability: '',
@@ -19,9 +40,18 @@ const internInfoSlice = createSlice({
       state.availability = availability;
       state.currentlyStudying = currentlyStudying;
       state.graduationYear = graduationYear;
+      saveState(state);
     },
     resetInternInfo: (state) => {
-      return initialState;
+      const resetState = {
+        internType: '',
+        skillSet: [],
+        availability: '',
+        currentlyStudying: '',
+        graduationYear: null
+      };
+      saveState(resetState);
+      return resetState;
     }
   }
 });
@@ -32,4 +62,3 @@ export const {
 } = internInfoSlice.actions;
 
 export default internInfoSlice.reducer;
-

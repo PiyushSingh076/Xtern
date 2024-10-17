@@ -15,6 +15,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Loading from "../../../components/Loading";
 import useFetchProjectData from "../../../hooks/Auth/useFetchProjectData";
 import './projectDetail.css'
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 
 const ProjectDetails = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
@@ -22,6 +23,7 @@ const ProjectDetails = () => {
   const navigate = useNavigate();
   const { projectId } = useParams();
   const { projectData, loading, error } = useFetchProjectData(projectId);
+  const { userData } = useFetchUserData();
 
   if (error) return <p>Error: {error.message}</p>;
 
@@ -350,7 +352,7 @@ const ProjectDetails = () => {
                             )}
                           </div>
                           <div className="des-buy-now-description">
-            <Link className="buy-now" to={`/applyproject/${projectId}`}>Apply Now</Link>
+      { userData?.id ?     <Link className="buy-now" to={`/applyproject/${projectId}`}>Apply Now</Link> : <Link className="buy-now" to={`/signin`}>Apply Now</Link>}
           </div>
                         </div>
                         {/* <div className="description-second-content mt-24">

@@ -8,23 +8,15 @@ const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log("User is authenticated:", user);
-      } else {
-        console.log("No user is authenticated.");
-      }
-      setIsAuthenticated(!!user);
-    });
-    return () => unsubscribe();
+    // Authentication removed
+    setIsAuthenticated(true);
   }, []);
-  console.log(isAuthenticated, "lllllll");
 
   if (isAuthenticated === null) {
     return <Loading />;
   }
 
-  return isAuthenticated ? children : <Navigate to="/signin" />;
+  return children;
 };
 
 export default ProtectedRoute;

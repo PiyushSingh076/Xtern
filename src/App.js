@@ -38,7 +38,6 @@ import ResetPasswordScreen from "./pages/ResetPasswordScreen";
 import VerifyScreen from "./pages/VerifyScreen";
 import NotificationAllow from "./pages/NotificationAllow";
 import PreferredLanguage from "./pages/PreferredLanguage";
-import PrimaryGoalScreen from "./pages/PrimaryGoalScreen";
 import SpendLearning from "./pages/SpendLearning";
 import SelectSkills from "./pages/SkillSelectionScreen";
 import SelectCoursesScreen from "./pages/SelectCoursesScreen";
@@ -131,7 +130,7 @@ useEffect(() => {
       <Toaster />
       <Routes>
         {/* Public Routes */}
-        <Route path={ROUTES.HOME} element={<LetYouScreen />} />
+        <Route path={ROUTES.HOME} element={isMobileView ? <HomeScreen /> : <DesktopHomeScreen/>} />
         <Route path={ROUTES.SIGN_UP} element={isMobileView ?  <SignUp /> : <DesktopSignUp/>} />
       <Route path={ROUTES.SIGN_IN} element={isMobileView ? <SignIn /> : <DesktopSignIn/>} />
         <Route path={ROUTES.FORGET_PASSWORD} element={<ForgetPassword />} />
@@ -411,7 +410,7 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
           path={ROUTES.PROFILE}
           element={
             <ProtectedRoute>
-      {isMobileView ?        <Profile /> : <Profile/>}
+      {isMobileView ?        <Profile /> : <DesktopProfile/>}
             </ProtectedRoute>
           }
         />
