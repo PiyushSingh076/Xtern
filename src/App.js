@@ -19,6 +19,7 @@ import DesktopSignIn from './pages/Desktop/Auth/SignIn'
 import DesktopSignUp from './pages/Desktop/Auth/SignUp'
 import DesktopPrefferedServiceIntern from './pages/Desktop/Prefference/PrefferServiceIntern.jsx'
 import DesktopPrefferServiceVenture from './pages/Desktop/Prefference/PrefferServiceVenture.jsx'
+import DesktopPrefferServiceMentor from './pages/Desktop/Prefference/PrefferServiceMentor.jsx'
 
 
 
@@ -27,7 +28,9 @@ import DesktopPrefferServiceVenture from './pages/Desktop/Prefference/PrefferSer
 
 
 // Mobile View
+
 import PrefferedServiceVenture from "./pages/PrefferedServiceVenture.jsx";
+import PrefferedServiceMentor from "./pages/PrefferedServiceMentor.jsx";
 import PrefferedServiceIntern from "./pages/PrefferedServiceIntern.jsx";
 import LetYouScreen from "./pages/LetYouScreen";
 import SignUp from "./pages/SignUp";
@@ -157,6 +160,10 @@ useEffect(() => {
 <Route
 path={ROUTES.INTERN}
 element={isMobileView ? <PrefferedServiceIntern/> : <DesktopPrefferedServiceIntern/>}
+/>
+<Route
+path={ROUTES.MENTOR}
+element={isMobileView ? <PrefferedServiceMentor/> : <DesktopPrefferServiceMentor/>}
 />
 
 <Route

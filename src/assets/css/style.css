@@ -666,6 +666,8 @@ textarea {
   justify-content: space-between;
 }
 
+
+
 .mentor-medal-sec{
   position: absolute;
   bottom: -8px;
@@ -1126,7 +1128,7 @@ textarea {
 }
 
 .select-lang {
-  font-weight: 500; /* Make the label bold */
+  font-weight: 600; /* Make the label bold */
   margin-bottom: 5px; /* Space between label and select */
   display: block; 
 }

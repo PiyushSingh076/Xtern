@@ -56,7 +56,7 @@ export default function Header() {
             Mentorship
           </li>
       {  !userData &&  (<li className="option-item-button">
-            <button className="option-button-login">Login</button>
+            <button onClick={()=>navigate(ROUTES.SIGN_IN)} className="option-button-login">Login</button>
           </li>)}
           <li className="option-item-button">
             <button className="option-button-host">
