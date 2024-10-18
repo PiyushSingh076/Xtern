@@ -1,3 +1,4 @@
+// Import necessary dependencies and components
 import React, { useEffect, useState } from "react";
 import BookmarkSvg from "../../../assets/svg/white-bookmark.svg";
 import PlayIcon from "../../../assets/images/single-courses/play-icon.svg";
@@ -18,20 +19,29 @@ import './projectDetail.css'
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import { useSelector } from "react-redux";
 
+// Define the ProjectDetails component
 const ProjectDetails = () => {
+  // State variables
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
+  
+  // Hooks
   const navigate = useNavigate();
   const { projectId } = useParams();
   const { projectData, loading, error } = useFetchProjectData(projectId);
   
+  // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
 
+  // Handle errors
   if (error) return <p>Error: {error.message}</p>;
 
+  // Navigation function
   const handleBackClick = () => {
-    navigate(-1); // This will navigate to the previous page in the history stack
+    navigate(-1); // Navigate to the previous page in the history stack
   };
+
+  // Toggle bookmark functions
   const toggleBookmark = () => {
     setIsBookmarked(!isBookmarked);
   };
@@ -39,6 +49,8 @@ const ProjectDetails = () => {
   const toggleBookmarkIcon = () => {
     setIsBookmarkIcon(!isBookmarkIcon);
   };
+
+  // Slider settings (not used in this component)
   const settings = {
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -51,15 +63,18 @@ const ProjectDetails = () => {
     arrows: false,
   };
 
+  // Show loading component while data is being fetched
   if (loading) {
     return <Loading />;
   }
+
+  // Render the component
   return (
     <div className="des-project-detail-container">
-    
-      {/* <!-- Single description section start --> */}
+      {/* Single description section start */}
       <section id="single-description-screen">
         <div className="des-first-desc-img-sec">
+          {/* Project image */}
           <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
               <img
@@ -71,6 +86,7 @@ const ProjectDetails = () => {
               />
             </div>
 
+            {/* Back button and bookmark icon */}
             <div className="single-courses-top">
               <div className="course-back-icon">
                 <svg
@@ -114,6 +130,7 @@ const ProjectDetails = () => {
                 </a>
               </div>
             </div>
+            {/* Play button */}
             <div className="cousr-play-btn">
               <a
                 href="#"
@@ -124,8 +141,12 @@ const ProjectDetails = () => {
               </a>
             </div>
           </div>
-          <div className="desc-container">
-            <div className="single-courses-description">
+          {/* Project details */}
+          <div
+          
+           className="desc-container">
+            <div className="des-single-courses-description">
+              {/* Skills and price */}
               <div className="first-decs-sec mt-16">
                 <div className="first-decs-sec-wrap">
                   <div className="skills-left-sec">
@@ -148,6 +169,7 @@ const ProjectDetails = () => {
                   </div>
                 </div>
               </div>
+              {/* Project title and details */}
               <div className="second-decs-sec mt-16">
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
@@ -168,7 +190,6 @@ const ProjectDetails = () => {
                         <span className="student-img mr-8 fillStar">
                           <img src={FillStar} alt="student-icon" />
                         </span>
-                        {/* <span className="second-txt2">4.3 (3.7k ratings)</span> */}
                         <span className="second-txt2">Level: Medium</span>
                       </div>
                       <div className="mt-12">
@@ -183,84 +204,11 @@ const ProjectDetails = () => {
                         </span>
                         <span className="second-txt2">Due: 25-09-2024</span>
                       </div>
-                      {/* <div className="mt-12">
-                        <span className="student-img mr-8">
-                          <img src={LanguageIcon} alt="student-icon" />
-                        </span>
-                        <span className="second-txt2">English</span>
-                      </div> */}
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="third-decs-sec mt-32">
-                <div className="third-decs-sec-wrap">
-                  {/* <div className="third-decs-sec-top">
-                    <h2 className="third-txt1">This Course Includes</h2>
-                  </div> */}
-                  {/* <div className="third-decs-sec-bottom">
-                    <div className="third-decs-sec-bottom-wrap mt-16">
-                      <span className="third-txt2 mr-8">
-                        <img src={CourseIconImg1} alt="course-img" />
-                      </span>
-                      <span className="third-txt3">
-                        1.5 hours On-Demand Video
-                      </span>
-                    </div>
-                    <div className="third-decs-sec-bottom-wrap mt-12">
-                      <span className="third-txt2 mr-8">
-                        <img src={CourseIconImg2} alt="course-img" />
-                      </span>
-                      <span className="third-txt3">Full Lifetime Access</span>
-                    </div>
-                    <div className="third-decs-sec-bottom-wrap mt-12">
-                      <span className="third-txt2 mr-8">
-                        <img src={CourseIconImg3} alt="course-img" />
-                      </span>
-                      <span className="third-txt3">
-                        Access on Mobile, Desktop and TV
-                      </span>
-                    </div>
-                    <div className="third-decs-sec-bottom-wrap mt-12">
-                      <span className="third-txt2 mr-8">
-                        <img src={CourseIconImg4} alt="course-img" />
-                      </span>
-                      <span className="third-txt3">
-                        Certificate of Completion
-                      </span>
-                    </div>
-                  </div> */}
-                </div>
-              </div>
-              {/* <div className="fourth-decs-sec mt-32">
-                <div className="fourth-decs-sec-wrap">
-                  <h2 className="third-txt1">Mentor</h2>
-                  <div className="fourth-decs-sec-top mt-16">
-                    <div className="fourth-decs-img-wrap">
-                      <div className="fourth-decs-img">
-                        <img src={MentorImg} alt="client-img" />
-                      </div>
-                      <div className="fourth-client-wrap">
-                        <h3 className="fourth-txt1">Athena Joy</h3>
-                        <h4 className="fourth-txt2 mt-12">236k followerss</h4>
-                        <div className="mt-16">
-                          <span className="fourth-txt3">
-                            <img src={FillStar} alt="star-img" />
-                          </span>
-                          <span className="fourth-txt4">
-                            4.3 (3.7k ratings)
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="fourth-follwing-sec">
-                      <div className="fourth-txt5">
-                        <p>Following</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
+              {/* Description tabs */}
               <div className="fifth-decs-sec mt-32">
                 <div className="fifth-decs-sec-wrap">
                   <ul
@@ -295,19 +243,9 @@ const ProjectDetails = () => {
                       </button>
                     </li>
                     <li className="nav-item" role="presentation">
-                      {/* <button
-                        className="nav-link"
-                        id="reviews-tab-btn"
-                        data-bs-toggle="pill"
-                        data-bs-target="#reviews-content"
-                        type="button"
-                        role="tab"
-                        aria-selected="false"
-                      >
-                        Reviews
-                      </button> */}
                     </li>
                   </ul>
+                  {/* Description content */}
                   <div className="tab-content" id="description-tabContent">
                     <div
                       className="tab-pane fade show active"
@@ -321,9 +259,7 @@ const ProjectDetails = () => {
                           <div>
                             {projectData?.detail || (
                               <>
-                                {" "}
                                 <p className="des-con-txt2">
-                                  {" "}
                                   In this className, you'll learn everything
                                   about using grids for your UI Design.Grids are
                                   not only your best friend when it comes to
@@ -349,102 +285,26 @@ const ProjectDetails = () => {
                                   The Figma and code template that I will show
                                   you are part of the course material to make
                                   sure you can dive right into the making
-                                </p>{" "}
+                                </p>
                               </>
                             )}
                           </div>
+                          {/* Apply Now button */}
                           <div className="des-buy-now-description">
-      { auth  ?     <Link className="buy-now" to={`/applyproject/${projectId}`}>Apply Now</Link> : <Link className="buy-now" to={`/signin`}>Apply Now</Link>}
-          </div>
+                            { auth  ?     
+                              <Link className="buy-now" to={`/applyproject/${projectId}`}>Apply Now</Link> 
+                              : 
+                              <Link className="buy-now" to={`/signin`}>Apply Now</Link>
+                            }
+                          </div>
                         </div>
-                        {/* <div className="description-second-content mt-24">
-                          <h3 className="des-con-txt1">What You'll Learn</h3>
-                          <div className="mt-12">
-                            <ul className="desc-learn-sec">
-                              <li>
-                                Everything about Responsive Grids from 0 to hero
-                              </li>
-                              <li>
-                                Basic setup like Columns, Grutter, Margin, and
-                                Rows
-                              </li>
-                              <li>
-                                Understand the difference between responsive and
-                                adaptive behaviour
-                              </li>
-                              <li>
-                                Understand what breakpoints are, where they come
-                                from and how to use them
-                              </li>
-                              <li>
-                                Classic Grid Systems such as Bootstrap Grids and
-                                CSS Grid
-                              </li>
-                              <li>
-                                Setting up Adaptive, Responsive and CSS Grids in
-                                FIGMA and adding content the right way
-                              </li>
-                              <li>
-                                Adding content to the grid, avoiding common
-                                positioning mistakes
-                              </li>
-                              <li>How Grids make your design responsive</li>
-                              <li>
-                                As a final project, we will be building our own
-                                responsive portfolio in Figma
-                              </li>
-                              <li>
-                                Go the extra mile and look at some basic code,
-                                all set up for UX/UI Designers to really
-                                understand the technicality behind the product
-                                you are building.
-                              </li>
-                            </ul>
-                          </div>
-                        </div> */}
-                        {/* <div className="description-second-content mt-24">
-                          <h3 className="des-con-txt1">
-                            Who This Course is For
-                          </h3>
-                          <div className="mt-12">
-                            <ul className="desc-learn-sec">
-                              <li>Beginner and Advanced UX/UI Designer</li>
-                              <li>
-                                Graphic Designer switching over to UX/UI Design
-                              </li>
-                              <li>
-                                Front-End Developer wanting to improve their
-                                communication with the design team
-                              </li>
-                              <li>
-                                Anyone interested in learning about Grids in
-                                UX/UI Design
-                              </li>
-                              <li>
-                                Sketch or XD users switching over to Figma
-                              </li>
-                            </ul>
-                          </div>
-                        </div> */}
-                        {/* <div className="description-second-content mt-24">
-                          <h3 className="des-con-txt1">Requirements</h3>
-                          <div className="mt-12">
-                            <ul className="desc-learn-sec">
-                              <li>
-                                No requirements but recommended: (Free) Figma
-                                account
-                              </li>
-                              <li>
-                                Basic knowledge of Figma (or any other UI Design
-                                software)
-                              </li>
-                            </ul>
-                          </div>
-                        </div> */}
                       </div>
                     </div>
                   </div>
-                  <div className="tab-content" id="lessons-tabContent">
+                  {/* Assessment content */}
+                  <div 
+                  
+                  className="tab-content" id="lessons-tabContent">
                     <div
                       className="tab-pane fade show"
                       id="lesson-content"
@@ -464,9 +324,11 @@ const ProjectDetails = () => {
                             </div>
                           </div>
                         </div>
+                        {/* Accordion for course content */}
                         <div className="lesson-second-content">
                           <div className="lesson-second-content-bottom">
                             <div className="accordion" id="lesson-introduction">
+                              {/* Introduction section */}
                               <div className="accordion-item mt-16">
                                 <h2
                                   className="accordion-header"
@@ -531,6 +393,7 @@ const ProjectDetails = () => {
                                   </div>
                                 </div>
                               </div>
+                              {/* How Grids Work section */}
                               <div className="accordion-item mt-16">
                                 <h2
                                   className="accordion-header"
@@ -605,12 +468,10 @@ const ProjectDetails = () => {
               </div>
             </div>
           </div>
-
-        
         </div>
       </section>
-      {/* <!-- Single description section end --> */}
-      {/* <!-- Video modal start --> */}
+      {/* Single description section end */}
+      {/* Video modal start */}
       <div
         className="modal"
         id="review-video-modal"
@@ -638,8 +499,9 @@ const ProjectDetails = () => {
           </div>
         </div>
       </div>
-      {/* <!-- Video modal end --> */}
+      {/* Video modal end */}
     </div>
   );
 };
+
 export default ProjectDetails;

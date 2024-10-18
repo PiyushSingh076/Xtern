@@ -34,9 +34,11 @@
 
 .desc-container{
     width: 50%;
-    display: flex;
-    align-items: center;
+    min-width: 50%;
+    
 }
+
+
 
 .apply-project-conatainer{
     margin-top: 100px;
@@ -71,3 +73,11 @@
    
 
 }
+
+.des-single-courses-description{
+    width: 100%;
+    
+   
+    
+}
+
