@@ -41,6 +41,7 @@ const VerifyScreen = () => {
 
     try {
       await initRecaptchaVerifier(); // Initialize Recaptcha
+      console.log('reCAPTCHA initialized successfully');
       await sendOtp(ph, setShowOTP, setError); // Send OTP
     } catch (err) {
       console.error("Error during OTP sending:", err);
