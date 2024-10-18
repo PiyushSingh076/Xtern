@@ -37,6 +37,8 @@ import useFetchUserSkills from "../hooks/Auth/useFetchUserSkills";
 import useFetchUserData from "../hooks/Auth/useFetchUserData";
 import useFetchRealWorldTasks from "../hooks/Auth/useFetchRealWorldTasks";
 import useOAuthLogout from "../hooks/Auth/useOAuthLogout";
+import Mentor from "../assets/images/banner/mentor.png";
+
 const HomeScreen = () => {
   const [isFixed, setIsFixed] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -752,6 +754,41 @@ const HomeScreen = () => {
                     <p>Microsoft</p>
                   </div>
                 </div>
+              </Slider>
+            </Link>
+          </div>
+        </div>
+
+        <div className="home-category mt-32">
+          <div className="home-category-wrap container">
+            <div className="homescreen-second-wrapper-top">
+              <div className="categories-first">
+                <h2 className="home1-txt3">Top Mentors</h2>
+              </div>
+              <div className="view-all-second">
+                <Link to="/mentor-screen">
+                  <p className="see-all-txt">
+                    See all
+                    <span>
+                      <img src={RightArrow} alt="right-arrow" />
+                    </span>
+                  </p>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div
+          
+           className="categories-slider mt-16">
+            <Link to="/mentor-screen">
+              <Slider {...settings}>
+                 {/* Mentor  */}
+                 <div className="mentor-card">
+                  <img src={Mentor} alt='mentor-img'  width={'80px'}/>
+                  <h4>John Doe</h4>
+                  
+                  
+                 </div>
               </Slider>
             </Link>
           </div>
