@@ -27,7 +27,7 @@ export default function Home() {
         <img src={banner} className='banner-img' width={'55%'}/>
       
       <div className='home-landing-page-text-container'>
-           <span className='greeting-text'>Hey, {userData?.display_name}</span>
+           <span className='greeting-text'>Hey, {userData?.display_name || 'Guest'}</span>
            <span className='greeting-info'>Find match you want</span>
            <div className='landing-page-button-container'>
             <button className='find-job-button'>Find Jobs</button>
