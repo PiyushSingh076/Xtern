@@ -108,6 +108,12 @@ body {
   overflow: auto !important;
 }
 
+.add-job-btn{
+position: absolute;
+right: 10px;
+bottom: 15%;
+box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
 body:not(.dark-mode) {
   --primary-color: #fff !important;
   --title-color: #121212;
@@ -1146,10 +1152,10 @@ textarea {
 .role-sec{
   display: flex;
   flex-direction: column;
-  justify-content: center;
+
   gap: 30px;
   padding: 0 10px;
-  height: 60vh;
+  height: 100vh;
 }
 
 .intern-container , .venture-container{
@@ -1161,12 +1167,12 @@ textarea {
   padding: 20px 10px;
 
   & span {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
   }
 
   & p{
-    font-size: 12px;
+    font-size: 14px;
   }  
 
   &:hover{

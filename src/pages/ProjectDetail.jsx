@@ -15,6 +15,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
 import useFetchProjectData from "../hooks/Auth/useFetchProjectData";
 import useFetchUserData from "../hooks/Auth/useFetchUserData";
+import { useSelector } from "react-redux";
+
+
 
 const ProjectDetails = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
@@ -23,6 +26,10 @@ const ProjectDetails = () => {
   const { projectId } = useParams();
   const { projectData, loading, error } = useFetchProjectData(projectId);
   const { userData } = useFetchUserData();
+
+  const auth = useSelector((state) => state.role.auth);
+
+  console.log(auth);
 
   if (error) return <p>Error: {error.message}</p>;
 
@@ -641,7 +648,7 @@ const ProjectDetails = () => {
           </div>
 
           <div className="buy-now-description">
-           {userData?.id ? <Link to={`/applyproject/${projectId}`}>Apply Now</Link> : <Link to={`/signin`}>Apply Now</Link>}
+          { auth  ? <Link className="buy-now" to={`/applyproject/${projectId}`}>Apply Now</Link> : <Link className="buy-now" to={`/signin`}>Apply Now</Link>}
           </div>
         </div>
       </section>

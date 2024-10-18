@@ -5,12 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../constants/routes'; // Your routes
 import Intern from '../assets/images/DesktopImage/intern.png';
 import Employer from '../assets/images/DesktopImage/employee.png';
+import Mentor from '../assets/images/DesktopImage/mentor.png';
+import useFetchUserData from "../hooks/Auth/useFetchUserData";
+
 
 export default function PrefferedRole() {
     const [role, setRoleState] = useState(''); // Local state for role
     const selectedRole = useSelector((state) => state.role.selectedRole); // Access role from Redux store
     const dispatch = useDispatch(); // Dispatch actions to Redux
     const navigate = useNavigate(); // Hook to navigate between routes
+    const { userData, loading, error } = useFetchUserData();
 
     // Handle role change and dispatch action
     const handleRoleChange = (selectedRole) => {
@@ -21,13 +25,15 @@ export default function PrefferedRole() {
             navigate(ROUTES.INTERN); // Navigate to goal screen if "intern" is selected
         } else if (selectedRole === 'venture') {
             navigate(ROUTES.VENTURE); // Navigate to venture dashboard
+        } else if (selectedRole === 'mentor') {
+            navigate(ROUTES.MENTOR); // Navigate to mentor dashboard (you'll need to define this route)
         }
     };
 
     return (
         <div className="preffered-role-container">
             <span className="hey-txt">
-                Welcome <span style={{ color: '#3374AE' }}>Anirudh</span>
+                Welcome <span style={{ color: '#3374AE' }}>{userData?.display_name || "User"}</span>
             </span>
 
             <div className="select-lang-sec">
@@ -57,6 +63,19 @@ export default function PrefferedRole() {
                         <span>I am an Employer</span>
                         <p>
                             You organize, manage, and assume the risk of a business or enterprise.
+                        </p>
+                    </div>
+
+                    {/* Mentor Role Selection */}
+                    <div
+                        onClick={() => handleRoleChange('mentor')}
+                        className='venture-container'
+                    >
+                        <img src={Mentor} alt="Mentor" width={60} height={60} className='role-image'/>
+                        <span>I am a Mentor</span>
+                        <p>
+                            You are an experienced professional who guides and supports interns 
+                            or less experienced individuals in their career development.
                         </p>
                     </div>
                 </div>

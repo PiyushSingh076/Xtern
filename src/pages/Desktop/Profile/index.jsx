@@ -15,6 +15,8 @@ const SingleMentor = () => {
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
     const [interviewDate, setInterviewDate] = useState('');
+    const [interviewtime, setInterviewTime] = useState('');
+    const [interviewScheduled, setInterviewScheduled] = useState(false);
     const navigate = useNavigate();
     
     // Slider settings
@@ -30,7 +32,7 @@ const SingleMentor = () => {
 
     // schedule interview modal
     const handleScheduleInterview = () => {
-        alert('Schedule interview: ' + interviewDate);
+      setInterviewScheduled(true);
     }
     
 
@@ -96,12 +98,11 @@ const SingleMentor = () => {
                         </Slider>
      
                         {/* Tabs section */}
-                        <div className="profile-details-third-sec">
+                        <div className="single-mentor-third-sec">
                             <div className="fifth-decs-sec mt-32">
                                 <div className="fifth-decs-sec-wrap">
-                                    {/* Tab navigation */}
                                     <ul
-                                        className="nav nav-pills profile-details-tab"
+                                        className="nav nav-pills single-mentor-tab"
                                         id="mentor-tab"
                                         role="tablist"
                                     >
@@ -147,7 +148,6 @@ const SingleMentor = () => {
                                             </button>
                                         </li>
                                     </ul>
-                                    {/* Tab content */}
                                     <div className="tab-content" id="course-tab-btn">
                                         <div
                                             className="tab-pane fade show active mt-16"
@@ -159,6 +159,7 @@ const SingleMentor = () => {
                                                 <h4>Software Developer Intern</h4>
                                                 <p>TechCorp Inc. | June 2022 - August 2022</p>
                                                 <ul>
+                        
                                                 </ul>
                                             </div>
                                         </div>
@@ -206,11 +207,21 @@ const SingleMentor = () => {
             {/* Similar profiles section */}
             <section id="similar-profiles-section">
                 <div className="xtern-btn-sec">
-                    <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleInterviewModal">
-                        <img src={schedule} className="schedule-icon me-2" alt="schedule" width={20} height={20}/>
-                        <span>Schedule an Interview</span>
-                    </button>
-                    <button className="btn btn-secondary ms-2">Subscribe Xtern+</button>
+                    <div className="schedule-interview-btn" data-bs-toggle="modal" data-bs-target="#scheduleInterviewModal">
+                        <div>
+                            <img src={schedule} className="schedule-icon me-2" alt="schedule" width={20} height={20}/>
+                            <span>{interviewScheduled ? "Reschedule Interview" : "Schedule Interview"}</span>
+                        </div>
+                        <div className="interview-scheduled-sec">
+                            {interviewScheduled ? (
+                                <div className="interview-scheduled-sec-wrap">
+                                    <b>Interview Scheduled on:</b> <span>{interviewDate} at {interviewtime}</span>
+                                </div>
+                            ) : (
+                                <span>No Interview Scheduled</span>
+                            )}
+                        </div>
+                    </div>
                 </div>
                 
                 {/* Interview scheduling modal */}
@@ -230,7 +241,9 @@ const SingleMentor = () => {
                                     onChange={(e)=>setInterviewDate(e.target.value)}
                                     
                                      type="date" className="form-control mt-3" id="interviewDate" />
-                                      <input type="time" className="form-control mb-3" />
+                                      <input
+                                      onChange={(e)=>setInterviewTime(e.target.value)}
+                                       type="time" className="form-control mb-3" />
                                 </div>
                             </div>
                             <div className="modal-footer">

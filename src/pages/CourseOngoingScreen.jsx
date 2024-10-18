@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import TimeIcon from "../assets/images/checkout-screen/time-icon.svg";
 import useFetchUserJobs from "../hooks/Auth/useFetchUserJobs";
@@ -7,7 +7,8 @@ import Loading from "../components/Loading";
 
 const CourseOngoingScreen = () => {
   const { jobs, loading, error } = useFetchUserJobs(); // For jobs
-  const { projects, projectLoading, projectError } = useFetchUserProjects(); // For projects
+  const { projects, loading: projectLoading, error: projectError } = useFetchUserProjects(); // For projects
+  const [activeTab, setActiveTab] = useState("jobs");
 
   if (loading || projectLoading) {
     return <Loading />; // Or a proper loading spinner
@@ -53,28 +54,30 @@ const CourseOngoingScreen = () => {
             >
               <li className="nav-item" role="presentation">
                 <button
-                  className="nav-link active"
+                  className={`nav-link ${activeTab === "jobs" ? "active" : ""}`}
                   id="pills-home-tab"
                   data-bs-toggle="pill"
                   data-bs-target="#pills-home"
                   type="button"
                   role="tab"
                   aria-controls="pills-home"
-                  aria-selected="true"
+                  aria-selected={activeTab === "jobs"}
+                  onClick={() => setActiveTab("jobs")}
                 >
                   Jobs
                 </button>
               </li>
               <li className="nav-item" role="presentation">
                 <button
-                  className="nav-link"
+                  className={`nav-link ${activeTab === "projects" ? "active" : ""}`}
                   id="pills-profile-tab"
                   data-bs-toggle="pill"
                   data-bs-target="#pills-profile"
                   type="button"
                   role="tab"
                   aria-controls="pills-profile"
-                  aria-selected="false"
+                  aria-selected={activeTab === "projects"}
+                  onClick={() => setActiveTab("projects")}
                 >
                   Projects
                 </button>
@@ -84,21 +87,21 @@ const CourseOngoingScreen = () => {
             <div className="tab-content" id="pills-tabContent">
               {/* Jobs Tab */}
               <div
-                className="tab-pane fade show active"
+                className={`tab-pane fade ${activeTab === "jobs" ? "show active" : ""}`}
                 id="pills-home"
                 role="tabpanel"
                 aria-labelledby="pills-home-tab"
                 tabIndex="0"
               >
                 <div className="ongoing-section-details mt-16">
-                  {jobs.length > 0 ? (
+                  {jobs && jobs.length > 0 ? (
                     jobs.map((job, index) => (
                       <Link
                         to={`/internship/${job.id}`}
                         className={`checkout-screen-top ${
                           index === 0 ? "mt-32" : "mt-16"
                         }`}
-                        key={index}
+                        key={job.id}
                       >
                         <div className="checkout-first">
                           <img
@@ -134,7 +137,7 @@ const CourseOngoingScreen = () => {
                           <div className="checkout-second-fourth">
                             <div className="bookmark-rating">
                               <div className="bookmark-star">
-                                <img src={TimeIcon} alt="star-img" />
+                                <img src={TimeIcon} alt="time-icon" />
                               </div>
                               <div className="check-txt5 ps-1">
                                 Assessment: {job?.assessmentDuration}
@@ -147,35 +150,33 @@ const CourseOngoingScreen = () => {
                   ) : (
                     <p>No jobs posted yet</p>
                   )}
-
-                  <div
-                    className="position-fixed mb-5"
-                    style={{ bottom: "10%", left: "920px" }}
-                  >
-                    <Link to="/createjob" className="btn btn-primary">
-                      Add Job
-                    </Link>
-                  </div>
                 </div>
               </div>
+              {activeTab === "jobs" && (
+                <div className="position-fixed mb-5" style={{width:"100%", bottom: "8%", right: "20px" }}>
+                  <button className="add-job-btn btn btn-primary">
+                    Add Job
+                  </button>
+                </div>
+              )}
 
               {/* Projects Tab */}
               <div
-                className="tab-pane fade"
+                className={`tab-pane fade ${activeTab === "projects" ? "show active" : ""}`}
                 id="pills-profile"
                 role="tabpanel"
                 aria-labelledby="pills-profile-tab"
                 tabIndex="0"
               >
                 <div className="Completed-section-details mt-16">
-                  {projects.length > 0 ? (
+                  {projects && projects.length > 0 ? (
                     projects.map((project, index) => (
                       <Link
                         to={`/project/${project.id}`}
                         className={`checkout-screen-top ${
                           index === 0 ? "mt-32" : "mt-16"
                         }`}
-                        key={index}
+                        key={project.id}
                       >
                         <div className="checkout-first">
                           <img
@@ -214,38 +215,28 @@ const CourseOngoingScreen = () => {
                           <div className="checkout-second-fourth">
                             <div className="bookmark-rating">
                               <div className="bookmark-star">
-                                <img src={TimeIcon} alt="star-img" />
+                                <img src={TimeIcon} alt="time-icon" />
                               </div>
                               <div className="check-txt5 ps-1">
                                 Level: {project?.level}
                               </div>
                             </div>
                           </div>
-
-                          {/* <div className="gap-2 d-flex mt-4">
-                            {project?.skills?.map((skill, idx) => (
-                              <div key={idx} className="checkout-design">
-                                <p> {skill}</p>
-                              </div>
-                            ))}
-                          </div> */}
                         </div>
                       </Link>
                     ))
                   ) : (
                     <p>No projects posted yet</p>
                   )}
-
-                  <div
-                    className="position-fixed mb-5"
-                    style={{ bottom: "10%", left: "920px" }}
-                  >
-                    <Link className="btn btn-primary" to="/createproject">
-                      Add Project
-                    </Link>
-                  </div>
                 </div>
               </div>
+              {activeTab === "projects" && (
+                <div className="position-fixed mb-5" style={{width:"100%", bottom: "8%", right: "20px" }}>
+                  <button className="add-job-btn btn btn-primary">
+                    Add Project
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -6,14 +6,15 @@ import { ROUTES } from '../../../constants/routes'; // Your routes
 import './Prefference.css'; // Import your styles
 import Intern from '../../../assets/images/DesktopImage/intern.png';
 import Employer from '../../../assets/images/DesktopImage/employee.png';
-
+import Mentor from '../../../assets/images/DesktopImage/mentor.png';
+import useFetchUserData from '../../../hooks/Auth/useFetchUserData';
 
 export default function PrefferedRole() {
   const [role, setRoleState] = useState(''); // Local state for role
   const selectedRole = useSelector((state) => state.role.selectedRole); // Access role from Redux store
   const dispatch = useDispatch(); // Dispatch actions to Redux
   const navigate = useNavigate(); // Hook to navigate between routes
-
+  const { userData, loading, error } = useFetchUserData();
   // Handle role change and dispatch action
   const handleRoleChange = (selectedRole) => {
     setRoleState(selectedRole); // Update local state
@@ -29,7 +30,7 @@ export default function PrefferedRole() {
   return (
     <div className="des-preffered-role-container">
       <span className="des-hey-txt">
-        Welcome <span style={{ color: '#3374AE' }}>Anirudh</span>
+        Welcome <span style={{ color: '#3374AE' }}>{userData?.display_name || "User"}</span>
       </span>
 
       <div className="des-select-lang-sec">
@@ -59,6 +60,19 @@ export default function PrefferedRole() {
             <span>I am an Employer</span>
             <p>
               You organize, manage, and assume the risk of a business or enterprise.
+            </p>
+          </div>
+
+          {/* Mentor Role Selection */}
+          <div
+            onClick={() => handleRoleChange('mentor')}
+            className='des-venture-container'
+          >
+            <img src={Mentor} alt="Mentor" className="des-role-image" />
+            <span>I am a Mentor</span>
+            <p>
+              You are an experienced professional who guides and supports interns 
+              or less experienced individuals in their career development.
             </p>
           </div>
         </div>

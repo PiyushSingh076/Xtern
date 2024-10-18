@@ -76,9 +76,9 @@
   
   .des-role-sec {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     width: 100%;
-    max-width: 800px;
+    gap: 20px;
     margin-top: 30px;
   }
   
