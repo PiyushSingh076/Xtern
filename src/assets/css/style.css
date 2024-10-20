@@ -2656,6 +2656,8 @@ ul.desc-learn-sec {
   text-decoration: none;
 }
 
+
+
 .mentor-content {
   display: flex;
   align-items: center;
@@ -4418,14 +4420,16 @@ span.ongoing-txt2 {
 
 .mentor-comment {
 
-  border: 1px solid var(--border-colors);
+ margin-top: 16px;
+  max-width: 40px;
+  width: 100%;
+  height: 40px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-  padding: 1px 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 15px;
-  border: 1px solid black;
+  border-radius: 8px;
+
 }
 
 .mentor-follow-sec {
@@ -5620,6 +5624,8 @@ input:-webkit-autofil {
 
 .categories-slider .slick-track {
   margin-left: 15px;
+  gap: 10px;
+  height: 180px;
 }
 
 .shop-now2-sec {

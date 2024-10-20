@@ -38,6 +38,7 @@ import useFetchUserData from "../hooks/Auth/useFetchUserData";
 import useFetchRealWorldTasks from "../hooks/Auth/useFetchRealWorldTasks";
 import useOAuthLogout from "../hooks/Auth/useOAuthLogout";
 import Mentor from "../assets/images/banner/mentor.png";
+import companylogo from "../assets/images/banner/companylogo.png";
 
 const HomeScreen = () => {
   const [isFixed, setIsFixed] = useState(false);
@@ -79,6 +80,19 @@ const HomeScreen = () => {
         : [...prevState, taskId]
     );
   };
+
+  const mentorSettings = {
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    swipeToSlide: true,
+    infinite: true,
+    variableWidth: true,
+    autoplaySpeed: 2000,
+    dots: false,
+    arrows: false,
+  };
+
 
   const settings = {
     slidesToShow: 1,
@@ -781,14 +795,17 @@ const HomeScreen = () => {
           
            className="categories-slider mt-16">
             <Link to="/mentor-screen">
-              <Slider {...settings}>
+              <Slider {...mentorSettings}>
                  {/* Mentor  */}
-                 <div className="mentor-card">
-                  <img src={Mentor} alt='mentor-img'  width={'80px'}/>
-                  <h4>John Doe</h4>
-                  
-                  
-                 </div>
+                {[1, 2, 3,4,5,6,7,8,9,10].map((item) => (
+                  <div key={item} className="mentor-card-main">
+                    <img src={Mentor} alt='mentor-img' width='80px' />
+                    <h4>John Doe</h4>
+                    <img src={companylogo} alt='company-logo' width={'50px'}/>
+                  </div>
+                ))}
+                
+          
               </Slider>
             </Link>
           </div>

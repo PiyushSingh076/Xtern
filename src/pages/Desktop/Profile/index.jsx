@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import Slider from "react-slick"
 import schedule from '../../../assets/svg/schedule.svg'
 import medal from '../../../assets/svg/medal.png'
+
 import './Profile.css'
 
 // Component definition

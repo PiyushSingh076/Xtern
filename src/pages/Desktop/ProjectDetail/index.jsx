@@ -145,7 +145,7 @@ const ProjectDetails = () => {
           <div
           
            className="desc-container">
-            <div className="des-single-courses-description">
+            <div className="des-clearsingle-courses-description">
               {/* Skills and price */}
               <div className="first-decs-sec mt-16">
                 <div className="first-decs-sec-wrap">

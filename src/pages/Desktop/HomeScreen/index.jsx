@@ -40,7 +40,9 @@ import useFetchUserSkills from "../../../hooks/Auth/useFetchUserSkills";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useFetchRealWorldTasks from "../../../hooks/Auth/useFetchRealWorldTasks";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
-import Header from "../Header/Header";
+import companylogo from "../../../assets/images/banner/companylogo.png";
+import Mentor from "../../../assets/images/banner/mentor.png";
+
 const HomeScreen = () => {
   const [isFixed, setIsFixed] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -81,6 +83,19 @@ const HomeScreen = () => {
         : [...prevState, taskId]
     );
   };
+
+  const mentorSettings = {
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    swipeToSlide: true,
+    infinite: true,
+    variableWidth: true,
+    autoplaySpeed: 2000,
+    dots: true,
+    arrows: false,
+  };
+  
 
   const settings = {
     slidesToShow: 1,
@@ -370,6 +385,43 @@ const HomeScreen = () => {
           </div>
         </div>
 
+        <div className="home-category mt-32">
+          <div className="home-category-wrap container">
+            <div className="homescreen-second-wrapper-top">
+              <div className="categories-first">
+                <h2 className="home1-txt3">Top Mentors</h2>
+              </div>
+              <div className="view-all-second">
+                <Link to="/mentor-screen">
+                  <p className="see-all-txt">
+                    See all
+                    <span>
+                      <img src={RightArrow} alt="right-arrow" />
+                    </span>
+                  </p>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div
+          
+           className="categories-slider mt-16">
+            <Link to="/mentor-screen">
+              <Slider {...mentorSettings}>
+                 {/* Mentor  */}
+                {[1, 2, 3,4,5,6,7,8,9,10].map((item) => (
+                  <div key={item} className="mentor-card-main">
+                    <img src={Mentor} alt='mentor-img' width='100px' />
+                    <h4>John Doe</h4>
+                    <img src={companylogo} alt='company-logo' width={'60px'}/>
+                  </div>
+                ))}
+                
+          
+              </Slider>
+            </Link>
+          </div>
+        </div>
        
         <div className="home-category mt-32">
           <div className="home-category-wrap container">
@@ -549,6 +601,9 @@ const HomeScreen = () => {
             </Link>
           </div>
         </div>
+
+      
+
       </section>
 
       <div className="menu-sidebar details">

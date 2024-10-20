@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import Slider from "react-slick";
 import schedule from '../assets/svg/schedule.svg';
 import medal from '../assets/svg/medal.png';
+import dollar from '../assets/svg/dollar.svg';
 
 const SingleMentor = () => {
     // State declarations
@@ -136,7 +137,7 @@ const SingleMentor = () => {
 
 
                                 <div className="mentor-comment">
-                                    Subscribe
+                                    <img src={dollar} width={'24px'} alt="dollar" />
                                 </div>
                             </div>
                         </div>
