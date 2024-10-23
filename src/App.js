@@ -20,6 +20,7 @@ import DesktopSignUp from './pages/Desktop/Auth/SignUp'
 import DesktopPrefferedServiceIntern from './pages/Desktop/Prefference/PrefferServiceIntern.jsx'
 import DesktopPrefferServiceVenture from './pages/Desktop/Prefference/PrefferServiceVenture.jsx'
 import DesktopPrefferServiceMentor from './pages/Desktop/Prefference/PrefferServiceMentor.jsx'
+import DesktopAllProjects from './pages/Desktop/ProjectDetail/AllProjects.jsx'
 
 
 
@@ -361,9 +362,9 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
           path={ROUTES.NEW_RELEASE_COURSE}
           element={
             <ProtectedRoute>
-              <NewReleaseCourse />
+            {isMobileView ? <NewReleaseCourse /> : <DesktopAllProjects/>}
             </ProtectedRoute>
-          }
+          } 
         />
         <Route
           path={ROUTES.BOOKMARK}

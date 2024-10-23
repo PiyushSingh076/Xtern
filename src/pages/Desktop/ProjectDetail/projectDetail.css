@@ -30,6 +30,8 @@
 .des-img-fluid{
     margin-left: 50px;
     margin-right: 100px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
 }
 
 .desc-container{
@@ -81,3 +83,39 @@
     
 }
 
+
+.des-all-projects-container{
+    width: 100%;
+    margin-top: 100px;
+}
+
+.des-new-courses-wrap{
+    place-items: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 80px;
+}
+
+.des-new-courses-sec{
+    margin-top: 20px;
+    width: 350px;
+    height: 350px;
+    margin-bottom: 50px;
+    transition: all 0.5s ease;
+}
+
+.des-new-courses-sec:hover{
+    transform: scale(1.05);
+    transition: all 1s ease;
+    cursor: pointer;
+  
+}
+
+
+
+.des-new-courses img{
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+}

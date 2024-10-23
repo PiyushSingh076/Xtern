@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <div className='home-landing-page-container'>
 
-        <img src={banner} className='banner-img' width={'55%'}/>
+        <img src={banner} className='banner-img' width={'50%'}/>
       
       <div className='home-landing-page-text-container'>
            <span className='greeting-text'>Hey, {userData?.display_name || 'Guest'}</span>
