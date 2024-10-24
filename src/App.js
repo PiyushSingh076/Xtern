@@ -92,7 +92,7 @@ import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
-import demensionHelper from "./hooks/demensionHelper.js¸";
+import demensionHelper from "./hooks/demensionHelper.js";
 
 
 function App() {

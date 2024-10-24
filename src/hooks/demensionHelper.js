@@ -6,25 +6,23 @@ export default function useWindowDimensions() {
   const getWindowDimensions = useCallback(() => {
     const width = hasWindow ? window.innerWidth : null;
     const height = hasWindow ? window.innerHeight : null;
-    const isMobileView = width < "992";
+    const isMobileView = width < 1000; // Fixed number comparison
 
-    // 420 is for mobile view if view in mobile view then width changes in height of mobile
+    // 420 is for mobile view, width changes in height for mobile
     return {
-      width: width < "992" ? height : width,
+      width: isMobileView ? height : width, // Adjust this logic based on your needs
       height,
       isMobileView,
     };
   }, [hasWindow]);
 
-  const [windowDimensions, setWindowDimensions] = useState(
-    getWindowDimensions()
-  );
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions);
 
   useEffect(() => {
     if (hasWindow) {
-      function handleResize() {
+      const handleResize = () => {
         setWindowDimensions(getWindowDimensions());
-      }
+      };
 
       window.addEventListener("resize", handleResize);
       return () => window.removeEventListener("resize", handleResize);
