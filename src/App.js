@@ -25,9 +25,6 @@ import DesktopAllProjects from './pages/Desktop/ProjectDetail/AllProjects.jsx'
 
 
 
-
-
-
 // Mobile View
 
 import PrefferedServiceVenture from "./pages/PrefferedServiceVenture.jsx";
@@ -92,17 +89,14 @@ import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
-import demensionHelper from "./hooks/demensionHelper.js";
+import useWindowDimensions from "./hooks/demensionHelper.js";
 
 
 function App() {
   const location = useLocation(); // Get the current location
-  const { isMobileView } = demensionHelper();
+  const { isMobileView } = useWindowDimensions();
 
-
-console.log(isMobileView);
-
-
+  console.log(isMobileView);
 
   // Define the pages where BottomNavigation is needed
   const pagesWithBottomNavigation = [
@@ -115,18 +109,14 @@ console.log(isMobileView);
 
   return (
     <div className="App">
-  { !isMobileView
-      &&
-   (<Header />) }
-    
-       
-   
+      {!isMobileView && <Header />}
+      
       <Toaster />
       <Routes>
         {/* Public Routes */}
         <Route path={ROUTES.HOME} element={isMobileView ? <HomeScreen /> : <DesktopHomeScreen/>} />
         <Route path={ROUTES.SIGN_UP} element={isMobileView ?  <SignUp /> : <DesktopSignUp/>} />
-      <Route path={ROUTES.SIGN_IN} element={isMobileView ? <SignIn /> : <DesktopSignIn/>} />
+        <Route path={ROUTES.SIGN_IN} element={isMobileView ? <SignIn /> : <DesktopSignIn/>} />
         <Route path={ROUTES.FORGET_PASSWORD} element={<ForgetPassword />} />
         <Route path={ROUTES.CHECK_MAIL_SCREEN} element={<CheckMailScreen />} />
         <Route
@@ -148,19 +138,19 @@ console.log(isMobileView);
        element={isMobileView ? <PrefferedRole/> : <DesktopPrefferRole/>}
        />
 
-<Route
-path={ROUTES.INTERN}
-element={isMobileView ? <PrefferedServiceIntern/> : <DesktopPrefferedServiceIntern/>}
-/>
-<Route
-path={ROUTES.MENTOR}
-element={isMobileView ? <PrefferedServiceMentor/> : <DesktopPrefferServiceMentor/>}
-/>
+      <Route
+      path={ROUTES.INTERN}
+      element={isMobileView ? <PrefferedServiceIntern/> : <DesktopPrefferedServiceIntern/>}
+      />
+      <Route
+      path={ROUTES.MENTOR}
+      element={isMobileView ? <PrefferedServiceMentor/> : <DesktopPrefferServiceMentor/>}
+      />
 
-<Route
-path={ROUTES.VENTURE}
-element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVenture/>}
-/>
+      <Route
+      path={ROUTES.VENTURE}
+      element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVenture/>}
+      />
 
 
         {/* Protected Routes */}
@@ -172,14 +162,6 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path={ROUTES.PREFERRED_LANGUAGE}
-          element={
-            <ProtectedRoute>
-              <PreferredLanguage />
-            </ProtectedRoute>
-          }
-        /> */}
         <Route
           path={ROUTES.CREATE_JOB}
           element={
@@ -188,14 +170,6 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path={ROUTES.PRIMARY_GOAL_SCREEN}
-          element={
-            <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
-              <PrimaryGoalScreen />
-            </ProtectedRoute>
-          }
-        /> */}
         <Route
           path={ROUTES.SPEND_LEARNING}
           element={
@@ -256,7 +230,7 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
           path={ROUTES.CREATE_PROJECT}
           element={
             <ProtectedRoute>
-      {isMobileView ?        <CreateProject /> : ''}
+              {isMobileView ? <CreateProject /> : null}
             </ProtectedRoute>
           }
         />
@@ -264,7 +238,7 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
           path={ROUTES.SINGLE_COURSE_DESCRIPTION + "/:projectId"}
           element={
             <ProtectedRoute>
-         {isMobileView ?     <ProjectDetails /> : <DesktopProjectDetails/>}
+              {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails/>}
             </ProtectedRoute>
           }
         />
@@ -272,7 +246,7 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
           path={ROUTES.APPLY_PROJECT + "/:projectId"}
           element={
             <ProtectedRoute>
-            {isMobileView ?  <ApplyProject /> : <DesktopCreateProject/>}
+              {isMobileView ? <ApplyProject /> : <DesktopCreateProject/>}
             </ProtectedRoute>
           }
         />
@@ -352,7 +326,7 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
           path={ROUTES.NEW_RELEASE_COURSE}
           element={
             <ProtectedRoute>
-            {isMobileView ? <NewReleaseCourse /> : <DesktopAllProjects/>}
+              {isMobileView ? <NewReleaseCourse /> : <DesktopAllProjects/>}
             </ProtectedRoute>
           } 
         />
@@ -408,7 +382,7 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
           path={ROUTES.PROFILE}
           element={
             <ProtectedRoute>
-      {isMobileView ?        <Profile /> : <DesktopProfile/>}
+              {isMobileView ? <Profile /> : <DesktopProfile/>}
             </ProtectedRoute>
           }
         />
@@ -436,14 +410,6 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path={ROUTES.WALLET_SCREEN}
-          element={
-            <ProtectedRoute>
-           {isMobileView ?    <WalletScreen />  : <DesktopWallet/>}
-            </ProtectedRoute>
-          }
-        /> */}
         <Route
           path={ROUTES.SINGLE_MENTOR}
           element={
@@ -545,8 +511,8 @@ element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVen
         <Route path="" element={<Footer />} />
       </Routes>
 
-      {/* Conditionally render BottomNavigation based on the current path */}
-      {pagesWithBottomNavigation.includes(location.pathname)&& isMobileView && (
+      
+      { isMobileView && (
         <BottomNavigation />
       )}
     
