@@ -96,7 +96,9 @@ function App() {
   const location = useLocation(); // Get the current location
   const { isMobileView } = useWindowDimensions();
 
-  console.log(isMobileView);
+
+
+  console.log('view',isMobileView);
 
   // Define the pages where BottomNavigation is needed
   const pagesWithBottomNavigation = [

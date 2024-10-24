@@ -4,15 +4,15 @@ export default function useWindowDimensions() {
   const hasWindow = typeof window !== "undefined";
 
   const getWindowDimensions = useCallback(() => {
-    const width = window.innerWidth;
-   
-    const isMobileView = ¸ width < '768';
+    const width = hasWindow ? window.innerWidth : null;
+    const height = hasWindow ? window.innerHeight : null;
+    const isMobileView = width !== null && width < '768';
 
-    console.log('isMobileView demensionHelper: ',isMobileView);
+    console.log('isMobileView ',isMobileView);
 
     return {
       width,
-
+      height,
       isMobileView,
     };
   }, [hasWindow]);
