@@ -6,7 +6,7 @@ export default function useWindowDimensions() {
   const getWindowDimensions = useCallback(() => {
     const width = hasWindow ? window.innerWidth : null;
     const height = hasWindow ? window.innerHeight : null;
-    const isMobileView = width < 1000; // Fixed number comparison
+    const isMobileView = width < 768; // Fixed number comparison
 
     // 420 is for mobile view, width changes in height for mobile
     return {
