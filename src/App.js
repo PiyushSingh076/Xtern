@@ -92,26 +92,16 @@ import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
+import demensionHelper from "./hooks/demensionHelper.js¸";
 
 
 function App() {
   const location = useLocation(); // Get the current location
- 
-
-const [isMobileView, setIsMobileView] = useState(false);
-
-useEffect(() => {
-  const handleResize = () => {
-    setIsMobileView(window.innerWidth <= 768); 
-  };
+  const { isMobileView } = demensionHelper();
 
 
-  handleResize();
+console.log(isMobileView);
 
-  window.addEventListener("resize", handleResize);
-
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
 
 
   // Define the pages where BottomNavigation is needed
