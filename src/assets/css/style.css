@@ -191,7 +191,7 @@ textarea {
 }
 
 .container {
- 
+  width: 100%;
   background: var(--primary-color);
   padding: 0 16px;
 }
@@ -6923,7 +6923,7 @@ color: #3374AE;
   color: #fff;
   padding: 2px 5px;
   border-radius: 20px;
-  
+
 }
 
 .payment-summary-item{
