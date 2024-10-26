@@ -1,4 +1,5 @@
 import { Route, Routes, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import "./assets/css/style.css";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
@@ -27,6 +28,7 @@ import DesktopAllProjects from './pages/Desktop/ProjectDetail/AllProjects.jsx'
 
 // Mobile View
 
+import Teams from "./pages/Teams/Teams.jsx";
 import PrefferedServiceVenture from "./pages/PrefferedServiceVenture.jsx";
 import PrefferedServiceMentor from "./pages/PrefferedServiceMentor.jsx";
 import PrefferedServiceIntern from "./pages/PrefferedServiceIntern.jsx";
@@ -90,11 +92,17 @@ import CreateJob from "./pages/CreateJob";
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
 import useWindowDimensions from "./hooks/demensionHelper.js";
+import BottomNavigationVenture from "./components/BottomNavigationVenture";
 
 
 function App() {
   const location = useLocation(); // Get the current location
   const { isMobileView } = useWindowDimensions();
+
+  const selectedRole = useSelector((state) => state.role.selectedRole);
+
+  console.log('selectedRole:',selectedRole);
+
 
 
 
@@ -508,14 +516,30 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path={ROUTES.TEAMS}
+          element={
+            <ProtectedRoute>
+              <Teams />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Footer */}
         <Route path="" element={<Footer />} />
       </Routes>
 
       
-      { isMobileView && (
-        <BottomNavigation />
+      {isMobileView && location.pathname !== ROUTES.SIGN_IN && 
+      location.pathname !== ROUTES.SIGN_UP && 
+      location.pathname !== ROUTES.INTERN && 
+      location.pathname !== ROUTES.MENTOR && 
+      location.pathname !== ROUTES.VENTURE && (
+        <>
+          {selectedRole === 'venture' && <BottomNavigationVenture />}
+         
+        
+        </>
       )}
     
     </div>

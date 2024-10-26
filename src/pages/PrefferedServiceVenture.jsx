@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function PrefferedServiceVenture() {
     const [ventureRole, setVentureRole] = useState(null);
     const [potential, setPotential] = useState(null);
+    const navigate = useNavigate();
 
     const handleRoleChange = (event) => {
         setVentureRole(event.target.value); // For venture roles like CEO, CTO, etc.
@@ -138,7 +140,7 @@ export default function PrefferedServiceVenture() {
                 </label>
 
             </div>
-            <button className='continue-btn'>Continue</button>
+            <button onClick={()=>navigate('/homescreen')} className='continue-btn'>Continue</button>
         </div>
     );
 }

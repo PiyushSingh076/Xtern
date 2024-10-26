@@ -42,11 +42,19 @@ const roleSlice = createSlice({
       state.auth = action.payload;
       saveState(state);
     },
+    removeRole: (state) => {
+      state.selectedRole = '';
+      saveState(state);
+    },
+    removeAuth: (state) => {
+      state.auth = false;
+      saveState(state);
+    },
   },
 });
 
 // Export the actions
-export const { setRole, setAuth } = roleSlice.actions;
+export const { setRole, setAuth, removeRole, removeAuth   } = roleSlice.actions;
 
 // Export the reducer
 export default roleSlice.reducer;

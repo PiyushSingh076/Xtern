@@ -4,12 +4,9 @@ import { TbBriefcase2 } from "react-icons/tb";
 import { MdOutlineMenuBook } from "react-icons/md";
 import { MdGroups } from "react-icons/md";
 import { MdOutlineChat } from "react-icons/md";
-import { useSelector } from "react-redux";
 
-const BottomNavigation = () => {
+const BottomNavigationVenture = () => {
   const location = useLocation(); // Get the current location
-
-  const auth = useSelector((state) => state.role.auth);
 
   // Function to check if the current path matches the link
   const isActive = (path) => location.pathname === path;
@@ -35,20 +32,20 @@ const BottomNavigation = () => {
                     size={24}
                   />
                 </Link>
-                <span className="d-block small">Assess</span>
+                <span className="d-block small">Posts</span>
               </li>
-              <li className={isActive("/bookmark") ? "active" : ""}>
+              <li className={isActive("/teams") ? "active" : ""}>
                 <Link
-                  to="/bookmark"
-                  className={isActive("/bookmark") ? "active" : ""}
+                  to="/teams"
+                  className={isActive("/teams") ? "active" : ""}
                 >
                   <TbBriefcase2 // Replaced the SVG with TbBriefcase2 icon
-                    className={isActive("/bookmark") ? "active" : ""}
-                    color={isActive("/bookmark") ? "blue" : "lightblue"}
+                    className={isActive("/teams") ? "active" : ""}
+                    color={isActive("/teams") ? "blue" : "lightblue"}
                     size={24} // Set the size to match the previous SVG size
                   />
                 </Link>
-                <span className="d-block small">Apply</span>
+                <span className="d-block small">Teams</span>
               </li>
               <li className={isActive("/homescreen") ? "active" : ""}>
                 <Link
@@ -78,7 +75,7 @@ const BottomNavigation = () => {
               </li>
               <li className={isActive("/profile") ? "active" : ""}>
                 <Link
-                  to={auth ? "/profile" : "/signin"}
+                  to="/profile"
                   className={isActive("/profile") ? "active" : ""}
                 >
                   <svg
@@ -111,7 +108,7 @@ const BottomNavigation = () => {
                     </g>
                   </svg>
                 </Link>
-                <span className="d-block small">profile</span>
+                <span className="d-block small">Org</span>
               </li>
             </ul>
           </div>
@@ -121,4 +118,4 @@ const BottomNavigation = () => {
   );
 };
 
-export default BottomNavigation;
+export default BottomNavigationVenture;
