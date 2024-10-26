@@ -107,11 +107,13 @@ function App() {
  
 
   const [isMobileView, setIsMobileView] = useState(false);
+
+
   console.log('isMobileView',isMobileView);
   useEffect(() => {
     const checkMobileView = () => {
       console.log('window.innerWidth',window.innerWidth);
-      setIsMobileView(window.innerWidth <= 990);
+      setIsMobileView(window.innerWidth <=678);
     };
 
     // Initial check
