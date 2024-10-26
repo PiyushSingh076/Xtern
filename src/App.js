@@ -91,22 +91,42 @@ import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
-import useWindowDimensions from "./hooks/demensionHelper.js";
+
 import BottomNavigationVenture from "./components/BottomNavigationVenture";
 
 
 function App() {
   const location = useLocation(); // Get the current location
-  const { isMobileView } = useWindowDimensions();
+
 
   const selectedRole = useSelector((state) => state.role.selectedRole);
 
   console.log('selectedRole:',selectedRole);
 
 
+ 
+
+  const [isMobileView, setIsMobileView] = useState(false);
+  console.log('isMobileView',isMobileView);
+  useEffect(() => {
+    const checkMobileView = () => {
+      setIsMobileView(window.innerWidth <= 768);
+    };
+
+    // Initial check
+    checkMobileView();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkMobileView);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', checkMobileView);
+    };
+  }, []);
 
 
-  console.log('view',isMobileView);
+
 
   // Define the pages where BottomNavigation is needed
   const pagesWithBottomNavigation = [
