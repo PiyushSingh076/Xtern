@@ -105,7 +105,7 @@ body {
   margin: 0 auto !important;
   height: 100%;
   background: var(--primary-color) !important;
-  overflow: hidden !important;
+  overflow: auto !important;
 }
 
 .add-job-btn{
