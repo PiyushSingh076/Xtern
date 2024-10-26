@@ -110,8 +110,8 @@ function App() {
   console.log('isMobileView',isMobileView);
   useEffect(() => {
     const checkMobileView = () => {
-      console.log('window.innerHeight',window.innerHeight);
-      setIsMobileView(window.innerHeight <= 768);
+      console.log('window.innerWidth',window.innerWidth);
+      setIsMobileView(window.innerWidth <= 768);
     };
 
     // Initial check
