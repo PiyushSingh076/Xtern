@@ -126,7 +126,7 @@ function App() {
     return () => {
       window.removeEventListener('resize', checkMobileView);
     };
-  }, [window.innerHeight]);
+  }, [window.innerWidth]);
 
 
 
@@ -149,7 +149,7 @@ function App() {
       <Toaster />
       <Routes>
         {/* Public Routes */}
-        <Route path={ROUTES.HOME} element={isMobileView ? <HomeScreen /> : <DesktopHomeScreen/>} />
+        <Route path={ROUTES.HOME} element={isMobileView ? <HomeScreen /> : <HomeScreen/>} />
         <Route path={ROUTES.SIGN_UP} element={isMobileView ?  <SignUp /> : <DesktopSignUp/>} />
         <Route path={ROUTES.SIGN_IN} element={isMobileView ? <SignIn /> : <DesktopSignIn/>} />
         <Route path={ROUTES.FORGET_PASSWORD} element={<ForgetPassword />} />

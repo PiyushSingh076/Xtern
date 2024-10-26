@@ -269,7 +269,7 @@ textarea {
 #top-header,
 #top-navbar {
   background: var(--primary-color);
-  max-width: 600px;
+  max-width: 100%;
 }
 
 #primary_goal,
