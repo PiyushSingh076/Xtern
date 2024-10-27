@@ -1,21 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import profile from "../../assets/images/banner/mentor.png";
 import share from "../../assets/svg/share.svg";
 import chat from "../../assets/svg/chat.png";
 import useFetchShortlistedInterns from "../../hooks/Teams/useFetchShortlistedInterns";
-import useSubscribeIntern from "../../hooks/Teams/useSubscribeIntern";
 
 export default function Shortlisted() {
   const { shortlistedInterns, loading } = useFetchShortlistedInterns();
-  const { subscribeIntern, loading: subscribeLoading } = useSubscribeIntern();
+  const [selectedIntern, setSelectedIntern] = useState(null);
 
+  console.log(shortlistedInterns, "ShortListed");
   if (loading) {
     return <div>Loading shortlisted interns...</div>;
   }
 
-  const handleSubscribe = (intern) => {
-    subscribeIntern(intern.uid); // Pass intern's ID as `internRef`
-    console.log(intern.uid, "pppppppp");
+  const handleScheduleInterview = (intern) => {
+    setSelectedIntern(intern);
   };
 
   return (
@@ -52,18 +51,65 @@ export default function Shortlisted() {
             </div>
           </div>
           <div className="info-card-action-section">
+            <button className="subscribe-btn">Subscribe xtern</button>
             <button
-              className="subscribe-btn"
-              onClick={() => handleSubscribe(intern)}
-              disabled={subscribeLoading}
+              className="replace-btn"
+              data-bs-toggle="modal"
+              data-bs-target="#scheduleModal"
+              onClick={() => handleScheduleInterview(intern)}
             >
-              {subscribeLoading ? "Subscribing..." : "Subscribe xtern"}
+              Schedule Interview
             </button>
-            <button className="replace-btn">Schedule Interview</button>
             <button className="unsubscribe-btn">Reject</button>
           </div>
         </div>
       ))}
+
+      {/* Schedule Interview Modal */}
+      <div
+        className="modal fade"
+        id="scheduleModal"
+        tabIndex="-1"
+        aria-labelledby="scheduleModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="scheduleModalLabel">
+                Schedule Interview
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              {selectedIntern && (
+                <p>
+                  Schedule interview for{" "}
+                  {selectedIntern.display_name || "No Name Available"}
+                </p>
+              )}
+              {/* Add your interview scheduling form here */}
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" className="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
