@@ -93,7 +93,6 @@ const HomeScreen = () => {
     arrows: false,
   };
 
-
   const settings = {
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -791,27 +790,23 @@ const HomeScreen = () => {
               </div>
             </div>
           </div>
-          <div
-          
-           className="categories-slider mt-16">
+          <div className="categories-slider mt-16">
             <Link to="/mentor-screen">
               <Slider {...mentorSettings}>
-                 {/* Mentor  */}
-                {[1, 2, 3,4,5,6,7,8,9,10].map((item) => (
+                {/* Mentor  */}
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
                   <div key={item} className="mentor-card-main">
-                    <img src={Mentor} alt='mentor-img' width='80px' />
+                    <img src={Mentor} alt="mentor-img" width="80px" />
                     <h4>John Doe</h4>
-                    <img src={companylogo} alt='company-logo' width={'50px'}/>
+                    <img src={companylogo} alt="company-logo" width={"50px"} />
                   </div>
                 ))}
-                
-          
               </Slider>
             </Link>
           </div>
         </div>
 
-        <div className="home-category mt-32">
+        {/* <div className="home-category mt-32">
           <div className="home-category-wrap container">
             <div className="homescreen-second-wrapper-top">
               <div className="categories-first">
@@ -988,7 +983,7 @@ const HomeScreen = () => {
               </Slider>
             </Link>
           </div>
-        </div>
+        </div> */}
       </section>
 
       <div className="menu-sidebar details">

@@ -9,7 +9,7 @@ import { auth, db } from "../../../../firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
 import SignInWithSocial from "../../../../components/SignInWithSocial";
 import Footer from "../../../../components/Footer";
-import './SignUp.css'
+import "./SignUp.css";
 
 const SignUp = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -340,7 +340,7 @@ const SignUp = () => {
           </div>
         </div>
       </section>
-      <Footer link="/signin" />
+      <Footer link="/signin" type="signup" />
     </>
   );
 };
