@@ -1,54 +1,30 @@
-import React from 'react'
-import profile from '../../assets/images/banner/mentor.png';
+import React from "react";
+import profile from "../../assets/images/banner/mentor.png";
+import useFetchOrganizationMembers from "../../hooks/Teams/useFetchOrganizationMembers";
 
 export default function MyTeam() {
-
-    const team = [
-        {
-            name: 'Rajesh Kumar',
-            position: 'CEO'
-        },
-        {
-            name: 'Priya Sharma',
-            position: 'CTO'
-        },
-        {
-            name: 'Amit Patel',
-            position: 'COO'
-        },
-        {
-            name: 'Neha Gupta',
-            position: 'CFO'
-        },
-        {
-            name: 'Vikram Singh',
-            position: 'Head of Marketing'
-        },
-        {
-            name: 'Ananya Reddy',
-            position: 'HR Manager'
-        },
-        {
-            name: 'Sanjay Mehta',
-            position: 'Product Manager'
-        },
-        {
-            name: 'Deepa Verma',
-            position: 'Lead Developer'
-        }
-    ]
+  const { members, loading } = useFetchOrganizationMembers();
+  console.log(members, "llll");
+  if (loading) {
+    return <div>Loading team members...</div>;
+  }
 
   return (
-    <div style={{marginTop: '20px'}} className='info-card-container'>
-      {team.map((item, index) => (
-        <div key={index} className='info-card-myteam'>
-          <img src={profile} alt="profile" width={'80px'}/>
-          <div className='info-card-myteam-content'>
-            <h4>{item.name}</h4>
-            <span className='position-tag'>{item.position}</span>
+    <div style={{ marginTop: "20px" }} className="info-card-container">
+      {members.map((item, index) => (
+        <div key={index} className="info-card-myteam">
+          <img
+            src={item.photo_url || profile}
+            alt="profile"
+            width={"80px"}
+            className="rounded-circle"
+          />
+          <div className="info-card-myteam-content">
+            <h4>{item.display_name}</h4>
+            <span className="position-tag">{item.role}</span>
           </div>
         </div>
       ))}
     </div>
-  )
+  );
 }

@@ -9,7 +9,8 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import SignInWithSocial from "../../../../components/SignInWithSocial";
-import './SignIn.css'
+import "./SignIn.css";
+import { ROUTES } from "../../../../constants/routes";
 
 const SignIn = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -41,10 +42,10 @@ const SignIn = () => {
           // Check if 'preferredLanguage' and 'typeUser' fields exist
           if (userData.preferredLanguage && userData.typeUser) {
             // Both fields exist, redirect to home screen
-            navigate("/homescreen"); // Adjust the route as necessary
+            navigate(ROUTES.PREFERRED_ROLE); // Adjust the route as necessary
           } else {
             // One or both fields are missing, redirect to preferred language page
-            navigate("/preferredlanguage");
+            navigate(ROUTES.PREFERRED_ROLE);
           }
         } else {
           console.error("No such user profile!");
@@ -247,7 +248,7 @@ const SignIn = () => {
 
       {/* <!-- Footer start --> */}
 
-      <Footer link="/signup" />
+      <Footer link="/signup" type="signin" />
     </>
   );
 };

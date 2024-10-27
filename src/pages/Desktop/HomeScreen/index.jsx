@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Slider from "react-slick";
-import './HomeScreen.css'
-import banner from '../../../assets/images/banner/banner.png'
+import "./HomeScreen.css";
+import banner from "../../../assets/images/banner/banner.png";
 import RightArrow from "../../../assets/svg/right-arrow.svg";
 import CategoryImg1 from "../../../assets/images/category/category1.png";
 import CategoryImg2 from "../../../assets/images/category/category2.png";
@@ -95,7 +95,6 @@ const HomeScreen = () => {
     dots: true,
     arrows: false,
   };
-  
 
   const settings = {
     slidesToShow: 1,
@@ -160,12 +159,10 @@ const HomeScreen = () => {
   return (
     <div className="homescreen-container">
       {/* <!-- Header start --> */}
-      <LandingPage userData={userData}/>
+      <LandingPage userData={userData} />
       {/* <!-- Header end --> */}
       {/* <!-- Homescreen content start --> */}
       <section id="des-homescreen">
-  
-
         <div className="home-release mt-32">
           <div className="home-category-wrap container">
             <div className="homescreen-second-wrapper-top">
@@ -191,8 +188,8 @@ const HomeScreen = () => {
                   <div className="new-courses">
                     <Link to={`/project/${task.id}`}>
                       <img
-                       width={'100px'}
-                       height={'200px'}
+                        width={"100px"}
+                        height={"200px"}
                         src={task.imageUrl || ReleaseImg2}
                         alt="course-img"
                       />
@@ -403,27 +400,23 @@ const HomeScreen = () => {
               </div>
             </div>
           </div>
-          <div
-          
-           className="categories-slider mt-16">
+          <div className="categories-slider mt-16">
             <Link to="/mentor-screen">
               <Slider {...mentorSettings}>
-                 {/* Mentor  */}
-                {[1, 2, 3,4,5,6,7,8,9,10].map((item) => (
+                {/* Mentor  */}
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
                   <div key={item} className="mentor-card-main">
-                    <img src={Mentor} alt='mentor-img' width='100px' />
+                    <img src={Mentor} alt="mentor-img" width="100px" />
                     <h4>John Doe</h4>
-                    <img src={companylogo} alt='company-logo' width={'60px'}/>
+                    <img src={companylogo} alt="company-logo" width={"60px"} />
                   </div>
                 ))}
-                
-          
               </Slider>
             </Link>
           </div>
         </div>
-       
-        <div className="home-category mt-32">
+
+        {/* <div className="home-category mt-32">
           <div className="home-category-wrap container">
             <div className="homescreen-second-wrapper-top">
               <div className="categories-first">
@@ -600,10 +593,7 @@ const HomeScreen = () => {
               </Slider>
             </Link>
           </div>
-        </div>
-
-      
-
+        </div> */}
       </section>
 
       <div className="menu-sidebar details">
