@@ -562,6 +562,8 @@ function App() {
       location.pathname !== ROUTES.VENTURE && (
         <>
           {selectedRole === 'venture' && <BottomNavigationVenture />}
+          {selectedRole === 'intern' && <BottomNavigation/>}
+          {selectedRole === '' && <BottomNavigation/>}
          
         
         </>
