@@ -1,3 +1,4 @@
+
 import React from "react";
 import profile from "../../assets/images/banner/mentor.png";
 import share from "../../assets/svg/share.svg";
@@ -62,8 +63,7 @@ export default function Shortlisted() {
             <button className="replace-btn">Schedule Interview</button>
             <button className="unsubscribe-btn">Reject</button>
           </div>
+
         </div>
-      ))}
-    </div>
-  );
+    );
 }
