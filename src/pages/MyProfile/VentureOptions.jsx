@@ -152,7 +152,7 @@ export default function VentureOptions() {
                       </svg>
                     </div>
                     <div className="icon-name">
-                      <p>Shortlist Intern</p>
+                      <p>Shortlisted Interns</p>
                     </div>
                     <div className="icon-back-btn">
                       <svg

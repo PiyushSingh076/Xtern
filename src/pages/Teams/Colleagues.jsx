@@ -105,8 +105,10 @@ export default function Colleagues() {
   const [index, setIndex] = useState(0);
   const [invitedPhone, setInvitedPhone] = useState("");
   const [role, setRole] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
 
-  // Use the hook
+  const countryCodes = ["+91", "+92", "+93", "+94", "+95"];
+
   const { sendInvite, loading, error } = useSendInvite();
 
   const handleInviteSend = async () => {
@@ -114,7 +116,12 @@ export default function Colleagues() {
       alert("Please enter both phone number and role.");
       return;
     }
-    await sendInvite(invitedPhone, role);
+
+    // Remove any existing country code from phone number
+    const phoneWithoutCode = invitedPhone.replace(/^\+\d{2}/, '');
+    const fullPhoneNumber = countryCode + phoneWithoutCode;
+
+    await sendInvite(fullPhoneNumber, role);
     if (!error) {
       setInvitedPhone("");
       setRole("");
@@ -138,7 +145,6 @@ export default function Colleagues() {
         </button>
       </div>
 
-      {/* Modal for Sending Invites */}
       <div
         className="modal fade"
         id="inviteModal"
@@ -170,25 +176,41 @@ export default function Colleagues() {
               </button>
             </div>
             <div className="modal-body invite-modal-body">
-              <input
-                type="text"
-                placeholder="Enter phone number"
-                className="invite-modal-input"
-                value={invitedPhone}
-                onChange={(e) => setInvitedPhone(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Role of the member"
-                className="invite-modal-input"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              />
+              <div className="phone-input-container">
+                <select 
+                  className="phone-input-select" 
+                  value={countryCode} 
+                  onChange={(e) => setCountryCode(e.target.value)}
+                >
+                  {countryCodes.map((code) => (
+                    <option key={code} value={code}>{code}</option>
+                  ))}
+                </select>
+                <input
+                  type="tel"
+                  placeholder="Enter phone number"
+                  className="invite-modal-input"
+                  value={invitedPhone}
+                  style={{border: "none", backgroundColor: 'transparent'}}
+                  onChange={(e) => setInvitedPhone(e.target.value)}
+                />
+              </div>
+              <div className="mt-3">
+                <input
+                  type="text"
+                  placeholder="Role of the member"
+                  className="invite-modal-input"
+                  style={{border: "1px solid #E0E0E0", borderRadius: "10px"}}
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                />
+              </div>
               <button
                 type="button"
                 className="invite-modal-btn"
                 onClick={handleInviteSend}
                 disabled={loading}
+                data-bs-dismiss={!error && !loading ? "modal" : ""}
               >
                 {loading ? "Sending..." : "Send invite"}
               </button>
