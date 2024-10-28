@@ -4,7 +4,7 @@ import share from "../../assets/svg/share.svg";
 import chat from "../../assets/svg/chat.png";
 import useFetchShortlistedInterns from "../../hooks/Teams/useFetchShortlistedInterns";
 import useSubscribeIntern from "../../hooks/Teams/useSubscribeIntern";
-
+import { FaRegSadCry } from "react-icons/fa";
 export default function Shortlisted() {
   const { shortlistedInterns, loading } = useFetchShortlistedInterns();
   const { subscribeIntern, loading: subscribing, error } = useSubscribeIntern();
@@ -27,57 +27,71 @@ export default function Shortlisted() {
 
   return (
     <div className="info-card-container">
-      {shortlistedInterns.map((intern, index) => (
-        <div key={index} className="info-card-container-inner">
-          <div className="info-card-shortlisted">
-            <div className="share-icon">
-              <img src={share} alt="share" width={"20px"} />
-            </div>
-            <div className="info-card-img-section">
-              <img
-                src={intern.photo_url || profile}
-                alt="profile"
-                width={"70px"}
-                className="rounded-circle"
-              />
-            </div>
-            <div className="info-card-content">
-              <div className="info-card-name-section">
-                <h4>{intern.display_name || "No Name Available"}</h4>
-                <div className="chat-icon">
-                  <img src={chat} alt="chat" width={"15px"} />
-                  <span>Chat</span>
+      {/* Display a message and icon if no data is found */}
+      {shortlistedInterns.length === 0 ? (
+        <div
+          className="no-data"
+          style={{ textAlign: "center", marginTop: "50px" }}
+        >
+          <FaRegSadCry size={50} color="#ccc" />{" "}
+          {/* Icon with size and color */}
+          <p style={{ fontSize: "18px", color: "#555" }}>
+            No shortlisted interns found.
+          </p>
+        </div>
+      ) : (
+        shortlistedInterns.map((intern, index) => (
+          <div key={index} className="info-card-container-inner">
+            <div className="info-card-shortlisted">
+              <div className="share-icon">
+                <img src={share} alt="share" width={"20px"} />
+              </div>
+              <div className="info-card-img-section">
+                <img
+                  src={intern.photo_url || profile}
+                  alt="profile"
+                  width={"70px"}
+                  className="rounded-circle"
+                />
+              </div>
+              <div className="info-card-content">
+                <div className="info-card-name-section">
+                  <h4>{intern.display_name || "No Name Available"}</h4>
+                  <div className="chat-icon">
+                    <img src={chat} alt="chat" width={"15px"} />
+                    <span>Chat</span>
+                  </div>
+                </div>
+                <div className="info-card-skills-section">
+                  {intern.skillSet?.map((skill, skillIndex) => (
+                    <span className="info-card-skill" key={skillIndex}>
+                      {skill}
+                    </span>
+                  ))}
                 </div>
               </div>
-              <div className="info-card-skills-section">
-                {intern.skillSet?.map((skill, skillIndex) => (
-                  <span className="info-card-skill" key={skillIndex}>
-                    {skill}
-                  </span>
-                ))}
-              </div>
+            </div>
+            <div className="info-card-action-section">
+              <button
+                className="subscribe-btn"
+                onClick={() => handleSubscribe(intern)}
+                disabled={subscribing}
+              >
+                {subscribing ? "Subscribing..." : "Subscribe xtern"}
+              </button>
+              <button
+                className="replace-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#scheduleModal"
+                onClick={() => handleScheduleInterview(intern.uid)}
+              >
+                Schedule Interview
+              </button>
+              <button className="unsubscribe-btn">Reject</button>
             </div>
           </div>
-          <div className="info-card-action-section">
-            <button
-              className="subscribe-btn"
-              onClick={() => handleSubscribe(intern)}
-              disabled={subscribing}
-            >
-              {subscribing ? "Subscribing..." : "Subscribe xtern"}
-            </button>
-            <button
-              className="replace-btn"
-              data-bs-toggle="modal"
-              data-bs-target="#scheduleModal"
-              onClick={() => handleScheduleInterview(intern.uid)}
-            >
-              Schedule Interview
-            </button>
-            <button className="unsubscribe-btn">Reject</button>
-          </div>
-        </div>
-      ))}
+        ))
+      )}
 
       {/* Display error message if any */}
       {error && <div className="error-message">{error}</div>}
