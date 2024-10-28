@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import useFetchUserData from "../../hooks/Auth/useFetchUserData";
+
+
 import code from '../../assets/svg/code.svg';
 import { useSelector } from "react-redux";
 import Slider from "react-slick";
-import schedule from '../../assets/svg/schedule.svg';
-import medal from '../../assets/svg/medal.png';
-import dollar from '../../assets/svg/dollar.svg';
+
 
 export default function SkillSet() {
-    const {internInfo} = useSelector((state)=>state.internInfo)
+   
+    const internInfo = useSelector((state) => state.internInfo);
+    console.log(internInfo)
+
 
     const settings = {
         dots: false,

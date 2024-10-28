@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setInternInfo } from '../Store/Slice/InternInfo';
-import { useNavigate } from 'react-router-dom';
 
 export default function PrefferedService() {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [potential, setPotential] = useState(null);
     const [skillset, setSkillset] = useState('');
     const [rating, setRating] = useState('');
@@ -47,13 +47,15 @@ export default function PrefferedService() {
             return;
         }
 
-        dispatch(setInternInfo({
+        const internData = {
             internType: potential,
             skillSet: SkillsetArray,
             availability: availability,
             currentlyStudying: currentlyStudying,
             graduationYear: graduationYear
-        }));
+        };
+
+        dispatch(setInternInfo(internData));
         alert('Intern Info Submitted');
         navigate('/profile');
     };

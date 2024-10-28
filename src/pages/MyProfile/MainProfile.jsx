@@ -73,12 +73,14 @@ export default function MainProfile() {
                                     </div>
                                 </div>
                             </div>
-                        </>
-                    )}
+
 
                     <div className="mentor-comment">
                         <img src={dollar} width={'24px'} alt="dollar" />
                     </div>
+                        </>
+                    )}
+
                 </div>
             </div>
         </div>
