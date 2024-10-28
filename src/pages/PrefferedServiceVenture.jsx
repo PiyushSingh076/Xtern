@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { setVentureInfo } from '../Store/Slice/VentureInfo';
+import { useDispatch } from 'react-redux';
 
 export default function PrefferedServiceVenture() {
     const [ventureRole, setVentureRole] = useState(null);
+    const [companyName, setCompanyName] = useState('');
     const [potential, setPotential] = useState(null);
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
     const handleRoleChange = (event) => {
         setVentureRole(event.target.value); // For venture roles like CEO, CTO, etc.
     };
 
     const handleRoleChangeIntern = (event) => {
         setPotential(event.target.value); // For potential intern roles
+    };
+
+    const handleContinue = () => {
+       
+        dispatch(setVentureInfo({ role: ventureRole, potential: potential, companyName: companyName }));
+        navigate('/homescreen');
     };
 
     return (
@@ -75,16 +84,36 @@ export default function PrefferedServiceVenture() {
             </div>
 
             <div className="select-lang-sec">
+                <span className='select-lang'>Your Company Name:</span>
+            </div>
+
+            <div className="company-input-container">
+                    <input
+                        type="text"
+                        id="company-name"
+                        name="company"
+                        placeholder="Enter Company Name"
+                        className="company-name-input"
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                    />
+                </div>
+
+            <div className="select-lang-sec">
                 <span className='select-lang'>You are Looking for:</span>
             </div>
 
+            
+
             <div className="lang-sec">
+              
                 <input
                     type="radio"
                     id="developer-intern"
                     name="potential"
                     value="Developer Intern"
                     onChange={handleRoleChangeIntern}
+                    
                     checked={potential === 'Developer Intern'}
                 />
                 <label className="custom-radio-sel-lang" htmlFor="developer-intern">
@@ -140,7 +169,7 @@ export default function PrefferedServiceVenture() {
                 </label>
 
             </div>
-            <button onClick={()=>navigate('/homescreen')} className='continue-btn'>Continue</button>
+            <button onClick={handleContinue} className='continue-btn'>Continue</button>
         </div>
     );
 }

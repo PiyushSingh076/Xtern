@@ -34,14 +34,14 @@ const BottomNavigationVenture = () => {
                 </Link>
                 <span className="d-block small">Posts</span>
               </li>
-              <li className={isActive("/teams") ? "active" : ""}>
+              <li className={isActive("/teams/xtern") ? "active" : ""}>
                 <Link
-                  to="/teams"
-                  className={isActive("/teams") ? "active" : ""}
+                  to="/teams/xtern"
+                  className={isActive("/teams/xtern") ? "active" : ""}
                 >
                   <TbBriefcase2 // Replaced the SVG with TbBriefcase2 icon
-                    className={isActive("/teams") ? "active" : ""}
-                    color={isActive("/teams") ? "blue" : "lightblue"}
+                    className={isActive("/teams/xtern") ? "active" : ""}
+                    color={isActive("/teams/xtern") ? "blue" : "lightblue"}
                     size={24} // Set the size to match the previous SVG size
                   />
                 </Link>

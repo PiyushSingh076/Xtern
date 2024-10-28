@@ -124,7 +124,22 @@ export default function Shortlisted() {
                   {selectedIntern.display_name || "No Name Available"}
                 </p>
               )}
-              {/* Add your interview scheduling form here */}
+              <div className="mb-3">
+                <label htmlFor="interviewDate" className="form-label">Date</label>
+                <input 
+                  type="date" 
+                  className="form-control" 
+                  id="interviewDate"
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="interviewTime" className="form-label">Time</label>
+                <input 
+                  type="time" 
+                  className="form-control" 
+                  id="interviewTime"
+                />
+              </div>
             </div>
             <div className="modal-footer">
               <button

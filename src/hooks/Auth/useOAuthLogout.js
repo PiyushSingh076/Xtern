@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 import { auth } from "../../firebaseConfig";
 import { useDispatch } from "react-redux";
 import { removeAuth, removeRole } from "../../Store/Slice/UserInfo";
+import { clearVentureInfo } from "../../Store/Slice/VentureInfo";
+import { resetInternInfo } from "../../Store/Slice/InternInfo";
 
 const useOAuthLogout = () => {
   const [loading, setLoading] = useState(false); // Track loading state
@@ -24,6 +26,8 @@ const useOAuthLogout = () => {
       navigate("/homescreen");
       dispatch(removeAuth());
       dispatch(removeRole());
+      dispatch(clearVentureInfo());
+      dispatch(resetInternInfo());
        // Redirect the user to the login page
     } catch (error) {
       console.error("Error during logout:", error);

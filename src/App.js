@@ -61,7 +61,7 @@ import CourseOngoingScreen from "./pages/CourseOngoingScreen";
 import SingleCourseOngoing from "./pages/SingleCourseOngoing";
 import ChatScreen from "./pages/ChatScreen";
 import SingleChatScreen from "./pages/SingleChatScreen";
-import Profile from "./pages/Profile2";
+import Profile from "./pages/MyProfile/Index.jsx";
 import ProfileEdit from "./pages/ProfileEdit";
 import WalletScreen from "./pages/WalletScreen";
 import SingleMentor from "./pages/SingleMentor";
