@@ -6,13 +6,20 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux"; // Import Provider
 import store from "./Store/store"; // Import your Redux store
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+// Load your Stripe public key
+const stripePromise = loadStripe('pk_test_51Oh72XAXDAbmyv8vxtSvVe4JcBpnSfkAhOpJpncouW64PwxcDBKUQB3fLRwGOky5Rq01kFuZ1YottmsijWO8Ihmu0037iKnt6W');
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}> {/* Wrap everything with Provider */}
       <BrowserRouter>
+      <Elements stripe={stripePromise}>
         <App />
+      </Elements>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>
