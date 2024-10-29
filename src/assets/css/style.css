@@ -4491,7 +4491,8 @@ span.ongoing-txt2 {
   display: flex;
   flex-direction: row;
   overflow-x: hidden;
-  
+  justify-content: space-between;
+  align-items: center;
   margin-top: 10px;
 }
 
@@ -7013,3 +7014,19 @@ color: #3374AE;
   width: 25%;
 }
 
+.nav-item.loading{
+  animation: width 2s ease-in-out infinite;
+}
+
+@keyframes width {
+  0%{
+    width: 100%;
+  }
+  50%{
+    width: 25%;
+  }
+  100%{
+    width: 100%;
+  }
+
+}

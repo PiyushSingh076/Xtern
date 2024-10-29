@@ -563,6 +563,7 @@ function App() {
         <>
           {selectedRole === 'venture' && <BottomNavigationVenture />}
           {selectedRole === 'intern' && <BottomNavigation/>}
+          {selectedRole === 'mentor' && <BottomNavigationVenture/>}
           {selectedRole === '' && <BottomNavigation/>}
          
         

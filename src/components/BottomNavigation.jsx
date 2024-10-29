@@ -24,7 +24,7 @@ const BottomNavigation = () => {
                 className={isActive("/course-ongoing-screen") ? "active" : ""}
               >
                 <Link
-                  to="/course-ongoing-screen"
+                  to={auth ? "/course-ongoing-screen" : "/signin"}
                   className={isActive("/course-ongoing-screen") ? "active" : ""}
                 >
                   <MdOutlineMenuBook
@@ -39,7 +39,7 @@ const BottomNavigation = () => {
               </li>
               <li className={isActive("/bookmark") ? "active" : ""}>
                 <Link
-                  to="/bookmark"
+                  to={auth ? "/bookmark" : "/signin"}
                   className={isActive("/bookmark") ? "active" : ""}
                 >
                   <TbBriefcase2 // Replaced the SVG with TbBriefcase2 icon
@@ -65,7 +65,7 @@ const BottomNavigation = () => {
               </li>
               <li className={isActive("/chat-screen") ? "active" : ""}>
                 <Link
-                  to="/chat-screen"
+                  to={auth ? "/chat-screen" : "/signin"}
                   className={isActive("/chat-screen") ? "active" : ""}
                 >
                   <MdOutlineChat

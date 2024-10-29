@@ -1,22 +1,27 @@
-// BottomNavigation.js
+// Bottom navigation component for venture users
 import { Link, useLocation } from "react-router-dom";
-import { TbBriefcase2 } from "react-icons/tb";
-import { MdOutlineMenuBook } from "react-icons/md";
-import { MdGroups } from "react-icons/md";
-import { MdOutlineChat } from "react-icons/md";
+import { TbBriefcase2 } from "react-icons/tb"; // Briefcase icon for Teams tab
+import { MdOutlineMenuBook } from "react-icons/md"; // Book icon for Posts tab
+import { MdGroups } from "react-icons/md"; // Groups icon for Discover tab
+import { MdOutlineChat } from "react-icons/md"; // Chat icon for Chat tab
+import teams from "../assets/svg/teams.svg";
+import org from "../assets/svg/org.svg";
 
 const BottomNavigationVenture = () => {
-  const location = useLocation(); // Get the current location
+  const location = useLocation(); // Get the current location from react-router
 
-  // Function to check if the current path matches the link
+  // Helper function to check if current path matches given path
   const isActive = (path) => location.pathname === path;
 
   return (
+    // Main bottom navigation container with padding
     <div id="bottom-navigation" style={{ paddingBottom: "20px" }}>
       <div className="container">
         <div className="home-navigation-menu">
           <div className="bottom-panel navigation-menu-wrap">
+            {/* Navigation menu items */}
             <ul className="bootom-tabbar d-flex justify-content-around">
+              {/* Posts tab */}
               <li
                 className={isActive("/course-ongoing-screen") ? "active" : ""}
               >
@@ -34,19 +39,26 @@ const BottomNavigationVenture = () => {
                 </Link>
                 <span className="d-block small">Posts</span>
               </li>
+
+              {/* Teams tab */}
               <li className={isActive("/teams/xtern") ? "active" : ""}>
                 <Link
                   to="/teams/xtern"
                   className={isActive("/teams/xtern") ? "active" : ""}
                 >
-                  <TbBriefcase2 // Replaced the SVG with TbBriefcase2 icon
+                  <img
+                    src={teams}
                     className={isActive("/teams/xtern") ? "active" : ""}
-                    color={isActive("/teams/xtern") ? "blue" : "lightblue"}
-                    size={24} // Set the size to match the previous SVG size
+                    style={{
+                      filter: isActive("/teams/xtern") ? "brightness(0) invert(1)" : "none",
+                      width: isActive("/teams/xtern") ? "40px" : "24px"
+                    }}
                   />
                 </Link>
                 <span className="d-block small">Teams</span>
               </li>
+
+              {/* Discover tab */}
               <li className={isActive("/homescreen") ? "active" : ""}>
                 <Link
                   to="/homescreen"
@@ -60,6 +72,8 @@ const BottomNavigationVenture = () => {
                 </Link>
                 <span className="d-block small">Discover</span>
               </li>
+
+              {/* Chat tab */}
               <li className={isActive("/chat-screen") ? "active" : ""}>
                 <Link
                   to="/chat-screen"
@@ -73,40 +87,23 @@ const BottomNavigationVenture = () => {
                 </Link>
                 <span className="d-block small">Chat</span>
               </li>
+
+              {/* Organization/Profile tab */}
               <li className={isActive("/profile") ? "active" : ""}>
                 <Link
                   to="/profile"
                   className={isActive("/profile") ? "active" : ""}
                 >
-                  <svg
+                  {/* Custom SVG icon for profile */}
+                  <img
+                    src={org}
                     className={isActive("/profile") ? "active" : ""}
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <mask
-                      id="mask0_202_1984"
-                      style={{ maskType: "alpha" }}
-                      maskUnits="userSpaceOnUse"
-                      x="0"
-                      y="0"
-                      width="24"
-                      height="24"
-                    >
-                      <rect width="24" height="24" fill="white" />
-                    </mask>
-                    <g mask="url(#mask0_202_1984)">
-                      <path
-                        d="M20 21C20 19.6044 20 18.9067 19.8278 18.3389C19.44 17.0605 18.4395 16.06 17.1611 15.6722C16.5933 15.5 15.8956 15.5 14.5 15.5H9.5C8.10444 15.5 7.40665 15.5 6.83886 15.6722C5.56045 16.06 4.56004 17.0605 4.17224 18.3389C4 18.9067 4 19.6044 4 21M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z"
-                        stroke="black"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </g>
-                  </svg>
+                    style={{
+                      filter: isActive("/profile") ? "brightness(0) invert(1)" : "none",
+                      width: isActive("/profile") ? "40px" : "24px",
+                      color: isActive("/profile") ? "white" : "blue"
+                    }}
+                  />
                 </Link>
                 <span className="d-block small">Org</span>
               </li>
