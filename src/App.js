@@ -456,7 +456,7 @@ function App() {
           }
         />
         <Route
-          path={ROUTES.SINGLE_MENTOR}
+          path={ROUTES.SINGLE_MENTOR + "/:uid"}
           element={
             <ProtectedRoute>
               <SingleMentor />

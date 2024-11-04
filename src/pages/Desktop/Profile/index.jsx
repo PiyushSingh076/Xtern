@@ -82,7 +82,7 @@ const SingleMentor = () => {
                   <span>{profileData?.medal}</span>
                 </div>
                 <img
-                  src={profileData?.profilePicture}
+                  src={profileData?.photo_url}
                   alt={profileData?.display_name || "profile image"}
                   width={96}
                   height={96}
@@ -90,9 +90,7 @@ const SingleMentor = () => {
               </div>
               <div className="profile-details-details">
                 <h1>{profileData?.display_name}</h1>
-                <h4 className="mt-12">
-                  Graduation Year: 2024
-                </h4>
+                <h4 className="mt-12">Graduation Year: 2024</h4>
                 <p className="mt-16">{profileData?.role}</p>
               </div>
             </div>
@@ -185,42 +183,50 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                  {profileData?.workExperience.map((work , index) => {
+                      {profileData?.workExperience.map((work, index) => {
+                        const startDate = new Date(
+                          work.startdate.seconds * 1000
+                        );
 
-  const startDate = new Date(work.startdate.seconds * 1000);
+                        const startDateFormatted = startDate.toLocaleDateString(
+                          "en-US",
+                          { year: "numeric", month: "long" }
+                        );
 
-  const startDateFormatted = startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+                        return (
+                          <div
+                            className="experience-sec"
+                            key={work.role + work.companyname}
+                          >
+                            <h4>{work.role}</h4>
+                            <p>
+                              {work.companyname} | {startDateFormatted} - August
+                              2022
+                            </p>
 
-  return (
-    <div className="experience-sec" key={work.role + work.companyname}>
-      <h4>{work.role}</h4>
-      <p>{work.companyname} | {startDateFormatted} - August 2022</p>
+                            <button
+                              className="desc-btn"
+                              data-bs-toggle="collapse"
+                              data-bs-target={`#collapse-${index}`}
+                              aria-expanded="false"
+                              aria-controls={`collapse-${index}`}
+                            >
+                              View Description
+                            </button>
 
-      <button 
-      className="desc-btn" 
-      data-bs-toggle="collapse" 
-      data-bs-target={`#collapse-${index}`}
-      aria-expanded="false" 
-      aria-controls={`collapse-${index}`}
-    >
-      View Description
-    </button>
-
-    <div 
-    style={{marginTop: '10px'}}
-      id={`collapse-${index}`} 
-      className="collapse" 
-      aria-labelledby={`collapse-${index}`}
-    >
-      <div className="card card-body">
-        {work.description}
-      </div>
-    </div>
-     
-    </div>
-  );
-})}
-
+                            <div
+                              style={{ marginTop: "10px" }}
+                              id={`collapse-${index}`}
+                              className="collapse"
+                              aria-labelledby={`collapse-${index}`}
+                            >
+                              <div className="card card-body">
+                                {work.description}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                   <div className="tab-content" id="student-tabContent">
@@ -230,13 +236,18 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                   {profileData?.educationDetails.map((educ)=> (  <div className="experience-sec">
-                        <h4>{educ.degree}</h4>
-                        <h6>Stream: ({educ.branch})</h6>
-                        <p>{educ.collegename} </p>
-                        <p> Batch: {educ.startyear} - {educ.endyear}</p>
-                        {/* <span> cgpa </span> */}
-                      </div>))}
+                      {profileData?.educationDetails.map((educ) => (
+                        <div className="experience-sec">
+                          <h4>{educ.degree}</h4>
+                          <h6>Stream: ({educ.branch})</h6>
+                          <p>{educ.collegename} </p>
+                          <p>
+                            {" "}
+                            Batch: {educ.startyear} - {educ.endyear}
+                          </p>
+                          {/* <span> cgpa </span> */}
+                        </div>
+                      ))}
                     </div>
                   </div>
                   <div className="tab-content" id="review-tabContent">
@@ -247,49 +258,45 @@ const SingleMentor = () => {
                       tabIndex="0"
                       aria-labelledby="reviews-tab-btn"
                     >
-   {profileData?.projectDetails.map((project, index) => (
-  <div className="experience-sec" key={index}>
-    <h4>{project.projectname}</h4>
+                      {profileData?.projectDetails.map((project, index) => (
+                        <div className="experience-sec" key={index}>
+                          <h4>{project.projectname}</h4>
 
-    <div style={{ marginTop: '20px' }}>
-      <span><b>Tech Stack:</b> {project.techstack.map((item) => (<span key={item}> {item} |</span>))}</span>
-    </div>
+                          <div style={{ marginTop: "20px" }}>
+                            <span>
+                              <b>Tech Stack:</b>{" "}
+                              {project.techstack.map((item) => (
+                                <span key={item}> {item} |</span>
+                              ))}
+                            </span>
+                          </div>
 
-    <button 
-      className="desc-btn" 
-      data-bs-toggle="collapse" 
-      data-bs-target={`#collapse-${index}`}
-      aria-expanded="false" 
-      aria-controls={`collapse-${index}`}
-    >
-      View Description
-    </button>
+                          <button
+                            className="desc-btn"
+                            data-bs-toggle="collapse"
+                            data-bs-target={`#collapse-${index}`}
+                            aria-expanded="false"
+                            aria-controls={`collapse-${index}`}
+                          >
+                            View Description
+                          </button>
 
-    <Link
-    to={project.link}
-    className="link-btn" 
-    >
-      Live Link
-    </Link>
+                          <Link to={project.link} className="link-btn">
+                            Live Link
+                          </Link>
 
-    <div 
-    style={{marginTop: '10px'}}
-      id={`collapse-${index}`} 
-      className="collapse" 
-      aria-labelledby={`collapse-${index}`}
-    >
-      <div className="card card-body">
-        {project.description}
-      </div>
-    </div>
-  </div>
-))}
-
-
-
-                 
-
-                     
+                          <div
+                            style={{ marginTop: "10px" }}
+                            id={`collapse-${index}`}
+                            className="collapse"
+                            aria-labelledby={`collapse-${index}`}
+                          >
+                            <div className="card card-body">
+                              {project.description}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -394,7 +401,6 @@ const SingleMentor = () => {
           </div>
         </div>
         {/* Similar profiles */}
-     
       </section>
     </div>
   );
