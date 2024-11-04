@@ -30,15 +30,14 @@ const SingleMentor = () => {
   } = useUserProfileData(uid);
   console.log("profileData", profileData, profileError);
   // Slider settings
-  const settings = {
-    infinite: false,
-    speed: 500,
-    slidesToShow: 2,
-    slidesToScroll: 2,
-    initialSlide: 0,
-    autoplay: true,
-    autoplaySpeed: 3000,
-  };
+// const settings = {
+//   infinite: false,
+//   speed: 500,
+//   slidesToShow: 2,
+//   slidesToScroll: 2,
+//   initialSlide: 0,
+//   autoplay: false,
+// };
 
   // schedule interview modal
   const handleScheduleInterview = () => {
@@ -91,9 +90,9 @@ const SingleMentor = () => {
               <div className="profile-details-details">
                 <h4>{profileData?.display_name}</h4>
                 <span className="mt-12">
-                  Graduation Year: 2024
+                  Graduation Year: {profileData?.graduationyear}
                 </span>
-                <p className="mt-16">{profileData?.role}</p>
+                <p className="mt-14">{profileData?.role}</p>
               </div>
             </div>
 
@@ -103,7 +102,7 @@ const SingleMentor = () => {
             </div>
 
             {/* Skills slider */}
-            <Slider {...settings}>
+              <div className="skillset-container">
               {profileData?.skillSet.map((skill, index) => (
                 <div className="profile-details-second-wrap-sec" key={index}>
                   <div
@@ -125,7 +124,7 @@ const SingleMentor = () => {
                   </div>
                 </div>
               ))}
-            </Slider>
+       </div>
 
             {/* Tabs section */}
             <div className="single-mentor-third-sec">
@@ -193,7 +192,7 @@ const SingleMentor = () => {
 
   return (
     <div className="experience-sec" key={work.role + work.companyname}>
-    <img src={work.logo} className="educ-logo" width={'100px'}/>
+    <img src={work.logo} className="educ-logo" width={'100px'} height={'100px'}/>
    <div className="experience-info">
    <h4>{work.role}</h4>
       <p>{work.companyname} | {startDateFormatted} - August 2022</p>
@@ -255,6 +254,7 @@ const SingleMentor = () => {
                     >
    {profileData?.projectDetails.map((project, index) => (
   <div className="experience-sec" key={index}>
+     <img src={project?.logo} width={'100px'} height={'100px'} className="educ-logo"/>
   <div className="experience-info">
   <h4>{project.projectname}</h4>
 
