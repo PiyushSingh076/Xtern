@@ -92,12 +92,12 @@ const SingleMentor = () => {
             <MainProfile ProfileData = {profileData}/>
             <div className="navbar-boder mt-24"></div>
 
-            {profileData.typeUser === "venture" && <VentureOptions />}
+            {role.selectedRole === "venture" && <VentureOptions />}
 
-            {profileData.typeUser === "Intern" && <SkillSet skill={profileData.skillSet} />}
+            {role.selectedRole === "intern" && <SkillSet />}
 
             {/* Tabs section */}
-            {profileData.typeUser === "Intern" && <Acadamic />}
+            {role.selectedRole === "intern" && <Acadamic />}
           </div>
         </div>
       </section>

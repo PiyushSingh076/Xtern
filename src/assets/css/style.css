@@ -4658,6 +4658,8 @@ span.ongoing-txt2 {
 }
 
 .experience-sec{
+  display: flex;
+  justify-content: start;
   margin-top: 16px;
   border: 1px solid var(--border-colors);
   padding: 12px;
@@ -4666,6 +4668,17 @@ span.ongoing-txt2 {
   background: var(--background-input);
   margin-bottom: 16px;
 
+}
+
+.experience-info{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.educ-logo{
+  border-radius: 10px;
+  margin-right: 20px;
 }
 
 

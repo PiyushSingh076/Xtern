@@ -5,17 +5,29 @@
     align-items: center;
     justify-content: space-between;
     padding-top: 80px;
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 70px;
+    padding-right: 70px;
 }
 
 #profile-details-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 50%;
-    border-right: 1px solid #ccc;
+    width: 100%;
+
     padding: 0 20px;
+}
+
+.profile-details-first-wrap{
+    display: flex;
+    flex-direction: row;
+}
+
+.profile-details-details{
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
 }
 
 .schedule-interview-btn{
@@ -71,7 +83,7 @@
 }
 
 .profile-details-skill-sec{
-
+    text-align: left;
     margin-top: 20px;
     border-top: 1px solid #ccc;
     padding-top: 10px;
@@ -87,7 +99,7 @@
 }
 
 .profile-details-second-wrap-sec{
-    border-bottom: 1px solid #ccc;
+
     padding-bottom: 20px;
 }
 
@@ -203,30 +215,49 @@
   .xtern-btn:hover{
     background-color: #2d699e;
   }
+
+  .desc-view-btn-container{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+   
+  }
   
   .desc-btn{
-    border: 1px  solid #3374AE;
+    border: none;
     margin-top: 10px;
     font-size: 16px;
     color: #3374AE;
     cursor: pointer;
-    border-radius: 10px;
-    padding: 8px;
+    background-color: transparent;
+    padding: 0;
+    margin-left: 0;
+  
   }
 
   .link-btn{
     text-decoration: none;
     border: none;
-    margin-left: 20px;
+ 
     margin-top: 10px;
     font-size: 16px;
     color: #3374AE;
     cursor: pointer;
     border-radius: 10px;
-    padding: 8px;
+
     background-color: transparent;
   }
 
   .link-btn:hover{
     text-decoration: underline;
+  }
+
+  .skillset-container{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+   
+    overflow-x: scroll;
   }

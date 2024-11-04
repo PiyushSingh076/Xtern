@@ -30,15 +30,14 @@ const SingleMentor = () => {
   } = useUserProfileData(uid);
   console.log("profileData", profileData, profileError);
   // Slider settings
-  const settings = {
-    infinite: false,
-    speed: 500,
-    slidesToShow: 2,
-    slidesToScroll: 2,
-    initialSlide: 0,
-    autoplay: true,
-    autoplaySpeed: 3000,
-  };
+// const settings = {
+//   infinite: false,
+//   speed: 500,
+//   slidesToShow: 2,
+//   slidesToScroll: 2,
+//   initialSlide: 0,
+//   autoplay: false,
+// };
 
   // schedule interview modal
   const handleScheduleInterview = () => {
@@ -89,9 +88,13 @@ const SingleMentor = () => {
                 />
               </div>
               <div className="profile-details-details">
-                <h1>{profileData?.display_name}</h1>
-                <h4 className="mt-12">Graduation Year: 2024</h4>
-                <p className="mt-16">{profileData?.role}</p>
+
+                <h4>{profileData?.display_name}</h4>
+                <span className="mt-12">
+                  Graduation Year: {profileData?.graduationyear}
+                </span>
+                <p className="mt-14">{profileData?.role}</p>
+
               </div>
             </div>
 
@@ -101,7 +104,7 @@ const SingleMentor = () => {
             </div>
 
             {/* Skills slider */}
-            <Slider {...settings}>
+              <div className="skillset-container">
               {profileData?.skillSet.map((skill, index) => (
                 <div className="profile-details-second-wrap-sec" key={index}>
                   <div
@@ -123,7 +126,7 @@ const SingleMentor = () => {
                   </div>
                 </div>
               ))}
-            </Slider>
+       </div>
 
             {/* Tabs section */}
             <div className="single-mentor-third-sec">
@@ -204,15 +207,40 @@ const SingleMentor = () => {
                               2022
                             </p>
 
-                            <button
-                              className="desc-btn"
-                              data-bs-toggle="collapse"
-                              data-bs-target={`#collapse-${index}`}
-                              aria-expanded="false"
-                              aria-controls={`collapse-${index}`}
-                            >
-                              View Description
-                            </button>
+
+  return (
+    <div className="experience-sec" key={work.role + work.companyname}>
+    <img src={work.logo} className="educ-logo" width={'100px'} height={'100px'}/>
+   <div className="experience-info">
+   <h4>{work.role}</h4>
+      <p>{work.companyname} | {startDateFormatted}</p>
+
+      <button 
+      className="desc-btn" 
+      data-bs-toggle="collapse" 
+      data-bs-target={`#collapse-${index}`}
+      aria-expanded="false" 
+      aria-controls={`collapse-${index}`}
+    >
+      View Description
+    </button>
+
+    <div 
+    style={{marginTop: '10px'}}
+      id={`collapse-${index}`} 
+      className="collapse" 
+      aria-labelledby={`collapse-${index}`}
+    >
+      <div className="card card-body">
+        {work.description}
+      </div>
+    </div>
+    </div>
+     
+    </div>
+  );
+})}
+
 
                             <div
                               style={{ marginTop: "10px" }}
@@ -236,18 +264,18 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                      {profileData?.educationDetails.map((educ) => (
-                        <div className="experience-sec">
-                          <h4>{educ.degree}</h4>
-                          <h6>Stream: ({educ.branch})</h6>
-                          <p>{educ.collegename} </p>
-                          <p>
-                            {" "}
-                            Batch: {educ.startyear} - {educ.endyear}
-                          </p>
-                          {/* <span> cgpa </span> */}
-                        </div>
-                      ))}
+
+                   {profileData?.educationDetails.map((educ)=> (  <div className="experience-sec">
+                     <img src={educ?.logo} width={'100px'} className="educ-logo"/>
+                      <div className="experience-info">
+                      <h4>{educ.degree}</h4>
+                        <h6>Stream: ({educ.branch})</h6>
+                        <p>{educ.collegename} </p>
+                        <p> Batch: {educ.startyear} - {educ.endyear}</p>
+                      </div>
+                        {/* <span> cgpa </span> */}
+                      </div>))}
+
                     </div>
                   </div>
                   <div className="tab-content" id="review-tabContent">
@@ -258,9 +286,50 @@ const SingleMentor = () => {
                       tabIndex="0"
                       aria-labelledby="reviews-tab-btn"
                     >
-                      {profileData?.projectDetails.map((project, index) => (
-                        <div className="experience-sec" key={index}>
-                          <h4>{project.projectname}</h4>
+
+   {profileData?.projectDetails.map((project, index) => (
+  <div className="experience-sec" key={index}>
+     <img src={project?.logo} width={'100px'} height={'100px'} className="educ-logo"/>
+  <div className="experience-info">
+  <h4>{project.projectname}</h4>
+
+<div style={{ marginTop: '5px' }}>
+  <span><b>Tech Stack:</b> {project.techstack.map((item) => (<span key={item}> {item} |</span>))}</span>
+</div>
+
+<div className="desc-view-btn-container">
+<button 
+  className="desc-btn" 
+  data-bs-toggle="collapse" 
+  data-bs-target={`#collapse-${index}`}
+  aria-expanded="false" 
+  aria-controls={`collapse-${index}`}
+>
+  View Description
+</button>
+
+<Link
+to={project.link}
+className="link-btn" 
+>
+  Live Link
+</Link>
+  </div>
+
+<div 
+style={{marginTop: '10px'}}
+  id={`collapse-${index}`} 
+  className="collapse" 
+  aria-labelledby={`collapse-${index}`}
+>
+  <div className="card card-body">
+    {project.description}
+  </div>
+</div>
+  </div>
+  </div>
+))}
+
 
                           <div style={{ marginTop: "20px" }}>
                             <span>
@@ -306,7 +375,7 @@ const SingleMentor = () => {
         </div>
       </section>
       {/* Similar profiles section */}
-      <section id="similar-profiles-section">
+      {/* <section id="similar-profiles-section">
         <div className="xtern-btn-sec">
           <div
             className="schedule-interview-btn"
@@ -342,7 +411,7 @@ const SingleMentor = () => {
           </div>
         </div>
 
-        {/* Interview scheduling modal */}
+         Interview scheduling modal 
         <div
           style={{ marginTop: "40px" }}
           className="modal fade "
@@ -400,8 +469,11 @@ const SingleMentor = () => {
             </div>
           </div>
         </div>
-        {/* Similar profiles */}
-      </section>
+
+         Similar profiles 
+     
+      </section> */}
+
     </div>
   );
 };
