@@ -21,7 +21,9 @@ import CourseImg1 from "../assets/images/single-mentor/course1.png";
 import CourseImg2 from "../assets/images/single-mentor/course2.png";
 import LikeIcon from "../assets/images/single-courses/like-icon.svg";
 import DislikeIcon from "../assets/images/single-courses/dislike-icon.svg";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import useUserProfileData from "../hooks/Profile/useUserProfileData";
+import code from "../assets/svg/code.svg";
 
 const SingleMentor = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -39,6 +41,10 @@ const SingleMentor = () => {
   const handleBackClick = () => {
     navigate(-1); // This will navigate to the previous page in the history stack
   };
+  const { uid } = useParams();
+
+  const { userData, loading, error } = useUserProfileData(uid);
+  console.log(userData, "lllllllllll");
   return (
     <>
       {/* <!-- Header start --> */}
@@ -92,24 +98,31 @@ const SingleMentor = () => {
           <div className="single-mentor-sec-wrap mt-32">
             <div className="single-mentor-first-wrap">
               <div className="mentor-img-sec">
-                <img src={ClientImg} alt="client-img" />
+                <img
+                  src={userData?.photo_url || ClientImg}
+                  alt="client-img"
+                  height={80}
+                  width={80}
+                />
               </div>
               <div className="single-mentor-details">
-                <h3>Claire Joe</h3>
-                <h4 className="mt-12">356k followers</h4>
-                <p className="mt-16">Development</p>
+                <h3>{userData?.display_name || "Claire Joe"}</h3>
+                <h4 className="mt-12">
+                  Graduation Year : {userData?.gradYear || "2024"}{" "}
+                </h4>
+                <p className="mt-16">{userData?.role || "Intern"}</p>
               </div>
               <div className="mentor-follow-sec">
-                <div className="mentor-follow-btn">
+                {/* <div className="mentor-follow-btn">
                   <img src={FollowBtnIcon} alt="follow-btn" />
                 </div>
                 <div className="mentor-comment">
                   <img src={CommentIcon} alt="follow-btn" />
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="navbar-boder mt-24"></div>
-            <div className="single-mentor-second-wrap-sec mt-24">
+            {/* <div className="single-mentor-second-wrap-sec mt-24">
               <div className="single-mentor-second-wrap">
                 <div className="mentor-icon purple-bg">
                   <img src={CourseIcon} alt="course-icon" />
@@ -146,6 +159,26 @@ const SingleMentor = () => {
                   <p>Rating</p>
                 </div>
               </div>
+            </div> */}
+
+            <div className="single-mentor-second-wrap-sec mt-24">
+              {userData?.skillSet?.map((skill, index) => (
+                <div className="single-mentor-second-wrap" key={index}>
+                  <div
+                    className={`mentor-icon ${
+                      ["purple-bg", "green-bg", "pink-bg", "orange-bg"][
+                        index % 4
+                      ]
+                    }`}
+                  >
+                    <img src={code} alt={`${skill.skill}-icon`} width="30px" />
+                  </div>
+                  <div className="mentor-content-single mt-12">
+                    <h3>{skill?.skill}</h3>
+                    <p>{skill?.rating}</p>
+                  </div>
+                </div>
+              ))}
             </div>
             <div className="single-mentor-third-sec">
               <div className="fifth-decs-sec mt-32">
@@ -165,7 +198,7 @@ const SingleMentor = () => {
                         role="tab"
                         aria-selected="true"
                       >
-                        Courses
+                        Work Experience
                       </button>
                     </li>
                     <li className="nav-item" role="presentation">
@@ -179,7 +212,7 @@ const SingleMentor = () => {
                         aria-selected="false"
                         tabIndex="-1"
                       >
-                        Students
+                        Projects
                       </button>
                     </li>
                     <li className="nav-item" role="presentation">
@@ -193,11 +226,11 @@ const SingleMentor = () => {
                         aria-selected="false"
                         tabIndex="-1"
                       >
-                        Reviews
+                        Education
                       </button>
                     </li>
                   </ul>
-                  <div className="tab-content" id="course-tab-btn">
+                  {/* <div className="tab-content" id="course-tab-btn">
                     <div
                       className="tab-pane fade show active mt-16"
                       id="course-content"
@@ -318,7 +351,116 @@ const SingleMentor = () => {
                         </div>
                       </div>
                     </div>
+                  </div> */}
+
+                  <div className="tab-content" id="course-tab-btn">
+                    <div
+                      className="tab-pane fade show active mt-16"
+                      id="course-content"
+                      role="tabpanel"
+                      tabIndex="0"
+                    >
+                      {userData?.workExperience?.map((work, index) => {
+                        const startDate = new Date(
+                          work.startdate.seconds * 1000
+                        );
+                        const startDateFormatted = startDate.toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                          }
+                        );
+
+                        return (
+                          <div
+                            className="mentor-course-tab-wrap"
+                            key={work.role + work.companyname}
+                          >
+                            <div className="checkout-screen-top mt-16">
+                              <div className="checkout-first d-flex justify-content-center align-items-center">
+                                <img
+                                  src={work.logo || CourseImg1}
+                                  alt={`${work.companyname}-img`}
+                                  className="img-fluid rounded" // Ensures the image scales nicely
+                                  style={{
+                                    maxWidth: "100px",
+                                    maxHeight: "100px",
+                                  }} // Controls the size
+                                />
+                              </div>
+
+                              <div className="checkout-second">
+                                <div className="checkout-second-wrap">
+                                  <div className="checkout-design">
+                                    <p>{work.companyname}</p>
+                                  </div>
+                                  <div className="checkout-bookmark">
+                                    {/* <div className="checkout-bookmark-sec">
+                                      <a
+                                        href=""
+                                        className={`item-bookmark ${
+                                          work.isBookmarked ? "active" : ""
+                                        }`}
+                                        onClick={() => toggleBookmark(index)}
+                                        tabIndex="0"
+                                      >
+                                        <img
+                                          src={BookmarkUnfillSvg}
+                                          alt="bookmark-icon"
+                                        />
+                                      </a>
+                                    </div> */}
+                                  </div>
+                                </div>
+                                <div className="mt-12">
+                                  <h1 className="check-txt1">{work.role}</h1>
+                                </div>
+                                <div className="checkout-second-third mt-12">
+                                  <div>
+                                    <button
+                                      className="desc-btn mt-12"
+                                      data-bs-toggle="collapse"
+                                      data-bs-target={`#collapse-${index}`}
+                                      aria-expanded="false"
+                                      aria-controls={`collapse-${index}`}
+                                    >
+                                      View Description
+                                    </button>
+                                  </div>
+                                  <div>
+                                    <span>
+                                      <img src={TimeIcon} alt="time-icon" />
+                                    </span>
+                                    <span className="check-txt4">
+                                      {startDateFormatted} - August 2022
+                                    </span>
+                                  </div>
+                                </div>
+                                {/* <div className="checkout-second-fourth">
+                                  <Link to={project.link} className="link-btn">
+                                    Live Link
+                                  </Link>
+                                </div> */}
+
+                                <div
+                                  style={{ marginTop: "10px" }}
+                                  id={`collapse-${index}`}
+                                  className="collapse"
+                                  aria-labelledby={`collapse-${index}`}
+                                >
+                                  <div className="card card-body">
+                                    {work.description}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
+
                   <div className="tab-content" id="student-tabContent">
                     <div
                       className="tab-pane fade show"
@@ -327,54 +469,109 @@ const SingleMentor = () => {
                       tabIndex="0"
                     >
                       <div className="mentor-student-wrap">
-                        <div className="mentor-student-content mt-16">
-                          <div className="mentor-img">
-                            <img src={StudentImg1} alt="student-img" />
-                          </div>
-                          <div className="mentor-name">
-                            <h2>Benny Spanbauer</h2>
-                            <h3>Student</h3>
-                          </div>
-                          <div className="mentor-comment-tab">
-                            <img src={CommentIcon} alt="follow-btn" />
-                          </div>
-                        </div>
-                        <div className="mentor-student-content mt-16">
-                          <div className="mentor-img">
-                            <img src={StudentImg2} alt="student-img" />
-                          </div>
-                          <div className="mentor-name">
-                            <h2>Freida Varnes</h2>
-                            <h3>Junior Developer</h3>
-                          </div>
-                          <div className="mentor-comment-tab">
-                            <img src={CommentIcon} alt="follow-btn" />
-                          </div>
-                        </div>
-                        <div className="mentor-student-content mt-16">
-                          <div className="mentor-img">
-                            <img src={StudentImg3} alt="student-img" />
-                          </div>
-                          <div className="mentor-name">
-                            <h2>Francene Vandyne</h2>
-                            <h3>Student</h3>
-                          </div>
-                          <div className="mentor-comment-tab">
-                            <img src={CommentIcon} alt="follow-btn" />
-                          </div>
-                        </div>
-                        <div className="mentor-student-content mt-16">
-                          <div className="mentor-img">
-                            <img src={StudentImg4} alt="student-img" />
-                          </div>
-                          <div className="mentor-name">
-                            <h2>Tanner Stafford</h2>
-                            <h3>Freelancer</h3>
-                          </div>
-                          <div className="mentor-comment-tab">
-                            <img src={CommentIcon} alt="follow-btn" />
-                          </div>
-                        </div>
+                        {userData?.projectDetails.map((project, index) => {
+                          return (
+                            <div
+                              className="mentor-course-tab-wrap mt-16"
+                              key={`${
+                                project.projectname || "Project"
+                              }-${index}`}
+                            >
+                              <div className="checkout-screen-top mt-16 ">
+                                <div className="checkout-first d-flex justify-content-center align-items-center">
+                                  <img
+                                    src={project.logo || CourseImg1} // Assume CourseImg1 is a placeholder image
+                                    alt={`${
+                                      project.projectname || "Project"
+                                    }-img`}
+                                    className="img-fluid rounded border border-secondary"
+                                    style={{
+                                      maxWidth: "100px",
+                                      maxHeight: "100px",
+                                    }}
+                                  />
+                                </div>
+
+                                <div className="checkout-second">
+                                  <div className="checkout-second-wrap ">
+                                    <div className="checkout-design d-flex gap-3 ">
+                                      {project.techstack &&
+                                      project.techstack.length > 0 ? (
+                                        project.techstack.map(
+                                          (tech, techIndex) => (
+                                            <p className="mr-2" key={techIndex}>
+                                              {tech}
+                                            </p>
+                                          )
+                                        )
+                                      ) : (
+                                        <span>Skills not specified</span>
+                                      )}
+                                    </div>
+
+                                    <div className="checkout-bookmark">
+                                      <Link
+                                        to={project.link}
+                                        className="link-btn"
+                                      >
+                                        Live Link
+                                      </Link>
+                                    </div>
+                                  </div>
+                                  <div className="mt-12">
+                                    <h1 className="check-txt1">
+                                      {project.projectname ||
+                                        "Name Not Specified"}
+                                    </h1>
+                                  </div>
+                                  {/* <div className="checkout-second-fourth ">
+                                    <p
+                                      onClick={() => navigate(project.link)}
+                                      className="text-primary"
+                                    >
+                                      Live Link
+                                    </p>
+                                  </div> */}
+                                  <div className="checkout-second-third mt-12">
+                                    <div>
+                                      <button
+                                        className="desc-btn mt-12"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target={`#collapse-${index}`}
+                                        aria-expanded="false"
+                                        aria-controls={`collapse-${index}`}
+                                      >
+                                        View Description
+                                      </button>
+                                    </div>
+                                    <div>
+                                      <span>
+                                        <img src={TimeIcon} alt="time-icon" />
+                                      </span>
+                                      <span className="check-txt4">
+                                        {project.startYear ||
+                                          "Start Year Unknown"}{" "}
+                                        - {project.endYear || "Present"}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div
+                                    style={{ marginTop: "10px" }}
+                                    id={`collapse-${index}`}
+                                    className="collapse"
+                                    aria-labelledby={`collapse-${index}`}
+                                  >
+                                    <div className="card card-body">
+                                      {project.description ||
+                                        "No description available"}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -386,140 +583,64 @@ const SingleMentor = () => {
                       tabIndex="0"
                       aria-labelledby="reviews-tab-btn"
                     >
-                      <div className="mentor-review-tab">
-                        <div className="review-third-sec-content mt-16">
-                          <div className="review-third-sec-wrap">
-                            <div className="review-bottom-first">
-                              <img src={ClientImg1} alt="client-img" />
+                      {userData?.educationDetails.map((educ, index) => (
+                        <div className="mentor-course-tab-wrap" key={index}>
+                          <div className="checkout-screen-top mt-16">
+                            <div className="checkout-first d-flex justify-content-center align-items-center">
+                              <img
+                                src={educ.logo || CourseImg1} // Assume CourseImg1 as placeholder for institution logo
+                                alt={`${educ.collegename || "Institution"}-img`}
+                                className="img-fluid"
+                                style={{
+                                  maxWidth: "100px",
+                                  maxHeight: "100px",
+                                }}
+                              />
                             </div>
-                            <div className="review-bottom-second">
-                              <h4>Ami Jackson</h4>
-                              <div className="review-content">
-                                <div className="review-star">
-                                  <ul>
-                                    <li>
-                                      <img src={OrangeStar} alt="star-img" />
-                                    </li>
-                                    <li>
-                                      <img src={OrangeStar} alt="star-img" />
-                                    </li>
-                                    <li>
-                                      <img src={OrangeStar} alt="star-img" />
-                                    </li>
-                                    <li>
-                                      <img src={OrangeStar} alt="star-img" />
-                                    </li>
-                                    <li>
-                                      <img
-                                        src={OrangeStarUnfill}
-                                        alt="star-img"
-                                      />
-                                    </li>
-                                  </ul>
-                                </div>
-                                <div className="review-time">
-                                  <p>20 minutes ago</p>
+
+                            <div className="checkout-second">
+                              <div className="checkout-second-wrap">
+                                <div className="checkout-design">
+                                  <p>{educ.degree || "Institution Name"}</p>
                                 </div>
                               </div>
-                            </div>
-                            <div className="review-bottom-third">
-                              <img src={CommentIcon} alt="comment-icon" />
-                            </div>
-                          </div>
-                          <div className="review-para mt-12">
-                            <p>
-                              The course is very good. the explanation of the
-                              mentor is very clear and easy to understand 😎😎
-                            </p>
-                          </div>
-                          <div className="review-helpful-sec">
-                            <div className="review-helpful-sec-full">
-                              <div>
-                                <p className="helpful-txt">
-                                  Was this review helpful?
-                                </p>
+                              <div className="mt-12">
+                                <h1 className="check-txt1">
+                                  {educ.collegename || "Degree Not Specified"}
+                                </h1>
                               </div>
-                              <div>
-                                <span>
-                                  <img src={LikeIcon} alt="review-like" />
-                                </span>
-                                <span className="like-txt1">369</span>
+                              <div className="checkout-second-third mt-12">
+                                <div>
+                                  <span>
+                                    Stream: {educ.branch || "Not Specified"}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span>
+                                    <img src={TimeIcon} alt="time-icon" />
+                                  </span>
+                                  <span className="check-txt4">
+                                    Batch: {educ.startyear || "N/A"} -{" "}
+                                    {educ.endyear || "Present"}
+                                  </span>
+                                </div>
                               </div>
-                              <div>
-                                <span>
-                                  <img src={DislikeIcon} alt="review-like" />
-                                </span>
-                                <span className="dislike-txt">10</span>
+
+                              <div
+                                style={{ marginTop: "10px" }}
+                                id={`collapse-${index}`}
+                                className="collapse"
+                                aria-labelledby={`collapse-${index}`}
+                              >
+                                <div className="card card-body">
+                                  {educ.description ||
+                                    "No additional information available"}
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="review-third-sec-content mt-16">
-                          <div className="review-third-sec-wrap">
-                            <div className="review-bottom-first">
-                              <img src={ClientImg2} alt="client-img" />
-                            </div>
-                            <div className="review-bottom-second">
-                              <h4>Kevin Smith</h4>
-                              <div className="review-content">
-                                <div className="review-star">
-                                  <ul>
-                                    <li>
-                                      <img src={OrangeStar} alt="star-img" />
-                                    </li>
-                                    <li>
-                                      <img src={OrangeStar} alt="star-img" />
-                                    </li>
-                                    <li>
-                                      <img src={OrangeStar} alt="star-img" />
-                                    </li>
-                                    <li>
-                                      <img src={OrangeStar} alt="star-img" />
-                                    </li>
-                                    <li>
-                                      <img src={OrangeStar} alt="star-img" />
-                                    </li>
-                                  </ul>
-                                </div>
-                                <div className="review-time">
-                                  <p>1 week ago</p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="review-bottom-third">
-                              <img src={CommentIcon} alt="comment-icon" />
-                            </div>
-                          </div>
-                          <div className="review-para mt-12">
-                            <p>
-                              Throughout the course, She explained everything so
-                              much more clearly, everything was easy, and the
-                              course is quite good.
-                            </p>
-                          </div>
-                          <div className="review-helpful-sec">
-                            <div className="review-helpful-sec-full">
-                              <div>
-                                <p className="helpful-txt">
-                                  Was this review helpful?
-                                </p>
-                              </div>
-                              <div>
-                                <span>
-                                  <img src={LikeIcon} alt="review-like" />
-                                </span>
-                                <span className="like-txt1">463</span>
-                              </div>
-                              <div>
-                                <span>
-                                  <img src={DislikeIcon} alt="review-like" />
-                                </span>
-                                <span className="dislike-txt">56</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
