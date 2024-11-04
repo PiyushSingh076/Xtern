@@ -38,7 +38,7 @@ export const ROUTES = {
   SINGLE_COURSE_COMPLETE: "/single-course-complete",
   CHAT_SCREEN: "/chat-screen",
   SINGLE_CHAT_SCREEN: "/single-chat-screen",
-  PROFILE: "/profile",
+  PROFILE: "/profile/:uid",
   PROFILE_EDIT: "/profile-edit",
   WALLET_SCREEN: "/wallet-screen",
   SINGLE_MENTOR: "/single-mentor",
