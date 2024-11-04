@@ -88,13 +88,11 @@ const SingleMentor = () => {
                 />
               </div>
               <div className="profile-details-details">
-
                 <h4>{profileData?.display_name}</h4>
                 <span className="mt-12">
                   Graduation Year: {profileData?.graduationyear}
                 </span>
                 <p className="mt-14">{profileData?.role}</p>
-
               </div>
             </div>
 
@@ -186,27 +184,11 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                      {profileData?.workExperience.map((work, index) => {
-                        const startDate = new Date(
-                          work.startdate.seconds * 1000
-                        );
+                  {profileData?.workExperience.map((work , index) => {
 
-                        const startDateFormatted = startDate.toLocaleDateString(
-                          "en-US",
-                          { year: "numeric", month: "long" }
-                        );
+  const startDate = new Date(work.startdate.seconds * 1000);
 
-                        return (
-                          <div
-                            className="experience-sec"
-                            key={work.role + work.companyname}
-                          >
-                            <h4>{work.role}</h4>
-                            <p>
-                              {work.companyname} | {startDateFormatted} - August
-                              2022
-                            </p>
-
+  const startDateFormatted = startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 
   return (
     <div className="experience-sec" key={work.role + work.companyname}>
@@ -241,20 +223,6 @@ const SingleMentor = () => {
   );
 })}
 
-
-                            <div
-                              style={{ marginTop: "10px" }}
-                              id={`collapse-${index}`}
-                              className="collapse"
-                              aria-labelledby={`collapse-${index}`}
-                            >
-                              <div className="card card-body">
-                                {work.description}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
                     </div>
                   </div>
                   <div className="tab-content" id="student-tabContent">
@@ -264,7 +232,6 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-
                    {profileData?.educationDetails.map((educ)=> (  <div className="experience-sec">
                      <img src={educ?.logo} width={'100px'} className="educ-logo"/>
                       <div className="experience-info">
@@ -275,7 +242,6 @@ const SingleMentor = () => {
                       </div>
                         {/* <span> cgpa </span> */}
                       </div>))}
-
                     </div>
                   </div>
                   <div className="tab-content" id="review-tabContent">
@@ -286,7 +252,6 @@ const SingleMentor = () => {
                       tabIndex="0"
                       aria-labelledby="reviews-tab-btn"
                     >
-
    {profileData?.projectDetails.map((project, index) => (
   <div className="experience-sec" key={index}>
      <img src={project?.logo} width={'100px'} height={'100px'} className="educ-logo"/>
@@ -331,41 +296,10 @@ style={{marginTop: '10px'}}
 ))}
 
 
-                          <div style={{ marginTop: "20px" }}>
-                            <span>
-                              <b>Tech Stack:</b>{" "}
-                              {project.techstack.map((item) => (
-                                <span key={item}> {item} |</span>
-                              ))}
-                            </span>
-                          </div>
 
-                          <button
-                            className="desc-btn"
-                            data-bs-toggle="collapse"
-                            data-bs-target={`#collapse-${index}`}
-                            aria-expanded="false"
-                            aria-controls={`collapse-${index}`}
-                          >
-                            View Description
-                          </button>
+                 
 
-                          <Link to={project.link} className="link-btn">
-                            Live Link
-                          </Link>
-
-                          <div
-                            style={{ marginTop: "10px" }}
-                            id={`collapse-${index}`}
-                            className="collapse"
-                            aria-labelledby={`collapse-${index}`}
-                          >
-                            <div className="card card-body">
-                              {project.description}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                     
                     </div>
                   </div>
                 </div>
@@ -469,11 +403,9 @@ style={{marginTop: '10px'}}
             </div>
           </div>
         </div>
-
          Similar profiles 
      
       </section> */}
-
     </div>
   );
 };
