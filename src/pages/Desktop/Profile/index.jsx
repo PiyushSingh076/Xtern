@@ -31,10 +31,10 @@ const SingleMentor = () => {
   console.log("profileData", profileData, profileError);
   // Slider settings
   const settings = {
-    infinite: true,
+    infinite: false,
     speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToShow: 2,
+    slidesToScroll: 2,
     initialSlide: 0,
     autoplay: true,
     autoplaySpeed: 3000,
@@ -79,7 +79,7 @@ const SingleMentor = () => {
                     width={"24px"}
                     alt="medal"
                   />
-                  <span>Bronze</span>
+                  <span>{profileData?.medal}</span>
                 </div>
                 <img
                   src={profileData?.profilePicture}
@@ -91,9 +91,9 @@ const SingleMentor = () => {
               <div className="profile-details-details">
                 <h1>{profileData?.display_name}</h1>
                 <h4 className="mt-12">
-                  Graduation Year: {internInfo?.graduationYear}
+                  Graduation Year: 2024
                 </h4>
-                <p className="mt-16">{internInfo?.internType}</p>
+                <p className="mt-16">{profileData?.role}</p>
               </div>
             </div>
 
@@ -104,7 +104,7 @@ const SingleMentor = () => {
 
             {/* Skills slider */}
             <Slider {...settings}>
-              {internInfo?.skillSet.map((skill, index) => (
+              {profileData?.skillSet.map((skill, index) => (
                 <div className="profile-details-second-wrap-sec" key={index}>
                   <div
                     className={`mentor-icon ${
@@ -120,7 +120,7 @@ const SingleMentor = () => {
                     />
                   </div>
                   <div className="mentor-content-single mt-12">
-                    <h3>{skill.skillset}</h3>
+                    <h3>{skill}</h3>
                     <p>{skill.rating}</p>
                   </div>
                 </div>
@@ -185,11 +185,42 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                      <div className="experience-sec">
-                        <h4>Software Developer Intern</h4>
-                        <p>TechCorp Inc. | June 2022 - August 2022</p>
-                        <ul></ul>
-                      </div>
+                  {profileData?.workExperience.map((work , index) => {
+
+  const startDate = new Date(work.startdate.seconds * 1000);
+
+  const startDateFormatted = startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+
+  return (
+    <div className="experience-sec" key={work.role + work.companyname}>
+      <h4>{work.role}</h4>
+      <p>{work.companyname} | {startDateFormatted} - August 2022</p>
+
+      <button 
+      className="desc-btn" 
+      data-bs-toggle="collapse" 
+      data-bs-target={`#collapse-${index}`}
+      aria-expanded="false" 
+      aria-controls={`collapse-${index}`}
+    >
+      View Description
+    </button>
+
+    <div 
+    style={{marginTop: '10px'}}
+      id={`collapse-${index}`} 
+      className="collapse" 
+      aria-labelledby={`collapse-${index}`}
+    >
+      <div className="card card-body">
+        {work.description}
+      </div>
+    </div>
+     
+    </div>
+  );
+})}
+
                     </div>
                   </div>
                   <div className="tab-content" id="student-tabContent">
@@ -199,12 +230,13 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                      <div className="experience-sec">
-                        <h4>B.E(Computer Science)</h4>
-                        <p>Chandigarh University </p>
-                        <p> Expected Graduation: May 2024</p>
-                        <span>CGPA: 8.5</span>
-                      </div>
+                   {profileData?.educationDetails.map((educ)=> (  <div className="experience-sec">
+                        <h4>{educ.degree}</h4>
+                        <h6>Stream: ({educ.branch})</h6>
+                        <p>{educ.collegename} </p>
+                        <p> Batch: {educ.startyear} - {educ.endyear}</p>
+                        {/* <span> cgpa </span> */}
+                      </div>))}
                     </div>
                   </div>
                   <div className="tab-content" id="review-tabContent">
@@ -215,20 +247,42 @@ const SingleMentor = () => {
                       tabIndex="0"
                       aria-labelledby="reviews-tab-btn"
                     >
-                      <div className="experience-sec">
-                        <h4>E-commerce Website</h4>
-                        <p>
-                          Developed a full-stack e-commerce website using MERN
-                          stack
-                        </p>
-                      </div>
+   {profileData?.projectDetails.map((project, index) => (
+  <div className="experience-sec" key={index}>
+    <h4>{project.projectname}</h4>
 
-                      <div className="experience-sec">
-                        <h4>Social Media App</h4>
-                        <p>
-                          Developed a social media app using React and Firebase
-                        </p>
-                      </div>
+    <div style={{ marginTop: '20px' }}>
+      <span><b>Tech Stack:</b> {project.techstack.map((item) => (<span key={item}> {item} |</span>))}</span>
+    </div>
+
+    <button 
+      className="desc-btn" 
+      data-bs-toggle="collapse" 
+      data-bs-target={`#collapse-${index}`}
+      aria-expanded="false" 
+      aria-controls={`collapse-${index}`}
+    >
+      View Description
+    </button>
+
+    <div 
+    style={{marginTop: '10px'}}
+      id={`collapse-${index}`} 
+      className="collapse" 
+      aria-labelledby={`collapse-${index}`}
+    >
+      <div className="card card-body">
+        {project.description}
+      </div>
+    </div>
+  </div>
+))}
+
+
+
+                 
+
+                     
                     </div>
                   </div>
                 </div>
