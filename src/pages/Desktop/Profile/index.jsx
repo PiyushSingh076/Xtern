@@ -195,7 +195,7 @@ const SingleMentor = () => {
     <img src={work.logo} className="educ-logo" width={'100px'} height={'100px'}/>
    <div className="experience-info">
    <h4>{work.role}</h4>
-      <p>{work.companyname} | {startDateFormatted} - August 2022</p>
+      <p>{work.companyname} | {startDateFormatted}</p>
 
       <button 
       className="desc-btn" 
