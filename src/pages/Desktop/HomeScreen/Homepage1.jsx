@@ -42,20 +42,20 @@ export default function Home() {
         </div>
       <div className="home-mentor-bottom">
             <Link to="/single-mentor">
-              <Slider {...CompanySettings}>
-                <div className="home-mentor-sec-wrap redirect-mentor">
+            <Slider {...CompanySettings}>
+                <div className="home-mentor-sec-wrap ">
                   <div className="home-mentor-sec">
                     <div>
                       <img
                         height="80"
                         width="80"
-                        src="https://media.licdn.com/dms/image/v2/D4D0BAQHWliOH_HLw_g/company-logo_200_200/company-logo_200_200/0/1706646202518/s_treasury_logo?e=1735171200&v=beta&t=F970-7FqWdc0Gjp8BOyNRDsNU-jnr_9VRyNRq3-T8HE"
+                        src="https://xpert.works/wp-content/uploads/2024/10/StudentDiwanLogo.8fcd85d1ecdb3d8b889a.png"
                         alt="mentor-img"
                       />
                     </div>
                   </div>
                   <div className="home-mentor-name">
-                    <p>Student Diwan</p>
+               
                   </div>
                 </div>
                 <div className="home-mentor-sec-wrap redirect-mentor">
@@ -64,13 +64,13 @@ export default function Home() {
                       <img
                         height="80"
                         width="80"
-                        src="https://media.licdn.com/dms/image/v2/D4D0BAQEssJxvVzhW2Q/company-logo_200_200/company-logo_200_200/0/1716271857252/edobo_logo?e=1735171200&v=beta&t=iB0IIYE5FEwVPu5vKYElTPY_p7CXidpow_equn1a-LQ"
+                        src="https://xpert.works/wp-content/uploads/2024/10/edobo-logo-800x293-2.jpg"
                         alt="mentor-img"
                       />
                     </div>
                   </div>
                   <div className="home-mentor-name">
-                    <p>Edobo</p>
+                
                   </div>
                 </div>
                 <div className="home-mentor-sec-wrap redirect-mentor">
@@ -79,13 +79,13 @@ export default function Home() {
                       <img
                         height="80"
                         width="80"
-                        src="https://media.licdn.com/dms/image/v2/C4D0BAQHiNSL4Or29cg/company-logo_200_200/company-logo_200_200/0/1631311446380?e=1735171200&v=beta&t=Za_-RfpybNMYSuC3QtnukL8SarqJJfYbK-h88BjWnDY"
+                        src="https://xpert.works/wp-content/uploads/2024/10/fundly.png"
                         alt="mentor-img"
                       />
                     </div>
                   </div>
                   <div className="home-mentor-name">
-                    <p>Google</p>
+      
                   </div>
                 </div>
                 <div className="home-mentor-sec-wrap redirect-mentor">
@@ -94,15 +94,63 @@ export default function Home() {
                       <img
                         height="80"
                         width="80"
-                        src="https://media.licdn.com/dms/image/v2/C560BAQE88xCsONDULQ/company-logo_200_200/company-logo_200_200/0/1630652622688/microsoft_logo?e=1735171200&v=beta&t=MZPfpagCHCoPSFOmDIKwfxa71NKmdKrN4LOgDlNr9tw"
+                        src="https://xpert.works/wp-content/uploads/2024/10/65114d62c0c8b53ff6b1b01b_color_transparent-1.png"
                         alt="mentor-img"
                       />
                     </div>
                   </div>
                   <div className="home-mentor-name">
-                    <p>Microsoft</p>
+               
                   </div>
                 </div>
+                <div className="home-mentor-sec-wrap redirect-mentor">
+                  <div className="home-mentor-sec">
+                    <div>
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://xpert.works/wp-content/uploads/2024/10/nido_automation_in_logo.jpeg"
+                        alt="mentor-img"
+                      />
+                    </div>
+                  </div>
+                  <div className="home-mentor-name">
+                   
+                  </div>
+                </div>
+                <div className="home-mentor-sec-wrap redirect-mentor">
+                  <div className="home-mentor-sec">
+                    <div>
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://xpert.works/wp-content/uploads/2024/10/images-1.png"
+                        alt="mentor-img"
+                      />
+                    </div>
+                  </div>
+                  <div className="home-mentor-name">
+              
+                  </div>
+                </div>
+
+                <div className="home-mentor-sec-wrap redirect-mentor">
+                  <div className="home-mentor-sec">
+                    <div>
+                      <img
+                        height="80"
+                        width="80"
+                        src="https://xpert.works/wp-content/uploads/2024/10/images.png"
+                        alt="mentor-img"
+                      />
+                    </div>
+                  </div>
+                  <div className="home-mentor-name">
+           
+                  </div>
+                </div>
+
+                
               </Slider>
             </Link>
           </div>

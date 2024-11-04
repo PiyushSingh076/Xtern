@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { setVentureInfo } from '../Store/Slice/VentureInfo';
 import { useDispatch } from 'react-redux';
+import { setAuth } from '../Store/Slice/UserInfo';
 
 export default function PrefferedServiceVenture() {
     const [ventureRole, setVentureRole] = useState(null);
@@ -20,6 +21,7 @@ export default function PrefferedServiceVenture() {
     const handleContinue = () => {
        
         dispatch(setVentureInfo({ role: ventureRole, potential: potential, companyName: companyName }));
+        dispatch(setAuth(true))
         navigate('/homescreen');
     };
 

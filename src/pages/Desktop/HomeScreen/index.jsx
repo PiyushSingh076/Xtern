@@ -381,7 +381,7 @@ const HomeScreen = () => {
             </div>
           </div>
         </div>
-
+{/* 
         <div className="home-category mt-32">
           <div className="home-category-wrap container">
             <div className="homescreen-second-wrapper-top">
@@ -403,7 +403,7 @@ const HomeScreen = () => {
           <div className="categories-slider mt-16">
             <Link to="/mentor-screen">
               <Slider {...mentorSettings}>
-                {/* Mentor  */}
+                // Mentor  
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
                   <div key={item} className="mentor-card-main">
                     <img src={Mentor} alt="mentor-img" width="100px" />
@@ -414,7 +414,7 @@ const HomeScreen = () => {
               </Slider>
             </Link>
           </div>
-        </div>
+        </div> */}
 
         {/* <div className="home-category mt-32">
           <div className="home-category-wrap container">

@@ -12,6 +12,7 @@ const BottomNavigationVenture = () => {
 
   // Helper function to check if current path matches given path
   const isActive = (path) => location.pathname === path;
+  
 
   return (
     // Main bottom navigation container with padding

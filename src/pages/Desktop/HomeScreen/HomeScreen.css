@@ -129,7 +129,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 100%; /* Make it full width */
+    width: 65%; /* Make it full width */
     left: 0; /* Align it to the left */
     overflow-x: hidden;
     padding: 0 20px; /* Horizontal padding */
@@ -141,22 +141,39 @@
 }
 
 
+.home-mentor-sec{
+   
+
+    padding: 8px;
+   
+
+}
 
 .home-mentor-sec-wrap:hover {
     transform: scale(1.05); /* Scale up on hover */
 }
 
+
+
+
 .home-mentor-sec img {
-    border-radius: 50%; /* Make images circular */
-    overflow: hidden; /* Ensures no overflow */
-    height: 50px; /* Set the height of the image */
-    width: 50px; /* Set the width of the image */
+   border-radius: 5px;
+    height: 50px;
+    width: auto;
+    border: none;
+
+    box-shadow: none;
+    
+ 
+    
+
 }
 
 .home-mentor-name p {
     font-size: 12px; /* Adjust font size for the names */
     margin-top: 5px; /* Space between image and name */
     text-align: center; /* Center align the text */
+
 }
 
 

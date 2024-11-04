@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setInternInfo } from '../Store/Slice/InternInfo';
+import { setAuth } from '../Store/Slice/UserInfo';
+
 
 export default function PrefferedService() {
     const navigate = useNavigate();
@@ -56,8 +58,10 @@ export default function PrefferedService() {
         };
 
         dispatch(setInternInfo(internData));
-        alert('Intern Info Submitted');
-        navigate('/profile');
+        dispatch(setAuth(true))
+   
+        navigate('/');
+
     };
 
     return (
