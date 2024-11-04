@@ -1,6 +1,6 @@
 // Imports
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import code from "../../../assets/svg/code.svg";
 import { useSelector } from "react-redux";
@@ -120,7 +120,7 @@ const SingleMentor = () => {
                     />
                   </div>
                   <div className="mentor-content-single mt-12">
-                    <h3>{skill}</h3>
+                    <h3>{skill.skill}</h3>
                     <p>{skill.rating}</p>
                   </div>
                 </div>
@@ -265,6 +265,13 @@ const SingleMentor = () => {
       View Description
     </button>
 
+    <Link
+    to={project.link}
+    className="link-btn" 
+    >
+      Live Link
+    </Link>
+
     <div 
     style={{marginTop: '10px'}}
       id={`collapse-${index}`} 
@@ -387,32 +394,7 @@ const SingleMentor = () => {
           </div>
         </div>
         {/* Similar profiles */}
-        <div className="similar-profile-sec">
-          <h3>Other Similar Profiles</h3>
-          <div className="similar-profile-sec-wrap">
-            {[1, 2, 3, 4, 5].map((item) => (
-              <div key={item} className="similar-profile-sec-wrap-sec">
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <img
-                    src={userData?.profilePicture}
-                    alt="client-img"
-                    width={70}
-                    height={70}
-                    style={{ marginRight: "20px" }}
-                  />
-                  <div>
-                    <h3>{userData?.display_name}</h3>
-                    <p>Graduation Year: {internInfo?.graduationYear}</p>
-                    <p>Intern Type: {internInfo?.internType}</p>
-                  </div>
-                </div>
-                <div className="view-profile-btn-sec">
-                  <button className="view-profile-btn"> + Connect</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+     
       </section>
     </div>
   );

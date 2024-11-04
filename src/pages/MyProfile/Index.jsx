@@ -94,7 +94,7 @@ const SingleMentor = () => {
 
             {profileData.typeUser === "venture" && <VentureOptions />}
 
-            {profileData.typeUser === "Intern" && <SkillSet  />}
+            {profileData.typeUser === "Intern" && <SkillSet skill={profileData.skillSet} />}
 
             {/* Tabs section */}
             {profileData.typeUser === "Intern" && <Acadamic />}
