@@ -7,24 +7,20 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./assets/css/media-query.css";
 import { ROUTES } from "./constants/routes"; // Import the route constants
 
-
 //  Desktop View
 
-import DesktopHomeScreen  from './pages/Desktop/HomeScreen/index';
+import DesktopHomeScreen from "./pages/Desktop/HomeScreen/index";
 import Header from "./pages/Desktop/Header/Header";
 import DesktopProjectDetails from "./pages/Desktop/ProjectDetail";
 import DesktopCreateProject from "./pages/Desktop/ProjectDetail/ApplyProject";
-import DesktopProfile from './pages/Desktop/Profile/index.jsx'
-import DesktopPrefferRole from './pages/Desktop/Prefference/PrefferRole.jsx'
-import DesktopSignIn from './pages/Desktop/Auth/SignIn'
-import DesktopSignUp from './pages/Desktop/Auth/SignUp'
-import DesktopPrefferedServiceIntern from './pages/Desktop/Prefference/PrefferServiceIntern.jsx'
-import DesktopPrefferServiceVenture from './pages/Desktop/Prefference/PrefferServiceVenture.jsx'
-import DesktopPrefferServiceMentor from './pages/Desktop/Prefference/PrefferServiceMentor.jsx'
-import DesktopAllProjects from './pages/Desktop/ProjectDetail/AllProjects.jsx'
-
-
-
+import DesktopProfile from "./pages/Desktop/Profile/index.jsx";
+import DesktopPrefferRole from "./pages/Desktop/Prefference/PrefferRole.jsx";
+import DesktopSignIn from "./pages/Desktop/Auth/SignIn";
+import DesktopSignUp from "./pages/Desktop/Auth/SignUp";
+import DesktopPrefferedServiceIntern from "./pages/Desktop/Prefference/PrefferServiceIntern.jsx";
+import DesktopPrefferServiceVenture from "./pages/Desktop/Prefference/PrefferServiceVenture.jsx";
+import DesktopPrefferServiceMentor from "./pages/Desktop/Prefference/PrefferServiceMentor.jsx";
+import DesktopAllProjects from "./pages/Desktop/ProjectDetail/AllProjects.jsx";
 
 // Mobile View
 
@@ -94,44 +90,33 @@ import PrefferedRole from "./pages/PrefferedRole.jsx";
 
 import BottomNavigationVenture from "./components/BottomNavigationVenture";
 
-
 function App() {
   const location = useLocation(); // Get the current location
 
-
   const selectedRole = useSelector((state) => state.role.selectedRole);
 
-  console.log('selectedRole:',selectedRole);
-
-
- 
+  console.log("selectedRole:", selectedRole);
 
   const [isMobileView, setIsMobileView] = useState(false);
 
-
-  console.log('isMobileView',isMobileView);
+  console.log("isMobileView", isMobileView);
   useEffect(() => {
     const checkMobileView = () => {
-      console.log('window.innerWidth',window.innerWidth);
-      setIsMobileView(window.innerWidth <=992);
+      console.log("window.innerWidth", window.innerWidth);
+      setIsMobileView(window.innerWidth <= 992);
     };
 
     // Initial check
     checkMobileView();
 
     // Add event listener for window resize
-    window.addEventListener('resize', checkMobileView);
+    window.addEventListener("resize", checkMobileView);
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', checkMobileView);
+      window.removeEventListener("resize", checkMobileView);
     };
   }, [window.innerWidth]);
-
-
-
-
-
 
   // Define the pages where BottomNavigation is needed
   const pagesWithBottomNavigation = [
@@ -145,13 +130,22 @@ function App() {
   return (
     <div className="App">
       {!isMobileView && <Header />}
-      
-      <Toaster />   
+
+      <Toaster />
       <Routes>
         {/* Public Routes */}
-        <Route path={ROUTES.HOME} element={isMobileView ? <HomeScreen /> : <DesktopHomeScreen/>} />
-        <Route path={ROUTES.SIGN_UP} element={isMobileView ?  <SignUp /> : <DesktopSignUp/>} />
-        <Route path={ROUTES.SIGN_IN} element={isMobileView ? <SignIn /> : <DesktopSignIn/>} />
+        <Route
+          path={ROUTES.HOME}
+          element={isMobileView ? <HomeScreen /> : <DesktopHomeScreen />}
+        />
+        <Route
+          path={ROUTES.SIGN_UP}
+          element={isMobileView ? <SignUp /> : <DesktopSignUp />}
+        />
+        <Route
+          path={ROUTES.SIGN_IN}
+          element={isMobileView ? <SignIn /> : <DesktopSignIn />}
+        />
         <Route path={ROUTES.FORGET_PASSWORD} element={<ForgetPassword />} />
         <Route path={ROUTES.CHECK_MAIL_SCREEN} element={<CheckMailScreen />} />
         <Route
@@ -167,26 +161,42 @@ function App() {
           }
         />
 
+        <Route
+          path={ROUTES.PREFERRED_ROLE}
+          element={isMobileView ? <PrefferedRole /> : <DesktopPrefferRole />}
+        />
 
-       <Route
-       path={ROUTES.PREFERRED_ROLE}
-       element={isMobileView ? <PrefferedRole/> : <DesktopPrefferRole/>}
-       />
+        <Route
+          path={ROUTES.INTERN}
+          element={
+            isMobileView ? (
+              <PrefferedServiceIntern />
+            ) : (
+              <DesktopPrefferedServiceIntern />
+            )
+          }
+        />
+        <Route
+          path={ROUTES.MENTOR}
+          element={
+            isMobileView ? (
+              <PrefferedServiceMentor />
+            ) : (
+              <DesktopPrefferServiceMentor />
+            )
+          }
+        />
 
-      <Route
-      path={ROUTES.INTERN}
-      element={isMobileView ? <PrefferedServiceIntern/> : <DesktopPrefferedServiceIntern/>}
-      />
-      <Route
-      path={ROUTES.MENTOR}
-      element={isMobileView ? <PrefferedServiceMentor/> : <DesktopPrefferServiceMentor/>}
-      />
-
-      <Route
-      path={ROUTES.VENTURE}
-      element={isMobileView ?   <PrefferedServiceVenture/> : <DesktopPrefferServiceVenture/>}
-      />
-
+        <Route
+          path={ROUTES.VENTURE}
+          element={
+            isMobileView ? (
+              <PrefferedServiceVenture />
+            ) : (
+              <DesktopPrefferServiceVenture />
+            )
+          }
+        />
 
         {/* Protected Routes */}
         <Route
@@ -233,7 +243,7 @@ function App() {
           path={ROUTES.HOME_SCREEN}
           element={
             <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
-             {isMobileView ? <HomeScreen /> : <DesktopHomeScreen/>}
+              {isMobileView ? <HomeScreen /> : <DesktopHomeScreen />}
             </ProtectedRoute>
           }
         />
@@ -273,7 +283,7 @@ function App() {
           path={ROUTES.SINGLE_COURSE_DESCRIPTION + "/:projectId"}
           element={
             <ProtectedRoute>
-              {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails/>}
+              {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />}
             </ProtectedRoute>
           }
         />
@@ -281,7 +291,7 @@ function App() {
           path={ROUTES.APPLY_PROJECT + "/:projectId"}
           element={
             <ProtectedRoute>
-              {isMobileView ? <ApplyProject /> : <DesktopCreateProject/>}
+              {isMobileView ? <ApplyProject /> : <DesktopCreateProject />}
             </ProtectedRoute>
           }
         />
@@ -361,9 +371,9 @@ function App() {
           path={ROUTES.NEW_RELEASE_COURSE}
           element={
             <ProtectedRoute>
-              {isMobileView ? <NewReleaseCourse /> : <DesktopAllProjects/>}
+              {isMobileView ? <NewReleaseCourse /> : <DesktopAllProjects />}
             </ProtectedRoute>
-          } 
+          }
         />
         <Route
           path={ROUTES.BOOKMARK}
@@ -417,7 +427,7 @@ function App() {
           path={ROUTES.PROFILE}
           element={
             <ProtectedRoute>
-              {isMobileView ? <Profile /> : <DesktopProfile/>}
+              {isMobileView ? <Profile /> : <DesktopProfile />}
             </ProtectedRoute>
           }
         />
@@ -554,22 +564,19 @@ function App() {
         <Route path="" element={<Footer />} />
       </Routes>
 
-      
-      {isMobileView && location.pathname !== ROUTES.SIGN_IN && 
-      location.pathname !== ROUTES.SIGN_UP && 
-      location.pathname !== ROUTES.INTERN && 
-      location.pathname !== ROUTES.MENTOR && 
-      location.pathname !== ROUTES.VENTURE && (
-        <>
-          {selectedRole === 'venture' && <BottomNavigationVenture />}
-          {selectedRole === 'intern' && <BottomNavigation/>}
-          {selectedRole === 'mentor' && <BottomNavigationVenture/>}
-          {selectedRole === '' && <BottomNavigation/>}
-         
-        
-        </>
-      )}
-    
+      {isMobileView &&
+        location.pathname !== ROUTES.SIGN_IN &&
+        location.pathname !== ROUTES.SIGN_UP &&
+        location.pathname !== ROUTES.INTERN &&
+        location.pathname !== ROUTES.MENTOR &&
+        location.pathname !== ROUTES.VENTURE && (
+          <>
+            {selectedRole === "venture" && <BottomNavigationVenture />}
+            {selectedRole === "intern" && <BottomNavigation />}
+            {selectedRole === "mentor" && <BottomNavigationVenture />}
+            {selectedRole === "" && <BottomNavigation />}
+          </>
+        )}
     </div>
   );
 }

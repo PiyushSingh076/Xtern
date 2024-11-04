@@ -19,7 +19,6 @@ const useFetchUserData = () => {
 
           if (userDoc.exists()) {
             setUserData(userDoc.data()); // Update userData state with Firestore data
-            console.log(userDoc.data(), "lllllldddddl");
           } else {
             // User document does not exist in Firestore
             setError("No user profile found.");
