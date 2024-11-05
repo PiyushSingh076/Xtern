@@ -4679,8 +4679,17 @@ span.ongoing-txt2 {
 .educ-logo{
   border-radius: 10px;
   margin-right: 20px;
+  object-fit: fill;
 }
 
+.logo-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  height: 100px;
+  border: 1px black solid;
+}
 
 .profile-follower h2,
 .profile-following h2 {

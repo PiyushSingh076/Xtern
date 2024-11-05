@@ -71,7 +71,7 @@ export default function Acadamic({profileData}) {
 
   return (
     <div className="experience-sec" key={work.role + work.companyname}>
-    <img src={work.logo} className="educ-logo" width={'100px'} height={'100px'}/>
+<img src={work.logo} className="educ-logo" style={{width: '30%', height: '30%'}}/>
    <div className="experience-info">
    <h4>{work.role}</h4>
       <p>{work.companyname} | {startDateFormatted}</p>
@@ -112,7 +112,7 @@ export default function Acadamic({profileData}) {
                       tabIndex="0"
                     >
                    {profileData?.educationDetails.map((educ)=> (  <div className="experience-sec">
-                     <img src={educ?.logo} width={'100px'} className="educ-logo"/>
+                     <img src={educ?.logo} width={'30%'} height={'30%'} className="educ-logo"/>
                       <div className="experience-info">
                       <h4>{educ.degree}</h4>
                         <h6>Stream: ({educ.branch})</h6>
@@ -133,7 +133,9 @@ export default function Acadamic({profileData}) {
                     >
    {profileData?.projectDetails.map((project, index) => (
   <div className="experience-sec" key={index}>
-     <img src={project?.logo} width={'100px'} height={'100px'} className="educ-logo"/>
+    <div>
+    <img src={project?.logo}width={'100px'} height={'100px'} className="educ-logo"/>
+    </div>
   <div className="experience-info">
   <h4>{project.projectname}</h4>
 

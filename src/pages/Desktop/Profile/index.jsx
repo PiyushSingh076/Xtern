@@ -4,14 +4,11 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import code from "../../../assets/svg/code.svg";
 import { useSelector } from "react-redux";
-import Slider from "react-slick";
-import schedule from "../../../assets/svg/schedule.svg";
 import medal from "../../../assets/svg/medal.png";
-
 import "./Profile.css";
-import toast from "react-hot-toast";
 import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
-import Loading from "../../../components/Loading";
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 // Component definition
 const SingleMentor = () => {
@@ -98,33 +95,47 @@ const SingleMentor = () => {
 
             {/* Skills section */}
             <div className="profile-details-skill-sec">
-              <h3>Skills</h3>
+                <h3>Skills</h3>
             </div>
 
             {/* Skills slider */}
-              <div className="skillset-container">
-              {profileData?.skillSet.map((skill, index) => (
-                <div className="profile-details-second-wrap-sec" key={index}>
-                  <div
-                    className={`mentor-icon ${
-                      ["purple-bg", "green-bg", "pink-bg", "orange-bg"][
-                        index % 4
-                      ]
-                    }`}
-                  >
-                    <img
-                      width={"30px"}
-                      src={code}
-                      alt={`${skill.skillset}-icon`}
-                    />
-                  </div>
-                  <div className="mentor-content-single mt-12">
-                    <h3>{skill.skill}</h3>
-                    <p>{skill.rating}</p>
-                  </div>
-                </div>
-              ))}
-       </div>
+            <div className="skillset-container">
+                {profileData?.skillSet.map((skillItem, index) => (
+                    <div className="profile-details-second-wrap-sec" key={index}>
+                        <div
+                            className={`mentor-icon ${
+                                ["purple-bg", "green-bg", "pink-bg", "orange-bg"][index % 4]
+                            }`}
+                            style={{ position: "relative", width: "80px", height: "80px" }}
+                        >
+                            <CircularProgressbar
+                                value={skillItem.rating == 'High'  ? 90 : skillItem.rating == 'Medium' ? 60 : 30}
+                              
+                              styles={buildStyles({
+    pathColor: skillItem.rating == 'High' ? 'green' : skillItem.rating == 'Medium' ? 'orange' : 'red',
+    trailColor: "#f0f0f0"
+})}
+                            />
+                            <img
+                                src={code}
+                                alt={`${skillItem.skill}-icon`}
+                                style={{
+                                    padding: '5px',
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    width: "40px"
+                                }}
+                            />
+                        </div>
+                        <div className="mentor-content-single mt-12">
+                            <h3>{skillItem.skill}</h3>
+                            <p>{skillItem.rating}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
 
             {/* Tabs section */}
             <div className="single-mentor-third-sec">
