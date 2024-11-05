@@ -1,8 +1,9 @@
 // Imports
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useFetchUserData from "../../hooks/Auth/useFetchUserData";
 import useUserProfileData from "../../hooks/Profile/useUserProfileData";
+import { useParams } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 
@@ -17,16 +18,13 @@ const SingleMentor = () => {
   const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
   const navigate = useNavigate();
   const role = useSelector((state) => state.role);
-
-  const {uid} = useParams()
-
+  const { uid } = useParams();
   const {
     userData: profileData,
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(uid);
-  console.log("Mob profileData", profileData, profileError);
-
+  console.log("profileData", profileData, profileError);
   // Slider settings for the skills carousel
 
   // Custom hooks and Redux state
@@ -89,15 +87,15 @@ const SingleMentor = () => {
           <h2 className="d-none">Mentor</h2>
           <div className="single-mentor-sec-wrap mt-32">
             {/* Profile information */}
-            <MainProfile ProfileData = {profileData}/>
+            <MainProfile userdata={profileData} />
             <div className="navbar-boder mt-24"></div>
 
-            {role.selectedRole === "venture" && <VentureOptions />}
+            {profileData?.typeUsere === "venture" && <VentureOptions />}
 
-            {role.selectedRole === "intern" && <SkillSet />}
+            {profileData?.typeUser === "Intern" && <SkillSet skill={profileData?.skillSet} />}
 
             {/* Tabs section */}
-            {role.selectedRole === "intern" && <Acadamic />}
+            {profileData?.typeUser === "Intern" && <Acadamic profileData={profileData} />}
           </div>
         </div>
       </section>

@@ -7,48 +7,51 @@ import schedule from '../../assets/svg/schedule.svg';
 import medal from '../../assets/svg/medal.png';
 import dollar from '../../assets/svg/dollar.svg';
 
-export default function MainProfile({ProfileData}) {
-    const [data, setData] = useState(null);
+export default function MainProfile({userdata}) {
+    // const [data, setData] = useState(null);
     const { userData } = useFetchUserData();
-    const role = useSelector((state) => state.role);
-    const InternInfo = useSelector((state) => state.InternInfo); 
-    const ventureInfo = useSelector((state) => state.ventureInfo);
-    console.log(ventureInfo);
-    useEffect(() => {
-        console.log('useEffect');
+    // const role = useSelector((state) => state.role);
+    // const internInfo = useSelector((state) => state.internInfo); 
+    // const ventureInfo = useSelector((state) => state.ventureInfo);
+    // console.log(ventureInfo);
+    // useEffect(() => {
+    //     console.log('useEffect');
 
-        if (ProfileData.typeUser=== 'Intern') {
-            setData(InternInfo);
-            console.log('Intern is executing');
-        }
-        if (ProfileData.typeUser=== 'venture') {
-            setData(ventureInfo);
-            console.log('venture is executing');
-        }
-    }, [role]);
+    //     if (userdata?.typeUser === 'intern') {
+    //         setData(internInfo);
+    //         console.log('intern is executing');
+    //     }
+    //     if (userdata?.typeUser === 'venture') {
+    //         setData(ventureInfo);
+    //         console.log('venture is executing');
+    //     }
+    // }, [role]);
+
+
+    console.log('main',userdata)
 
 
     return (
         <div>
             <div className="single-mentor-first-wrap">
                 <div className="mentor-img-sec">
-                    {ProfileData.typeUser === 'Intern' && (
+                    {userdata?.typeUser === 'Intern' && (
                         <div className="mentor-medal-sec">
                             <img src={medal} className="mentor-medal" width={'24px'} alt="medal" />
-                            <span>{ProfileData.medal}</span>
+                            <span>{userdata?.medal}</span>
                         </div>
                     )}
-                    <img src={userData?.profilePicture} alt="client-img" width={96} height={96} />
+                    <img src={userdata?.photo_url} alt="client-img" width={96} height={96} />
                 </div>
                 <div className="single-mentor-details">
-                    <h3>{ProfileData?.display_name}</h3>
-                    {ProfileData.typeUser === 'Intern' && <h4 className="mt-12">Graduation Year: {InternInfo?.graduationYear}</h4>}
-                    {ProfileData.typeUser=== 'venture' && <h4 className="mt-12">Organization: <span className="company-name">{data?.companyName}</span></h4>}
-                    {ProfileData.typeUser=== 'Intern' && <p className="mt-16">{ProfileData?.role}</p>}
-                    {ProfileData.typeUser=== 'venture' && <p className="mt-16">{ProfileData?.role}</p>}
+                    <h3>{userdata?.display_name}</h3>
+                    {userdata?.typeUser === 'Intern' && <h4 className="mt-12">Graduation Year: {userdata?.graduationyear}</h4>}
+                    {userdata?.typeUser === 'venture' && <h4 className="mt-12">Organization: <span className="company-name">{userdata?.companyName}</span></h4>}
+                    {userdata?.typeUser === 'Intern' && <p className="mt-16">{userdata?.role}</p>}
+                    {userdata?.typeUser === 'venture' && <p className="mt-16">{userdata?.role}</p>}
                 </div>
                 <div className="mentor-follow-sec">
-                    {ProfileData.typeUser=== 'Intern' && (
+                    {userdata?.typeUser === 'Intern' && (
                         <>
                             <div className="mentor-follow-btn" data-bs-toggle="modal" data-bs-target="#scheduleModal">
                                 <img src={schedule} width={'24px'} alt="schedule" />
