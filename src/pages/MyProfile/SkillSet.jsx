@@ -1,14 +1,22 @@
 import React from "react";
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-
+import useUserProfileData from "../../hooks/Profile/useUserProfileData";
+import { useParams } from "react-router-dom";
+import Skeleton from '@mui/material/Skeleton';
 import code from '../../assets/svg/code.svg';
 import { useSelector } from "react-redux";
-import Slider from "react-slick";
 
-export default function SkillSet({ skill }) {
-    const internInfo = useSelector((state) => state.internInfo);
-    console.log(internInfo);
+
+export default function SkillSet({ skill , skillloading }) {
+ 
+    const { uid } = useParams();
+    const {
+        loading: profileLoading,
+} = useUserProfileData(uid);
+
+
+console.log('skill',profileLoading)
 
     const settings = {
         dots: false,
@@ -17,6 +25,20 @@ export default function SkillSet({ skill }) {
         slidesToShow: 4,
         slidesToScroll: 4
     };
+
+    if (skillloading) {
+        return (
+            <div className="skillset-container">
+                {Array(4).fill(0).map((_, index) => (
+                    <div className="profile-details-second-wrap-sec" key={index}>
+                        <Skeleton variant={'circular'} width={80} height={80} />
+                        <Skeleton width={"80%"} height={20} style={{ marginTop: 10 }} />
+                        <Skeleton width={"60%"} height={15} />
+                    </div>
+                ))}
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -35,12 +57,12 @@ export default function SkillSet({ skill }) {
                             style={{ position: "relative", width: "80px", height: "80px" }}
                         >
                             <CircularProgressbar
-                                value={skillItem.rating == 'High'  ? 90 : skillItem.rating == 'Medium' ? 60 : 30}
-                              
-                              styles={buildStyles({
-    pathColor: skillItem.rating == 'High' ? 'green' : skillItem.rating == 'Medium' ? 'orange' : 'red',
-    trailColor: "#f0f0f0"
-})}
+                                value={skillItem.rating === 'High' ? 90 : skillItem.rating === 'Medium' ? 60 : 30}
+                                styles={buildStyles({
+                                    pathColor: skillItem.rating === 'High' ? 'green' : skillItem.rating === 'Medium' ? 'orange' : 'red',
+                                    trailColor: "#f0f0f0"
+                                })}
+                                ariaLabel={`Skill progress for ${skillItem.skill}`}
                             />
                             <img
                                 src={code}

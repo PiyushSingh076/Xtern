@@ -9,6 +9,9 @@ import "./Profile.css";
 import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import Skeleton from '@mui/material/Skeleton';
+
+
 
 // Component definition
 const SingleMentor = () => {
@@ -19,6 +22,7 @@ const SingleMentor = () => {
   const [interviewtime, setInterviewTime] = useState("");
   const [interviewScheduled, setInterviewScheduled] = useState(false);
   const navigate = useNavigate();
+
   const { uid } = useParams();
   const {
     userData: profileData,
@@ -26,6 +30,8 @@ const SingleMentor = () => {
     error: profileError,
   } = useUserProfileData(uid);
   console.log("profileData", profileData, profileError);
+
+
   // Slider settings
 // const settings = {
 //   infinite: false,
@@ -42,7 +48,7 @@ const SingleMentor = () => {
   };
 
   // Hooks
-  const { userData, loading, error } = useFetchUserData();
+
   const internInfo = useSelector((state) => state.internInfo);
   console.log(internInfo);
 
@@ -58,8 +64,9 @@ const SingleMentor = () => {
   const handleBackClick = () => {
     navigate(-1); // This will navigate to the previous page in the history stack
   };
-  //   if (profileLoading) return <Loading />;
-  return (
+ 
+
+ return (
     <div className="desktop-profile-container">
       {/* Profile details section */}
       <section id="profile-details-section">
@@ -67,6 +74,9 @@ const SingleMentor = () => {
           <div className="profile-details-wrap mt-32">
             {/* Profile image and basic info */}
             <div className="profile-details-first-wrap">
+              {profileLoading ? 
+              <Skeleton variant="circular" width={80} height={80} /> 
+              : 
               <div className="mentor-img-sec">
                 <div className="mentor-medal-sec">
                   <img
@@ -83,18 +93,19 @@ const SingleMentor = () => {
                   width={96}
                   height={96}
                 />
-              </div>
+              </div>}
               <div className="profile-details-details">
-                <h4>{profileData?.display_name}</h4>
-                <span className="mt-12">
+              {profileLoading ? <Skeleton variant="text" sx={{ fontSize: '1rem' , width: '300px' , height: '30px'}} /> :  <h4>{profileData?.display_name}</h4>}
+              {profileLoading ? <Skeleton variant="text" sx={{ fontSize: '1rem' , width: '200px' , height: '20px'}} /> :  <span className="mt-12">
                   Graduation Year: {profileData?.graduationyear}
-                </span>
-                <p className="mt-14">{profileData?.role}</p>
+                </span>}
+        {profileLoading ?  <Skeleton variant="text" sx={{ fontSize: '1rem' , width: '100px' , height: '20px'}} /> :  <p className="mt-14">{profileData?.role}</p>}
               </div>
             </div>
 
             {/* Skills section */}
-            <div className="profile-details-skill-sec">
+         {profileLoading ?  <Skeleton variant="rectangle" sx={{ width: '100%' , height: '200px', marginTop: '20px' , borderRadius: '10px'}} />:  <div>
+           <div className="profile-details-skill-sec">
                 <h3>Skills</h3>
             </div>
 
@@ -136,12 +147,13 @@ const SingleMentor = () => {
                     </div>
                 ))}
             </div>
+           </div>}
 
             {/* Tabs section */}
             <div className="single-mentor-third-sec">
               <div className="fifth-decs-sec mt-32">
                 <div className="fifth-decs-sec-wrap">
-                  <ul
+                 {profileLoading ? <Skeleton variant="rectangle" sx={{ width: '100%' , height: '50px', marginTop: '20px' , borderRadius: '10px'}} /> : <ul
                     className="nav nav-pills single-mentor-tab"
                     id="mentor-tab"
                     role="tablist"
@@ -187,7 +199,7 @@ const SingleMentor = () => {
                         Projects
                       </button>
                     </li>
-                  </ul>
+                  </ul>}
                   <div className="tab-content" id="course-tab-btn">
                     <div
                       className="tab-pane fade show active mt-16"
@@ -200,8 +212,8 @@ const SingleMentor = () => {
   const startDate = new Date(work.startdate.seconds * 1000);
 
   const startDateFormatted = startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-
-  return (
+ if (profileLoading) return <Skeleton variant="rectangle" sx={{ width: '100%' , height: '100px', marginTop: '20px' , borderRadius: '10px'}} />
+ else return (
     <div className="experience-sec" key={work.role + work.companyname}>
     <img src={work.logo} className="educ-logo" width={'100px'} height={'100px'}/>
    <div className="experience-info">
@@ -236,34 +248,58 @@ const SingleMentor = () => {
 
                     </div>
                   </div>
-                  <div className="tab-content" id="student-tabContent">
-                    <div
-                      className="tab-pane fade show"
-                      id="student-content"
-                      role="tabpanel"
-                      tabIndex="0"
-                    >
-                   {profileData?.educationDetails.map((educ)=> (  <div className="experience-sec">
-                     <img src={educ?.logo} width={'100px'} className="educ-logo"/>
-                      <div className="experience-info">
-                      <h4>{educ.degree}</h4>
-                        <h6>Stream: ({educ.branch})</h6>
-                        <p>{educ.collegename} </p>
-                        <p> Batch: {educ.startyear} - {educ.endyear}</p>
-                      </div>
-                        {/* <span> cgpa </span> */}
-                      </div>))}
-                    </div>
-                  </div>
-                  <div className="tab-content" id="review-tabContent">
-                    <div
-                      className="tab-pane fade show"
-                      id="reviews-content"
-                      role="tabpanel"
-                      tabIndex="0"
-                      aria-labelledby="reviews-tab-btn"
-                    >
-   {profileData?.projectDetails.map((project, index) => (
+                <div className="tab-content" id="student-tabContent">
+  <div
+    className="tab-pane fade show"
+    id="student-content"
+    role="tabpanel"
+    tabIndex="0"
+  >
+    {profileData?.educationDetails.map((educ, index) => {
+      if (profileLoading) {
+        return (
+          <Skeleton
+            variant="rectangle"
+            sx={{
+              width: "100%",
+              height: "100px",
+              marginTop: "20px",
+              borderRadius: "10px",
+            }}
+            key={index}
+          />
+        );
+      } else {
+        return (
+          <div className="experience-sec" key={index}>
+            <img
+              src={educ?.logo}
+              width={"100px"}
+              className="educ-logo"
+              onError={(e) => (e.target.src = "")}
+            />
+            <div className="experience-info">
+              <h4>{educ.degree}</h4>
+              <h6>Stream: ({educ.branch})</h6>
+              <p>{educ.collegename}</p>
+              <p>Batch: {educ.startyear} - {educ.endyear}</p>
+            </div>
+          </div>
+        );
+      }
+    })}
+  </div>
+</div>
+               {profileLoading ? <Skeleton variant="rectangle" sx={{ width: '100%' , height: '200px', marginTop: '20px' , borderRadius: '10px'}} /> : 
+<div className="tab-content" id="review-tabContent">
+  <div
+    className="tab-pane fade show"
+    id="reviews-content"
+    role="tabpanel"
+    tabIndex="0"
+    aria-labelledby="reviews-tab-btn"
+  >
+{profileData?.projectDetails.map((project, index) => (
   <div className="experience-sec" key={index}>
      <img src={project?.logo} width={'100px'} height={'100px'} className="educ-logo"/>
   <div className="experience-info">
@@ -305,14 +341,8 @@ style={{marginTop: '10px'}}
   </div>
   </div>
 ))}
-
-
-
-                 
-
-                     
-                    </div>
-                  </div>
+</div>
+</div>}
                 </div>
               </div>
             </div>

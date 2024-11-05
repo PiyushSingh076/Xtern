@@ -87,15 +87,15 @@ const SingleMentor = () => {
           <h2 className="d-none">Mentor</h2>
           <div className="single-mentor-sec-wrap mt-32">
             {/* Profile information */}
-            <MainProfile userdata={profileData} />
+            <MainProfile userdata={profileData} loading={profileLoading} />
             <div className="navbar-boder mt-24"></div>
 
             {profileData?.typeUsere === "venture" && <VentureOptions />}
 
-            {profileData?.typeUser === "Intern" && <SkillSet skill={profileData?.skillSet} />}
+            {profileData?.typeUser === "Intern" && <SkillSet skill={profileData?.skillSet} skillloading={profileLoading} />}
 
             {/* Tabs section */}
-            {profileData?.typeUser === "Intern" && <Acadamic profileData={profileData} />}
+            {profileData?.typeUser === "Intern" && <Acadamic profileData={profileData} loading={profileLoading}/>}
           </div>
         </div>
       </section>
