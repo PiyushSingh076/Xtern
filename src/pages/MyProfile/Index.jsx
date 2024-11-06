@@ -1,37 +1,34 @@
 // Imports
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import useFetchUserData from "../../hooks/Auth/useFetchUserData";
-import useUserProfileData from "../../hooks/Profile/useUserProfileData";
-import { useParams } from "react-router-dom";
-
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-
+import useUserProfileData from "../../hooks/Profile/useUserProfileData";
 import SkillSet from "./SkillSet";
 import Acadamic from "./Acadamic";
 import MainProfile from "./MainProfile";
 import VentureOptions from "./VentureOptions";
+import Skeleton from '@mui/material/Skeleton';
 
 const SingleMentor = () => {
   // State declarations
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
   const navigate = useNavigate();
-  const role = useSelector((state) => state.role);
   const { uid } = useParams();
+  const role = useSelector((state) => state.role);
+  
   const {
     userData: profileData,
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(uid);
+  
   console.log("profileData", profileData, profileError);
-  // Slider settings for the skills carousel
-
-  // Custom hooks and Redux state
 
   const handleBackClick = () => {
     navigate(-1); // Navigate to the previous page in the history stack
   };
+
+  console.log('index',profileLoading)
 
   return (
     <>
@@ -90,12 +87,29 @@ const SingleMentor = () => {
             <MainProfile userdata={profileData} loading={profileLoading} />
             <div className="navbar-boder mt-24"></div>
 
-            {profileData?.typeUsere === "venture" && <VentureOptions />}
+            {profileData?.typeUser === "venture" && <VentureOptions />}
 
-            {profileData?.typeUser === "Intern" && <SkillSet skill={profileData?.skillSet} skillloading={profileLoading} />}
+            {/* SkillSet section */}
+            {profileData?.typeUser === "Intern" && (
+              <>
+                {profileLoading ? (
+                  <Skeleton variant="rounded" width={'100%'} height={'150px'} sx={{marginTop: '40px'}}/>
+                ) : (
+                  <SkillSet skill={profileData?.skillSet} />
+                )}
+              </>
+            )}
 
-            {/* Tabs section */}
-            {profileData?.typeUser === "Intern" && <Acadamic profileData={profileData} loading={profileLoading}/>}
+            {/* Acadamic section */}
+            {profileData?.typeUser === "Intern" && (
+              <>
+                {profileLoading ? (
+                  <Skeleton variant="rounded" width={'100%'} height={'350px'} sx={{marginTop: '80px'}}/>
+                ) : (
+                  <Acadamic profileData={profileData}  />
+                )}
+              </>
+            )}
           </div>
         </div>
       </section>

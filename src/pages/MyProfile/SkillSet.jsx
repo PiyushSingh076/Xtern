@@ -11,12 +11,10 @@ import { useSelector } from "react-redux";
 export default function SkillSet({ skill , skillloading }) {
  
     const { uid } = useParams();
-    const {
-        loading: profileLoading,
-} = useUserProfileData(uid);
+    
 
 
-console.log('skill',profileLoading)
+console.log('skill',skillloading)
 
     const settings = {
         dots: false,

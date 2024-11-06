@@ -10,7 +10,15 @@ import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import Skeleton from '@mui/material/Skeleton';
-
+import schedule from '../../../assets/svg/calendar.png'
+import chat  from '../../../assets/svg/chat.png'
+import dayjs, { Dayjs } from 'dayjs';
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { TimeClock } from '@mui/x-date-pickers/TimeClock';
+import { Flag } from "@mui/icons-material";
 
 
 // Component definition
@@ -18,8 +26,10 @@ const SingleMentor = () => {
   // State declarations
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
-  const [interviewDate, setInterviewDate] = useState("");
-  const [interviewtime, setInterviewTime] = useState("");
+  const [interviewDate, setInterviewDate] = useState(dayjs('2022-04-17'));;
+  const [DateContainer , setDateContainer] = useState(true)
+  const [interviewtime, setInterviewTime] = useState(dayjs('2022-04-17T15:30'));
+  const [TimeContainer , setTimecontainer] = useState(false)
   const [interviewScheduled, setInterviewScheduled] = useState(false);
   const navigate = useNavigate();
 
@@ -43,14 +53,29 @@ const SingleMentor = () => {
 // };
 
   // schedule interview modal
-  const handleScheduleInterview = () => {
-    setInterviewScheduled(true);
-  };
+
 
   // Hooks
 
   const internInfo = useSelector((state) => state.internInfo);
   console.log(internInfo);
+
+// Schedule interview functions
+
+const handledatechange = (date) =>{
+  setInterviewDate(date)
+  setDateContainer(false)
+  setTimecontainer(true)
+
+}
+
+const scheduled = () => {
+  alert('Interview scheduled')
+  setInterviewScheduled(false);
+  setDateContainer(true)
+  setTimecontainer(false)
+}
+
 
   // Event handlers
   const toggleBookmark = () => {
@@ -73,35 +98,61 @@ const SingleMentor = () => {
         <div className="profile-details">
           <div className="profile-details-wrap mt-32">
             {/* Profile image and basic info */}
-            <div className="profile-details-first-wrap">
-              {profileLoading ? 
-              <Skeleton variant="circular" width={80} height={80} /> 
-              : 
-              <div className="mentor-img-sec">
-                <div className="mentor-medal-sec">
-                  <img
-                    src={medal}
-                    className="mentor-medal"
-                    width={"24px"}
-                    alt="medal"
-                  />
-                  <span>{profileData?.medal}</span>
-                </div>
-                <img
-                  src={profileData?.photo_url}
-                  alt={profileData?.display_name || "profile image"}
-                  width={96}
-                  height={96}
-                />
-              </div>}
-              <div className="profile-details-details">
-              {profileLoading ? <Skeleton variant="text" sx={{ fontSize: '1rem' , width: '300px' , height: '30px'}} /> :  <h4>{profileData?.display_name}</h4>}
-              {profileLoading ? <Skeleton variant="text" sx={{ fontSize: '1rem' , width: '200px' , height: '20px'}} /> :  <span className="mt-12">
-                  Graduation Year: {profileData?.graduationyear}
-                </span>}
-        {profileLoading ?  <Skeleton variant="text" sx={{ fontSize: '1rem' , width: '100px' , height: '20px'}} /> :  <p className="mt-14">{profileData?.role}</p>}
-              </div>
-            </div>
+      
+<div className="profile-details-first-wrap">
+  {profileLoading ? (
+    <Skeleton variant="circular" width={80} height={80} />
+  ) : (
+    <div className="profile-img-info-container">
+      <div className="mentor-img-sec">
+        <div className="mentor-medal-sec">
+          <img
+            src={medal}
+            className="mentor-medal"
+            width={"24px"}
+            alt="medal"
+          />
+          <span>{profileData?.medal}</span>
+        </div>
+        <img
+          src={profileData?.photo_url}
+          alt={profileData?.display_name || "profile image"}
+          width={96}
+          height={96}
+          onError={(e) => (e.target.src = "")}
+        />
+      </div>
+      <div className="profile-details-details">
+        {profileLoading ? (
+          <Skeleton variant="text" sx={{ fontSize: "1rem", width: "300px", height: "30px" }} />
+        ) : (
+          <h4>{profileData?.display_name}</h4>
+        )}
+        {profileLoading ? (
+          <Skeleton variant="text" sx={{ fontSize: "1rem", width: "200px", height: "20px" }} />
+        ) : (
+          <span className="mt-12">
+            Graduation Year: {profileData?.graduationyear}
+          </span>
+        )}
+        {profileLoading ? (
+          <Skeleton variant="text" sx={{ fontSize: "1rem", width: "100px", height: "20px" }} />
+        ) : (
+          <p className="mt-14">{profileData?.role}</p>
+        )}
+      </div>
+    </div>
+  )}
+
+ <div>
+  <div className="profile-details-second-wrap">
+    <button onClick={()=>setInterviewScheduled(true)} className="schedule-btn"><img src={schedule} width={'50px'} alt='schedule' className="schedule-icon"/>  <div><span>Schedule Interview</span> <span>Schedule interview at few click</span></div></button>
+    {/* <button className="chat-btn"><img src={chat} width={'50px'} alt="chat"/> Chat</button> */}
+  </div>
+ </div>
+
+</div>
+
 
             {/* Skills section */}
          {profileLoading ?  <Skeleton variant="rectangle" sx={{ width: '100%' , height: '200px', marginTop: '20px' , borderRadius: '10px'}} />:  <div>
@@ -215,7 +266,9 @@ const SingleMentor = () => {
  if (profileLoading) return <Skeleton variant="rectangle" sx={{ width: '100%' , height: '100px', marginTop: '20px' , borderRadius: '10px'}} />
  else return (
     <div className="experience-sec" key={work.role + work.companyname}>
-    <img src={work.logo} className="educ-logo" width={'100px'} height={'100px'}/>
+<div className="work-logo-container">   
+   <img src={work.logo} className="educ-logo" />
+   </div>
    <div className="experience-info">
    <h4>{work.role}</h4>
       <p>{work.companyname} | {startDateFormatted}</p>
@@ -272,12 +325,9 @@ const SingleMentor = () => {
       } else {
         return (
           <div className="experience-sec" key={index}>
-            <img
-              src={educ?.logo}
-              width={"100px"}
-              className="educ-logo"
-              onError={(e) => (e.target.src = "")}
-            />
+          <div className="work-logo-container">   
+   <img src={educ.logo} className="educ-logo" />
+   </div>
             <div className="experience-info">
               <h4>{educ.degree}</h4>
               <h6>Stream: ({educ.branch})</h6>
@@ -301,7 +351,9 @@ const SingleMentor = () => {
   >
 {profileData?.projectDetails.map((project, index) => (
   <div className="experience-sec" key={index}>
-     <img src={project?.logo} width={'100px'} height={'100px'} className="educ-logo"/>
+<div className="work-logo-container">   
+   <img src={project.logo} className="educ-logo" />
+   </div>
   <div className="experience-info">
   <h4>{project.projectname}</h4>
 
@@ -447,6 +499,44 @@ style={{marginTop: '10px'}}
          Similar profiles 
      
       </section> */}
+
+{interviewScheduled &&
+     <div className="schedule-interview-container">
+            <div className="schedule-interview-card">
+                 <div className="schedule-interview-img-section">
+                 <span>Schedule Inteview</span>
+                  <img alt='img' src="https://img.freepik.com/free-vector/employee-month-concept_23-2148459815.jpg?semt=ais_hybrid"/>
+                 </div>
+                 <div className="date-time-container">
+              
+{DateContainer &&    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DemoContainer components={['DateCalendar', 'DateCalendar']}>
+      
+        <DemoItem>
+          <DateCalendar value={interviewDate} onChange={(newValue) => handledatechange(newValue)} />
+        </DemoItem>
+      </DemoContainer>
+    </LocalizationProvider>}
+
+    {TimeContainer &&
+      <div className="time-container">
+           <LocalizationProvider dateAdapter={AdapterDayjs}>
+         <DemoContainer components={['TimeClock', 'TimeClock']}>
+           
+           <DemoItem>
+             <TimeClock value={interviewtime} onChange={(newValue) => setInterviewTime(newValue)} />
+           </DemoItem>
+         </DemoContainer>
+       </LocalizationProvider>
+
+       <button onClick={scheduled} className="btn btn-primary">Schedule</button>
+        </div>
+    }
+
+                 </div>
+            </div>
+     </div>}
+
     </div>
   );
 };
