@@ -151,7 +151,7 @@ const scheduled = () => {
   </div>
  </div>
 
-</div>
+</div> 
 
 
             {/* Skills section */}

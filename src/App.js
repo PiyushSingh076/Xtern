@@ -9,7 +9,7 @@ import { ROUTES } from "./constants/routes"; // Import the route constants
 
 //  Desktop View
 
-import DesktopHomeScreen from "./pages/Desktop/HomeScreen/index";
+import DesktopHomeScreen from "./pages/Desktop/HomeScreen2/index";
 import Header from "./pages/Desktop/Header/Header";
 import DesktopProjectDetails from "./pages/Desktop/ProjectDetail";
 import DesktopCreateProject from "./pages/Desktop/ProjectDetail/ApplyProject";
@@ -424,7 +424,7 @@ function App() {
           }
         />
         <Route
-          path={ROUTES.PROFILE}
+       path={ROUTES.PROFILE}
           element={
             <ProtectedRoute>
               {isMobileView ? <Profile /> : <DesktopProfile />}

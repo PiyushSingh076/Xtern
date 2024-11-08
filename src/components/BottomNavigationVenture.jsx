@@ -6,13 +6,14 @@ import { MdGroups } from "react-icons/md"; // Groups icon for Discover tab
 import { MdOutlineChat } from "react-icons/md"; // Chat icon for Chat tab
 import teams from "../assets/svg/teams.svg";
 import org from "../assets/svg/org.svg";
+import useFetchUserData from "../hooks/Auth/useFetchUserData";
 
 const BottomNavigationVenture = () => {
   const location = useLocation(); // Get the current location from react-router
 
   // Helper function to check if current path matches given path
   const isActive = (path) => location.pathname === path;
-  
+  const { userData, loading, error } = useFetchUserData();
 
   return (
     // Main bottom navigation container with padding
@@ -92,7 +93,8 @@ const BottomNavigationVenture = () => {
               {/* Organization/Profile tab */}
               <li className={isActive("/profile") ? "active" : ""}>
                 <Link
-                  to="/profile"
+              to={`profile/${userData?.uid}`}
+           
                   className={isActive("/profile") ? "active" : ""}
                 >
                   {/* Custom SVG icon for profile */}

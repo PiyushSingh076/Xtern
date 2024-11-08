@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -10,8 +11,6 @@ export default function Acadamic({ profileData }) {
       setLoading(false);
     }
   }, [profileData]);
-
- 
 
   return (
     <div>
@@ -65,29 +64,31 @@ export default function Acadamic({ profileData }) {
             <div className="tab-content" id="course-tab-btn">
               {/* Work Experience Tab */}
               <div className="tab-pane fade show active mt-16" id="course-content" role="tabpanel" tabIndex="0">
-                {profileData?.workExperience?.map((work) => {
+                {profileData?.workExperience?.map((work , index) => {
                   const startDate = new Date(work.startdate.seconds * 1000);
                   const startDateFormatted = startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
                   return (
-                    <div className="experience-sec" key={work.role + work.companyname}>
-                      <img src={work.logo} alt={`${work.companyname} logo`} className="educ-logo" style={{ width: '30%', height: '30%' }} />
+                    <div className="experience-sec" key={index}>
+                      <div className="mob-work-logo-container">
+                        <img src={work.logo} className="educ-logo" />
+                      </div>
                       <div className="experience-info">
                         <h4>{work.role}</h4>
                         <p>{work.companyname} | {startDateFormatted}</p>
-                        <button 
-                          className="desc-btn" 
-                          data-bs-toggle="collapse" 
-                          data-bs-target={`#work-collapse-${work.role}-${work.companyname}`}
-                          aria-expanded="false" 
-                          aria-controls={`work-collapse-${work.role}-${work.companyname}`}
+                        <button
+                          className="desc-btn"
+                          data-bs-toggle="collapse"
+                          data-bs-target={`#work-collapse-${index}`}
+                          aria-expanded="false"
+                          aria-controls={`work-collapse-${index}`}
                         >
                           View Description
                         </button>
-                        <div 
+                        <div
                           style={{ marginTop: '10px' }}
-                          id={`work-collapse-${work.role}-${work.companyname}`} 
-                          className="collapse" 
-                          aria-labelledby={`work-collapse-${work.role}-${work.companyname}`}
+                          id={`work-collapse-${index}`}
+                          className="collapse"
+                          aria-labelledby={`work-collapse-${index}`}
                         >
                           <div className="card card-body">
                             {work.description}
@@ -103,7 +104,9 @@ export default function Acadamic({ profileData }) {
               <div className="tab-pane fade" id="student-content" role="tabpanel" tabIndex="0">
                 {profileData?.educationDetails?.map((educ) => (
                   <div className="experience-sec" key={educ.collegename + educ.degree}>
-                    <img src={educ?.logo} alt={`${educ.collegename} logo`} width={'30%'} height={'30%'} className="educ-logo" />
+                    <div className="mob-work-logo-container">
+                      <img src={educ.logo} className="educ-logo" />
+                    </div>
                     <div className="experience-info">
                       <h4>{educ.degree}</h4>
                       <h6>Stream: ({educ.branch})</h6>
@@ -116,31 +119,33 @@ export default function Acadamic({ profileData }) {
 
               {/* Projects Tab */}
               <div className="tab-pane fade" id="reviews-content" role="tabpanel" tabIndex="0">
-                {profileData?.projectDetails?.map((project) => (
-                  <div className="experience-sec" key={project.projectname}>
-                    <img src={project?.logo} alt={`${project.projectname} logo`} width={'100px'} height={'50px'} className="educ-logo" />
+                {profileData?.projectDetails?.map((project,index) => (
+                  <div className="experience-sec" key={index}>
+                    <div className="mob-work-logo-container">
+                      <img src={project.logo} className="educ-logo" />
+                    </div>
                     <div className="experience-info">
                       <h4>{project.projectname}</h4>
                       <div style={{ marginTop: '5px' }}>
                         <span><b>Tech Stack:</b> {project.techstack.join(' | ')}</span>
                       </div>
-                      <button 
-                        className="desc-btn" 
-                        data-bs-toggle="collapse" 
-                        data-bs-target={`#project-collapse-${project.projectname}`}
-                        aria-expanded="false" 
-                        aria-controls={`project-collapse-${project.projectname}`}
+                      <button
+                        className="desc-btn"
+                        data-bs-toggle="collapse"
+                        data-bs-target={`#project-collapse-${index}`}
+                        aria-expanded="false"
+                        aria-controls={`project-collapse-${index}`}
                       >
                         View Description
                       </button>
                       <Link to={project.link} className="link-btn">
                         Live Link
                       </Link>
-                      <div 
+                      <div
                         style={{ marginTop: '10px' }}
-                        id={`project-collapse-${project.projectname}`} 
-                        className="collapse" 
-                        aria-labelledby={`project-collapse-${project.projectname}`}
+                        id={`project-collapse-${index}`}
+                        className="collapse"
+                        aria-labelledby={`project-collapse-${index}`}
                       >
                         <div className="card card-body">
                           {project.description}

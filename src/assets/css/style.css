@@ -4679,8 +4679,13 @@ span.ongoing-txt2 {
 .work-logo-container{
   width: 150px;
   height: 100px;
+   margin-right: 20px;
+}
 
-  margin-right: 20px;
+.mob-work-logo-container{
+ width: 100px;
+ height: 70px;
+ margin-right: 10px;
 }
 
 .educ-logo{

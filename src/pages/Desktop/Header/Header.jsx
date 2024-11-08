@@ -23,10 +23,10 @@ export default function Header() {
         <span 
         onClick={()=>navigate(ROUTES.HOME_SCREEN)}
         className='logo'>Xtern</span>
-         <div className='input-search-wrap-container'>
+         {/* <div className='input-search-wrap-container'>
           <input className='search-input' type='text' placeholder='Search jobs' />
           <AiOutlineSearch className="search-icon" />
-        </div> 
+        </div>  */}
       </div>
 
       <div className="internships-jobs-option-container">
@@ -35,41 +35,56 @@ export default function Header() {
             className={`option-item ${optionActive === 'Learn' ? 'active' : ''}`} 
             onClick={() => handleOptionClick('Learn')}
           >
-            Learn
+            Home
           </li>
           <li 
             className={`option-item ${optionActive === 'Internship' ? 'active' : ''}`} 
             onClick={() => handleOptionClick('Internship')}
           >
-            Internships
+            About us
           </li>
           <li 
             className={`option-item ${optionActive === 'Jobs' ? 'active' : ''}`} 
             onClick={() => handleOptionClick('Jobs')}
           >
-            Jobs
+            Categories
           </li>
           <li 
             className={`option-item ${optionActive === 'Mentorship' ? 'active' : ''}`} 
             onClick={() => handleOptionClick('Mentorship')}
           >
-            Mentorship
+            Xpert
           </li>
-      {  !userData &&  (<li className="option-item-button">
+
+          <li 
+            className={`option-item ${optionActive === 'Mentorship' ? 'active' : ''}`} 
+            onClick={() => handleOptionClick('Mentorship')}
+          >
+            Xtern
+          </li>
+
+          <li 
+            className={`option-item ${optionActive === 'Mentorship' ? 'active' : ''}`} 
+            onClick={() => handleOptionClick('Mentorship')}
+          >
+            Contact us
+          </li>
+
+      {/* {  !userData &&  (<li className="option-item-button">
             <button onClick={()=>navigate(ROUTES.SIGN_IN)} className="option-button-login">Login</button>
-          </li>)}
-          <li className="option-item-button">
+          </li>)} */}
+          {/* <li className="option-item-button">
             <button className="option-button-host">
               <AiOutlinePlus className="add-icon" />
               Host
             </button>
-          </li>
+          </li> */}
         
         </ul>
 
         {userData && (
             <div
-            onClick={()=>navigate(ROUTES.PROFILE)}
+            onClick={() => navigate(`profile/${userData?.uid}`)}
             >
             <img
              className='profile-icon'
@@ -80,6 +95,11 @@ export default function Header() {
           )
 
           }
+      </div>
+
+      <div className='hire-btns'>
+       <button className='hire-xpert-btn'>Hire Xpert</button>
+       <button className='hire-xtern-btn'>Hire Xtern</button>
       </div>
     </div>
   );

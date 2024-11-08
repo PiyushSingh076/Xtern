@@ -23,11 +23,32 @@ import useFetchInvoice from '../../hooks/Teams/useFetchInvoice'
 export default function Payments() {
     const [expandedCards, setExpandedCards] = useState([]);
 
-    const { loading, paymentData, error } = useFetchInvoice();
-    //console.log("paymentData", paymentData);
+    // const { loading, paymentData, error } = useFetchInvoice();
+    // console.log("paymentData", paymentData);
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error fetching payment data.</div>;
+
+  const  paymentData = [
+        
+      { detail: [
+        { from: 'October 29,2024 at 12:00',
+            to: 'November 29,2024 at 12:00',
+            salary: 153,
+            internRef: 'Anirudh'}
+       ],
+       month :'October',
+       OrganzationId: '2309423',
+       payLink: 'www.google.com',
+       status: 'unpaid',
+       StripeCustomerId: '39403920-90',
+       totalAmount: 387
+    }
+
+
+        
+    ];
+
+    // if (loading) return <div>Loading...</div>;
+    // if (error) return <div>Error fetching payment data.</div>;
 
     const toggleCardExpansion = (index) => {
         setExpandedCards(prevExpandedCards => {
@@ -51,10 +72,10 @@ export default function Payments() {
                     <img className='payment-card-month-year-img' src={item.month === 'JANUARY' ? JANUARY : item.month === 'FEBRUARY' ? FEBRUARY : item.month === 'MARCH' ? MARCH : item.month === 'APRIL' ? APRIL : item.month === 'MAY' ? MAY : item.month === 'JUNE' ? JUNE : item.month === 'JULY' ? JULY : item.month === 'AUGUST' ? AUGUST : item.month === 'SEPTEMBER' ? SEPTEMBER : item.month === 'OCTOBER' ? OCTOBER : item.month === 'NOVEMBER' ? NOVEMBER : DECEMBER} />
                     <span className='payment-card-month-year'>{item.month} {item.year}</span>
                     <div className='payment-card-amount'
-                        onClick={() => handlePayment(item.paymentLink)} // Make this div clickable
+                        onClick={() => handlePayment(item.payLink)} 
                         style={{ cursor: 'pointer' }}
-                    >Pay {
-                            item.paymentSummary.reduce((total, payment) => total + payment.amount, 0)
+                    >Pay ${
+                            item.totalAmount
                         }</div>
                     <button
                         className='payment-card-view-btn'
@@ -79,10 +100,12 @@ export default function Payments() {
                         }}
                     >
                         <div className="payment-summary-section">
-                            {item.paymentSummary.map((payment, index) => (
+                      
+                            {item.detail.map((payment, index) => (
                                 <div className='payment-summary-item' key={index}>
-                                    <span>{payment.name}</span>
-                                    <span>₹{payment.amount}</span>
+                                    <span>{payment.internRef}</span>
+                                    <span style={{fontSize: '12px'}}>{(((payment.from).split(',')[0]).split(' ')[1]) +' '+((((payment.from).split(',')[0]).split(' ')[0])).slice(0,3)} - {(((payment.from).split(',')[0]).split(' ')[1]) +' '+((((payment.to).split(',')[0]).split(' ')[0])).slice(0,3)}</span>
+                                    <span>${payment.salary}</span>
                                 </div>
                             ))}
                         </div>

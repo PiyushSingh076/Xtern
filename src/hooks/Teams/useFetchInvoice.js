@@ -11,7 +11,7 @@ const useFetchInvoice = () => {
 
     useEffect(() => {
         const fetchInvoices = async (organizationId) => {
-            if (!organizationId) return;
+            if (!organizationId) return ;
 
             try {
                 const invoicesRef = collection(db, 'invoice');
@@ -71,6 +71,7 @@ const useFetchInvoice = () => {
 
         const auth = getAuth();
         const user = auth.currentUser;
+       
 
         if (user) {
             getOrganizationIdAndFetchInvoices(user);
