@@ -1,0 +1,91 @@
+import React from 'react'
+import './Homescreen.css'
+import { Typewriter , Cursor } from 'react-simple-typewriter'
+import CountUp from 'react-countup';
+
+
+
+export default function LandingBanner({pop}) {
+
+    const images1 = [
+        'https://xpert.works/wp-content/uploads/2024/10/Add-a-subheading-2.png',
+        'https://xpert.works/wp-content/uploads/2024/10/Add-a-subheading-1.png',
+        'https://xpert.works/wp-content/uploads/2024/10/Sameer-Gupta-1.png',
+        'https://xpert.works/wp-content/uploads/2024/10/Rithvik-Shah.png',
+        'https://xpert.works/wp-content/uploads/2024/10/Ravi-Sharma-1.png'
+    ];
+
+    const images2 = [
+        'https://xpert.works/wp-content/uploads/2024/10/Sameer-Gupta-2.png',
+        'https://xpert.works/wp-content/uploads/2024/10/Rithvik-Shah-5.png',
+        'https://xpert.works/wp-content/uploads/2024/10/Rithvik-Shah-2.png',
+        'https://xpert.works/wp-content/uploads/2024/10/Ravi-Sharma-2.png',
+        'https://xpert.works/wp-content/uploads/2024/10/Product-Manager.png',
+        'https://xpert.works/wp-content/uploads/2024/10/Ravi-Sharma.png'
+    ]
+
+    const domains = Typewriter({
+        words: ['Xpert', 'Developer', 'Digital Marketer', 'UI Designer'],
+            loop: true,
+            delay: 3000,
+            typeSpeed: 70,
+            deleteSpeed: 70
+    })
+
+  return (
+    <div className="landing-banner-container">
+      <div className="content-container">
+        <div className="main-container">
+          <span className="subheading">&nbsp;Find the right</span>
+          <h1 className='domains-title'>&nbsp;{domains}</h1>
+
+          <div className="hire-btns-container">
+            <button onClick={()=>pop(true)} className="become-xpert-btn"><h4 className="become-xpert-title">Become Xpert</h4> <span className="become-xpert-subtitle">Become Top Quality Xperts</span></button>
+            <button className="hire-xperts-btn"><h4 className="hire-xpert-title">Hire Xpert</h4> <span className="hire-xpert-subtitle">Hire Top Quality Xperts</span></button>
+          </div>
+
+          <span className="xpert-count">Over 3000+ expect Xpert are waiting for you</span>
+          <div className='counts-section'>
+            <div className='expert-count-section'>
+            <CountUp end={3000} />
+                <span>Expert Experts</span>
+            </div>
+            <div className='bar'></div>
+            <div className='project-count-section'>
+            <CountUp end={100} />
+            <span>Project Completed</span> 
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="image-slider-container">
+  {/* First slider scrolling up */}
+  <div className="slider-up">
+    <div className="slider-track-up">
+      {images1.map((item, index) => (
+        <img key={index} src={item} alt={`mentor-${index}`} className="slider-image" />
+      ))}
+      {/* Duplicate images for seamless looping */}
+      {images1.map((item, index) => (
+        <img key={images1.length + index} src={item} alt={`mentor-${index}-duplicate`} className="slider-image" />
+      ))}
+    </div>
+  </div>
+
+  {/* Second slider scrolling down */}
+  <div className="slider-down">
+    <div className="slider-track-down">
+      {images2.map((item, index) => (
+        <img key={index} src={item} alt={`mentor-${index}-down`} className="slider-image" />
+      ))}
+      {/* Duplicate images for seamless looping */}
+      {images2.map((item, index) => (
+        <img key={images1.length + index} src={item} alt={`mentor-${index}-down-duplicate`} className="slider-image" />
+      ))}
+    </div>
+  </div>
+</div>
+    </div>
+  )
+}

@@ -1,16 +1,17 @@
 .nav-bar-container{
     display: flex;
     flex-direction: row;
-    align-items: start;
-
+    align-items: center;
+   position: fixed;
     justify-content: space-between;
     width: 100%;
     height: 90px;
     border-bottom: 1px rgb(242, 242, 242) solid;
     z-index: 3489;
     top: 0;
-    padding: 10px 10px;
-    background: rgba(255, 255, 255, 0.75);
+    padding: 0px 10px;
+    background: white;
+    
     /* box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px); */
@@ -22,7 +23,7 @@
 .logo-search-container{
   display: flex;
   flex-direction: row;
-  align-items: center;
+
   gap: 10px;
 }
 
@@ -172,13 +173,15 @@
     justify-content: center;
     font-weight: bold;
     font-size: 12px;
-  }
+}
+
 
   .hire-xpert-btn{
     background-color: #0A65FC;
     border: none;
     color: white;
-  }
+
+ }
 
   .hire-xtern-btn{
     border: 2px #0A65FC solid;

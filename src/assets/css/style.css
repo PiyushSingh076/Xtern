@@ -5762,10 +5762,20 @@ input:-webkit-autofil {
   margin-left: 15px;
 }
 
-.home-mentor-sec img {
-  mix-blend-mode: multiply;
-  background: rgb(102 102 102 / 8%);
-  border-radius: 40px;
+.home-mentor-sec-wrap{
+  width: 160px;
+  height: 80px;
+  border:  rgb(201, 201, 201) 1px  solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.home-mentor-sec img{
+  width: 100%;
+  object-fit: contain;
 }
 
 .home-mentor-bottom .slick-slide {
