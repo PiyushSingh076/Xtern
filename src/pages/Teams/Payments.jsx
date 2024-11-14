@@ -31,6 +31,9 @@ export default function Payments() {
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error fetching payment data.</div>;
 
+
+
+
     const toggleCardExpansion = (index) => {
         setExpandedCards(prevExpandedCards => {
             if (prevExpandedCards.includes(index)) {

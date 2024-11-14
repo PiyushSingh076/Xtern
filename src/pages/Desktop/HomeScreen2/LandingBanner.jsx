@@ -5,7 +5,7 @@ import CountUp from 'react-countup';
 
 
 
-export default function LandingBanner({pop}) {
+export default function LandingBanner({pop , setRole}) {
 
     const images1 = [
         'https://xpert.works/wp-content/uploads/2024/10/Add-a-subheading-2.png',
@@ -40,8 +40,8 @@ export default function LandingBanner({pop}) {
           <h1 className='domains-title'>&nbsp;{domains}</h1>
 
           <div className="hire-btns-container">
-            <button onClick={()=>pop(true)} className="become-xpert-btn"><h4 className="become-xpert-title">Become Xpert</h4> <span className="become-xpert-subtitle">Become Top Quality Xperts</span></button>
-            <button className="hire-xperts-btn"><h4 className="hire-xpert-title">Hire Xpert</h4> <span className="hire-xpert-subtitle">Hire Top Quality Xperts</span></button>
+            <button onClick={() => { pop(true); setRole('Bxpert') }} className="become-xpert-btn"><h4 className="become-xpert-title">Become Xpert</h4> <span className="become-xpert-subtitle">Become Top Quality Xperts</span></button>
+            <button onClick={() => { pop(true); setRole('Hxpert') }} className="hire-xperts-btn"><h4 className="hire-xpert-title">Organization</h4> <span className="hire-xpert-subtitle">Hire Top Quality Xperts</span></button>
           </div>
 
           <span className="xpert-count">Over 3000+ expect Xpert are waiting for you</span>

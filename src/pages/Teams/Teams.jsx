@@ -29,7 +29,7 @@ export default function Teams() {
   }, [index, navigate]);
 
   return (
-    <>
+    <div className='teams-container'>
       {/* Header */}
       <header id="top-navbar" className="top-navbar">
         <div className="container">
@@ -183,6 +183,6 @@ export default function Teams() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

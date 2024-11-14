@@ -4,11 +4,13 @@ import './Header.css';
 import { Route, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../constants/routes';
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
+import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
+
 
 export default function Header() {
 
   const { userData, loading, error } = useFetchUserData();
-
+  const { handleLogout, loading: logoutloading } = useOAuthLogout(); // Use the logout hook
   const navigate = useNavigate()
   const [optionActive, setOptionActive] = useState('');
 
@@ -81,7 +83,7 @@ export default function Header() {
           </li> */}
         
         </ul>
-
+{/* 
         {userData && (
             <div
             onClick={() => navigate(`profile/${userData?.uid}`)}
@@ -94,12 +96,13 @@ export default function Header() {
             </div>
           )
 
-          }
+          } */}
       </div>
 
       <div className='hire-btns'>
-       <button className='hire-xpert-btn'>Hire Xpert</button>
-       <button className='hire-xtern-btn'>Hire Xtern</button>
+      {/* {!userData && <button className='hire-xpert-btn'>Hire Xpert</button>}
+       {!userData && <button className='hire-xtern-btn'>Hire Xtern</button>} */}
+       {userData && <button onClick={handleLogout} className='hire-xpert-btn'>Log Out</button>}
       </div>
     </div>
   );

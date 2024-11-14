@@ -6927,7 +6927,26 @@ color: #3374AE;
   display: flex;
   flex-direction: column;
 }
+@media screen and (min-width: 900px) {
+  .payments-container{
+     height: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
 
+  }
+
+  .info-card-payment-container{
+   
+
+  }
+
+
+  .teams-container{
+    margin-top: 100px;
+  }
+
+
+}
 .payment-card-btn{
   background-color: transparent;
   border: 1px solid #3374AE;
