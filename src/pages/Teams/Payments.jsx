@@ -23,32 +23,32 @@ import useFetchInvoice from '../../hooks/Teams/useFetchInvoice'
 export default function Payments() {
     const [expandedCards, setExpandedCards] = useState([]);
 
-    // const { loading, paymentData, error } = useFetchInvoice();
-    // console.log("paymentData", paymentData);
+    const { loading, paymentData, error } = useFetchInvoice();
+    console.log("paymentData", paymentData);
 
 
-  const  paymentData = [
+//   const  paymentData = [
         
-      { detail: [
-        { from: 'October 29,2024 at 12:00',
-            to: 'November 29,2024 at 12:00',
-            salary: 153,
-            internRef: 'Anirudh'}
-       ],
-       month :'October',
-       OrganzationId: '2309423',
-       payLink: 'www.google.com',
-       status: 'unpaid',
-       StripeCustomerId: '39403920-90',
-       totalAmount: 387
-    }
+//       { detail: [
+//         { from: 'October 29,2024 at 12:00',
+//             to: 'November 29,2024 at 12:00',
+//             salary: 153,
+//             internRef: 'Anirudh'}
+//        ],
+//        month :'October',
+//        OrganzationId: '2309423',
+//        payLink: 'www.google.com',
+//        status: 'unpaid',
+//        StripeCustomerId: '39403920-90',
+//        totalAmount: 387
+//     }
 
 
         
-    ];
+//     ];
 
-    // if (loading) return <div>Loading...</div>;
-    // if (error) return <div>Error fetching payment data.</div>;
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error fetching payment data.</div>;
 
     const toggleCardExpansion = (index) => {
         setExpandedCards(prevExpandedCards => {

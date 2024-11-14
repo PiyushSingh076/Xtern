@@ -391,6 +391,7 @@ justify-content: center;
   width: 100%;
   height: auto;
   padding: 50px 20px ;
+
 }
 
 .slide-container{
@@ -399,6 +400,7 @@ justify-content: center;
   display: flex;
   flex-direction: row;
   gap: 50px;
+
 }
 
 .slide-row{
@@ -409,6 +411,7 @@ justify-content: center;
   animation: slide-row infinite linear 20s;
 
 }
+
 
 .home-mentor-sec-wrap{
   width: 160px;
@@ -665,9 +668,9 @@ align-items: center;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  animation: popup ease-in-out 1s;
+  animation: popup ease-in-out 0.5s;
   margin-top: 50px;
-
+  transition: ease-in-out 1s;
 
 }
 
@@ -705,6 +708,7 @@ align-items: center;
   align-items: center;
   justify-content: center;
   padding: 10px 0;
+ 
 
 }
 
@@ -777,4 +781,21 @@ input [type="radio"]{
 
   justify-content: center;
 
+}
+
+
+.vector-image{
+  animation : popup ease-in-out 0.5s;
+  height: 400px;
+
+  object-fit: contain;
+  
+}
+
+
+.auth-container{
+  width: 80%;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }

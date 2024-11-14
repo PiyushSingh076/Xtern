@@ -29,7 +29,7 @@ export default function Xterns() {
       <img className='xtern-vector' src='https://xpert.works/wp-content/uploads/2024/05/Rectangle-3586-min.png'/>
       <img className='xtern-img' src='https://xpert.works/wp-content/uploads/2024/05/Mask-group-1-min-1.png' />
       </div>
-      <button className="hire-xterns-btn"><h4 className="hire-xpert-title">Hire Xpert</h4> <span className="hire-xpert-subtitle">Industry Expert Consultants</span></button>
+      <button className="hire-xterns-btn"><h4 className="hire-xpert-title">Become Xpert</h4> <span className="hire-xpert-subtitle">Industry Expert Consultants</span></button>
     </div>
   </div>
   )

@@ -5778,6 +5778,22 @@ input:-webkit-autofil {
   object-fit: contain;
 }
 
+.Mob-home-mentor-sec-wrap{
+  width: 10px;
+  height: 30px;
+  border:  rgb(201, 201, 201) 1px  solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.Mob-home-mentor-sec img{
+
+  object-fit: contain;
+}
+
 .home-mentor-bottom .slick-slide {
   padding: 0 15px 0 0;
 }

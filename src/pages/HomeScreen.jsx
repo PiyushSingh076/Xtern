@@ -111,7 +111,7 @@ const HomeScreen = () => {
     autoplay: true,
     swipeToSlide: true,
     infinite: true,
-    variableWidth: true,
+    variableWidth: false,
     autoplaySpeed: 2000,
     dots: false,
     arrows: false,
@@ -707,8 +707,8 @@ const HomeScreen = () => {
           <div className="home-mentor-bottom mt-16">
             <Link to="/single-mentor">
             <Slider {...CompanySettings}>
-                <div className="home-mentor-sec-wrap ">
-                  <div className="home-mentor-sec">
+                <div className="Mob-home-mentor-sec-wrap">
+                  <div className="Mob-home-mentor-sec">
                     <div>
                       <img
                         height="80"
@@ -722,7 +722,7 @@ const HomeScreen = () => {
                
                   </div>
                 </div>
-                <div className="home-mentor-sec-wrap redirect-mentor">
+                <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
                     <div>
                       <img
@@ -737,7 +737,7 @@ const HomeScreen = () => {
                 
                   </div>
                 </div>
-                <div className="home-mentor-sec-wrap redirect-mentor">
+                <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
                     <div>
                       <img
@@ -752,7 +752,7 @@ const HomeScreen = () => {
       
                   </div>
                 </div>
-                <div className="home-mentor-sec-wrap redirect-mentor">
+                <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
                     <div>
                       <img
@@ -767,7 +767,7 @@ const HomeScreen = () => {
                
                   </div>
                 </div>
-                <div className="home-mentor-sec-wrap redirect-mentor">
+                <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
                     <div>
                       <img
@@ -782,7 +782,7 @@ const HomeScreen = () => {
                    
                   </div>
                 </div>
-                <div className="home-mentor-sec-wrap redirect-mentor">
+                <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
                     <div>
                       <img
@@ -798,7 +798,7 @@ const HomeScreen = () => {
                   </div>
                 </div>
 
-                <div className="home-mentor-sec-wrap redirect-mentor">
+                <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
                     <div>
                       <img
