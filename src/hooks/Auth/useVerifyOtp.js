@@ -13,20 +13,15 @@ import { ROUTES } from "../../constants/routes";
 const useVerifyOtp = () => {
   const [loading, setLoading] = useState(false);
 
-  /**
-   * Verifies the OTP entered by the user.
-   *
-   * @param {string} otp - The OTP entered by the user.
-   * @param {function} setError - Function to set error messages.
-   * @param {function} navigate - Function to navigate to different routes.
-   */
   const verifyOtp = async (otp, setError, navigate) => {
     setLoading(true);
     try {
       const confirmationResult = window.confirmationResult;
 
       if (!confirmationResult) {
-        throw new Error("No confirmation result available. Please request a new OTP.");
+        throw new Error(
+          "No confirmation result available. Please request a new OTP."
+        );
       }
 
       // Create phone credential using the verification ID and OTP
@@ -56,7 +51,9 @@ const useVerifyOtp = () => {
             setError("The OTP has expired. Please request a new one.");
             break;
           case "auth/account-exists-with-different-credential":
-            setError("This phone number is linked to another account. Please sign in using that method.");
+            setError(
+              "This phone number is linked to another account. Please sign in using that method."
+            );
             break;
           default:
             setError(err.message || "Error verifying OTP. Please try again.");
@@ -70,14 +67,6 @@ const useVerifyOtp = () => {
     }
   };
 
-  /**
-   * Links the phone credential to the existing authenticated user.
-   *
-   * @param {object} user - The authenticated Firebase user.
-   * @param {object} phoneCredential - The phone authentication credential.
-   * @param {function} setError - Function to set error messages.
-   * @param {function} navigate - Function to navigate to different routes.
-   */
   const linkPhoneNumber = async (user, phoneCredential, setError, navigate) => {
     try {
       // Link the phone credential to the user
@@ -129,17 +118,13 @@ const useVerifyOtp = () => {
         await auth.signOut();
         navigate(ROUTES.SIGN_IN);
       } else {
-        setError(error.message || "Error linking phone number. Please try again.");
+        setError(
+          error.message || "Error linking phone number. Please try again."
+        );
       }
     }
   };
 
-  /**
-   * Signs in the user using the phone credential.
-   *
-   * @param {object} phoneCredential - The phone authentication credential.
-   * @param {function} navigate - Function to navigate to different routes.
-   */
   const signInWithPhone = async (phoneCredential, navigate) => {
     try {
       // Sign in with the phone credential
@@ -183,14 +168,17 @@ const useVerifyOtp = () => {
     } catch (error) {
       console.error("Sign-in error:", error);
       if (error.code === "auth/account-exists-with-different-credential") {
-        setError(
+        console.error(
           "This phone number is linked to another account. Please sign in using that method."
         );
         // Sign the user out to avoid conflicts
         await auth.signOut();
         navigate(ROUTES.SIGN_IN);
       } else {
-        setError(error.message || "Error signing in with phone number. Please try again.");
+        console.error(
+          error.message ||
+            "Error signing in with phone number. Please try again."
+        );
       }
     }
   };
