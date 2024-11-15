@@ -141,6 +141,7 @@ const useVerifyOtp = () => {
             throw new Error("User data not found.");
           }
         } catch (error) {
+          console.log(error);
           // Handle account linking error
           if (error.code === "auth/account-exists-with-different-credential") {
             // If the error is due to a different credential, link the accounts
