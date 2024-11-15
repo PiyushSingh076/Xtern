@@ -46,7 +46,7 @@ export default function MainProfile({ userdata, loading }) {
 
                 {/* Schedule and Dollar Buttons */}
                 <div className="mentor-follow-sec">
-                    {userdata?.typeUser === 'Intern' && (
+                    {userdata?.typeUser === 'Intern' &&  !userdata?.organization && (
                         <>
                             {loading ? (
                                 <>

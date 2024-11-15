@@ -1,7 +1,7 @@
 import React from 'react'
 import './Homescreen.css'
 import { Typewriter , Cursor } from 'react-simple-typewriter'
-import CountUp from 'react-countup';
+
 
 
 
@@ -49,12 +49,12 @@ export default function LandingBanner({pop , setRole}) {
           <span className="xpert-count">Over 3000+ expect Xpert are waiting for you</span>
           <div className='counts-section'>
             <div className='expert-count-section'>
-            <CountUp end={3000} />
+                 <span>3K</span>
                 <span>Expert Experts</span>
             </div>
             <div className='bar'></div>
             <div className='project-count-section'>
-            <CountUp end={100} />
+            <span>300</span>
             <span>Project Completed</span> 
             </div>
           </div>

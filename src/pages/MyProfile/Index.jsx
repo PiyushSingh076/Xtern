@@ -83,14 +83,15 @@ const SingleMentor = () => {
           <h1 className="d-none">Hidden</h1>
           <h2 className="d-none">Mentor</h2>
           <div className="single-mentor-sec-wrap mt-32">
+
             {/* Profile information */}
             <MainProfile userdata={profileData} loading={profileLoading} />
             <div className="navbar-boder mt-24"></div>
 
-            {profileData?.typeUser === "venture" && <VentureOptions />}
+            {profileData?.organization  && <VentureOptions />}
 
             {/* SkillSet section */}
-            {profileData?.typeUser === "Intern" && (
+            {profileData?.typeUser === "Intern" && !profileData?.organization && (
               <>
                 {profileLoading ? (
                   <Skeleton variant="rounded" width={'100%'} height={'150px'} sx={{marginTop: '40px'}}/>
@@ -101,7 +102,7 @@ const SingleMentor = () => {
             )}
 
             {/* Acadamic section */}
-            {profileData?.typeUser === "Intern" && (
+            {profileData?.typeUser === "Intern" && !profileData?.organization && (
               <>
                 {profileLoading ? (
                   <Skeleton variant="rounded" width={'100%'} height={'350px'} sx={{marginTop: '80px'}}/>
