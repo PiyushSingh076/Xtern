@@ -3,8 +3,6 @@ import './Homescreen.css'
 
 
 
-
-
 export default function LandingBanner({pop , setRole}) {
 
   // images
@@ -26,7 +24,6 @@ export default function LandingBanner({pop , setRole}) {
         'https://xpert.works/wp-content/uploads/2024/10/Ravi-Sharma.png'
     ]
 
-   
 
   return (
     <div className="landing-banner-container">
