@@ -37,7 +37,7 @@ const useSendOtp = () => {
    * @param {string} phoneNumber - The user's phone number in international format (e.g., +1234567890).
    * @returns {Promise<void>}
    */
-  const sendOtp = async (phoneNumber) => {
+  const sendOtp = async (phoneNumber, setShowOTP) => {
     setLoading(true);
     setError("");
 
@@ -57,6 +57,8 @@ const useSendOtp = () => {
       );
 
       window.confirmationResult = confirmationResult;
+      setShowOTP(true);
+
       toast.success("OTP sent successfully!");
     } catch (err) {
       console.error("Error sending OTP:", err);
