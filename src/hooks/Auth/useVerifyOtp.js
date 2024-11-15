@@ -33,8 +33,17 @@ const useVerifyOtp = () => {
       const user = auth.currentUser;
 
       if (user) {
-        // User is authenticated; attempt to link phone number
-        await linkPhoneNumber(user, phoneCredential, setError, navigate);
+        // User is authenticated; check if phone is already linked
+        const providers = user.providerData.map(
+          (provider) => provider.providerId
+        );
+        if (providers.includes(PhoneAuthProvider.PROVIDER_ID)) {
+          // Phone is already linked, proceed to verify or update as needed
+          await updatePhoneNumber(user, phoneCredential, setError, navigate);
+        } else {
+          // Phone is not linked, attempt to link
+          await linkPhoneNumber(user, phoneCredential, setError, navigate);
+        }
       } else {
         // User is not authenticated; sign in with phone credential
         await signInWithPhone(phoneCredential, navigate);
@@ -69,7 +78,7 @@ const useVerifyOtp = () => {
 
   const linkPhoneNumber = async (user, phoneCredential, setError, navigate) => {
     try {
-      // Link the phone credential to the user
+      // Attempt to link the phone credential to the user
       await linkWithCredential(user, phoneCredential);
 
       // Fetch user data from Firestore
@@ -77,8 +86,6 @@ const useVerifyOtp = () => {
       const userDocSnap = await getDoc(userDocRef);
 
       if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-
         // Update Firestore with phone number and verification status
         await updateDoc(userDocRef, {
           phone_number: user.phoneNumber,
@@ -110,7 +117,25 @@ const useVerifyOtp = () => {
       }
     } catch (error) {
       console.error("Linking error:", error);
-      if (error.code === "auth/account-exists-with-different-credential") {
+      if (error.code === "auth/provider-already-linked") {
+        // Phone number is already linked
+        toast.info("Phone number is already linked to your account.");
+
+        // Optionally, update Firestore if needed
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          await updateDoc(userDocRef, {
+            phone_number: user.phoneNumber,
+            isPhoneVerified: true,
+          });
+        }
+
+        // Redirect the user appropriately
+        navigate(ROUTES.HOME);
+      } else if (
+        error.code === "auth/account-exists-with-different-credential"
+      ) {
         setError(
           "This phone number is linked to another account. Please sign in using that method."
         );
@@ -121,7 +146,58 @@ const useVerifyOtp = () => {
         setError(
           error.message || "Error linking phone number. Please try again."
         );
+        toast.error(setError);
       }
+    }
+  };
+
+  const updatePhoneNumber = async (
+    user,
+    phoneCredential,
+    setError,
+    navigate
+  ) => {
+    try {
+      // Fetch user data from Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        // Update Firestore with phone number and verification status
+        await updateDoc(userDocRef, {
+          phone_number: user.phoneNumber,
+          isPhoneVerified: true,
+        });
+      } else {
+        // If user document does not exist, create it
+        await setDoc(userDocRef, {
+          phone_number: user.phoneNumber,
+          isPhoneVerified: true,
+          typeUser: "default", // Adjust based on your user schema
+          // Add other default fields as necessary
+        });
+      }
+
+      // Clear the reCAPTCHA verifier
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+
+      toast.success("Phone number verified successfully!");
+
+      // Redirect based on typeUser field
+      if (userDocSnap.exists() && userDocSnap.data().typeUser) {
+        navigate(ROUTES.HOME);
+      } else {
+        navigate(ROUTES.PREFERRED_ROLE);
+      }
+    } catch (error) {
+      console.error("Updating phone number error:", error);
+      setError(
+        error.message || "Error updating phone number. Please try again."
+      );
+      toast.error(setError);
     }
   };
 
@@ -140,8 +216,6 @@ const useVerifyOtp = () => {
         await setDoc(userDocRef, {
           phone_number: user.phoneNumber,
           isPhoneVerified: true,
-   
-          // Add other default fields as necessary
         });
       } else {
         // Update existing user document
@@ -179,6 +253,11 @@ const useVerifyOtp = () => {
           error.message ||
             "Error signing in with phone number. Please try again."
         );
+        setError(
+          error.message ||
+            "Error signing in with phone number. Please try again."
+        );
+        toast.error(setError);
       }
     }
   };
