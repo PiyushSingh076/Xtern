@@ -68,13 +68,6 @@
   "devDependencies": {
     "stylelint": "^16.9.0",
     "stylelint-config-standard": "^36.0.1"
-  },
-  {
-  "overrides": {
-    "infinite-react-carousel": {
-      "react": "^18.3.1"
-    }
   }
 }
 
-}
