@@ -96,8 +96,7 @@ const useVerifyOtp = () => {
         await setDoc(userDocRef, {
           phone_number: user.phoneNumber,
           isPhoneVerified: true,
-          typeUser: "default", // Adjust based on your user schema
-          // Add other default fields as necessary
+         
         });
       }
 
@@ -173,8 +172,7 @@ const useVerifyOtp = () => {
         await setDoc(userDocRef, {
           phone_number: user.phoneNumber,
           isPhoneVerified: true,
-          typeUser: "default", // Adjust based on your user schema
-          // Add other default fields as necessary
+         
         });
       }
 
