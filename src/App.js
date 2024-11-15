@@ -90,6 +90,7 @@ import PrefferedRole from "./pages/PrefferedRole.jsx";
 
 import BottomNavigationVenture from "./components/BottomNavigationVenture";
 
+
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -136,7 +137,7 @@ function App() {
         {/* Public Routes */}
         <Route
           path={ROUTES.HOME}
-          element={isMobileView ? <HomeScreen /> : <DesktopHomeScreen />}
+          element={isMobileView ? <DesktopHomeScreen /> : <DesktopHomeScreen />}
         />
         <Route
           path={ROUTES.SIGN_UP}
