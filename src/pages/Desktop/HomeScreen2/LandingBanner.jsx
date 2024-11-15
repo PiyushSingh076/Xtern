@@ -1,6 +1,6 @@
 import React from 'react'
 import './Homescreen.css'
-import { Typewriter , Cursor } from 'react-simple-typewriter'
+
 
 
 
@@ -26,20 +26,14 @@ export default function LandingBanner({pop , setRole}) {
         'https://xpert.works/wp-content/uploads/2024/10/Ravi-Sharma.png'
     ]
 
-    const domains = Typewriter({
-        words: ['Xpert', 'Developer', 'Digital Marketer', 'UI Designer'],
-            loop: true,
-            delay: 3000,
-            typeSpeed: 70,
-            deleteSpeed: 70
-    })
+   
 
   return (
     <div className="landing-banner-container">
       <div className="content-container">
         <div className="main-container">
-          <span className="subheading">&nbsp;Find the right</span>
-          <h1 className='domains-title'>&nbsp;{domains}</h1>
+          <span className="subheading">Find the right</span>
+          <h1 className='domains-title'>Xpert</h1>
 
           <div className="hire-btns-container">
             <button onClick={() => { pop(true); setRole('Bxpert') }} className="become-xpert-btn"><h4 className="become-xpert-title">Become Xpert</h4> <span className="become-xpert-subtitle">Become Top Quality Xperts</span></button>

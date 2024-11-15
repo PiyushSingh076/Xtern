@@ -36,7 +36,7 @@ export default function Homepage() {
   return (
     <div className='homescreen-container'>
   {!userData &&     <LandingBanner pop={setShow} setRole={setRole}/>}
-     {profileData?.organization ? <Org data={profileData}/> : <div style={{width: '100%' , height: '100vh' , display: 'flex', alignItems: 'center' , justifyContent: 'center'} }> Loading...  </div>}
+     {profileData?.organization ? <Org data={profileData}/> : ''}
      {!show && <div>
   {!userData &&  <div>
     <Categories/>
