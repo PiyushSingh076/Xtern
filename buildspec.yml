@@ -7,8 +7,10 @@ phases:
     commands:
       - echo "Checking AWS CLI version...."
       - aws --version
+      - rm -rf node_modules
+      - rm -f package-lock.json
       - echo "Installing NPM dependencies..."
-      - npm install --force
+      - npm install --legacy-peer-deps
   build:
     commands:
       - echo "Build started on `date`"
