@@ -7,6 +7,8 @@ import CountUp from 'react-countup';
 
 export default function LandingBanner({pop , setRole}) {
 
+  // images
+
     const images1 = [
         'https://xpert.works/wp-content/uploads/2024/10/Add-a-subheading-2.png',
         'https://xpert.works/wp-content/uploads/2024/10/Add-a-subheading-1.png',
