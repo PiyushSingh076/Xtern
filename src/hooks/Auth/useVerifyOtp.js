@@ -40,7 +40,7 @@ const useVerifyOtp = () => {
         if (user.phoneNumber) {
           // Phone number is already linked
           console.log("Phone number is already linked.");
-          await updateFirestorePhoneVerification(user, navigate);
+          await updateFirestorePhoneVerification(user, setError, navigate);
         } else {
           // Phone number is not linked; attempt to link
           console.log("Attempting to link phone number.");
@@ -48,8 +48,10 @@ const useVerifyOtp = () => {
         }
       } else {
         // User is not authenticated; sign in with phone credential
-        console.log("User not authenticated. Signing in with phone credential.");
-        await signInWithPhone(phoneCredential, navigate);
+        console.log(
+          "User not authenticated. Signing in with phone credential."
+        );
+        await signInWithPhone(phoneCredential, setError, navigate);
       }
     } catch (err) {
       console.error("Error verifying OTP:", err);
@@ -58,22 +60,30 @@ const useVerifyOtp = () => {
         switch (err.code) {
           case "auth/invalid-verification-code":
             setError("The OTP you entered is invalid. Please try again.");
+            toast.error("The OTP you entered is invalid. Please try again.");
             break;
           case "auth/code-expired":
             setError("The OTP has expired. Please request a new one.");
+            toast.error("The OTP has expired. Please request a new one.");
             break;
           case "auth/account-exists-with-different-credential":
             setError(
               "This phone number is linked to another account. Please sign in using that method."
             );
+            toast.error(
+              "This phone number is linked to another account. Please sign in using that method."
+            );
             break;
           default:
             setError(err.message || "Error verifying OTP. Please try again.");
+            toast.error(
+              err.message || "Error verifying OTP. Please try again."
+            );
         }
       } else {
         setError(err.message || "Error verifying OTP. Please try again.");
+        toast.error(err.message || "Error verifying OTP. Please try again.");
       }
-      toast.error(setError);
     } finally {
       setLoading(false);
     }
@@ -83,14 +93,14 @@ const useVerifyOtp = () => {
     try {
       // Attempt to link the phone credential to the user
       await linkWithCredential(user, phoneCredential);
-      
+
       // Reload the user to ensure phoneNumber is updated
       await user.reload();
       const updatedUser = auth.currentUser;
       console.log("Updated User Phone Number:", updatedUser.phoneNumber);
 
       // Proceed to update Firestore
-      await updateFirestorePhoneVerification(updatedUser, navigate);
+      await updateFirestorePhoneVerification(updatedUser, setError, navigate);
     } catch (error) {
       console.error("Linking error:", error);
       if (error.code === "auth/provider-already-linked") {
@@ -98,9 +108,14 @@ const useVerifyOtp = () => {
         toast.info("Phone number is already linked to your account.");
 
         // Update Firestore verification status
-        await updateFirestorePhoneVerification(user, navigate);
-      } else if (error.code === "auth/account-exists-with-different-credential") {
+        await updateFirestorePhoneVerification(user, setError, navigate);
+      } else if (
+        error.code === "auth/account-exists-with-different-credential"
+      ) {
         setError(
+          "This phone number is linked to another account. Please sign in using that method."
+        );
+        toast.error(
           "This phone number is linked to another account. Please sign in using that method."
         );
         // Sign the user out to avoid conflicts
@@ -110,12 +125,14 @@ const useVerifyOtp = () => {
         setError(
           error.message || "Error linking phone number. Please try again."
         );
-        toast.error(setError);
+        toast.error(
+          error.message || "Error linking phone number. Please try again."
+        );
       }
     }
   };
 
-  const updateFirestorePhoneVerification = async (user, navigate) => {
+  const updateFirestorePhoneVerification = async (user, setError, navigate) => {
     try {
       // Fetch user data from Firestore
       const userDocRef = doc(db, "users", user.uid);
@@ -131,7 +148,6 @@ const useVerifyOtp = () => {
         await setDoc(userDocRef, {
           phone_number: user.phoneNumber,
           isPhoneVerified: true,
-         
         });
       }
 
@@ -152,11 +168,11 @@ const useVerifyOtp = () => {
     } catch (error) {
       console.error("Error updating Firestore:", error);
       setError(error.message || "Error updating verification status.");
-      toast.error(setError);
+      toast.error(error.message || "Error updating verification status.");
     }
   };
 
-  const signInWithPhone = async (phoneCredential, navigate) => {
+  const signInWithPhone = async (phoneCredential, setError, navigate) => {
     try {
       // Sign in with the phone credential
       const userCredential = await signInWithCredential(auth, phoneCredential);
@@ -171,7 +187,6 @@ const useVerifyOtp = () => {
         await setDoc(userDocRef, {
           phone_number: user.phoneNumber,
           isPhoneVerified: true,
-       
         });
       } else {
         // Update existing user document
@@ -201,6 +216,9 @@ const useVerifyOtp = () => {
         console.error(
           "This phone number is linked to another account. Please sign in using that method."
         );
+        toast.error(
+          "This phone number is linked to another account. Please sign in using that method."
+        );
         // Sign the user out to avoid conflicts
         await auth.signOut();
         navigate(ROUTES.SIGN_IN);
@@ -210,9 +228,13 @@ const useVerifyOtp = () => {
             "Error signing in with phone number. Please try again."
         );
         setError(
-          error.message || "Error signing in with phone number. Please try again."
+          error.message ||
+            "Error signing in with phone number. Please try again."
         );
-        toast.error(setError);
+        toast.error(
+          error.message ||
+            "Error signing in with phone number. Please try again."
+        );
       }
     }
   };

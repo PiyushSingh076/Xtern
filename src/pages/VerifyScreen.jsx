@@ -1,6 +1,6 @@
+// VerifyScreen.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebaseConfig"; // You are using only auth, removed db
 import OtpInputGroup from "../components/OtpGroup";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -19,11 +19,11 @@ const VerifyScreen = () => {
   const navigate = useNavigate();
 
   // Initialize Recaptcha hook
-  const { resetRecaptcha, initRecaptchaVerifier } = useRecaptcha(auth);
+  const { resetRecaptcha, initRecaptchaVerifier } = useRecaptcha();
 
   // Hooks for sending and verifying OTP
-  const { sendOtp, loading: sendingOtp } = useSendOtp(auth);
-  const { verifyOtp, loading: verifyingOtp } = useVerifyOtp(auth);
+  const { sendOtp, loading: sendingOtp } = useSendOtp();
+  const { verifyOtp, loading: verifyingOtp } = useVerifyOtp();
 
   useEffect(() => {
     if (seconds > 0 && showOTP) {
@@ -36,16 +36,18 @@ const VerifyScreen = () => {
     e.preventDefault();
     if (!ph || ph.length < 10) {
       setError("Please enter a valid phone number");
+      toast.error("Please enter a valid phone number");
       return;
     }
 
     try {
       await initRecaptchaVerifier(); // Initialize Recaptcha
-      console.log('reCAPTCHA initialized successfully');
+      console.log("reCAPTCHA initialized successfully");
       await sendOtp(ph, setShowOTP, setError); // Send OTP
     } catch (err) {
       console.error("Error during OTP sending:", err);
       setError("Failed to send OTP. Please try again.");
+      toast.error("Failed to send OTP. Please try again.");
     }
   };
 
@@ -53,6 +55,7 @@ const VerifyScreen = () => {
     e.preventDefault();
     if (!otp || otp.length !== 6) {
       setError("Please enter a valid 6-digit OTP");
+      toast.error("Please enter a valid 6-digit OTP");
       return;
     }
 
@@ -65,7 +68,7 @@ const VerifyScreen = () => {
     setOtp("");
     setError("");
     await resetRecaptcha(); // Reset Recaptcha before resending OTP
-    await sendOtp(ph, setShowOTP, setError, setSeconds, initRecaptchaVerifier); // Resend OTP
+    await sendOtp(ph, setShowOTP, setError); // Resend OTP
   };
 
   const handleBackClick = () => {

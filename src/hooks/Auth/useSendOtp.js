@@ -1,49 +1,28 @@
 // hooks/useSendOtp.js
-import { useState, useEffect } from "react";
-import { signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
+import { useState } from "react";
+import { signInWithPhoneNumber } from "firebase/auth";
 import toast from "react-hot-toast";
 import { auth } from "../../firebaseConfig";
 
 const useSendOtp = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  /**
-   * Initializes the reCAPTCHA verifier if it's not already initialized.
-   */
-  const initializeRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        "recaptcha-container",
-        {
-          size: "invisible", // Can be 'normal' if you want the widget to be visible
-          callback: (response) => {
-            // reCAPTCHA solved, allow OTP sending
-            // You can optionally handle the response here
-          },
-          "expired-callback": () => {
-            // Reset reCAPTCHA if it expires
-            window.recaptchaVerifier.reset();
-          },
-        },
-        auth
-      );
-    }
-  };
 
   /**
    * Sends an OTP to the provided phone number.
    *
    * @param {string} phoneNumber - The user's phone number in international format (e.g., +1234567890).
+   * @param {function} setShowOTP - Function to toggle the OTP input visibility.
+   * @param {function} setError - Function to set error messages in the component.
    * @returns {Promise<void>}
    */
-  const sendOtp = async (phoneNumber, setShowOTP) => {
+  const sendOtp = async (phoneNumber, setShowOTP, setError) => {
     setLoading(true);
-    setError("");
-
     try {
-      // Initialize reCAPTCHA
-      initializeRecaptcha();
+      // Assume that reCAPTCHA is already initialized via useRecaptcha
+      const appVerifier = window.recaptchaVerifier;
+      if (!appVerifier) {
+        throw new Error("reCAPTCHA verifier not initialized");
+      }
 
       const formattedPhone = phoneNumber.startsWith("+")
         ? phoneNumber
@@ -53,13 +32,16 @@ const useSendOtp = () => {
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         formattedPhone,
-        window.recaptchaVerifier
+        appVerifier
       );
 
-      window.confirmationResult = confirmationResult;
+      // Store confirmationResult locally instead of globally
+      // You might want to manage this differently based on your app's architecture
       setShowOTP(true);
-
       toast.success("OTP sent successfully!");
+
+      // Optionally, you can return confirmationResult if needed elsewhere
+      return confirmationResult;
     } catch (err) {
       console.error("Error sending OTP:", err);
 
@@ -75,8 +57,12 @@ const useSendOtp = () => {
             toast.error("Please enter a phone number.");
             break;
           case "auth/quota-exceeded":
-            setError("You have exceeded the OTP request limit. Please try again later.");
-            toast.error("You have exceeded the OTP request limit. Please try again later.");
+            setError(
+              "You have exceeded the OTP request limit. Please try again later."
+            );
+            toast.error(
+              "You have exceeded the OTP request limit. Please try again later."
+            );
             break;
           default:
             setError("Failed to send OTP. Please try again.");
@@ -91,19 +77,7 @@ const useSendOtp = () => {
     }
   };
 
-  /**
-   * Cleans up the reCAPTCHA verifier when the component using this hook unmounts.
-   */
-  useEffect(() => {
-    return () => {
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-        window.recaptchaVerifier = null;
-      }
-    };
-  }, []);
-
-  return { sendOtp, loading, error };
+  return { sendOtp, loading };
 };
 
 export default useSendOtp;
