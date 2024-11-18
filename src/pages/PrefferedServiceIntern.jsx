@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setInternInfo } from '../Store/Slice/InternInfo';
 import { setAuth } from '../Store/Slice/UserInfo';
+import { ROUTES } from '../constants/routes';
 
 
 export default function PrefferedService() {
@@ -15,6 +16,7 @@ export default function PrefferedService() {
     const [availability, setAvailability] = useState({ from: '', to: '' });
     const [currentlyStudying, setCurrentlyStudying] = useState('');
     const [graduationYear, setGraduationYear] = useState('');
+
 
     const programmingLanguages = [
         'JavaScript', 'Python', 'Java', 'C++', 'Ruby', 
@@ -57,16 +59,15 @@ export default function PrefferedService() {
             graduationYear: graduationYear
         };
 
-        dispatch(setInternInfo(internData));
-        dispatch(setAuth(true))
+        
    
-        navigate('/');
+        navigate(ROUTES.SIGN_UP);
 
     };
 
     return (
         <div className='preffered-role-container'>
-            <span className='hey-txt'>Hey, <span style={{ color: '#3374AE' }}>Intern</span></span>
+            <span className='hey-txt'>Hey, <span style={{ color: '#0d6efd' }}>Xpert</span></span>
         
             <div className="select-lang-sec">
                 <span className='select-lang'>
