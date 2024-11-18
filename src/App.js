@@ -21,6 +21,7 @@ import DesktopPrefferedServiceIntern from "./pages/Desktop/Prefference/PrefferSe
 import DesktopPrefferServiceVenture from "./pages/Desktop/Prefference/PrefferServiceVenture.jsx";
 import DesktopPrefferServiceMentor from "./pages/Desktop/Prefference/PrefferServiceMentor.jsx";
 import DesktopAllProjects from "./pages/Desktop/ProjectDetail/AllProjects.jsx";
+import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx";
 
 // Mobile View
 
@@ -89,7 +90,6 @@ import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
 
 import BottomNavigationVenture from "./components/BottomNavigationVenture";
-
 
 function App() {
   const location = useLocation(); // Get the current location
@@ -166,6 +166,8 @@ function App() {
           path={ROUTES.PREFERRED_ROLE}
           element={isMobileView ? <PrefferedRole /> : <DesktopPrefferRole />}
         />
+        {/*iffat*/}
+        <Route path={ROUTES.FILTER_SCREEN} element={<DesktopFilterScreen />} />
 
         <Route
           path={ROUTES.INTERN}
@@ -425,7 +427,7 @@ function App() {
           }
         />
         <Route
-       path={ROUTES.PROFILE}
+          path={ROUTES.PROFILE}
           element={
             <ProtectedRoute>
               {isMobileView ? <Profile /> : <DesktopProfile />}

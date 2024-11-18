@@ -57,4 +57,5 @@ export const ROUTES = {
   INTERNSHIP: "/internship",
   APPLY_INTERNSHIP: "/applyinternship",
   USER_PROFILE: "/userprofile",
+  FILTER_SCREEN: "/filterscreen", //Iffat
 };
