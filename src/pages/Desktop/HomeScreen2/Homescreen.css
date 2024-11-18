@@ -152,7 +152,7 @@
   
   .slider-track-up,
   .slider-track-down {
-    width: 250px;
+    width: 100%;
     gap: 20px;
     display: flex;
     flex-direction: column;
@@ -167,6 +167,7 @@
   .slider-image {
     width: 100%; 
     height: auto;
+    object-fit: contain;
   }
  
   @keyframes scrollUp {
@@ -353,7 +354,7 @@ justify-content: center;
 
 .xtern-vector{
   position: absolute;
-  width: 450px;
+  width: 100%;
   z-index: 100;
   top: 55%;
   left: 50%;
@@ -362,8 +363,7 @@ justify-content: center;
 }
 
 .xtern-img{
-  width: 450px;
-
+  width: 100%;
   position: absolute;
   z-index: 200;
   top: 42%;

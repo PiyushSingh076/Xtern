@@ -7038,3 +7038,135 @@ h2 {
     width: 100%;
   }
 }
+
+/* Header */
+
+.mob-header-container {
+  width: 100vw;
+  height: 50px;
+  border-bottom: 1px rgb(219, 219, 219) solid;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  position: fixed;
+  flex: 1;
+  top: 0;
+  z-index: 70;
+
+  background-color: white;
+}
+
+.Logo-container {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.menu-btn {
+  background-color: transparent;
+  border: none;
+}
+
+.back-btn-container,
+.Logo-container,
+.menu-btn-container {
+  width: 33%;
+}
+
+.Logo-container {
+  text-align: center;
+}
+
+.menu-btn-container {
+  text-align: right;
+}
+
+.side-menu {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 70;
+  position: fixed;
+  top: 50px;
+  right: 0;
+  background-color: white;
+  border-bottom: 1px solid #ccc;
+  animation: slideLeft ease-out 0.5s;
+  padding-left: 10px;
+
+  & div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+
+    & button {
+      background-color: transparent;
+      border: none;
+      width: 100%;
+      height: 100%;
+      background-color: #007bff;
+      color: white;
+    }
+  }
+}
+
+.log-out {
+  width: 100px;
+  height: 100%;
+  background-color: #007bff;
+}
+
+.menu-items {
+  text-decoration: none;
+  color: black;
+}
+
+@keyframes slideLeft {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideLeftclose {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.mob-usertype-container {
+  width: 100%;
+  height: 95vh;
+  background-color: #f6f6f6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+}
+
+.mob-usertype {
+  width: 90%;
+  height: 150px;
+  background-color: white;
+  border-radius: 20px;
+  border: 1px solid #0d6efd;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 40px;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0d6efd;
+}

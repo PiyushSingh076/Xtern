@@ -24,7 +24,7 @@ export default function Header() {
       <div className='logo-search-container'>
         <span 
         onClick={()=>navigate(ROUTES.HOME_SCREEN)}
-        className='logo'>Xtern</span>
+        className='logo'><span style={{color: '#0d6efd', fontSize: '34px'}}>X</span>pert</span>
          {/* <div className='input-search-wrap-container'>
           <input className='search-input' type='text' placeholder='Search jobs' />
           <AiOutlineSearch className="search-icon" />

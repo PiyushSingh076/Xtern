@@ -1,62 +1,68 @@
+// hooks/useRecaptcha.js
 import { useEffect } from "react";
 import { RecaptchaVerifier } from "firebase/auth";
-import { toast } from "react-hot-toast";
+import { auth } from "../../firebaseConfig";
 
-const useRecaptcha = (auth) => {
-  // Initialize the Recaptcha Verifier
+const useRecaptcha = () => {
+  /**
+   * Initializes the reCAPTCHA verifier.
+   */
   const initRecaptchaVerifier = () => {
-    return new Promise((resolve, reject) => {
-      try {
-        // Check if recaptchaVerifier is already initialized
-        if (!window.recaptchaVerifier && auth) {
-          window.recaptchaVerifier = new RecaptchaVerifier(
-            "recaptcha-container", // HTML element ID where reCAPTCHA should be rendered
-            {
-              size: "invisible", // Invisible reCAPTCHA for seamless UX
-              callback: (response) => {
-                console.log("reCAPTCHA verified successfully.", response);
-              },
-              "expired-callback": () => {
-                console.log("reCAPTCHA expired. Please try again.");
-                toast.error("reCAPTCHA expired. Please try again.");
-              },
-            },
-            auth
-          );
-          window.recaptchaVerifier.render().then(() => {
-            resolve(window.recaptchaVerifier);
-          });
-        } else {
-          resolve(window.recaptchaVerifier); // Already initialized, resolve it
-        }
-      } catch (error) {
-        console.error("Error initializing RecaptchaVerifier:", error);
-        reject(error);
-      }
-    });
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: (response) => {
+            // reCAPTCHA solved, allow sending OTP
+            console.log("reCAPTCHA solved", response);
+          },
+          "expired-callback": () => {
+            // Reset reCAPTCHA if it expires
+            if (window.recaptchaVerifier) {
+              window.recaptchaVerifier.reset();
+            }
+          },
+        },
+        auth
+      );
+
+      window.recaptchaVerifier
+        .render()
+        .then((widgetId) => {
+          window.recaptchaWidgetId = widgetId;
+        })
+        .catch((error) => {
+          console.error("Error rendering reCAPTCHA:", error);
+        });
+    }
   };
 
-  // Reset and reinitialize the reCAPTCHA
+  /**
+   * Resets the reCAPTCHA verifier.
+   */
   const resetRecaptcha = () => {
     if (window.recaptchaVerifier) {
       window.recaptchaVerifier.clear();
       window.recaptchaVerifier = null;
     }
-    return initRecaptchaVerifier(); // Reinitialize recaptcha
+    initRecaptchaVerifier();
   };
 
+  /**
+   * Cleanup on unmount.
+   */
   useEffect(() => {
-    // Initialize recaptcha on mount
-    initRecaptchaVerifier();
+    initRecaptchaVerifier(); // Initialize on mount
 
-    // Cleanup reCAPTCHA on component unmount
     return () => {
       if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear(); // Clear reCAPTCHA
-        window.recaptchaVerifier = null; // Reset reference
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
       }
     };
-  }, [auth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return { resetRecaptcha, initRecaptchaVerifier };
 };

@@ -24,7 +24,8 @@ import DesktopAllProjects from "./pages/Desktop/ProjectDetail/AllProjects.jsx";
 import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx";
 
 // Mobile View
-
+import UserType from "./pages/UserType.jsx";
+import MobHeader from "./components/MobHeader.jsx";
 import Teams from "./pages/Teams/Teams.jsx";
 import PrefferedServiceVenture from "./pages/PrefferedServiceVenture.jsx";
 import PrefferedServiceMentor from "./pages/PrefferedServiceMentor.jsx";
@@ -41,7 +42,7 @@ import PreferredLanguage from "./pages/PreferredLanguage";
 import SpendLearning from "./pages/SpendLearning";
 import SelectSkills from "./pages/SkillSelectionScreen";
 import SelectCoursesScreen from "./pages/SelectCoursesScreen";
-import HomeScreen from "./pages/HomeScreen";
+import HomeScreen from "./pages/MobHomeScreen/index.jsx";
 import Notification from "./pages/Notification";
 import CategoryScreen from "./pages/CategoryScreen";
 import Business from "./pages/Business";
@@ -90,6 +91,7 @@ import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
 
 import BottomNavigationVenture from "./components/BottomNavigationVenture";
+import { RouteRounded } from "@mui/icons-material";
 
 function App() {
   const location = useLocation(); // Get the current location
@@ -131,7 +133,8 @@ function App() {
   return (
     <div className="App">
       {!isMobileView && <Header />}
-
+      {isMobileView && <MobHeader />}
+      {isMobileView && <div style={{height: '50px'}}></div>}
       <Toaster />
       <Routes>
         {/* Public Routes */}
@@ -266,6 +269,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+
+<Route
+path={ROUTES.USER_TYPE}
+element= {
+  isMobileView ? <UserType/>: <div>This Page only for Mobile</div>
+}
+/>
         <Route
           path={ROUTES.BUSINESS}
           element={
@@ -567,7 +578,7 @@ function App() {
         <Route path="" element={<Footer />} />
       </Routes>
 
-      {isMobileView &&
+      {/* {isMobileView &&
         location.pathname !== ROUTES.SIGN_IN &&
         location.pathname !== ROUTES.SIGN_UP &&
         location.pathname !== ROUTES.INTERN &&
@@ -579,7 +590,7 @@ function App() {
             {selectedRole === "mentor" && <BottomNavigationVenture />}
             {selectedRole === "" && <BottomNavigation />}
           </>
-        )}
+        )} */}
     </div>
   );
 }

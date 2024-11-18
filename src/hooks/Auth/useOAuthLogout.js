@@ -23,7 +23,7 @@ const useOAuthLogout = () => {
       // If you store other user data, consider clearing it here
 
       toast.success("Successfully logged out", { position: "bottom-left" });
-      navigate("/homescreen");
+      navigate("/");
       dispatch(removeAuth());
       dispatch(removeRole());
       dispatch(clearVentureInfo());
