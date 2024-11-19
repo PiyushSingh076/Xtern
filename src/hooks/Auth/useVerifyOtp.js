@@ -8,15 +8,6 @@ import { auth, db } from "../../firebaseConfig";
 const useVerifyOtp = () => {
   const [loading, setLoading] = useState(false);
 
-  /**
-   * Verifies the entered OTP, links the phone number to the authenticated user,
-   * and updates the Firestore user document.
-   *
-   * @param {string} otp - The OTP entered by the user.
-   * @param {function} setError - Function to set error messages.
-   * @param {function} navigate - Function to handle navigation.
-   * @returns {Promise<void>}
-   */
   const verifyOtp = async (otp, setError, navigate) => {
     setLoading(true);
     try {
@@ -54,14 +45,6 @@ const useVerifyOtp = () => {
     }
   };
 
-  /**
-   * Links the phone number to the existing authenticated user and updates Firestore.
-   *
-   * @param {object} user - The authenticated Firebase user.
-   * @param {object} phoneCredential - The PhoneAuthProvider credential.
-   * @param {function} navigate - Function to handle navigation.
-   * @returns {Promise<void>}
-   */
   const linkPhoneNumber = async (user, phoneCredential, navigate, setError) => {
     try {
       // Link the phone credential to the user
@@ -93,12 +76,6 @@ const useVerifyOtp = () => {
     }
   };
 
-  /**
-   * Updates the Firestore user document with the linked phone number and providers.
-   *
-   * @param {object} user - The authenticated Firebase user.
-   * @returns {Promise<void>}
-   */
   const updateUserData = async (user) => {
     const userDocRef = doc(db, "users", user.uid);
     const userDocSnap = await getDoc(userDocRef);
@@ -141,12 +118,7 @@ const useVerifyOtp = () => {
     }
   };
 
-  /**
-   * Maps Firebase error codes to user-friendly messages.
-   *
-   * @param {object} error - The error object from Firebase.
-   * @returns {string} - The mapped error message.
-   */
+
   const getFirebaseErrorMessage = (error) => {
     const errorMap = {
       "auth/invalid-verification-code":
@@ -168,7 +140,6 @@ const useVerifyOtp = () => {
 };
 
 export default useVerifyOtp;
-
 
 
 // // hooks/useVerifyOtp.js
