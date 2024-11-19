@@ -1,3 +1,176 @@
+// hooks/useVerifyOtp.js
+import { useState } from "react";
+import { PhoneAuthProvider, linkWithCredential } from "firebase/auth";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+import toast from "react-hot-toast";
+import { auth, db } from "../../firebaseConfig";
+
+const useVerifyOtp = () => {
+  const [loading, setLoading] = useState(false);
+
+  /**
+   * Verifies the entered OTP, links the phone number to the authenticated user,
+   * and updates the Firestore user document.
+   *
+   * @param {string} otp - The OTP entered by the user.
+   * @param {function} setError - Function to set error messages.
+   * @param {function} navigate - Function to handle navigation.
+   * @returns {Promise<void>}
+   */
+  const verifyOtp = async (otp, setError, navigate) => {
+    setLoading(true);
+    try {
+      const confirmationResult = window.confirmationResult;
+
+      if (!confirmationResult) {
+        throw new Error(
+          "No confirmation result available. Please request a new OTP."
+        );
+      }
+
+      // Create phone credential using the OTP
+      const phoneCredential = PhoneAuthProvider.credential(
+        confirmationResult.verificationId,
+        otp
+      );
+
+      const user = auth.currentUser;
+
+      if (user) {
+        // User is authenticated with Google; link phone number
+        await linkPhoneNumber(user, phoneCredential, navigate);
+      } else {
+        throw new Error(
+          "No authenticated user found. Please sign in with Google first."
+        );
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      const errorMessage = getFirebaseErrorMessage(error);
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Links the phone number to the existing authenticated user and updates Firestore.
+   *
+   * @param {object} user - The authenticated Firebase user.
+   * @param {object} phoneCredential - The PhoneAuthProvider credential.
+   * @param {function} navigate - Function to handle navigation.
+   * @returns {Promise<void>}
+   */
+  const linkPhoneNumber = async (user, phoneCredential, navigate, setError) => {
+    try {
+      // Link the phone credential to the user
+      await linkWithCredential(user, phoneCredential);
+
+      // Update Firestore user data
+      await updateUserData(user);
+
+      toast.success("Phone number verified and linked successfully!");
+      navigate("/homescreen");
+    } catch (error) {
+      console.error("Linking error:", error);
+
+      if (error.code === "auth/credential-already-in-use") {
+        // Phone number already linked to another user
+        toast.error("This phone number is already linked to another account.");
+        await auth.signOut();
+        navigate("/signin");
+      } else if (error.code === "auth/provider-already-linked") {
+        // Phone number already linked to this user
+        await updateUserData(user);
+        toast.success("Phone number already linked and verified!");
+        navigate("/homescreen");
+      } else {
+        const errorMessage = getFirebaseErrorMessage(error);
+        setError(errorMessage);
+        toast.error(errorMessage);
+      }
+    }
+  };
+
+  /**
+   * Updates the Firestore user document with the linked phone number and providers.
+   *
+   * @param {object} user - The authenticated Firebase user.
+   * @returns {Promise<void>}
+   */
+  const updateUserData = async (user) => {
+    const userDocRef = doc(db, "users", user.uid);
+    const userDocSnap = await getDoc(userDocRef);
+
+    if (userDocSnap.exists()) {
+      // Existing user; append 'phone' to authProviders if not already present
+      const existingData = userDocSnap.data();
+      const updatedAuthProviders = existingData.authProviders
+        ? existingData.authProviders.includes("phone")
+          ? existingData.authProviders
+          : [...existingData.authProviders, "phone"]
+        : ["phone"];
+
+      await updateDoc(userDocRef, {
+        phone_number: user.phoneNumber,
+        isPhoneVerified: true,
+        authProviders: updatedAuthProviders,
+      });
+    } else {
+      // New user; create user document with both 'google' and 'phone' as auth providers
+      await setDoc(userDocRef, {
+        uid: user.uid,
+        display_name: user.displayName || "User",
+        email: user.email,
+        profilePicture: user.photoURL,
+        provider: user.providerData[0]?.providerId,
+        lastLogin: new Date(),
+        phone_number: user.phoneNumber,
+        isPhoneVerified: true,
+        authProviders: ["google.com", "phone"],
+        typeUser: "default",
+        // Include other relevant fields as needed
+      });
+    }
+
+    // Clear reCAPTCHA verifier if it exists
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.clear();
+      window.recaptchaVerifier = null;
+    }
+  };
+
+  /**
+   * Maps Firebase error codes to user-friendly messages.
+   *
+   * @param {object} error - The error object from Firebase.
+   * @returns {string} - The mapped error message.
+   */
+  const getFirebaseErrorMessage = (error) => {
+    const errorMap = {
+      "auth/invalid-verification-code":
+        "The OTP you entered is invalid. Please try again.",
+      "auth/code-expired": "The OTP has expired. Please request a new one.",
+      "auth/credential-already-in-use":
+        "This phone number is already linked to another account.",
+      "auth/provider-already-linked":
+        "This phone number is already linked to your account.",
+      // Add more mappings as needed
+    };
+
+    return (
+      errorMap[error.code] || error.message || "An unexpected error occurred."
+    );
+  };
+
+  return { verifyOtp, loading };
+};
+
+export default useVerifyOtp;
+
+
+
 // // hooks/useVerifyOtp.js
 // import { useState } from "react";
 // import {
@@ -189,215 +362,215 @@
 // export default useVerifyOtp;
 
 
-
+// ----------------------------------------------------------//----------------------
 // src/hooks/useVerifyOtp.js
-import { useState } from "react";
-import {
-  PhoneAuthProvider,
-  linkWithCredential,
-  signInWithCredential,
-  fetchSignInMethodsForEmail,
-} from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import toast from "react-hot-toast";
-import { auth, db } from "../../firebaseConfig";
-import { ROUTES } from "../../constants/routes";
+// import { useState } from "react";
+// import {
+//   PhoneAuthProvider,
+//   linkWithCredential,
+//   signInWithCredential,
+//   fetchSignInMethodsForEmail,
+// } from "firebase/auth";
+// import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+// import toast from "react-hot-toast";
+// import { auth, db } from "../../firebaseConfig";
+// import { ROUTES } from "../../constants/routes";
 
-const useVerifyOtp = () => {
-  const [loading, setLoading] = useState(false);
+// const useVerifyOtp = () => {
+//   const [loading, setLoading] = useState(false);
 
-  // Function to map Firebase error codes to user-friendly messages
-  const getFirebaseErrorMessage = (error) => {
-    const errorMap = {
-      "auth/invalid-verification-code": "The OTP you entered is invalid. Please try again.",
-      "auth/code-expired": "The OTP has expired. Please request a new one.",
-      "auth/account-exists-with-different-credential":
-        "This phone number is linked to another account. Please sign in using that method.",
-      "auth/provider-already-linked": "This phone number is already linked to your account.",
-      // Add more mappings as needed
-    };
+//   // Function to map Firebase error codes to user-friendly messages
+//   const getFirebaseErrorMessage = (error) => {
+//     const errorMap = {
+//       "auth/invalid-verification-code": "The OTP you entered is invalid. Please try again.",
+//       "auth/code-expired": "The OTP has expired. Please request a new one.",
+//       "auth/account-exists-with-different-credential":
+//         "This phone number is linked to another account. Please sign in using that method.",
+//       "auth/provider-already-linked": "This phone number is already linked to your account.",
+//       // Add more mappings as needed
+//     };
 
-    return errorMap[error.code] || error.message || "An unexpected error occurred. Please try again.";
-  };
+//     return errorMap[error.code] || error.message || "An unexpected error occurred. Please try again.";
+//   };
 
-  // Main function to verify OTP
-  const verifyOtp = async (otp, setError, navigate) => {
-    setLoading(true);
-    try {
-      const confirmationResult = window.confirmationResult;
+//   // Main function to verify OTP
+//   const verifyOtp = async (otp, setError, navigate) => {
+//     setLoading(true);
+//     try {
+//       const confirmationResult = window.confirmationResult;
 
-      if (!confirmationResult) {
-        throw new Error("No confirmation result available. Please request a new OTP.");
-      }
+//       if (!confirmationResult) {
+//         throw new Error("No confirmation result available. Please request a new OTP.");
+//       }
 
-      // Create phone credential using the OTP
-      const phoneCredential = PhoneAuthProvider.credential(
-        confirmationResult.verificationId,
-        otp
-      );
+//       // Create phone credential using the OTP
+//       const phoneCredential = PhoneAuthProvider.credential(
+//         confirmationResult.verificationId,
+//         otp
+//       );
 
-      const user = auth.currentUser;
+//       const user = auth.currentUser;
 
-      if (user) {
-        // User is already authenticated (e.g., via Google); link the phone number
-        await linkPhoneNumber(user, phoneCredential, navigate);
-      } else {
-        // User is not authenticated; sign in with the phone credential
-        await signInWithPhone(phoneCredential, navigate);
-      }
-    } catch (err) {
-      console.error("Error verifying OTP:", err);
-      const errorMessage = getFirebaseErrorMessage(err);
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
+//       if (user) {
+//         // User is already authenticated (e.g., via Google); link the phone number
+//         await linkPhoneNumber(user, phoneCredential, navigate);
+//       } else {
+//         // User is not authenticated; sign in with the phone credential
+//         await signInWithPhone(phoneCredential, navigate);
+//       }
+//     } catch (err) {
+//       console.error("Error verifying OTP:", err);
+//       const errorMessage = getFirebaseErrorMessage(err);
+//       setError(errorMessage);
+//       toast.error(errorMessage);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-  // Function to link phone number to an existing authenticated user
-  const linkPhoneNumber = async (user, phoneCredential, navigate) => {
-    try {
-      // Link phone credential to the user
-      await linkWithCredential(user, phoneCredential);
+//   // Function to link phone number to an existing authenticated user
+//   const linkPhoneNumber = async (user, phoneCredential, navigate) => {
+//     try {
+//       // Link phone credential to the user
+//       await linkWithCredential(user, phoneCredential);
 
-      // Update Firestore user data
-      await updateUserData(user);
+//       // Update Firestore user data
+//       await updateUserData(user);
 
-      toast.success("Phone number verified successfully!");
-      navigateUser(user, navigate);
-    } catch (error) {
-      console.error("Linking error:", error);
+//       toast.success("Phone number verified successfully!");
+//       navigateUser(user, navigate);
+//     } catch (error) {
+//       console.error("Linking error:", error);
 
-      if (error.code === "auth/provider-already-linked") {
-        // Phone number is already linked; treat as success
-        await updateUserData(user);
-        toast.success("Phone number already linked and verified!");
-        navigateUser(user, navigate);
-      } else if (error.code === "auth/account-exists-with-different-credential") {
-        // Handle account conflict
-        await resolveCredentialConflict(error, phoneCredential, navigate);
-      } else {
-        const errorMessage = getFirebaseErrorMessage(error);
-        setErrorAndNavigate(errorMessage, navigate);
-      }
-    }
-  };
+//       if (error.code === "auth/provider-already-linked") {
+//         // Phone number is already linked; treat as success
+//         await updateUserData(user);
+//         toast.success("Phone number already linked and verified!");
+//         navigateUser(user, navigate);
+//       } else if (error.code === "auth/account-exists-with-different-credential") {
+//         // Handle account conflict
+//         await resolveCredentialConflict(error, phoneCredential, navigate);
+//       } else {
+//         const errorMessage = getFirebaseErrorMessage(error);
+//         setErrorAndNavigate(errorMessage, navigate);
+//       }
+//     }
+//   };
 
-  // Function to sign in a user using the phone credential
-  const signInWithPhone = async (phoneCredential, navigate) => {
-    try {
-      // Sign in with the phone credential
-      const userCredential = await signInWithCredential(auth, phoneCredential);
-      const user = userCredential.user;
+//   // Function to sign in a user using the phone credential
+//   const signInWithPhone = async (phoneCredential, navigate) => {
+//     try {
+//       // Sign in with the phone credential
+//       const userCredential = await signInWithCredential(auth, phoneCredential);
+//       const user = userCredential.user;
 
-      // Update Firestore user data
-      await updateUserData(user);
+//       // Update Firestore user data
+//       await updateUserData(user);
 
-      toast.success("Phone number verified and signed in successfully!");
-      navigateUser(user, navigate);
-    } catch (error) {
-      console.error("Sign-in error:", error);
+//       toast.success("Phone number verified and signed in successfully!");
+//       navigateUser(user, navigate);
+//     } catch (error) {
+//       console.error("Sign-in error:", error);
 
-      if (error.code === "auth/account-exists-with-different-credential") {
-        // Handle account conflict
-        await resolveCredentialConflict(error, phoneCredential, navigate);
-      } else {
-        const errorMessage = getFirebaseErrorMessage(error);
-        setErrorAndNavigate(errorMessage, navigate);
-      }
-    }
-  };
+//       if (error.code === "auth/account-exists-with-different-credential") {
+//         // Handle account conflict
+//         await resolveCredentialConflict(error, phoneCredential, navigate);
+//       } else {
+//         const errorMessage = getFirebaseErrorMessage(error);
+//         setErrorAndNavigate(errorMessage, navigate);
+//       }
+//     }
+//   };
 
-  // Function to handle account conflicts
-  const resolveCredentialConflict = async (error, phoneCredential, navigate) => {
-    const email = error.customData?.email;
+//   // Function to handle account conflicts
+//   const resolveCredentialConflict = async (error, phoneCredential, navigate) => {
+//     const email = error.customData?.email;
 
-    if (email) {
-      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-      if (signInMethods.includes("google.com")) {
-        toast.error(
-          "This phone number is linked to a Google account. Please sign in with Google."
-        );
-        navigate(ROUTES.SIGN_IN);
-      } else {
-        toast.error("Account conflict detected. Please resolve via support.");
-      }
-    } else {
-      toast.error("Unable to resolve conflict. Please try again.");
-    }
+//     if (email) {
+//       const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+//       if (signInMethods.includes("google.com")) {
+//         toast.error(
+//           "This phone number is linked to a Google account. Please sign in with Google."
+//         );
+//         navigate(ROUTES.SIGN_IN);
+//       } else {
+//         toast.error("Account conflict detected. Please resolve via support.");
+//       }
+//     } else {
+//       toast.error("Unable to resolve conflict. Please try again.");
+//     }
 
-    await auth.signOut();
-  };
+//     await auth.signOut();
+//   };
 
-  // Function to update Firestore user data
-  const updateUserData = async (user) => {
-    const userDocRef = doc(db, "users", user.uid);
-    const userDocSnap = await getDoc(userDocRef);
+//   // Function to update Firestore user data
+//   const updateUserData = async (user) => {
+//     const userDocRef = doc(db, "users", user.uid);
+//     const userDocSnap = await getDoc(userDocRef);
 
-    if (userDocSnap.exists()) {
-      // Existing user; append 'phone' to authProviders if not already present
-      const existingData = userDocSnap.data();
-      const updatedAuthProviders = existingData.authProviders
-        ? existingData.authProviders.includes("phone")
-          ? existingData.authProviders
-          : [...existingData.authProviders, "phone"]
-        : ["phone"];
+//     if (userDocSnap.exists()) {
+//       // Existing user; append 'phone' to authProviders if not already present
+//       const existingData = userDocSnap.data();
+//       const updatedAuthProviders = existingData.authProviders
+//         ? existingData.authProviders.includes("phone")
+//           ? existingData.authProviders
+//           : [...existingData.authProviders, "phone"]
+//         : ["phone"];
 
-      await updateDoc(userDocRef, {
-        phone_number: user.phoneNumber,
-        isPhoneVerified: true,
-        authProviders: updatedAuthProviders,
-      });
-    } else {
-      // New user; create user document with both 'google' and 'phone' as auth providers
-      await setDoc(userDocRef, {
-        phone_number: user.phoneNumber,
-        isPhoneVerified: true,
-        typeUser: "default",
-        authProviders: ["google", "phone"],
-        // Include other relevant fields as needed
-      });
-    }
+//       await updateDoc(userDocRef, {
+//         phone_number: user.phoneNumber,
+//         isPhoneVerified: true,
+//         authProviders: updatedAuthProviders,
+//       });
+//     } else {
+//       // New user; create user document with both 'google' and 'phone' as auth providers
+//       await setDoc(userDocRef, {
+//         phone_number: user.phoneNumber,
+//         isPhoneVerified: true,
+//         typeUser: "default",
+//         authProviders: ["google", "phone"],
+//         // Include other relevant fields as needed
+//       });
+//     }
 
-    // Clear reCAPTCHA verifier if it exists
-    if (window.recaptchaVerifier) {
-      window.recaptchaVerifier.clear();
-      window.recaptchaVerifier = null;
-    }
-  };
+//     // Clear reCAPTCHA verifier if it exists
+//     if (window.recaptchaVerifier) {
+//       window.recaptchaVerifier.clear();
+//       window.recaptchaVerifier = null;
+//     }
+//   };
 
-  // Function to navigate the user based on their profile data
-  const navigateUser = async (user, navigate) => {
-    try {
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
+//   // Function to navigate the user based on their profile data
+//   const navigateUser = async (user, navigate) => {
+//     try {
+//       const userDocRef = doc(db, "users", user.uid);
+//       const userDocSnap = await getDoc(userDocRef);
 
-      if (userDocSnap.exists()) {
-        const data = userDocSnap.data();
-        if (data.typeUser) {
-          navigate(ROUTES.HOME);
-        } else {
-          navigate(ROUTES.PREFERRED_ROLE);
-        }
-      } else {
-        // If user document doesn't exist, navigate to role selection
-        navigate(ROUTES.PREFERRED_ROLE);
-      }
-    } catch (err) {
-      console.error("Navigation error:", err);
-      toast.error("Failed to navigate. Please try again.");
-    }
-  };
+//       if (userDocSnap.exists()) {
+//         const data = userDocSnap.data();
+//         if (data.typeUser) {
+//           navigate(ROUTES.HOME);
+//         } else {
+//           navigate(ROUTES.PREFERRED_ROLE);
+//         }
+//       } else {
+//         // If user document doesn't exist, navigate to role selection
+//         navigate(ROUTES.PREFERRED_ROLE);
+//       }
+//     } catch (err) {
+//       console.error("Navigation error:", err);
+//       toast.error("Failed to navigate. Please try again.");
+//     }
+//   };
 
-  // Function to handle errors and navigate to sign-in page
-  const setErrorAndNavigate = async (errorMessage, navigate) => {
-    toast.error(errorMessage);
-    await auth.signOut();
-    navigate(ROUTES.SIGN_IN);
-  };
+//   // Function to handle errors and navigate to sign-in page
+//   const setErrorAndNavigate = async (errorMessage, navigate) => {
+//     toast.error(errorMessage);
+//     await auth.signOut();
+//     navigate(ROUTES.SIGN_IN);
+//   };
 
-  return { verifyOtp, loading };
-};
+//   return { verifyOtp, loading };
+// };
 
-export default useVerifyOtp;
+// export default useVerifyOtp;
