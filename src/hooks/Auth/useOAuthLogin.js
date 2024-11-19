@@ -27,16 +27,17 @@ const useOAuthLogin = () => {
         if (!userData.phone_number || !userData.isPhoneVerified) {
           toast("Please verify your phone number", { position: "bottom-left" });
           navigate("/verifyscreen");
-        } else if (!userData.typeUser) {
-          navigate("/roleselect");
+        }
+        else if (!userData.typeUser) {
+          // navigate("/roleselect");
         } else if (userData.typeUser === "entrepreneur") {
           toast.success("Welcome back, Entrepreneur!", {
             position: "bottom-left",
           });
-          navigate("/homescreen");
+          navigate("/");
         } else if (userData.typeUser === "Intern") {
           if (!userData.skillSet || userData.skillSet.length === 0) {
-            navigate("/select-skills");
+            // navigate("/select-skills");
           } else {
             navigate("/");
           }
