@@ -29,7 +29,7 @@ const useVerifyOtp = () => {
 
       if (user) {
         // User is authenticated with Google; link phone number
-        await linkPhoneNumber(user, phoneCredential, navigate);
+        await linkPhoneNumber(user, phoneCredential,setError, navigate);
       } else {
         throw new Error(
           "No authenticated user found. Please sign in with Google first."
@@ -45,7 +45,7 @@ const useVerifyOtp = () => {
     }
   };
 
-  const linkPhoneNumber = async (user, phoneCredential, navigate, setError) => {
+  const linkPhoneNumber = async (user, phoneCredential,setError, navigate) => {
     try {
       // Link the phone credential to the user
       await linkWithCredential(user, phoneCredential);
