@@ -71,7 +71,7 @@ const useVerifyOtp = () => {
       await updateUserData(user);
 
       toast.success("Phone number verified and linked successfully!");
-      navigate("/homescreen");
+      navigate("/");
     } catch (error) {
       console.error("Linking error:", error);
 
@@ -84,7 +84,7 @@ const useVerifyOtp = () => {
         // Phone number already linked to this user
         await updateUserData(user);
         toast.success("Phone number already linked and verified!");
-        navigate("/homescreen");
+        navigate("/");
       } else {
         const errorMessage = getFirebaseErrorMessage(error);
         setError(errorMessage);
