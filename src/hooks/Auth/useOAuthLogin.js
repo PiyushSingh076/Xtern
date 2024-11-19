@@ -38,7 +38,7 @@ const useOAuthLogin = () => {
           if (!userData.skillSet || userData.skillSet.length === 0) {
             navigate("/select-skills");
           } else {
-            navigate("/homescreen");
+            navigate("/");
           }
         }
       } else {
