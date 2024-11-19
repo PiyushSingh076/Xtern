@@ -190,8 +190,7 @@
 
 
 
-
-
+// src/hooks/useVerifyOtp.js
 import { useState } from "react";
 import {
   PhoneAuthProvider,
@@ -207,6 +206,7 @@ import { ROUTES } from "../../constants/routes";
 const useVerifyOtp = () => {
   const [loading, setLoading] = useState(false);
 
+  // Function to map Firebase error codes to user-friendly messages
   const getFirebaseErrorMessage = (error) => {
     const errorMap = {
       "auth/invalid-verification-code": "The OTP you entered is invalid. Please try again.",
@@ -220,6 +220,7 @@ const useVerifyOtp = () => {
     return errorMap[error.code] || error.message || "An unexpected error occurred. Please try again.";
   };
 
+  // Main function to verify OTP
   const verifyOtp = async (otp, setError, navigate) => {
     setLoading(true);
     try {
@@ -229,7 +230,7 @@ const useVerifyOtp = () => {
         throw new Error("No confirmation result available. Please request a new OTP.");
       }
 
-      // Create phone credential
+      // Create phone credential using the OTP
       const phoneCredential = PhoneAuthProvider.credential(
         confirmationResult.verificationId,
         otp
@@ -238,10 +239,10 @@ const useVerifyOtp = () => {
       const user = auth.currentUser;
 
       if (user) {
-        // User is authenticated; link phone number
+        // User is already authenticated (e.g., via Google); link the phone number
         await linkPhoneNumber(user, phoneCredential, navigate);
       } else {
-        // Sign in with phone credential
+        // User is not authenticated; sign in with the phone credential
         await signInWithPhone(phoneCredential, navigate);
       }
     } catch (err) {
@@ -254,12 +255,13 @@ const useVerifyOtp = () => {
     }
   };
 
+  // Function to link phone number to an existing authenticated user
   const linkPhoneNumber = async (user, phoneCredential, navigate) => {
     try {
-      // Link phone credential to user
+      // Link phone credential to the user
       await linkWithCredential(user, phoneCredential);
 
-      // Update Firestore data
+      // Update Firestore user data
       await updateUserData(user);
 
       toast.success("Phone number verified successfully!");
@@ -268,7 +270,7 @@ const useVerifyOtp = () => {
       console.error("Linking error:", error);
 
       if (error.code === "auth/provider-already-linked") {
-        // Phone number already linked; treat as success
+        // Phone number is already linked; treat as success
         await updateUserData(user);
         toast.success("Phone number already linked and verified!");
         navigateUser(user, navigate);
@@ -282,13 +284,14 @@ const useVerifyOtp = () => {
     }
   };
 
+  // Function to sign in a user using the phone credential
   const signInWithPhone = async (phoneCredential, navigate) => {
     try {
-      // Sign in with phone credential
+      // Sign in with the phone credential
       const userCredential = await signInWithCredential(auth, phoneCredential);
       const user = userCredential.user;
 
-      // Update Firestore data
+      // Update Firestore user data
       await updateUserData(user);
 
       toast.success("Phone number verified and signed in successfully!");
@@ -306,6 +309,7 @@ const useVerifyOtp = () => {
     }
   };
 
+  // Function to handle account conflicts
   const resolveCredentialConflict = async (error, phoneCredential, navigate) => {
     const email = error.customData?.email;
 
@@ -326,40 +330,58 @@ const useVerifyOtp = () => {
     await auth.signOut();
   };
 
+  // Function to update Firestore user data
   const updateUserData = async (user) => {
     const userDocRef = doc(db, "users", user.uid);
     const userDocSnap = await getDoc(userDocRef);
 
     if (userDocSnap.exists()) {
-      // Update existing user document
+      // Existing user; append 'phone' to authProviders if not already present
+      const existingData = userDocSnap.data();
+      const updatedAuthProviders = existingData.authProviders
+        ? existingData.authProviders.includes("phone")
+          ? existingData.authProviders
+          : [...existingData.authProviders, "phone"]
+        : ["phone"];
+
       await updateDoc(userDocRef, {
         phone_number: user.phoneNumber,
         isPhoneVerified: true,
+        authProviders: updatedAuthProviders,
       });
     } else {
-      // Create a new user document
+      // New user; create user document with both 'google' and 'phone' as auth providers
       await setDoc(userDocRef, {
         phone_number: user.phoneNumber,
         isPhoneVerified: true,
         typeUser: "default",
+        authProviders: ["google", "phone"],
+        // Include other relevant fields as needed
       });
     }
 
-    // Clear reCAPTCHA verifier
+    // Clear reCAPTCHA verifier if it exists
     if (window.recaptchaVerifier) {
       window.recaptchaVerifier.clear();
       window.recaptchaVerifier = null;
     }
   };
 
+  // Function to navigate the user based on their profile data
   const navigateUser = async (user, navigate) => {
     try {
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
 
-      if (userDocSnap.exists() && userDocSnap.data().typeUser) {
-        navigate(ROUTES.HOME);
+      if (userDocSnap.exists()) {
+        const data = userDocSnap.data();
+        if (data.typeUser) {
+          navigate(ROUTES.HOME);
+        } else {
+          navigate(ROUTES.PREFERRED_ROLE);
+        }
       } else {
+        // If user document doesn't exist, navigate to role selection
         navigate(ROUTES.PREFERRED_ROLE);
       }
     } catch (err) {
@@ -368,6 +390,7 @@ const useVerifyOtp = () => {
     }
   };
 
+  // Function to handle errors and navigate to sign-in page
   const setErrorAndNavigate = async (errorMessage, navigate) => {
     toast.error(errorMessage);
     await auth.signOut();
