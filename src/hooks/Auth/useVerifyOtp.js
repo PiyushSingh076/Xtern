@@ -192,15 +192,12 @@
 
 
 
-
-
-
-
 import { useState } from "react";
 import {
   PhoneAuthProvider,
   linkWithCredential,
   signInWithCredential,
+  fetchSignInMethodsForEmail,
 } from "firebase/auth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
@@ -209,36 +206,30 @@ import { ROUTES } from "../../constants/routes";
 
 const useVerifyOtp = () => {
   const [loading, setLoading] = useState(false);
+
   const getFirebaseErrorMessage = (error) => {
     const errorMap = {
-      "auth/invalid-verification-code":
-        "The OTP you entered is invalid. Please try again.",
+      "auth/invalid-verification-code": "The OTP you entered is invalid. Please try again.",
       "auth/code-expired": "The OTP has expired. Please request a new one.",
       "auth/account-exists-with-different-credential":
         "This phone number is linked to another account. Please sign in using that method.",
-      "auth/provider-already-linked":
-        "This phone number is already linked to your account.",
+      "auth/provider-already-linked": "This phone number is already linked to your account.",
       // Add more mappings as needed
     };
 
-    return (
-      errorMap[error.code] ||
-      error.message ||
-      "An unexpected error occurred. Please try again."
-    );
+    return errorMap[error.code] || error.message || "An unexpected error occurred. Please try again.";
   };
+
   const verifyOtp = async (otp, setError, navigate) => {
     setLoading(true);
     try {
       const confirmationResult = window.confirmationResult;
 
       if (!confirmationResult) {
-        throw new Error(
-          "No confirmation result available. Please request a new OTP."
-        );
+        throw new Error("No confirmation result available. Please request a new OTP.");
       }
 
-      // Create phone credential using the verification ID and OTP
+      // Create phone credential
       const phoneCredential = PhoneAuthProvider.credential(
         confirmationResult.verificationId,
         otp
@@ -247,10 +238,10 @@ const useVerifyOtp = () => {
       const user = auth.currentUser;
 
       if (user) {
-        // User is authenticated; attempt to link phone number
+        // User is authenticated; link phone number
         await linkPhoneNumber(user, phoneCredential, navigate);
       } else {
-        // User is not authenticated; sign in with phone credential
+        // Sign in with phone credential
         await signInWithPhone(phoneCredential, navigate);
       }
     } catch (err) {
@@ -265,7 +256,7 @@ const useVerifyOtp = () => {
 
   const linkPhoneNumber = async (user, phoneCredential, navigate) => {
     try {
-      // Attempt to link the phone credential to the user
+      // Link phone credential to user
       await linkWithCredential(user, phoneCredential);
 
       // Update Firestore data
@@ -277,18 +268,14 @@ const useVerifyOtp = () => {
       console.error("Linking error:", error);
 
       if (error.code === "auth/provider-already-linked") {
-        // Phone number is already linked; proceed as if successful
+        // Phone number already linked; treat as success
         await updateUserData(user);
         toast.success("Phone number already linked and verified!");
         navigateUser(user, navigate);
-      } else if (
-        error.code === "auth/account-exists-with-different-credential"
-      ) {
-        // Handle account exists with different credential
-        const errorMessage = getFirebaseErrorMessage(error);
-        setErrorAndNavigate(errorMessage, navigate);
+      } else if (error.code === "auth/account-exists-with-different-credential") {
+        // Handle account conflict
+        await resolveCredentialConflict(error, phoneCredential, navigate);
       } else {
-        // Handle other errors
         const errorMessage = getFirebaseErrorMessage(error);
         setErrorAndNavigate(errorMessage, navigate);
       }
@@ -297,11 +284,11 @@ const useVerifyOtp = () => {
 
   const signInWithPhone = async (phoneCredential, navigate) => {
     try {
-      // Sign in with the phone credential
+      // Sign in with phone credential
       const userCredential = await signInWithCredential(auth, phoneCredential);
       const user = userCredential.user;
 
-      // Update or create user data in Firestore
+      // Update Firestore data
       await updateUserData(user);
 
       toast.success("Phone number verified and signed in successfully!");
@@ -310,15 +297,33 @@ const useVerifyOtp = () => {
       console.error("Sign-in error:", error);
 
       if (error.code === "auth/account-exists-with-different-credential") {
-        // Handle account exists with different credential
-        const errorMessage = getFirebaseErrorMessage(error);
-        setErrorAndNavigate(errorMessage, navigate);
+        // Handle account conflict
+        await resolveCredentialConflict(error, phoneCredential, navigate);
       } else {
-        // Handle other errors
         const errorMessage = getFirebaseErrorMessage(error);
         setErrorAndNavigate(errorMessage, navigate);
       }
     }
+  };
+
+  const resolveCredentialConflict = async (error, phoneCredential, navigate) => {
+    const email = error.customData?.email;
+
+    if (email) {
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      if (signInMethods.includes("google.com")) {
+        toast.error(
+          "This phone number is linked to a Google account. Please sign in with Google."
+        );
+        navigate(ROUTES.SIGN_IN);
+      } else {
+        toast.error("Account conflict detected. Please resolve via support.");
+      }
+    } else {
+      toast.error("Unable to resolve conflict. Please try again.");
+    }
+
+    await auth.signOut();
   };
 
   const updateUserData = async (user) => {
@@ -332,16 +337,15 @@ const useVerifyOtp = () => {
         isPhoneVerified: true,
       });
     } else {
-      // Create a new user document if it doesn't exist
+      // Create a new user document
       await setDoc(userDocRef, {
         phone_number: user.phoneNumber,
         isPhoneVerified: true,
-        typeUser: "default", // Adjust based on your user schema
-        // Add other default fields as necessary
+        typeUser: "default",
       });
     }
 
-    // Clear the reCAPTCHA verifier
+    // Clear reCAPTCHA verifier
     if (window.recaptchaVerifier) {
       window.recaptchaVerifier.clear();
       window.recaptchaVerifier = null;
@@ -359,16 +363,13 @@ const useVerifyOtp = () => {
         navigate(ROUTES.PREFERRED_ROLE);
       }
     } catch (err) {
-      console.error("Error fetching user data for navigation:", err);
+      console.error("Navigation error:", err);
       toast.error("Failed to navigate. Please try again.");
     }
   };
 
   const setErrorAndNavigate = async (errorMessage, navigate) => {
-    // Display error message
     toast.error(errorMessage);
-
-    // Sign out to prevent conflicts
     await auth.signOut();
     navigate(ROUTES.SIGN_IN);
   };
@@ -377,5 +378,3 @@ const useVerifyOtp = () => {
 };
 
 export default useVerifyOtp;
-
-
