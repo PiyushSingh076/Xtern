@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import CardList from "../Card/CarList";
 import {
   FaLaptopCode,
   FaBrush,
@@ -23,39 +24,29 @@ const professionals = [
 ];
 
 const FilterScreen = () => {
-  const [selectedProfession, setSelectedProfession] = useState("All");
+  const [selectedProfession, setSelectedProfession] = useState(null);
 
-  const filteredProfessionals =
-    selectedProfession === "All"
-      ? professionals
-      : professionals.filter((prof) => prof.name === selectedProfession);
+  const handleClick = (name) => {
+    setSelectedProfession(name);
+  };
 
   return (
     <div className="filter-container">
-      <div className="filter-dropdown">
-        <label htmlFor="profession-filter">Filter By Profession: </label>
-        <select
-          id="profession-filter"
-          value={selectedProfession}
-          onChange={(e) => setSelectedProfession(e.target.value)}
-        >
-          <option value="All">All</option>
-          {professionals.map((prof) => (
-            <option key={prof.id} value={prof.name}>
-              {prof.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="card-container">
-        {filteredProfessionals.map((prof) => (
-          <div className="card" key={prof.id}>
-            <div className="icon">{prof.icon}</div>
-            <div className="name">{prof.name}</div>
+      <div className="profession-cards">
+        {professionals.map((profession) => (
+          <div
+            key={profession.id}
+            className={`card ${
+              selectedProfession === profession.name ? "selected" : ""
+            }`}
+            onClick={() => handleClick(profession.name)}
+          >
+            <div className="icon">{profession.icon}</div>
+            <h3>{profession.name}</h3>
           </div>
         ))}
       </div>
+      <CardList profession={selectedProfession} />
     </div>
   );
 };

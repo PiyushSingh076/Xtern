@@ -1,86 +1,70 @@
-/* Main container */
+/* --------- */
+/* Main container for the profile grid */
 .filter-container {
-  font-family: Arial, sans-serif;
-  padding: 40px;
-  text-align: center;
-  background-color: #f4f7fb;
-  min-height: 100vh;
+  padding: 2rem;
+  padding-top: 10rem;
+  background-color: #f4f4f4;
+  font-family: "Roboto", sans-serif;
 }
 
-/* Filter dropdown */
-.filter-dropdown {
-  margin-bottom: 30px;
-  font-size: 16px;
-}
-
-.filter-dropdown label {
-  margin-right: 10px;
-  font-weight: bold;
-  color: #333;
-}
-
-.filter-dropdown select {
-  padding: 12px 20px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.filter-dropdown select:focus {
-  outline: none;
-  border-color: #007bff;
-}
-
-/* Card container */
-.card-container {
+/* Profession cards container */
+.profession-cards {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 25px;
-  margin-top: 20px;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+  scroll-behavior: smooth;
 }
 
-/* Individual card */
-.card {
-  width: 200px;
-  padding: 20px;
+.profession-cards .card {
+  border: 1px solid #0a65fc;
+  border-radius: 8px;
+  background-color: white;
   text-align: center;
-  border-radius: 10px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 1rem;
+  width: 180px;
+  height: 150px;
   cursor: pointer;
-  border: 1px solid #ddd;
+  transition: transform 0.3s, background-color 0.3s, color 0.3s;
 }
 
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+.profession-cards .card h3 {
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
 }
 
-.card .icon {
-  font-size: 50px;
-  color: #4caf50;
-  margin-bottom: 10px;
+.profession-cards .card:hover {
+  transform: scale(1.05);
 }
 
-.card .name {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
+.profession-cards .card.selected {
+  background-color: #0a65fc;
+  color: white;
 }
 
-/* Mobile responsiveness */
-/* @media (max-width: 768px) {
-  .card-container {
-    flex-direction: column;
-    align-items: center;
+.profession-cards .card .icon {
+  font-size: 2rem;
+  margin-bottom: 0.3rem;
+}
+
+@media (max-width: 480px) {
+  .filter-container {
+    padding: 0.5rem;
   }
 
-  .card {
-    width: 90%;
-    margin-bottom: 20px;
+  .profession-cards .card {
+    width: 120px;
+    height: 100px;
+    padding: 0.5rem;
   }
-} */
+
+  .profession-cards .card h3 {
+    font-size: 1rem;
+  }
+
+  .profession-cards .card .icon {
+    font-size: 1.2rem;
+  }
+}

@@ -21,7 +21,9 @@ import DesktopPrefferedServiceIntern from "./pages/Desktop/Prefference/PrefferSe
 import DesktopPrefferServiceVenture from "./pages/Desktop/Prefference/PrefferServiceVenture.jsx";
 import DesktopPrefferServiceMentor from "./pages/Desktop/Prefference/PrefferServiceMentor.jsx";
 import DesktopAllProjects from "./pages/Desktop/ProjectDetail/AllProjects.jsx";
-import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx";
+import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iffat
+// import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
+import DesktopCard from "./pages/Desktop/Card/CarList.jsx";
 
 // Mobile View
 import UserType from "./pages/UserType.jsx";
@@ -134,7 +136,8 @@ function App() {
     <div className="App">
       {!isMobileView && <Header />}
       {isMobileView && <MobHeader />}
-      {isMobileView && <div style={{height: '50px'}}></div>}
+      {isMobileView && <div style={{ height: "50px" }}></div>}
+      {/* {!isMobileView && <div style={{ height: "90px" }}></div>} */}
       <Toaster />
       <Routes>
         {/* Public Routes */}
@@ -171,6 +174,12 @@ function App() {
         />
         {/*iffat*/}
         <Route path={ROUTES.FILTER_SCREEN} element={<DesktopFilterScreen />} />
+        <Route path={ROUTES.CARD_DESIGN} element={<DesktopCard />} />
+
+        {/* <Route
+          path={ROUTES.PROFESSIONAL_PROFILE}
+          element={<DesktopProfileDetails />}
+        /> */}
 
         <Route
           path={ROUTES.INTERN}
@@ -270,13 +279,12 @@ function App() {
           }
         />
 
-
-<Route
-path={ROUTES.USER_TYPE}
-element= {
-  isMobileView ? <UserType/>: <div>This Page only for Mobile</div>
-}
-/>
+        <Route
+          path={ROUTES.USER_TYPE}
+          element={
+            isMobileView ? <UserType /> : <div>This Page only for Mobile</div>
+          }
+        />
         <Route
           path={ROUTES.BUSINESS}
           element={

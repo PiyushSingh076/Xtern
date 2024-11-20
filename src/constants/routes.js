@@ -1,6 +1,5 @@
 // Define all the route paths as constants
 export const ROUTES = {
- 
   SIGN_UP: "/signup",
   SIGN_IN: "/signin",
   APPLY_PROJECT: "/applyproject",
@@ -12,7 +11,7 @@ export const ROUTES = {
   VERIFY_SCREEN: "/verifyscreen",
   NOTIFICATION_ALLOW: "/notificationallow",
   PREFERRED_ROLE: "/preferredrole",
-  USER_TYPE: '/usertype',
+  USER_TYPE: "/usertype",
   INTERN: "/intern",
   VENTURE: "/venture",
   MENTOR: "/mentor",
@@ -59,4 +58,6 @@ export const ROUTES = {
   APPLY_INTERNSHIP: "/applyinternship",
   USER_PROFILE: "/userprofile",
   FILTER_SCREEN: "/filterscreen", //Iffat
+  // PROFESSIONAL_PROFILE: "/professionalProfile/:profession",
+  CARD_DESIGN: "/cardDesign",
 };
