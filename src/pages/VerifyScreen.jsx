@@ -60,7 +60,7 @@ const VerifyScreen = () => {
     }
 
     // Verify OTP
-    await verifyOtp(otp, setError, navigate);
+    await verifyOtp(otp, ph, setError, navigate);
   };
 
   const handleResendOtp = async () => {
