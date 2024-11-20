@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { PhoneAuthProvider, linkWithCredential } from "firebase/auth";
+import {
+  PhoneAuthProvider,
+  linkWithCredential,
+  updatePhoneNumber,
+} from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { auth, db } from "../../firebaseConfig";
@@ -18,6 +22,9 @@ const useVerifyOtp = () => {
    */
   const verifyOtp = async (otp, newPhoneNumber, setError, navigate) => {
     setLoading(true);
+
+    let phoneCredential; // Declare `phoneCredential` for reuse across blocks
+
     try {
       const confirmationResult = window.confirmationResult;
 
@@ -28,7 +35,7 @@ const useVerifyOtp = () => {
       }
 
       // Create phone credential using OTP
-      const phoneCredential = PhoneAuthProvider.credential(
+      phoneCredential = PhoneAuthProvider.credential(
         confirmationResult.verificationId,
         otp
       );
@@ -44,7 +51,7 @@ const useVerifyOtp = () => {
       // Attempt to link phone number to the authenticated user
       await linkWithCredential(user, phoneCredential);
 
-      // Manually update Firestore with the verified phone number
+      // Update Firestore with the verified phone number
       const userDocRef = doc(db, "users", user.uid);
       await updateDoc(userDocRef, {
         phone_number: phoneCredential.phoneNumber || user.phoneNumber,
@@ -57,7 +64,6 @@ const useVerifyOtp = () => {
       console.error("Error verifying OTP:", error);
 
       if (error.code === "auth/provider-already-linked") {
-        // If the provider is already linked, update Firestore with the new phone number
         try {
           const user = auth.currentUser;
 
@@ -67,11 +73,19 @@ const useVerifyOtp = () => {
             );
           }
 
+          if (!newPhoneNumber) {
+            throw new Error("New phone number is required to update Firestore.");
+          }
+
+          // Update Firestore with the new phone number
           const userDocRef = doc(db, "users", user.uid);
           await updateDoc(userDocRef, {
-            phone_number: newPhoneNumber || user.phoneNumber,
+            phone_number: newPhoneNumber,
             isPhoneVerified: true,
           });
+
+          // Update phone number in Firebase Auth
+          await updatePhoneNumber(user, phoneCredential);
 
           toast.success(
             "Phone number provider already linked. Firestore updated successfully!"
@@ -109,12 +123,9 @@ const useVerifyOtp = () => {
         "This phone number is already linked to your account.",
       "auth/account-exists-with-different-credential":
         "This phone number is linked to a different account. Please sign in with that account.",
-      // Add more mappings as needed
     };
 
-    return (
-      errorMap[error.code] || error.message || "An unexpected error occurred."
-    );
+    return errorMap[error.code] || error.message || "An unexpected error occurred.";
   };
 
   return { verifyOtp, loading };
