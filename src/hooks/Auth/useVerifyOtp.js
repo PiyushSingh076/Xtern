@@ -39,13 +39,6 @@ const useVerifyOtp = () => {
         );
       }
 
-      // Check if the phone number is already linked
-      if (user.phoneNumber) {
-        toast.success("Phone number is already linked to your account.");
-        navigate("/");
-        return;
-      }
-
       // Link phone number to the authenticated user
       await linkWithCredential(user, phoneCredential);
 
@@ -60,6 +53,11 @@ const useVerifyOtp = () => {
       navigate("/"); // Redirect to dashboard or home page
     } catch (error) {
       console.error("Error verifying OTP:", error);
+      if (error.code === "auth/provider-already-linked") {
+        toast.success("This phone number is already linked to your account.");
+        navigate("/"); // Redirect to dashboard or home page
+        return;
+      }
       const errorMessage = getFirebaseErrorMessage(error);
       setError(errorMessage);
       toast.error(errorMessage);
@@ -81,8 +79,6 @@ const useVerifyOtp = () => {
       "auth/code-expired": "The OTP has expired. Please request a new one.",
       "auth/credential-already-in-use":
         "This phone number is already linked to another account.",
-      "auth/provider-already-linked":
-        "This phone number is already linked to your account.",
       "auth/account-exists-with-different-credential":
         "This phone number is linked to a different account. Please sign in with that account.",
       // Add more mappings as needed
@@ -98,6 +94,112 @@ const useVerifyOtp = () => {
 
 export default useVerifyOtp;
 
+
+
+// import { useState } from "react";
+// import { PhoneAuthProvider, linkWithCredential } from "firebase/auth";
+// import { doc, updateDoc } from "firebase/firestore";
+// import toast from "react-hot-toast";
+// import { auth, db } from "../../firebaseConfig";
+
+// const useVerifyOtp = () => {
+//   const [loading, setLoading] = useState(false);
+
+//   /**
+//    * Verifies OTP and links phone number to the current authenticated user.
+//    *
+//    * @param {string} otp - The OTP entered by the user.
+//    * @param {function} setError - Function to set error messages.
+//    * @param {function} navigate - Function to navigate to different routes.
+//    */
+//   const verifyOtp = async (otp, setError, navigate) => {
+//     setLoading(true);
+//     try {
+//       const confirmationResult = window.confirmationResult;
+
+//       if (!confirmationResult) {
+//         throw new Error(
+//           "No confirmation result available. Please request a new OTP."
+//         );
+//       }
+
+//       // Create phone credential using OTP
+//       const phoneCredential = PhoneAuthProvider.credential(
+//         confirmationResult.verificationId,
+//         otp
+//       );
+
+//       const user = auth.currentUser;
+
+//       if (!user) {
+//         throw new Error(
+//           "No authenticated user found. Please sign in with your account first."
+//         );
+//       }
+
+//       // Check if the phone number is already linked
+//       if (user.phoneNumber) {
+//         toast.success("Phone number is already linked to your account.");
+//         navigate("/");
+//         return;
+//       }
+
+//       // Link phone number to the authenticated user
+//       await linkWithCredential(user, phoneCredential);
+
+//       // Manually update Firestore with the verified phone number
+//       const userDocRef = doc(db, "users", user.uid);
+//       await updateDoc(userDocRef, {
+//         phone_number: phoneCredential.phoneNumber || user.phoneNumber,
+//         isPhoneVerified: true,
+//       });
+
+//       toast.success("Phone number verified and linked successfully!");
+//       navigate("/"); // Redirect to dashboard or home page
+//     } catch (error) {
+//       console.error("Error verifying OTP:", error);
+//       const errorMessage = getFirebaseErrorMessage(error);
+//       setError(errorMessage);
+//       toast.error(errorMessage);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Maps Firebase error codes to user-friendly messages.
+//    *
+//    * @param {object} error - The Firebase error object.
+//    * @returns {string} - A user-friendly error message.
+//    */
+//   const getFirebaseErrorMessage = (error) => {
+//     const errorMap = {
+//       "auth/invalid-verification-code":
+//         "The OTP you entered is invalid. Please try again.",
+//       "auth/code-expired": "The OTP has expired. Please request a new one.",
+//       "auth/credential-already-in-use":
+//         "This phone number is already linked to another account.",
+//       "auth/provider-already-linked":
+//         "This phone number is already linked to your account.",
+//       "auth/account-exists-with-different-credential":
+//         "This phone number is linked to a different account. Please sign in with that account.",
+//       // Add more mappings as needed
+//     };
+
+//     return (
+//       errorMap[error.code] || error.message || "An unexpected error occurred."
+//     );
+//   };
+
+//   return { verifyOtp, loading };
+// };
+
+// export default useVerifyOtp;
+
+
+
+
+// --------------------------------------------//// -------------------------- ////// ------------------------
 // // hooks/useVerifyOtp.js
 // import { useState } from "react";
 // import {
