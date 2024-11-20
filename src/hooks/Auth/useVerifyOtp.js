@@ -74,7 +74,7 @@ const useVerifyOtp = () => {
           });
 
           toast.success(
-            "Phone number already linked. Firestore updated successfully!"
+            "Phone number provider already linked. Firestore updated successfully!"
           );
           navigate("/"); // Redirect to dashboard or home page
         } catch (firestoreError) {
@@ -121,7 +121,6 @@ const useVerifyOtp = () => {
 };
 
 export default useVerifyOtp;
-
 
 // import { useState } from "react";
 // import { PhoneAuthProvider, linkWithCredential } from "firebase/auth";
