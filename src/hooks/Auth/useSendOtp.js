@@ -6,7 +6,6 @@ import { auth } from "../../firebaseConfig";
 
 const useSendOtp = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   /**
    * Initializes the reCAPTCHA verifier if it's not already initialized.
@@ -37,14 +36,24 @@ const useSendOtp = () => {
    * @param {string} phoneNumber - The user's phone number in international format (e.g., +1234567890).
    * @returns {Promise<void>}
    */
-  const sendOtp = async (phoneNumber, setShowOTP) => {
+  const sendOtp = async (phoneNumber, setShowOTP, setError, navigate) => {
     setLoading(true);
     setError("");
 
     try {
       // Initialize reCAPTCHA
       initializeRecaptcha();
+      const user = auth.currentUser;
 
+      if (!user) {
+        toast.error(
+          "No authenticated user found. Please sign in with your account first."
+        );
+        navigate("/");
+        throw new Error(
+          "No authenticated user found. Please sign in with your account first."
+        );
+      }
       const formattedPhone = phoneNumber.startsWith("+")
         ? phoneNumber
         : `+${phoneNumber}`; // Ensure phone number is in international format
@@ -75,8 +84,12 @@ const useSendOtp = () => {
             toast.error("Please enter a phone number.");
             break;
           case "auth/quota-exceeded":
-            setError("You have exceeded the OTP request limit. Please try again later.");
-            toast.error("You have exceeded the OTP request limit. Please try again later.");
+            setError(
+              "You have exceeded the OTP request limit. Please try again later."
+            );
+            toast.error(
+              "You have exceeded the OTP request limit. Please try again later."
+            );
             break;
           default:
             setError("Failed to send OTP. Please try again.");
@@ -103,7 +116,7 @@ const useSendOtp = () => {
     };
   }, []);
 
-  return { sendOtp, loading, error };
+  return { sendOtp, loading };
 };
 
 export default useSendOtp;
