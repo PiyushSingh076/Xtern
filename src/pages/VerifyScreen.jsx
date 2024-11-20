@@ -60,7 +60,7 @@ const VerifyScreen = () => {
     }
 
     // Verify OTP
-    await verifyOtp(otp, ph, setError, navigate);
+ await verifyOtp(otp, ph, setError, navigate);
   };
 
   const handleResendOtp = async () => {
@@ -68,7 +68,7 @@ const VerifyScreen = () => {
     setOtp("");
     setError("");
     await resetRecaptcha(); // Reset Recaptcha before resending OTP
-    await sendOtp(ph, setShowOTP, setError); // Resend OTP
+      await sendOtp(ph, setShowOTP, navigate, setError, navigate);  // Resend OTP
   };
 
   const handleBackClick = () => {
