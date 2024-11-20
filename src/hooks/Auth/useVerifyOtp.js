@@ -9,12 +9,14 @@ const useVerifyOtp = () => {
 
   /**
    * Verifies OTP and links phone number to the current authenticated user.
+   * If the phone number provider is already linked, updates the Firestore DB with the new number.
    *
    * @param {string} otp - The OTP entered by the user.
+   * @param {string} newPhoneNumber - The new phone number to update in Firestore.
    * @param {function} setError - Function to set error messages.
    * @param {function} navigate - Function to navigate to different routes.
    */
-  const verifyOtp = async (otp, setError, navigate) => {
+  const verifyOtp = async (otp, newPhoneNumber, setError, navigate) => {
     setLoading(true);
     try {
       const confirmationResult = window.confirmationResult;
@@ -39,7 +41,7 @@ const useVerifyOtp = () => {
         );
       }
 
-      // Link phone number to the authenticated user
+      // Attempt to link phone number to the authenticated user
       await linkWithCredential(user, phoneCredential);
 
       // Manually update Firestore with the verified phone number
@@ -53,11 +55,35 @@ const useVerifyOtp = () => {
       navigate("/"); // Redirect to dashboard or home page
     } catch (error) {
       console.error("Error verifying OTP:", error);
+
       if (error.code === "auth/provider-already-linked") {
-        toast.success("This phone number is already linked to your account.");
-        navigate("/"); // Redirect to dashboard or home page
+        // If the provider is already linked, update Firestore with the new phone number
+        try {
+          const user = auth.currentUser;
+
+          if (!user) {
+            throw new Error(
+              "No authenticated user found. Please sign in with your account first."
+            );
+          }
+
+          const userDocRef = doc(db, "users", user.uid);
+          await updateDoc(userDocRef, {
+            phone_number: newPhoneNumber || user.phoneNumber,
+            isPhoneVerified: true,
+          });
+
+          toast.success(
+            "Phone number already linked. Firestore updated successfully!"
+          );
+          navigate("/"); // Redirect to dashboard or home page
+        } catch (firestoreError) {
+          console.error("Error updating Firestore:", firestoreError);
+          toast.error("Failed to update phone number in Firestore.");
+        }
         return;
       }
+
       const errorMessage = getFirebaseErrorMessage(error);
       setError(errorMessage);
       toast.error(errorMessage);
@@ -79,6 +105,8 @@ const useVerifyOtp = () => {
       "auth/code-expired": "The OTP has expired. Please request a new one.",
       "auth/credential-already-in-use":
         "This phone number is already linked to another account.",
+      "auth/provider-already-linked":
+        "This phone number is already linked to your account.",
       "auth/account-exists-with-different-credential":
         "This phone number is linked to a different account. Please sign in with that account.",
       // Add more mappings as needed
@@ -93,7 +121,6 @@ const useVerifyOtp = () => {
 };
 
 export default useVerifyOtp;
-
 
 
 // import { useState } from "react";
