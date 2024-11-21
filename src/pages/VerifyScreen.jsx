@@ -102,7 +102,7 @@ const VerifyScreen = () => {
       <section id="verify-screen">
         <div className="container">
           <div className="verify-screen-wrap">
-            <div className="forget-password-screen-top mt-32">
+            <div className="forget-password-screen-top mt-32 pt-4">
               {showOTP ? (
                 <>
                   <p className="title-sec">Enter your OTP</p>
