@@ -60,4 +60,5 @@ export const ROUTES = {
   FILTER_SCREEN: "/filterscreen", //Iffat
   // PROFESSIONAL_PROFILE: "/professionalProfile/:profession",
   CARD_DESIGN: "/cardDesign",
+  STEPPER_FORM: '/userdetail'
 };

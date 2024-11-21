@@ -24,6 +24,7 @@ import DesktopAllProjects from "./pages/Desktop/ProjectDetail/AllProjects.jsx";
 import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iffat
 // import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
 import DesktopCard from "./pages/Desktop/Card/CarList.jsx";
+import DesktopStepperForm from './pages/Desktop/StepperForm/index.jsx'
 
 // Mobile View
 import UserType from "./pages/UserType.jsx";
@@ -137,7 +138,7 @@ function App() {
       {!isMobileView && <Header />}
       {isMobileView && <MobHeader />}
       {isMobileView && <div style={{ height: "50px" }}></div>}
-      {/* {!isMobileView && <div style={{ height: "90px" }}></div>} */}
+      {!isMobileView && <div style={{ height: "90px" }}></div>}
       <Toaster />
       <Routes>
         {/* Public Routes */}
@@ -222,6 +223,11 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+<Route
+path={ROUTES.STEPPER_FORM}
+element={<DesktopStepperForm/>}/>
+
         <Route
           path={ROUTES.CREATE_JOB}
           element={
