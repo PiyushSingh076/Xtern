@@ -1,3 +1,4 @@
+// OtpInputGroup.js
 import React, { useEffect, useRef, useState } from "react";
 
 const OtpInputGroup = ({ length = 6, onComplete }) => {
@@ -14,12 +15,14 @@ const OtpInputGroup = ({ length = 6, onComplete }) => {
       const newOtpValues = [...otpValues];
       newOtpValues[index] = value;
       setOtpValues(newOtpValues);
+
       // Focus the next input
       if (index < length - 1) {
         inputsRef.current[index + 1].focus();
       }
-      // If last input, trigger the onComplete callback
-      if (index === length - 1 && newOtpValues.join("").length === length) {
+
+      // Check if all inputs are filled
+      if (newOtpValues.every((val) => val !== "")) {
         onComplete(newOtpValues.join(""));
       }
     }
@@ -39,15 +42,42 @@ const OtpInputGroup = ({ length = 6, onComplete }) => {
     }
   };
 
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData("text").trim();
+    if (/^\d+$/.test(pasteData) && pasteData.length === length) {
+      const pasteValues = pasteData.split("");
+      setOtpValues(pasteValues);
+
+      // Update each input's value
+      pasteValues.forEach((digit, idx) => {
+        if (inputsRef.current[idx]) {
+          inputsRef.current[idx].value = digit;
+        }
+      });
+
+      onComplete(pasteData);
+
+      // Optionally, focus the last input
+      inputsRef.current[length - 1]?.focus();
+    } else {
+      // Optionally, you can handle invalid paste data here
+      console.error("Invalid OTP pasted");
+    }
+  };
+
   return (
-    <div className="digit-group otp-section">
-      {otpValues.map((_, index) => (
+    <div
+      className="digit-group otp-section"
+      onPaste={handlePaste} // Attach onPaste handler to the container
+    >
+      {otpValues.map((value, index) => (
         <input
           key={index}
           className="form-control otp"
           type="text"
           maxLength="1"
-          value={otpValues[index]}
+          value={value}
           ref={(el) => (inputsRef.current[index] = el)}
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
