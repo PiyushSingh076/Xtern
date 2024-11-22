@@ -18,13 +18,16 @@ export default function MobHeader() {
 
   return (
     <div className='mob-header-container' style={{border: isOpen && 'none' }}>
-      <div className='back-btn-container'></div>
-      <div className='Logo-container'><span style={{color: '#0d6efd' , fontSize: '22px'}}>X</span>pert</div>
+     
       <div className='menu-btn-container'>
         <button className='menu-btn' onClick={handleMenuClick}>
           <img src={isOpen ? close : menu} width={'20px'}/>
         </button>
       </div>
+      <div className='Logo-container'><span style={{color: '#0d6efd' , fontSize: '22px'}}>X</span>pert</div>
+
+      <div className='back-btn-container'></div>
+   
       {isOpen && (
         <div className='side-menu'>
              <div>

@@ -46,14 +46,14 @@ export default function LandingPage() {
                <h1 className='domains-title'>Xpert</h1>
 
 
-               <button 
+               {/* <button 
                onClick={()=>navigate(ROUTES.USER_TYPE)}
-               style={{ marginTop: '20px' , marginBottom: '10px' ,  width: '250px' , height: '60px' }} className="become-xpert-btn"><h4 className="become-xpert-title">Become Xpert</h4> <span className="become-xpert-subtitle">Become Top Quality Xperts</span></button>
+               style={{ marginTop: '20px' , marginBottom: '10px' ,  width: '250px' , height: '60px' }} className="become-xpert-btn"><h4 className="become-xpert-title">Become Xpert</h4> <span className="become-xpert-subtitle">Become Top Quality Xperts</span></button> */}
 
 
                <button 
                 onClick={()=>navigate(ROUTES.SIGN_IN)}
-               style={{marginBottom: '10px' ,  width: '250px' , height: '60px' }}  className="hire-xperts-btn"><h4 className="hire-xpert-title">Organization</h4> <span className="hire-xpert-subtitle">Hire Top Quality Xperts</span></button>
+               style={{marginBottom: '5px' ,  width: '250px' , height: '60px' , marginTop: '20px'}}  className="hire-xperts-btn"><h4 className="hire-xpert-title">Get Started</h4> <span className="hire-xpert-subtitle">Top Quality Xperts</span></button>
            
 
                <div className='mob-expert-count-section'>

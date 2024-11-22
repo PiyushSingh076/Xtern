@@ -20,6 +20,21 @@
 
 }
 
+
+.profile-container{
+  width: 130px;
+  height: 50px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between
+
+}
+
+
 .logo-search-container{
   display: flex;
   flex-direction: row;
