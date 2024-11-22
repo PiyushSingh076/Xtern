@@ -52,7 +52,7 @@ export default function Homepage() {
               <div style={{ fontSize: "28px", color: "red" }}>Loading...</div>
             ) : (
               <div className="bad-request">
-                <span>ā Sorry! your E-mail not register as Organisation</span>
+                <span>Sorry! your E-mail not register as Organisation</span>
 
                 <button onClick={handleLogout}>Try Another Account</button>
               </div>

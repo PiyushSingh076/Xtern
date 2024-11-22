@@ -29,7 +29,7 @@ export default function LandingBanner({ pop, setRole }) {
           <h1 className="domains-title">Xpert</h1>
 
           <div className="hire-btns-container">
-            <button
+            {/* <button
               onClick={() => {
                 pop(true);
                 setRole("Bxpert");
@@ -40,7 +40,7 @@ export default function LandingBanner({ pop, setRole }) {
               <span className="become-xpert-subtitle">
                 Become Top Quality Xperts
               </span>
-            </button>
+            </button> */}
             <button
               onClick={() => {
                 pop(true);
@@ -48,9 +48,9 @@ export default function LandingBanner({ pop, setRole }) {
               }}
               className="hire-xperts-btn"
             >
-              <h4 className="hire-xpert-title">Organization</h4>{" "}
+              <h4 className="hire-xpert-title">Get Started</h4>{" "}
               <span className="hire-xpert-subtitle">
-                Hire Top Quality Xperts
+                Top Quality Xperts
               </span>
             </button>
           </div>

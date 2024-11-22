@@ -27,7 +27,7 @@
   min-width: 150px; /* Ensure cards are a consistent size */
   height: 150px;
   cursor: pointer;
-  transition: transform 0.3s, background-color 0.3s, color 0.3s;
+  transition: transform 0.2s, background-color 0.3s, color 0.3s;
 }
 
 .profession-cards .card h3 {
@@ -45,7 +45,7 @@
 }
 
 .profession-cards .card .icon {
-  font-size: 1.5rem; /* Adjust icon size */
+  font-size: 2.5rem; /* Adjust icon size */
   margin-bottom: 0.5rem;
 }
 

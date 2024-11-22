@@ -5,9 +5,15 @@ import { Route, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../constants/routes';
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
+import { useSelector } from 'react-redux';
 
 
 export default function Header() {
+
+  const data = useSelector((state)=> state.user);
+  const isDetailEmpty = Object.keys(data.detail).length === 0;
+
+  console.log(data, 'll')
 
   const { userData, loading, error } = useFetchUserData();
   const { handleLogout, loading: logoutloading } = useOAuthLogout(); // Use the logout hook
@@ -31,9 +37,9 @@ export default function Header() {
         </div>  */}
       </div>
 
-      <div className="internships-jobs-option-container">
-        <ul className="options-list">
-          <li 
+      {/* <div className="internships-jobs-option-container"> */}
+        {/* <ul className="options-list"> */}
+          {/* <li 
             className={`option-item ${optionActive === 'Learn' ? 'active' : ''}`} 
             onClick={() => handleOptionClick('Learn')}
           >
@@ -70,7 +76,7 @@ export default function Header() {
             onClick={() => handleOptionClick('Mentorship')}
           >
             Contact us
-          </li>
+          </li> */}
 
       {/* {  !userData &&  (<li className="option-item-button">
             <button onClick={()=>navigate(ROUTES.SIGN_IN)} className="option-button-login">Login</button>
@@ -82,7 +88,7 @@ export default function Header() {
             </button>
           </li> */}
         
-        </ul>
+        {/* </ul> */}
 {/* 
         {userData && (
             <div
@@ -97,11 +103,20 @@ export default function Header() {
           )
 
           } */}
-      </div>
+      {/* </div> */}
 
       <div className='hire-btns'>
-      {/* {!userData && <button className='hire-xpert-btn'>Hire Xpert</button>}
-       {!userData && <button className='hire-xtern-btn'>Hire Xtern</button>} */}
+  {!userData && <button 
+  onClick={()=>{navigate(ROUTES.SIGN_IN)}}
+  className='hire-xpert-btn'>Log in</button>}
+  {
+     !isDetailEmpty &&
+    <div className='profile-container'>
+          <img src={data.detail.profileImage} width={'30px'} style={{borderRadius: '50%'}}/>
+          {data.detail.expertise} 
+    </div>
+  }
+     
        {userData && <button onClick={handleLogout} className='hire-xpert-btn'>Log Out</button>}
       </div>
     </div>

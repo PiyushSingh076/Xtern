@@ -2,11 +2,20 @@ import React, { useState } from "react";
 import "./Form.css";
 import { FiTrash } from "react-icons/fi";
 import { State, City } from "country-state-city";
+import { useDispatch } from "react-redux";
+import { setDetail } from "../../../Store/Slice/UserDetail";
+import { Route, useNavigate } from "react-router-dom";
+import { ROUTES } from "../../../constants/routes";
 
 export default function StepperForm() {
 
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
 
-    const [step, setStep] = useState(1);
+  
+    //Form Detail Elements
+
+   
     const [FirstName , setFirstName] = useState('')
     const [LastName , setLastName] = useState('')
     const [Xpert , setXpert] = useState(null)
@@ -14,17 +23,25 @@ export default function StepperForm() {
     const [profileImg , setProfileImg] = useState(null)
     const [selectedState, setSelectedState] = useState(""); 
     const [cities, setCities] = useState([]); 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalType, setModalType] = useState("");
-
+    const [selectedCity, setSelectedCity] = useState('')
     const[Education , setEducation] = useState([])
     const[Work , setWork] = useState([])
     const[Skills , setSkills] = useState([])
     const[Projects , setProjects] = useState([])
     const [Services , setServices] = useState([])
+    const [ConsultingPrice , setConsultingPrice] = useState(null)
+    const [ConsultingDuration , setConsultingDuration] = useState(null)
+    const [ConsultingDurationType , setConsultingDeurationType] = useState(null)
 
     console.log(Work ,'Work')
 
+
+
+   //Flow control
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalType, setModalType] = useState("");
+    const [step, setStep] = useState(1);
 
     const handleProfileImage = (event) =>{
         const file = event.target.files[0];
@@ -33,6 +50,55 @@ export default function StepperForm() {
           reader.onload = () => setProfileImg(reader.result);
           reader.readAsDataURL(file);
         }
+    }
+
+
+    const handleSubmitInfo = () => {
+       
+        if (FirstName && LastName && Xpert && Experience && selectedState && profileImg && cities) {
+            alert('clicked')
+           let data = {
+                "firstName": FirstName
+                , "lastName": LastName
+                , "expertise": Xpert
+                , "experience": Experience
+                , "profileImage": profileImg
+                , "state": selectedState
+                , "city": selectedCity
+                , 'education' : Education
+                , 'work' : Work
+                , 'skills' : Skills
+                , 'projects' : Projects
+                , 'services' : Services
+                , 'consultingPrice' : ConsultingPrice
+                , 'consultingDuration' : ConsultingDuration
+                , 'consultingDurationType' : ConsultingDurationType
+
+                
+            }
+
+            console.log('excute here...')
+            console.log(data)
+            dispatch(setDetail(data))
+            navigate(ROUTES.HOME_SCREEN)
+        
+        }
+
+        else{
+        
+       
+{FirstName === '' && alert('First Name is required')}
+{LastName === '' && alert('Last Name is required')}
+{Xpert === null && alert('Xpert Type is required')}
+{Experience === null && alert('Years of Experience is required')}
+{selectedState === '' && alert('State is required')}
+{profileImg === null && alert('Profile Image is required')}
+{cities.length === 0 && alert('City is required')}
+
+
+            
+        }
+
     }
 
     const handleSubmit = (e) => {
@@ -217,7 +283,9 @@ const degrees = [
                             </select>
 
                             {/* City Dropdown */}
-                            <select disabled={!selectedState}>
+                            <select 
+                            onChange={(e) => setSelectedCity(e.target.value)}
+                            disabled={!selectedState}>
                                 <option value="">Select a City</option>
                                 {cities.map((city) => (
                                     <option key={city.id} value={city.name}>
@@ -241,7 +309,9 @@ const degrees = [
 
                         <span className="label-title">Years Of Experience:</span>
                         <div className="xpert-type-section">
-                           <select style={{width: '100%'}}>
+                           <select
+                           onChange={(e) => setExperience(e.target.value)}
+                            style={{width: '100%'}}>
                             <option value="">Select Year of Experience</option>
                             {[1,2,3,4,5,6,7,8,9,10].map((items)=>(
                               <option key={items.id} value={items.name}>{items}</option>
@@ -380,11 +450,20 @@ const degrees = [
                         <span className="label-title">Consulting Charges</span>
                    </div>
                     <div className="add-offering-section">
-                        <input type="text" placeholder="Price in Rs." className="input-price"/>
+                        <input
+                        value={ConsultingPrice}
+                        onChange={(e) => setConsultingPrice(e.target.value)}
+                         type="text" placeholder="Price in Rs." className="input-price"/>
                         <span style={{width: '40px', textAlign: 'center'}}>For </span>
 
-                        <input type="text" placeholder="time" />
-                         <select style={{marginLeft: '3px'}}>
+                        <input
+                        value={ConsultingDuration}
+                        onChange={(e) => setConsultingDuration(e.target.value)}
+                         type="text" placeholder="time" />
+                         <select
+                         value={ConsultingDurationType}
+                         onChange={(e) => setConsultingDeurationType(e.target.value)}
+                          style={{marginLeft: '3px'}}>
                             <option value="per hour">per hour</option>
                             <option value="per day">per day</option>
                             <option value="per week">per week</option>
@@ -426,7 +505,12 @@ const degrees = [
 
 
 
-                    
+                     <button
+                    className="next-step-btn"
+                    onClick={handleSubmitInfo}
+                    >
+                        Submit
+                    </button>
             </div>}
             </div>
 
