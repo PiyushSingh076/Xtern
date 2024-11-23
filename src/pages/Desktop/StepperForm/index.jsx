@@ -1,23 +1,48 @@
 import React, { useState } from "react";
-import "./Form.css";
+import {
+  Box,
+  Grid,
+  Avatar,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Button,
+  Stepper,
+  Step,
+  StepLabel,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+} from "@mui/material";
 import { FiTrash } from "react-icons/fi";
 import { State, City } from "country-state-city";
 import { useDispatch } from "react-redux";
 import { setDetail } from "../../../Store/Slice/UserDetail";
-import { Route, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
 import LinkedInFetcher from "../../Teams/LinkedInFetcher";
+import CloseIcon from "@mui/icons-material/Close";
+import ClearIcon from "@mui/icons-material/Clear";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 export default function StepperForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  //Form Detail Elements
-
+  // Form Detail Elements
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
-  const [Xpert, setXpert] = useState(null);
-  const [Experience, setExperience] = useState(null);
+  const [Xpert, setXpert] = useState("");
+  const [Experience, setExperience] = useState("");
   const [profileImg, setProfileImg] = useState(null);
   const [selectedState, setSelectedState] = useState("");
   const [cities, setCities] = useState([]);
@@ -27,18 +52,18 @@ export default function StepperForm() {
   const [Skills, setSkills] = useState([]);
   const [Projects, setProjects] = useState([]);
   const [Services, setServices] = useState([]);
-  const [ConsultingPrice, setConsultingPrice] = useState(null);
-  const [ConsultingDuration, setConsultingDuration] = useState(null);
-  const [ConsultingDurationType, setConsultingDeurationType] = useState(null);
+  const [ConsultingPrice, setConsultingPrice] = useState("");
+  const [ConsultingDuration, setConsultingDuration] = useState("");
+  const [ConsultingDurationType, setConsultingDurationType] = useState("");
 
-  console.log(Work, "Work");
-
-  //Flow control
-
+  // Flow control
+  const [activeStep, setActiveStep] = useState(0);
+  const steps = ["Profile", "Offering"];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
-  const [step, setStep] = useState(1);
+  const [isLinkedInFetched, setIsLinkedInFetched] = useState(false); // Flag to check if LinkedIn data is fetched
 
+  // Handle Profile Image Upload
   const handleProfileImage = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -48,6 +73,78 @@ export default function StepperForm() {
     }
   };
 
+  // Clear Profile Image
+  const clearProfileImage = () => {
+    setProfileImg(null);
+  };
+
+  // Handle State Change
+  const handleStateChange = (stateCode) => {
+    setSelectedState(stateCode);
+    const stateCities = City.getCitiesOfState("IN", stateCode);
+    setCities(stateCities);
+    setSelectedCity("");
+  };
+
+  // Open Modal
+  const openModal = (type) => {
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
+  // Close Modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalType("");
+  };
+
+  // Save Detail
+  const saveDetail = (type, data) => {
+    switch (type.toLowerCase()) {
+      case "education":
+        setEducation([...Education, data]);
+        break;
+      case "work":
+        setWork([...Work, data]);
+        break;
+      case "skill":
+        setSkills([...Skills, data]);
+        break;
+      case "project":
+        setProjects([...Projects, data]);
+        break;
+      case "service":
+        setServices([...Services, data]);
+        break;
+      default:
+        console.error("Invalid type");
+    }
+  };
+
+  // Delete Detail
+  const deleteDetail = (type, index) => {
+    switch (type.toLowerCase()) {
+      case "education":
+        setEducation(Education.filter((_, i) => i !== index));
+        break;
+      case "work":
+        setWork(Work.filter((_, i) => i !== index));
+        break;
+      case "skill":
+        setSkills(Skills.filter((_, i) => i !== index));
+        break;
+      case "project":
+        setProjects(Projects.filter((_, i) => i !== index));
+        break;
+      case "service":
+        setServices(Services.filter((_, i) => i !== index));
+        break;
+      default:
+        console.error("Invalid type");
+    }
+  };
+
+  // Handle Form Submission
   const handleSubmitInfo = () => {
     if (
       FirstName &&
@@ -56,9 +153,8 @@ export default function StepperForm() {
       Experience &&
       selectedState &&
       profileImg &&
-      cities
+      selectedCity
     ) {
-      alert("clicked");
       let data = {
         firstName: FirstName,
         lastName: LastName,
@@ -77,113 +173,36 @@ export default function StepperForm() {
         consultingDurationType: ConsultingDurationType,
       };
 
-      console.log("excute here...");
-      console.log(data);
       dispatch(setDetail(data));
       navigate(ROUTES.HOME_SCREEN);
     } else {
-      {
-        FirstName === "" && alert("First Name is required");
-      }
-      {
-        LastName === "" && alert("Last Name is required");
-      }
-      {
-        Xpert === null && alert("Xpert Type is required");
-      }
-      {
-        Experience === null && alert("Years of Experience is required");
-      }
-      {
-        selectedState === "" && alert("State is required");
-      }
-      {
-        profileImg === null && alert("Profile Image is required");
-      }
-      {
-        cities.length === 0 && alert("City is required");
-      }
+      // Display specific alerts
+      if (!FirstName) alert("First Name is required");
+      if (!LastName) alert("Last Name is required");
+      if (!Xpert) alert("Xpert Type is required");
+      if (!Experience) alert("Years of Experience is required");
+      if (!selectedState) alert("State is required");
+      if (!profileImg) alert("Profile Image is required");
+      if (!selectedCity) alert("City is required");
     }
   };
 
+  // Handle Modal Form Submission
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
-
-    console.log(data, "data");
-    console.log(modalType, "type");
-
-    saveDetail(modalType.toLowerCase(), data);
+    saveDetail(modalType, data);
     closeModal();
   };
 
-  const saveDetail = (type, data) => {
-    switch (type) {
-      case "education":
-        setEducation([...Education, data]);
-        break;
-      case "work":
-        setWork([...Work, data]);
-        break;
-      case "skill":
-        setSkills([...Skills, data]);
-        break;
-      case "project":
-        setProjects([...Projects, data]);
-        break;
-      case "service":
-        setServices([...Services, data]);
-      default:
-        console.error("Invalid type");
-    }
-  };
-
-  const deleteDetail = (type, index) => {
-    switch (type) {
-      case "education":
-        setEducation(Education.filter((_, i) => i !== index));
-        break;
-      case "work":
-        setWork(Work.filter((_, i) => i !== index));
-        break;
-      case "skill":
-        setSkills(Skills.filter((_, i) => i !== index));
-        break;
-      case "project":
-        setProjects(Projects.filter((_, i) => i !== index));
-        break;
-      case "service":
-        setServices(Services.filter((_, i) => i !== index));
-      default:
-        console.error("Invalid type");
-    }
-  };
-
-  // Fetch all Indian states
+  // Fetch Indian States
   const indiaStates = State.getAllStates().filter(
-    (items) => items.countryCode === "IN"
+    (item) => item.countryCode === "IN"
   );
 
-  const handleStateChange = (stateCode) => {
-    setSelectedState(stateCode);
-
-    const stateCities = City.getCitiesOfState("IN", stateCode);
-    setCities(stateCities);
-  };
-
-  const openModal = (type) => {
-    setModalType(type);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalType("");
-  };
-
-  const xpert = [
+  // Define Expertise Types and Degrees
+  const expertiseTypes = [
     "Developer",
     "Designer",
     "Cloud Devops",
@@ -196,532 +215,975 @@ export default function StepperForm() {
 
   const degrees = ["High-School", "Bachelor", "Master", "PhD"];
 
+  // Callback to handle LinkedIn data
+  const handleLinkedInData = (data) => {
+    console.log("Received LinkedIn Data:", data); // Debugging
+    if (data) {
+      // Auto-fill Profile Fields
+      setFirstName(data.first_name || "");
+      setLastName(data.last_name || "");
+      setXpert(data.occupation || "");
+      setExperience(calculateExperience(data.experiences) || "");
+      setProfileImg(data.profile_pic_url || "");
+      setIsLinkedInFetched(true); // Set flag to hide sections
+
+      // Mapping state and city
+      if (data.state && data.city) {
+        const stateObj = State.getStatesOfCountry("IN").find(
+          (state) => state.name.toLowerCase() === data.state.toLowerCase()
+        );
+        if (stateObj) {
+          setSelectedState(stateObj.isoCode);
+          const stateCities = City.getCitiesOfState("IN", stateObj.isoCode);
+          setCities(stateCities);
+          const cityObj = stateCities.find(
+            (city) => city.name.toLowerCase() === data.city.toLowerCase()
+          );
+          if (cityObj) {
+            setSelectedCity(cityObj.name);
+          }
+        }
+      }
+
+      // Prefilling Education
+      if (data.education && Array.isArray(data.education)) {
+        const eduData = data.education.map((edu) => ({
+          degree: edu.degree_name || "",
+          stream: edu.field_of_study || "",
+          college: edu.school || "",
+          startDate: formatDate(edu.starts_at),
+          endDate: edu.ends_at ? formatDate(edu.ends_at) : "Present",
+          cgpa: edu.grade || "",
+        }));
+        setEducation(eduData);
+      }
+
+      // Prefilling Work Experience
+      if (data.experiences && Array.isArray(data.experiences)) {
+        const workData = data.experiences.map((exp) => ({
+          position: exp.title || "",
+          company: exp.company || "",
+          startDate: formatDate(exp.starts_at),
+          endDate: exp.ends_at ? formatDate(exp.ends_at) : "Present",
+        }));
+        setWork(workData);
+      }
+
+      // Prefilling Projects
+      if (
+        data.accomplishment_projects &&
+        Array.isArray(data.accomplishment_projects)
+      ) {
+        const projectData = data.accomplishment_projects.map((proj) => ({
+          projectName: proj.title || "",
+          duration: `${formatDate(proj.starts_at)} - ${
+            proj.ends_at ? formatDate(proj.ends_at) : "Present"
+          }`,
+          liveLink: proj.url || "",
+          description: proj.description || "",
+        }));
+        setProjects(projectData);
+      }
+
+      // Prefilling Skills
+      if (data.skills && Array.isArray(data.skills)) {
+        const skillData = data.skills.map((skill) => ({
+          skill: skill.name || "",
+        }));
+        setSkills(skillData);
+      }
+    }
+  };
+
+  // Helper function to calculate total experience
+  const calculateExperience = (experiences) => {
+    if (!experiences || experiences.length === 0) return "";
+    const currentDate = new Date();
+    let totalMonths = 0;
+    experiences.forEach((exp) => {
+      const start = new Date(
+        exp.starts_at.year,
+        exp.starts_at.month - 1,
+        exp.starts_at.day
+      );
+      const end = exp.ends_at
+        ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
+        : currentDate;
+      const months =
+        (end.getFullYear() - start.getFullYear()) * 12 +
+        (end.getMonth() - start.getMonth());
+      totalMonths += months;
+    });
+    const years = Math.floor(totalMonths / 12);
+    const months = totalMonths % 12;
+    return `${years} ${years > 1 ? "Years" : "Year"} ${
+      months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
+    }`;
+  };
+
+  // Helper function to format date
+  const formatDate = (dateObj) => {
+    if (!dateObj) return "";
+    const { year, month, day } = dateObj;
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString("default", {
+      month: "short",
+      year: "numeric",
+    });
+  };
+
   return (
-    <div className="stepper-form-container">
-      <div className="stepper-naigation-container">
-        <div className="step-no-title-container">
-          <div
-            onClick={() => setStep(1)}
-            className={
-              step == 1 ? "step-no-container-active" : "step-no-container"
-            }
-          >
-            1
-          </div>
-          Profile
-        </div>
+    <Box sx={{ width: "100%", padding: 4, overflow: "hidden" }}>
+      {/* Stepper Navigation */}
+      <Stepper activeStep={activeStep} alternativeLabel>
+        {steps.map((label) => (
+          <Step key={label}>
+            <StepLabel>{label}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
 
-        <div className="line-bar"></div>
+      {/* Form Content */}
+      <Box sx={{ height: "80vh", overflow: "auto" }}>
+        {activeStep === 0 && (
+          <Grid container spacing={4} alignItems="flex-start">
+            {/* Left Column - Profile Fields */}
+            <Grid
+              item
+              xs={12}
+              md={4}
+              sx={{
+                position: { md: "sticky" }, // Apply sticky positioning on medium and larger screens
+              }}
+            >
+              <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
+                <CardContent>
+                  {/* Profile Image */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      mb: 4,
+                      position: "relative",
+                    }}
+                  >
+                    <input
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      id="profile-image-upload"
+                      type="file"
+                      onChange={handleProfileImage}
+                    />
+                    <label htmlFor="profile-image-upload">
+                      <IconButton component="span">
+                        <Avatar
+                          src={
+                            profileImg
+                              ? profileImg
+                              : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
+                          }
+                          sx={{ width: 120, height: 120 }} // Increased size
+                        />
+                      </IconButton>
+                    </label>
+                    {profileImg && (
+                      <IconButton
+                        aria-label="clear"
+                        onClick={clearProfileImage}
+                        sx={{
+                          position: "absolute",
+                          top: 0,
+                          right: 0,
+                          backgroundColor: "rgba(255,255,255,0.7)",
+                          "&:hover": {
+                            backgroundColor: "rgba(255,255,255,1)",
+                          },
+                        }}
+                        size="small"
+                      >
+                        <ClearIcon fontSize="small" />
+                      </IconButton>
+                    )}
+                    <Typography
+                      variant="caption"
+                      color="textSecondary"
+                      sx={{ mt: 1 }}
+                    >
+                      Click to upload
+                    </Typography>
+                  </Box>
 
-        <div onClick={() => setStep(2)} className="step-no-title-container">
-          <div
-            className={
-              step == 2 ? "step-no-container-active" : "step-no-container"
-            }
-          >
-            2
-          </div>
-          Offering
-        </div>
-      </div>
+                  {/* First Name */}
+                  <TextField
+                    label="First Name"
+                    variant="outlined"
+                    fullWidth
+                    value={FirstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    size="small"
+                    sx={{ mb: 3 }}
+                  />
 
-      <div className="profile-step-container">
-        <div className="profile-picture-section">
-          <input
-            className="file-input"
-            type="file"
-            id="hiddenFileInput"
-            style={{ display: "none" }}
-            onChange={handleProfileImage}
-          />
-          <img
-            onClick={() => document.getElementById("hiddenFileInput").click()}
-            width={"200px"}
-            className="dp"
-            src={
-              profileImg
-                ? profileImg
-                : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
-            }
-            alt="Profile"
-          />
-          <div className="personal-info-section">
-            <div className="name-section">
-              <input
-                type="text"
-                placeholder="First Name"
-                className="input-name"
-                value={FirstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Last Name"
-                className="input-name"
-                value={LastName}
-                onChange={(e) => setLastName(e.target.value)}
-              />
-            </div>
+                  {/* Last Name */}
+                  <TextField
+                    label="Last Name"
+                    variant="outlined"
+                    fullWidth
+                    value={LastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    size="small"
+                    sx={{ mb: 3 }}
+                  />
 
-            <span className="label-title">Location: </span>
-            <div className="location-section">
-              {/* State Dropdown */}
-              <select onChange={(e) => handleStateChange(e.target.value)}>
-                <option value="">Select a State</option>
-                {indiaStates.map((state) => (
-                  <option key={state.isoCode} value={state.isoCode}>
-                    {state.name}
-                  </option>
-                ))}
-              </select>
+                  {/* Expertise Type */}
+                  <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
+                    <InputLabel id="expertise-label">Xpert Type</InputLabel>
+                    <Select
+                      labelId="expertise-label"
+                      value={Xpert}
+                      label="Xpert Type"
+                      onChange={(e) => setXpert(e.target.value)}
+                    >
+                      {expertiseTypes.map((type) => (
+                        <MenuItem key={type} value={type}>
+                          {type}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
 
-              {/* City Dropdown */}
-              <select
-                onChange={(e) => setSelectedCity(e.target.value)}
-                disabled={!selectedState}
+                  {/* Years of Experience */}
+                  <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
+                    <InputLabel id="experience-label">
+                      Years of Experience
+                    </InputLabel>
+                    <Select
+                      labelId="experience-label"
+                      value={Experience}
+                      label="Years of Experience"
+                      onChange={(e) => setExperience(e.target.value)}
+                    >
+                      {Array.from({ length: 20 }, (_, i) => i + 1).map(
+                        (year) => (
+                          <MenuItem key={year} value={year}>
+                            {year}
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                  </FormControl>
+
+                  {/* State */}
+                  <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
+                    <InputLabel id="state-label">State</InputLabel>
+                    <Select
+                      labelId="state-label"
+                      value={selectedState}
+                      label="State"
+                      onChange={(e) => handleStateChange(e.target.value)}
+                    >
+                      {indiaStates.map((state) => (
+                        <MenuItem key={state.isoCode} value={state.isoCode}>
+                          {state.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  {/* City */}
+                  <FormControl fullWidth required size="small">
+                    <InputLabel id="city-label">City</InputLabel>
+                    <Select
+                      labelId="city-label"
+                      value={selectedCity}
+                      label="City"
+                      onChange={(e) => setSelectedCity(e.target.value)}
+                      disabled={!selectedState}
+                    >
+                      {cities.map((city) => (
+                        <MenuItem key={city.id} value={city.name}>
+                          {city.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Right Column - LinkedInFetcher and Details Sections */}
+            <Grid item xs={12} md={8}>
+              {/* LinkedInFetcher */}
+              <Box sx={{ mb: 2 }}>
+                <LinkedInFetcher onFetchSuccess={handleLinkedInData} />
+              </Box>
+
+              {/* Conditionally Render Sections Only If Not Fetched via LinkedIn */}
+              {!isLinkedInFetched && (
+                <>
+                  {/* Education Section */}
+                  <Card sx={{ mb: 2, boxShadow: 2 }}>
+                    <CardHeader
+                      title="Education"
+                      titleTypographyProps={{ variant: "h6" }}
+                      action={
+                        <Button
+                          variant="contained"
+                          startIcon={<AddCircleOutlineIcon />}
+                          onClick={() => openModal("Education")}
+                          size="small"
+                          sx={{ textTransform: "none" }}
+                        >
+                          Add Education
+                        </Button>
+                      }
+                      sx={{ padding: 2 }}
+                    />
+                    <Divider />
+                    <CardContent sx={{ padding: 2 }}>
+                      {Education.map((item, index) => (
+                        <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                          <IconButton
+                            aria-label="delete"
+                            size="small"
+                            sx={{ position: "absolute", top: 0, right: 0 }}
+                            onClick={() => deleteDetail("education", index)}
+                          >
+                            <FiTrash color="red" size={16} />
+                          </IconButton>
+                          <Typography variant="subtitle1">
+                            <strong>{item.degree}</strong> in {item.stream}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {item.college}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {item.startDate} - {item.endDate}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            CGPA: {item.cgpa}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </CardContent>
+                  </Card>
+
+                  {/* Skills Section */}
+                  <Card sx={{ mb: 2, boxShadow: 2 }}>
+                    <CardHeader
+                      title="Skills"
+                      titleTypographyProps={{ variant: "h6" }}
+                      action={
+                        <Button
+                          variant="contained"
+                          startIcon={<AddCircleOutlineIcon />}
+                          onClick={() => openModal("Skill")}
+                          size="small"
+                          sx={{ textTransform: "none" }}
+                        >
+                          Add Skill
+                        </Button>
+                      }
+                      sx={{ padding: 2 }}
+                    />
+                    <Divider />
+                    <CardContent sx={{ padding: 2 }}>
+                      {Skills.map((item, index) => (
+                        <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                          <IconButton
+                            aria-label="delete"
+                            size="small"
+                            sx={{ position: "absolute", top: 0, right: 0 }}
+                            onClick={() => deleteDetail("skill", index)}
+                          >
+                            <FiTrash color="red" size={16} />
+                          </IconButton>
+                          <Typography variant="body1">{item.skill}</Typography>
+                        </Box>
+                      ))}
+                    </CardContent>
+                  </Card>
+
+                  {/* Work Experience Section */}
+                  <Card sx={{ mb: 2, boxShadow: 2 }}>
+                    <CardHeader
+                      title="Work Experience"
+                      titleTypographyProps={{ variant: "h6" }}
+                      action={
+                        <Button
+                          variant="contained"
+                          startIcon={<AddCircleOutlineIcon />}
+                          onClick={() => openModal("Work")}
+                          size="small"
+                          sx={{ textTransform: "none" }}
+                        >
+                          Add Experience
+                        </Button>
+                      }
+                      sx={{ padding: 2 }}
+                    />
+                    <Divider />
+                    <CardContent sx={{ padding: 2 }}>
+                      {Work.map((item, index) => (
+                        <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                          <IconButton
+                            aria-label="delete"
+                            size="small"
+                            sx={{ position: "absolute", top: 0, right: 0 }}
+                            onClick={() => deleteDetail("work", index)}
+                          >
+                            <FiTrash color="red" size={16} />
+                          </IconButton>
+                          <Typography variant="subtitle1">
+                            <strong>{item.position}</strong> at {item.company}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {item.startDate} - {item.endDate}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </CardContent>
+                  </Card>
+
+                  {/* Projects/Assignments Section */}
+                  <Card sx={{ mb: 2, boxShadow: 2 }}>
+                    <CardHeader
+                      title="Projects/Assignments"
+                      titleTypographyProps={{ variant: "h6" }}
+                      action={
+                        <Button
+                          variant="contained"
+                          startIcon={<AddCircleOutlineIcon />}
+                          onClick={() => openModal("Project")}
+                          size="small"
+                          sx={{ textTransform: "none" }}
+                        >
+                          Add Project
+                        </Button>
+                      }
+                      sx={{ padding: 2 }}
+                    />
+                    <Divider />
+                    <CardContent sx={{ padding: 2 }}>
+                      {Projects.map((item, index) => (
+                        <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                          <IconButton
+                            aria-label="delete"
+                            size="small"
+                            sx={{ position: "absolute", top: 0, right: 0 }}
+                            onClick={() => deleteDetail("project", index)}
+                          >
+                            <FiTrash color="red" size={16} />
+                          </IconButton>
+                          <Typography variant="subtitle1">
+                            <strong>{item.projectName}</strong>
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {item.duration}
+                          </Typography>
+                          {item.liveLink && (
+                            <Typography variant="body2" color="primary">
+                              <a
+                                href={item.liveLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ textDecoration: "none" }}
+                              >
+                                Live Link
+                              </a>
+                            </Typography>
+                          )}
+                          <Typography variant="body2" color="textSecondary">
+                            {item.description}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+            </Grid>
+
+            {/* Navigation Buttons */}
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  mt: 2,
+                }}
               >
-                <option value="">Select a City</option>
-                {cities.map((city) => (
-                  <option key={city.id} value={city.name}>
-                    {city.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <span className="label-title">Xpert Type: </span>
-            <div className="xpert-type-section">
-              <select
-                onChange={(e) => setXpert(e.target.value)}
-                style={{ width: "100%" }}
-              >
-                <option value="">Select a Xpert Type</option>
-                {xpert.map((items) => (
-                  <option key={items.id} value={items.name}>
-                    {items}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <span className="label-title">Years Of Experience:</span>
-            <div className="xpert-type-section">
-              <select
-                onChange={(e) => setExperience(e.target.value)}
-                style={{ width: "100%" }}
-              >
-                <option value="">Select Year of Experience</option>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((items) => (
-                  <option key={items.id} value={items.name}>
-                    {items}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-        {step == 1 && (
-          <div className="detail-section">
-            <button className="next-step-btn" onClick={() => setStep(2)}>
-              Next Step
-            </button>
-
-            <div className="acadamic-section">
-              <LinkedInFetcher />
-              <div className="education-section">
-                <div className="title-section">
-                  <span className="label-title">Education</span>
-                </div>
-
-                <div className="add-detail-section">
-                  <div className="card-list-container">
-                    {Education.map((item, index) => (
-                      <div className="details-card">
-                        <FiTrash
-                          onClick={() => deleteDetail("education", index)}
-                          size={20}
-                          color="red"
-                          className="trash-icon"
-                        />
-                        <span>
-                          <b>
-                            {item.degree},{item.stream}
-                          </b>
-                        </span>
-                        <span>{item.college}</span>
-                        <span>
-                          {new Date(item.startDate).toLocaleString("default", {
-                            month: "short",
-                            year: "numeric",
-                          })}
-                          -
-                          {new Date(item.endDate).toLocaleString("default", {
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                        <span>CGPA: {item.cgpa}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => openModal("Education")}
-                    className="add-detail-btn"
-                  >
-                    + Add Eduction
-                  </button>
-                </div>
-              </div>
-
-              <div className="education-section">
-                <div className="title-section">
-                  <span className="label-title">Skills</span>
-                </div>
-
-                <div className="add-detail-section">
-                  <div className="card-list-container">
-                    {Skills.map((item, index) => (
-                      <div className="details-card">
-                        <FiTrash
-                          onClick={() => deleteDetail("skill", index)}
-                          size={20}
-                          color="red"
-                          className="trash-icon"
-                        />
-                        <span>{item.skill}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => openModal("Skill")}
-                    className="add-detail-btn"
-                  >
-                    + Add Skill
-                  </button>
-                </div>
-              </div>
-
-              <div className="education-section">
-                <div className="title-section">
-                  <span className="label-title">Work Experience</span>
-                </div>
-
-                <div className="add-detail-section">
-                  <div className="card-list-container">
-                    {Work.map((item, index) => (
-                      <div className="details-card">
-                        <FiTrash
-                          onClick={() => deleteDetail("work", index)}
-                          size={20}
-                          color="red"
-                          className="trash-icon"
-                        />
-                        <span>
-                          <b>{item.position}</b>
-                        </span>
-                        <span>{item.company}</span>
-                        <span>
-                          {new Date(item.startDate).toLocaleString("default", {
-                            month: "short",
-                            year: "numeric",
-                          })}
-                          -
-                          {new Date(item.endDate).toLocaleString("default", {
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => openModal("Work")}
-                    className="add-detail-btn"
-                  >
-                    + Add Work Experience
-                  </button>
-                </div>
-              </div>
-
-              <div className="education-section">
-                <div className="title-section">
-                  <span className="label-title">projects/Assignments</span>
-                </div>
-
-                <div className="add-detail-section">
-                  <div className="card-list-container">
-                    {Projects.map((item, index) => (
-                      <div className="details-card" key={index}>
-                        <FiTrash
-                          onClick={() => deleteDetail("project", index)}
-                          size={20}
-                          color="red"
-                          className="trash-icon"
-                        />
-                        <span>
-                          <b>{item.projectName}</b>
-                        </span>
-                        <span>{item.duration}</span>
-                        <span>{item.liveLink}</span>
-                        <span>{item.description}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => openModal("Project")}
-                    className="add-detail-btn"
-                  >
-                    + Add Project/Assignment
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setActiveStep(1)}
+                  size="large"
+                >
+                  Next Step
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
         )}
 
-        {step == 2 && (
-          <div className="offering-container">
-            <div className="offering-section">
-              <div className="title-section">
-                <span className="label-title">Consulting Charges</span>
-              </div>
-              <div className="add-offering-section">
-                <input
-                  value={ConsultingPrice}
-                  onChange={(e) => setConsultingPrice(e.target.value)}
-                  type="text"
-                  placeholder="Price in Rs."
-                  className="input-price"
+        {activeStep === 1 && (
+          <Grid container spacing={4}>
+            {/* Left Column - Profile Summary */}
+            <Grid item xs={12} md={4}>
+              <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Avatar
+                      src={
+                        profileImg
+                          ? profileImg
+                          : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
+                      }
+                      sx={{ width: 120, height: 120 }} // Increased size
+                    />
+                    <Typography variant="h6" sx={{ mt: 3 }}>
+                      {FirstName} {LastName}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      color="textSecondary"
+                      sx={{ mt: 1 }}
+                    >
+                      {Xpert}
+                    </Typography>
+                    <Typography variant="body1" color="textSecondary">
+                      {Experience} {Experience === 1 ? "Year" : "Years"} of
+                      Experience
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      color="textSecondary"
+                      sx={{ mt: 2 }}
+                    >
+                      {selectedCity},{" "}
+                      {
+                        State.getStateByCodeAndCountry(selectedState, "IN")
+                          ?.name
+                      }
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Right Column - Offering Details */}
+            <Grid item xs={12} md={8}>
+              {/* Consulting Charges Section */}
+              <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+                <CardHeader
+                  title="Consulting Charges"
+                  titleTypographyProps={{ variant: "h6" }}
+                  sx={{ padding: 2 }}
                 />
-                <span style={{ width: "40px", textAlign: "center" }}>For </span>
-
-                <input
-                  value={ConsultingDuration}
-                  onChange={(e) => setConsultingDuration(e.target.value)}
-                  type="text"
-                  placeholder="time"
-                />
-                <select
-                  value={ConsultingDurationType}
-                  onChange={(e) => setConsultingDeurationType(e.target.value)}
-                  style={{ marginLeft: "3px" }}
-                >
-                  <option value="per hour">per hour</option>
-                  <option value="per day">per day</option>
-                  <option value="per week">per week</option>
-                  <option value="per month">per month</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="education-section">
-              <div className="title-section">
-                <span className="label-title">Services</span>
-              </div>
-
-              <div className="add-detail-section">
-                <div className="card-list-container">
-                  {Services.map((item, index) => (
-                    <div className="details-card">
-                      <FiTrash
-                        onClick={() => deleteDetail("service", index)}
-                        size={20}
-                        color="red"
-                        className="trash-icon"
+                <Divider />
+                <CardContent sx={{ padding: 2 }}>
+                  <Grid container spacing={3} alignItems="center">
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        label="Price (₹)"
+                        variant="outlined"
+                        fullWidth
+                        value={ConsultingPrice}
+                        onChange={(e) => setConsultingPrice(e.target.value)}
+                        required
+                        size="small"
                       />
-                      <span>
-                        <b>{item.serviceName}</b>
-                      </span>
-                      <span>{item.serviceDescription}</span>
-                      <span>Price: ₹{item.servicePrice}</span>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  onClick={() => openModal("Service")}
-                  className="add-detail-btn"
-                >
-                  + Add Services
-                </button>
-              </div>
-            </div>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        label="Duration"
+                        variant="outlined"
+                        fullWidth
+                        value={ConsultingDuration}
+                        onChange={(e) => setConsultingDuration(e.target.value)}
+                        required
+                        size="small"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <FormControl fullWidth required size="small">
+                        <InputLabel id="duration-type-label">
+                          Duration Type
+                        </InputLabel>
+                        <Select
+                          labelId="duration-type-label"
+                          value={ConsultingDurationType}
+                          label="Duration Type"
+                          onChange={(e) =>
+                            setConsultingDurationType(e.target.value)
+                          }
+                        >
+                          <MenuItem value="per hour">Per Hour</MenuItem>
+                          <MenuItem value="per day">Per Day</MenuItem>
+                          <MenuItem value="per week">Per Week</MenuItem>
+                          <MenuItem value="per month">Per Month</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
 
-            <button className="next-step-btn" onClick={handleSubmitInfo}>
-              Submit
-            </button>
-          </div>
+              {/* Services Section */}
+              <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+                <CardHeader
+                  title="Services"
+                  titleTypographyProps={{ variant: "h6" }}
+                  action={
+                    <Button
+                      variant="contained"
+                      startIcon={<AddCircleOutlineIcon />}
+                      onClick={() => openModal("Service")}
+                      size="small"
+                      sx={{ textTransform: "none" }}
+                    >
+                      Add Service
+                    </Button>
+                  }
+                  sx={{ padding: 2 }}
+                />
+                <Divider />
+                <CardContent sx={{ padding: 2 }}>
+                  {Services.map((item, index) => (
+                    <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                      <IconButton
+                        aria-label="delete"
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 0 }}
+                        onClick={() => deleteDetail("service", index)}
+                      >
+                        <FiTrash color="red" size={16} />
+                      </IconButton>
+                      <Typography variant="subtitle1">
+                        <strong>{item.serviceName}</strong>
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {item.serviceDescription}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Price: ₹{item.servicePrice}
+                      </Typography>
+                    </Box>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Submit Button */}
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => setActiveStep(0)}
+                  size="large"
+                  sx={{ mr: 2 }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmitInfo}
+                  size="large"
+                >
+                  Submit
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
         )}
-      </div>
+
+        {/* You can add more steps here if needed */}
+      </Box>
 
       {/* Modal Component */}
-      {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <h4>Add {modalType}</h4>
-            <br />
-            <form onSubmit={handleSubmit}>
-              {modalType === "Education" && (
-                <>
-                  <label>Degree:</label>
-                  <input
-                    type="text"
+      <Dialog
+        open={isModalOpen}
+        onClose={closeModal}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            borderRadius: 3, // Slightly more rounded
+          },
+        }}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }}>
+          Add {modalType}
+          <IconButton
+            aria-label="close"
+            onClick={closeModal}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+            size="small"
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <form onSubmit={handleSubmit}>
+          <DialogContent dividers>
+            {modalType === "Education" && (
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Degree"
                     name="degree"
-                    placeholder="Degree"
+                    variant="outlined"
+                    fullWidth
                     required
+                    size="small"
                   />
-                  <label>Stream:</label>
-                  <input
-                    type="text"
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Stream"
                     name="stream"
-                    placeholder="Stream"
+                    variant="outlined"
+                    fullWidth
                     required
+                    size="small"
                   />
-                  <label>College:</label>
-                  <input
-                    type="text"
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="College"
                     name="college"
-                    placeholder="College"
+                    variant="outlined"
+                    fullWidth
                     required
+                    size="small"
                   />
-                  <div className="main-date-container">
-                    <div className="date-container">
-                      <span>Start</span>
-                      <input
-                        type="date"
-                        name="startDate"
-                        className="input-date"
-                        required
-                      />
-                    </div>
-                    <div className="date-container">
-                      <span>End</span>
-                      <input
-                        type="date"
-                        name="endDate"
-                        className="input-date"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <label>CGPA:</label>
-                  <input
-                    type="number"
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Start Date"
+                    name="startDate"
+                    type="date"
+                    variant="outlined"
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="End Date"
+                    name="endDate"
+                    type="date"
+                    variant="outlined"
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="CGPA"
                     name="cgpa"
-                    placeholder="CGPA"
-                    step="0.1"
-                    required
-                  />
-                </>
-              )}
-              {modalType === "Skill" && (
-                <>
-                  <input
-                    type="text"
-                    name="skill"
-                    placeholder="Skill Name"
-                    required
-                  />
-                </>
-              )}
-              {modalType === "Work" && (
-                <>
-                  <label>Position:</label>
-                  <input
-                    type="text"
-                    name="position"
-                    placeholder="Job Title"
-                    required
-                  />
-                  <label>Company:</label>
-                  <input
-                    type="text"
-                    name="company"
-                    placeholder="Company Name"
-                    required
-                  />
-                  <div className="main-date-container">
-                    <div className="date-container">
-                      <span>Start</span>
-                      <input
-                        type="date"
-                        name="startDate"
-                        className="input-date"
-                        required
-                      />
-                    </div>
-                    <div className="date-container">
-                      <span>End</span>
-                      <input
-                        type="date"
-                        name="endDate"
-                        className="input-date"
-                        required
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-              {modalType === "Project" && (
-                <>
-                  <label>Project Name:</label>
-                  <input
-                    type="text"
-                    name="projectName"
-                    placeholder="Project Name"
-                    required
-                  />
-                  <label>Duration:</label>
-                  <input
-                    type="text"
-                    name="duration"
-                    placeholder="Duration"
-                    required
-                  />
-                  <label>Live Link:</label>
-                  <input type="text" name="liveLink" placeholder="Link" />
-                  <label>Description:</label>
-                  <textarea
-                    name="description"
-                    placeholder="Description"
-                    required
-                  ></textarea>
-                </>
-              )}
-
-              {modalType === "Service" && (
-                <>
-                  <label>Service Name:</label>
-                  <input
-                    type="text"
-                    name="serviceName"
-                    placeholder="Service Name"
-                    required
-                  />
-                  <label>Service Description:</label>
-                  <textarea
-                    name="serviceDescription"
-                    placeholder="Service Description"
-                    required
-                  ></textarea>
-                  <label>Service Price:</label>
-                  <input
                     type="number"
-                    name="servicePrice"
-                    placeholder="Service Price"
+                    variant="outlined"
+                    fullWidth
+                    inputProps={{
+                      step: 0.1,
+                    }}
                     required
+                    size="small"
                   />
-                </>
-              )}
-              <div className="modal-buttons">
-                <button type="submit">Save</button>
-                <button type="button" onClick={closeModal}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+                </Grid>
+              </Grid>
+            )}
+
+            {modalType === "Skill" && (
+              <TextField
+                label="Skill Name"
+                name="skill"
+                variant="outlined"
+                fullWidth
+                required
+                size="small"
+              />
+            )}
+
+            {modalType === "Work" && (
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Position"
+                    name="position"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Company"
+                    name="company"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Start Date"
+                    name="startDate"
+                    type="date"
+                    variant="outlined"
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="End Date"
+                    name="endDate"
+                    type="date"
+                    variant="outlined"
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    required
+                    size="small"
+                  />
+                </Grid>
+              </Grid>
+            )}
+
+            {modalType === "Project" && (
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Project Name"
+                    name="projectName"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Duration"
+                    name="duration"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Live Link"
+                    name="liveLink"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Description"
+                    name="description"
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    rows={3}
+                    required
+                    size="small"
+                  />
+                </Grid>
+              </Grid>
+            )}
+
+            {modalType === "Service" && (
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Service Name"
+                    name="serviceName"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Service Description"
+                    name="serviceDescription"
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    rows={3}
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Service Price (₹)"
+                    name="servicePrice"
+                    type="number"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    size="small"
+                  />
+                </Grid>
+              </Grid>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={closeModal}
+              color="secondary"
+              variant="outlined"
+              size="large"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              size="large"
+            >
+              Save
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Box>
   );
 }

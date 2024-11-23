@@ -5,7 +5,6 @@ import medal from "../../assets/svg/medal.png";
 import useFetchSubscribedCandidates from "../../hooks/Teams/useFetchSubscribedCandidates";
 import useUnsubscribeCandidate from "../../hooks/Teams/useUnsubscribeCandidate";
 import { FaRegSadCry } from "react-icons/fa";
-import LinkedInFetcher from "./LinkedInFetcher";
 
 export default function Xtern({ userAccessRole }) {
   const { subscribedCandidates, loading } = useFetchSubscribedCandidates();
@@ -14,7 +13,11 @@ export default function Xtern({ userAccessRole }) {
   const [loadingIds, setLoadingIds] = useState({}); // Track loading for specific candidates
 
   if (loading) {
-    return <div>Loading subscribed candidates...</div>;
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>;
   }
 
   const handleUnsubscribe = async (candidate) => {
@@ -89,8 +92,6 @@ export default function Xtern({ userAccessRole }) {
           </div>
         ))
       )}
-
-      <LinkedInFetcher />
     </div>
   );
 }
