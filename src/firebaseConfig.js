@@ -5,6 +5,7 @@ import {
   FacebookAuthProvider,
   OAuthProvider,
 } from "firebase/auth";
+import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
 
@@ -23,6 +24,7 @@ const app = initializeApp(firebaseConfig);
 
 // Get Firebase services
 const auth = getAuth(app);
+const realtimeDb = getDatabase(app); // Initialize Realtime Database
 const db = getFirestore(app);
 const functions = getFunctions(app);
 
@@ -31,4 +33,12 @@ const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 const appleProvider = new OAuthProvider("apple.com");
 
-export { auth, db, functions, googleProvider, facebookProvider, appleProvider };
+export {
+  auth,
+  db,
+  realtimeDb,
+  functions,
+  googleProvider,
+  facebookProvider,
+  appleProvider,
+};

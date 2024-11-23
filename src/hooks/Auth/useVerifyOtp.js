@@ -74,7 +74,9 @@ const useVerifyOtp = () => {
           }
 
           if (!newPhoneNumber) {
-            throw new Error("New phone number is required to update Firestore.");
+            throw new Error(
+              "New phone number is required to update Firestore."
+            );
           }
 
           // Update Firestore with the new phone number
@@ -125,7 +127,9 @@ const useVerifyOtp = () => {
         "This phone number is linked to a different account. Please sign in with that account.",
     };
 
-    return errorMap[error.code] || error.message || "An unexpected error occurred.";
+    return (
+      errorMap[error.code] || error.message || "An unexpected error occurred."
+    );
   };
 
   return { verifyOtp, loading };

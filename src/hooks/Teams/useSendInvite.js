@@ -1,5 +1,15 @@
+// useSendInvite.js
 import { useState, useEffect } from "react";
-import { collection, addDoc, Timestamp, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  Timestamp,
+  doc,
+  getDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../../firebaseConfig";
 
@@ -30,7 +40,7 @@ const useSendInvite = () => {
     return () => unsubscribe(); // Clean up the listener on component unmount
   }, []);
 
-  const sendInvite = async (invitedPhone, role) => {
+  const sendInvite = async (invitedPhone, accessRole) => {
     if (!user) {
       setError("User not authenticated or no profile data found");
       return;
@@ -43,12 +53,26 @@ const useSendInvite = () => {
     setError(null);
 
     try {
+      // Normalize the phone number by removing any non-digit characters
+      const normalizedPhone = invitedPhone.replace(/\D/g, "");
+
+      // Create a query against the "users" collection where phone_number equals the invited phone
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("phone_number", "==", normalizedPhone));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        // No user found with the given phone number
+        setError("The phone number does not exist in our records.");
+        return;
+      }
+
       // Create a new invite document in the teamInvite collection
       await addDoc(collection(db, "teamInvite"), {
-        invited: invitedPhone,
+        invited: normalizedPhone,
         inviter: inviterPhone,
         organization: organizationRef,
-        role,
+        accessRole, // Include the accessRole here
         createdAt: Timestamp.now(),
       });
     } catch (err) {
