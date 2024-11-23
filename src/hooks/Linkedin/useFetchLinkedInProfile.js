@@ -1,3 +1,4 @@
+// src/hooks/Linkedin/useFetchLinkedInProfile.js
 import { useState } from "react";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
@@ -9,6 +10,7 @@ const firebaseFunctionURL =
 const useFetchLinkedInProfile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [linkedInData, setLinkedInData] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
 
   const fetchLinkedInProfile = async (profileUrl) => {
@@ -16,16 +18,19 @@ const useFetchLinkedInProfile = () => {
       setLoading(true);
       setError(null);
       setSuccessMessage("");
+      setLinkedInData(null); // Reset previous data
 
       const auth = getAuth();
       const user = auth.currentUser;
       if (!user) {
         setError("No authenticated user found. Please log in.");
+        console.error("No authenticated user found.");
         return;
       }
 
       // Get Firebase ID token for the current user
       const idToken = await user.getIdToken();
+      console.log("User ID Token:", idToken);
 
       // Call Firebase Cloud Function
       const response = await axios.post(
@@ -34,22 +39,36 @@ const useFetchLinkedInProfile = () => {
         { headers: { Authorization: `Bearer ${idToken}` } }
       );
 
+      console.log("Firebase Function Response:", response.data);
+
       if (response.status === 200) {
         setSuccessMessage(
           response.data.message || "Profile fetched and saved successfully!"
         );
+        setLinkedInData(response.data.linkedInData);
+        console.log("LinkedIn Data Set:", response.data.linkedInData);
       } else {
         setError(response.data.error || "Unexpected error occurred.");
+        console.error("Unexpected response status:", response.status);
       }
     } catch (err) {
       console.error("Error fetching LinkedIn profile:", err);
-      setError(err.response?.data?.error || "An unexpected error occurred.");
+      if (err.response) {
+        // Server responded with a status other than 2xx
+        setError(err.response.data.error || "An unexpected error occurred.");
+      } else if (err.request) {
+        // Request was made but no response received
+        setError("No response from server. Please try again later.");
+      } else {
+        // Something else happened
+        setError(err.message || "An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  return { fetchLinkedInProfile, loading, error, successMessage };
+  return { fetchLinkedInProfile, loading, error, successMessage, linkedInData };
 };
 
 export default useFetchLinkedInProfile;
