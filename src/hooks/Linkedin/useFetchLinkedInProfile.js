@@ -47,6 +47,7 @@ const useFetchLinkedInProfile = () => {
         );
         setLinkedInData(response.data.linkedInData);
         console.log("LinkedIn Data Set:", response.data.linkedInData);
+        return response.data;
       } else {
         setError(response.data.error || "Unexpected error occurred.");
         console.error("Unexpected response status:", response.status);

@@ -22,7 +22,11 @@ export default function Shortlisted() {
   console.log(shortlistedInterns, "lllllllll");
 
   if (loading) {
-    return <div>Loading shortlisted interns...</div>;
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>;
   }
 
   return (
@@ -125,18 +129,22 @@ export default function Shortlisted() {
                 </p>
               )}
               <div className="mb-3">
-                <label htmlFor="interviewDate" className="form-label">Date</label>
-                <input 
-                  type="date" 
-                  className="form-control" 
+                <label htmlFor="interviewDate" className="form-label">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  className="form-control"
                   id="interviewDate"
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="interviewTime" className="form-label">Time</label>
-                <input 
-                  type="time" 
-                  className="form-control" 
+                <label htmlFor="interviewTime" className="form-label">
+                  Time
+                </label>
+                <input
+                  type="time"
+                  className="form-control"
                   id="interviewTime"
                 />
               </div>
