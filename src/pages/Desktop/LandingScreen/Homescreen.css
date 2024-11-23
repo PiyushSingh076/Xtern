@@ -1,5 +1,4 @@
 .homescreen-container{
-    padding-top: 90px;
     overflow: hidden;
 }
 
@@ -57,7 +56,7 @@
   .domains-title{
     font-size: 3rem;
     background: linear-gradient(90deg, #0A4EFB 0%, #F77991 100%);
- 
+     font-style: italic;
     font-family: 'DM Serif Display';
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -199,7 +198,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 95vh;
+    height: auto;
     padding: 20px;
     background-color: #F9F9F9;
 
@@ -912,3 +911,29 @@ input [type="radio"]{
 
 }
 
+
+@media only screen and (max-width: 768px) {
+  .categories-card-container{
+    padding: 10px 10px;
+   
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .categories-card{
+   width: 11rem;
+   height: 11rem;
+  }
+
+  .xpert-icon{
+    width: 2rem;
+  }
+
+  .categories-card-title{
+    font-size: 1.2rem;
+  }
+
+  .categories-desc{
+    font-size: 10px;
+    text-align: center;
+  }
+}

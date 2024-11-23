@@ -1,0 +1,142 @@
+.main-Home-Screen-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 15px 5px;
+  background-color: #f9f9f9;
+}
+
+/* Responsive banner */
+.become-xpert-banner {
+  width: 75%;
+  height: auto;
+  padding: 20px;
+  background: linear-gradient(90deg, #e0efff, #a6d8ff, #80c8ff);
+  border-radius: 10px;
+  animation: glowingUp 5s infinite;
+  margin: 20px auto;
+  box-shadow: 0 5px 15px rgba(23, 166, 255, 0.2);
+  text-align: center;
+  transition: transform 0.5s ease-in-out;
+}
+
+.become-xpert-banner:hover {
+  cursor: pointer;
+  transform: scale(1.02);
+  box-shadow: 0 10px 20px rgba(23, 166, 255, 0.3);
+}
+
+.title {
+  font-size: 1.8rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  margin-top: 8px;
+  color: #174fa8;
+  opacity: 0.8;
+}
+
+/* Categories container adjustments */
+.categories-container {
+  width: 100%;
+}
+
+.categories-title {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.categories-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.categories-card {
+  width: 90%;
+  background: #fff;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.categories-card:hover {
+  transform: translateY(-5px);
+}
+
+.catedories-card-icon-title img {
+  margin-bottom: 10px;
+}
+
+.categories-card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.categories-desc {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 5px;
+}
+
+/* Explore All Container */
+.explore-all-container {
+  width: 100%;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.explore-all {
+  font-size: 1rem;
+  color: #0a65fc;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Responsive adjustments for mobile screens */
+@media (max-width: 768px) {
+
+  .main-Home-Screen-container{
+    width: 100vw;
+  }
+
+  .become-xpert-banner{
+    width: 90%;
+  }
+
+  .categories-card {
+    width: 100%;
+    padding: 10px;
+  }
+
+
+  .categories-title {
+    font-size: 1.4rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+  }
+
+  .categories-desc {
+    font-size: 0.8rem;
+  }
+
+  .become-xpert-banner {
+    padding: 15px;
+  }
+}

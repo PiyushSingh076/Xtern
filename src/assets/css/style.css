@@ -7079,7 +7079,7 @@ h2 {
 }
 
 .menu-btn-container {
-  text-align: right;
+  text-align: left;
 }
 
 .side-menu {
@@ -7097,6 +7097,7 @@ h2 {
   border-bottom: 1px solid #ccc;
   animation: slideLeft ease-out 0.5s;
   padding-left: 10px;
+  padding-right: 10px;
 
   & div {
     display: flex;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CardList from "../Card/CarList";
 import {
   FaLaptopCode,
@@ -11,6 +11,8 @@ import {
   FaCalculator,
 } from "react-icons/fa";
 import "./filter.css";
+import { useParams , useNavigate } from "react-router-dom";
+
 
 const professionals = [
   { id: 1, name: "Developer", icon: <FaLaptopCode /> },
@@ -24,10 +26,22 @@ const professionals = [
 ];
 
 const FilterScreen = () => {
+
+  const navigate = useNavigate()
+  const type = useParams();
+  
+  useEffect(()=>{
+
+    if(type){
+      setSelectedProfession(type.type)
+    }
+  })
+
+
   const [selectedProfession, setSelectedProfession] = useState(null);
 
   const handleClick = (name) => {
-    setSelectedProfession(name);
+    navigate(`/filterscreen/${name}`)
   };
 
   return (

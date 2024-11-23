@@ -9,7 +9,8 @@ import { ROUTES } from "./constants/routes"; // Import the route constants
 
 //  Desktop View
 
-import DesktopHomeScreen from "./pages/Desktop/HomeScreen2/index";
+import DesktopHomeScreen from './pages/Desktop/Homescreen/index.jsx'
+import DesktopLandingPage from "./pages/Desktop/LandingScreen/index";
 import Header from "./pages/Desktop/Header/Header";
 import DesktopProjectDetails from "./pages/Desktop/ProjectDetail";
 import DesktopCreateProject from "./pages/Desktop/ProjectDetail/ApplyProject";
@@ -24,6 +25,8 @@ import DesktopAllProjects from "./pages/Desktop/ProjectDetail/AllProjects.jsx";
 import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iffat
 // import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
 import DesktopCard from "./pages/Desktop/Card/CarList.jsx";
+import DesktopStepperForm from './pages/Desktop/StepperForm/index.jsx'
+
 
 // Mobile View
 import UserType from "./pages/UserType.jsx";
@@ -44,7 +47,7 @@ import PreferredLanguage from "./pages/PreferredLanguage";
 import SpendLearning from "./pages/SpendLearning";
 import SelectSkills from "./pages/SkillSelectionScreen";
 import SelectCoursesScreen from "./pages/SelectCoursesScreen";
-import HomeScreen from "./pages/MobHomeScreen/index.jsx";
+import HomeScreen from "./pages/MobLandingScreen/index.jsx";
 import Notification from "./pages/Notification";
 import CategoryScreen from "./pages/CategoryScreen";
 import Business from "./pages/Business";
@@ -94,6 +97,8 @@ import PrefferedRole from "./pages/PrefferedRole.jsx";
 
 import BottomNavigationVenture from "./components/BottomNavigationVenture";
 import { RouteRounded } from "@mui/icons-material";
+import LandingBanner from "./pages/Desktop/LandingScreen/LandingBanner.jsx";
+import LandingPage from "./pages/MobLandingScreen/LandingPage.jsx";
 
 function App() {
   const location = useLocation(); // Get the current location
@@ -137,14 +142,14 @@ function App() {
       {!isMobileView && <Header />}
       {isMobileView && <MobHeader />}
       {isMobileView && <div style={{ height: "50px" }}></div>}
-      {/* {!isMobileView && <div style={{ height: "90px" }}></div>} */}
+      {!isMobileView && <div style={{ height: "90px" }}></div>}
       <Toaster />
       <Routes>
         {/* Public Routes */}
-        <Route
+        {/* <Route
           path={ROUTES.HOME}
           element={isMobileView ? <DesktopHomeScreen /> : <DesktopHomeScreen />}
-        />
+        /> */}
         <Route
           path={ROUTES.SIGN_UP}
           element={isMobileView ? <SignUp /> : <DesktopSignUp />}
@@ -222,6 +227,11 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+<Route
+path={ROUTES.STEPPER_FORM}
+element={<DesktopStepperForm/>}/>
+
         <Route
           path={ROUTES.CREATE_JOB}
           element={
@@ -255,13 +265,21 @@ function App() {
           }
         />
         <Route
-          path={ROUTES.HOME_SCREEN}
+          path={ROUTES.LANDING_PAGE}
           element={
             <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
-              {isMobileView ? <HomeScreen /> : <DesktopHomeScreen />}
+              {isMobileView ? <HomeScreen /> : <DesktopLandingPage />}
             </ProtectedRoute>
           }
         />
+
+        <Route
+        path={ROUTES.HOME_SCREEN}
+        element={<DesktopHomeScreen/>}/>
+
+
+       
+
         <Route
           path={ROUTES.NOTIFICATION}
           element={
