@@ -1,12 +1,15 @@
 import React from "react";
 import profile from "../../assets/images/banner/mentor.png";
-import useFetchOrganizationMembers from "../../hooks/Teams/useFetchOrganizationMembers";
 
-export default function MyTeam() {
-  const { members, loading } = useFetchOrganizationMembers();
-  console.log(members, "llll");
+export default function MyTeam({ members, loading }) {
   if (loading) {
-    return <div>Loading team members...</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -21,7 +24,7 @@ export default function MyTeam() {
           />
           <div className="info-card-myteam-content">
             <h4>{item.display_name}</h4>
-            <span className="position-tag">{item.role}</span>
+            <span className="position-tag">{item.role || "Member"}</span>
           </div>
         </div>
       ))}

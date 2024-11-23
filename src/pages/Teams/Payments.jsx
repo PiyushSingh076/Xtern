@@ -35,6 +35,8 @@ export default function Payments() {
   const { invoices, loading, error } = useInvoicesWithInternData();
   const [expandedCards, setExpandedCards] = useState([]);
 
+  console.log(invoices);
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error fetching payment data: {error}</div>;
 

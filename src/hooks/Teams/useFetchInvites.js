@@ -33,7 +33,7 @@ const useFetchInvites = () => {
           querySnapshot.docs.map(async (docSnapshot) => {
             const inviteData = docSnapshot.data();
             const invitedPhone = inviteData.invited;
-
+            console.log(invitedPhone, "sdf");
             // Fetch user details by invited phone number
             const usersQuery = query(
               collection(db, "users"),

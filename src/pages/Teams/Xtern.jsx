@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+// Xtern.js
+import React, { useState, useEffect } from "react";
 import profile from "../../assets/images/banner/mentor.png";
 import medal from "../../assets/svg/medal.png";
 import useFetchSubscribedCandidates from "../../hooks/Teams/useFetchSubscribedCandidates";
 import useUnsubscribeCandidate from "../../hooks/Teams/useUnsubscribeCandidate";
 import { FaRegSadCry } from "react-icons/fa";
-export default function Xtern() {
+import LinkedInFetcher from "./LinkedInFetcher";
+
+export default function Xtern({ userAccessRole }) {
   const { subscribedCandidates, loading } = useFetchSubscribedCandidates();
   const { unsubscribeCandidate, loading: unsubscribeLoading } =
     useUnsubscribeCandidate();
@@ -25,6 +28,8 @@ export default function Xtern() {
 
   return (
     <div className="info-card-container">
+      {/* Conditionally render payment section based on accessRole */}
+
       {/* Display "No Data" message if subscribedCandidates is empty */}
       {subscribedCandidates.length === 0 ? (
         <div
@@ -58,19 +63,23 @@ export default function Xtern() {
               </div>
               <span className="subscribed-tag">Subscribed</span>
               <div className="info-card-action-section">
-                <button className="replace-btn">Replace</button>
-                <button
-                  className="unsubscribe-btn"
-                  onClick={() => handleUnsubscribe(candidate)}
-                  disabled={
-                    unsubscribeLoading ||
-                    loadingIds[candidate.internDetails.uid]
-                  }
-                >
-                  {loadingIds[candidate.internDetails.uid]
-                    ? "Unsubscribing..."
-                    : "Unsubscribe"}
-                </button>
+                {userAccessRole === "management" && (
+                  <>
+                    <button className="replace-btn">Replace</button>
+                    <button
+                      className="unsubscribe-btn"
+                      onClick={() => handleUnsubscribe(candidate)}
+                      disabled={
+                        unsubscribeLoading ||
+                        loadingIds[candidate.internDetails.uid]
+                      }
+                    >
+                      {loadingIds[candidate.internDetails.uid]
+                        ? "Unsubscribing..."
+                        : "Unsubscribe"}
+                    </button>
+                  </>
+                )}
               </div>
               <span className="info-card-phone-number">
                 Phone Number:{" "}
@@ -80,6 +89,8 @@ export default function Xtern() {
           </div>
         ))
       )}
+
+      <LinkedInFetcher />
     </div>
   );
 }

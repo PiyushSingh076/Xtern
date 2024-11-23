@@ -28,15 +28,13 @@ const useOAuthLogout = () => {
       dispatch(removeRole());
       dispatch(clearVentureInfo());
       dispatch(resetInternInfo());
-       // Redirect the user to the login page
+      // Redirect the user to the login page
     } catch (error) {
       console.error("Error during logout:", error);
       toast.error("Logout failed", { position: "bottom-left" });
     } finally {
       setLoading(false); // Reset the loading state after logout
     }
-
-
   };
 
   return { handleLogout, loading };

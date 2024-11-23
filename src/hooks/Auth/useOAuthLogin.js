@@ -27,19 +27,18 @@ const useOAuthLogin = () => {
         if (!userData.phone_number || !userData.isPhoneVerified) {
           toast("Please verify your phone number", { position: "bottom-left" });
           navigate("/verifyscreen");
-        }
-        else if (!userData.typeUser) {
+        } else if (!userData.typeUser) {
           // navigate("/roleselect");
         } else if (userData.typeUser === "entrepreneur") {
           toast.success("Welcome back, Entrepreneur!", {
             position: "bottom-left",
           });
-          navigate("/");
+          navigate("/homescreen");
         } else if (userData.typeUser === "Intern") {
           if (!userData.skillSet || userData.skillSet.length === 0) {
             // navigate("/select-skills");
           } else {
-            navigate("/");
+            navigate("/homescreen");
           }
         }
       } else {
@@ -48,7 +47,7 @@ const useOAuthLogin = () => {
           uid: user.uid,
           display_name: user.displayName || "User",
           email: user.email,
-          profilePicture: user.photoURL,
+          photo_url: user.photoURL,
           provider: user.providerData[0]?.providerId,
           lastLogin: new Date(),
           isPhoneVerified: false, // Set phone verification flag to false initially
