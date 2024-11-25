@@ -15,7 +15,7 @@ import Header from "./pages/Desktop/Header/Header";
 import DesktopProjectDetails from "./pages/Desktop/ProjectDetail";
 import DesktopCreateProject from "./pages/Desktop/ProjectDetail/ApplyProject";
 import DesktopProfile from "./pages/Desktop/Profile/index.jsx";
-import DesktopPrefferRole from "./pages/Desktop/Prefference/PrefferRole.jsx";
+import DesktopPrefferRole from "./pages/Desktop/Prefference/XpertRole.jsx";
 import DesktopSignIn from "./pages/Desktop/Auth/SignIn";
 import DesktopSignUp from "./pages/Desktop/Auth/SignUp";
 import DesktopPrefferedServiceIntern from "./pages/Desktop/Prefference/PrefferServiceIntern.jsx";
@@ -175,7 +175,7 @@ function App() {
 
         <Route
           path={ROUTES.PREFERRED_ROLE}
-          element={isMobileView ? <PrefferedRole /> : <DesktopPrefferRole />}
+          element={ <DesktopPrefferRole />}
         />
         {/*iffat*/}
         <Route path={ROUTES.FILTER_SCREEN} element={<DesktopFilterScreen />} />

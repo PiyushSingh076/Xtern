@@ -11,7 +11,7 @@ export const ROUTES = {
   RESET_PASSWORD_SCREEN: "/resetpasswordscreen",
   VERIFY_SCREEN: "/verifyscreen",
   NOTIFICATION_ALLOW: "/notificationallow",
-  PREFERRED_ROLE: "/preferredrole",
+  PREFERRED_ROLE: "/xpertrole",
   USER_TYPE: "/usertype",
   INTERN: "/intern",
   VENTURE: "/venture",
