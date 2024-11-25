@@ -8,7 +8,7 @@ import {
 import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
-
+import { getStorage } from "firebase/storage";
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCpzZHQ5R-fjc3Y8eH2rakvvRNRyYRWu6c",
@@ -27,7 +27,7 @@ const auth = getAuth(app);
 const realtimeDb = getDatabase(app); // Initialize Realtime Database
 const db = getFirestore(app);
 const functions = getFunctions(app);
-
+const storage = getStorage(app); // Initialize Firebase Storage
 // Authentication providers
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
@@ -38,6 +38,7 @@ export {
   db,
   realtimeDb,
   functions,
+  storage, // Export storage
   googleProvider,
   facebookProvider,
   appleProvider,

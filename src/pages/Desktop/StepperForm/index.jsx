@@ -22,6 +22,7 @@ import {
   CardContent,
   CardHeader,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 
 import { FiTrash } from "react-icons/fi";
@@ -35,14 +36,16 @@ import CloseIcon from "@mui/icons-material/Close";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { AddPhotoAlternateIcon } from "@mui/icons-material";
+import useSaveProfileData from "../../../hooks/Linkedin/useSaveProfileData";
+import toast from "react-hot-toast";
 
 export default function StepperForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { saveProfileData, loading } = useSaveProfileData();
+  const dataRole = useSelector((state) => state.user);
 
-  const dataRole = useSelector((state)=> state.user);
-
-  console.log(dataRole, 'sd')
+  console.log(dataRole, "sd");
 
   // Form Detail Elements
   const [FirstName, setFirstName] = useState("");
@@ -149,19 +152,21 @@ export default function StepperForm() {
         console.error("Invalid type");
     }
   };
+  // Handle form submission
+  const handleSubmitInfo = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
 
-  // Handle Form Submission
-  const handleSubmitInfo = () => {
+    // Validate required fields
     if (
       FirstName &&
       LastName &&
-      Xpert &&
+      dataRole.XpertType &&
       Experience &&
       selectedState &&
       profileImg &&
       selectedCity
     ) {
-      let data = {
+      const data = {
         profileImage: profileImg,
         firstName: FirstName,
         lastName: LastName,
@@ -179,20 +184,31 @@ export default function StepperForm() {
         consultingDurationType: ConsultingDurationType,
       };
 
-      console.log(data)
+      console.log("Form Data:", data);
 
+      // Dispatch to Redux store (if necessary)
       dispatch(setDetail(data));
 
-      navigate(ROUTES.HOME_SCREEN);
+      try {
+        // Save to Firestore
+        await saveProfileData(data);
+        // Show success toast
+        toast.success("Profile data saved successfully!");
+        // Navigate to home screen upon successful save
+        navigate("/homescreen"); // Replace with your actual route
+      } catch (error) {
+        // Show error toast
+        toast.error(`Error saving data: ${error.message || error}`);
+      }
     } else {
-      // Display specific alerts
-      if (!FirstName) alert("First Name is required");
-      if (!LastName) alert("Last Name is required");
-      if (!Xpert) alert("Xpert Type is required");
-      if (!Experience) alert("Years of Experience is required");
-      if (!selectedState) alert("State is required");
-      if (!profileImg) alert("Profile Image is required");
-      if (!selectedCity) alert("City is required");
+      // Display specific toast alerts
+      if (!FirstName) toast.error("First Name is required");
+      if (!LastName) toast.error("Last Name is required");
+      if (!dataRole.XpertType) toast.error("Xpert Type is required");
+      if (!Experience) toast.error("Years of Experience is required");
+      if (!selectedState) toast.error("State is required");
+      if (!profileImg) toast.error("Profile Image is required");
+      if (!selectedCity) toast.error("City is required");
     }
   };
 
@@ -200,11 +216,11 @@ export default function StepperForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-  
+
     // Check if an image is uploaded
-    const imageFile = formData.get('projectImage');
+    const imageFile = formData.get("projectImage");
     const Fdata = Object.fromEntries(formData.entries());
-  
+
     // Include image file or Base64 string in the data object
     if (imageFile && imageFile instanceof File) {
       // If you want to convert it to Base64 (optional)
@@ -217,8 +233,8 @@ export default function StepperForm() {
     } else {
       saveDetail(modalType, Fdata);
     }
-  
-    console.log(Fdata, 'Submitted Data');
+
+    console.log(Fdata, "Submitted Data");
     closeModal();
   };
 
@@ -280,7 +296,6 @@ export default function StepperForm() {
           startDate: formatDate(edu.starts_at),
           endDate: edu.ends_at ? formatDate(edu.ends_at) : "Present",
           cgpa: edu.grade || "",
-    
         }));
         setEducation(eduData);
       }
@@ -544,217 +559,234 @@ export default function StepperForm() {
             {/* Right Column - LinkedInFetcher and Details Sections */}
             <Grid item xs={12} md={8}>
               {/* LinkedInFetcher */}
-            {!isLinkedInFetched && (  <Box sx={{ mb: 2 }}>
-                <LinkedInFetcher onFetchSuccess={handleLinkedInData} />
-              </Box>)}
+              {!isLinkedInFetched && (
+                <Box sx={{ mb: 2 }}>
+                  <LinkedInFetcher onFetchSuccess={handleLinkedInData} />
+                </Box>
+              )}
 
               {/* Conditionally Render Sections Only If Not Fetched via LinkedIn */}
 
-                <>
-                  {/* Education Section */}
-                  <Card sx={{ mb: 2, boxShadow: 2 }}>
-                    <CardHeader
-                      title="Education"
-                      titleTypographyProps={{ variant: "h6" }}
-                      action={
-                        <Button
-                          variant="contained"
-                          startIcon={<AddCircleOutlineIcon />}
-                          onClick={() => openModal("Education")}
+              <>
+                {/* Education Section */}
+                <Card sx={{ mb: 2, boxShadow: 2 }}>
+                  <CardHeader
+                    title="Education"
+                    titleTypographyProps={{ variant: "h6" }}
+                    action={
+                      <Button
+                        variant="contained"
+                        startIcon={<AddCircleOutlineIcon />}
+                        onClick={() => openModal("Education")}
+                        size="small"
+                        sx={{ textTransform: "none" }}
+                      >
+                        Add Education
+                      </Button>
+                    }
+                    sx={{ padding: 2 }}
+                  />
+                  <Divider />
+                  <CardContent sx={{ padding: 2 }}>
+                    {Education.map((item, index) => (
+                      <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                        <IconButton
+                          aria-label="delete"
                           size="small"
-                          sx={{ textTransform: "none" }}
+                          sx={{ position: "absolute", top: 0, right: 0 }}
+                          onClick={() => deleteDetail("education", index)}
                         >
-                          Add Education
-                        </Button>
-                      }
-                      sx={{ padding: 2 }}
-                    />
-                    <Divider />
-                    <CardContent sx={{ padding: 2 }}>
-                      {Education.map((item, index) => (
-                        <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                          <IconButton
-                            aria-label="delete"
-                            size="small"
-                            sx={{ position: "absolute", top: 0, right: 0 }}
-                            onClick={() => deleteDetail("education", index)}
-                          >
-                            <FiTrash color="red" size={16} />
-                          </IconButton>
-                         <Box sx={{display: 'flex' , flexDirection: 'row' , gap: '20px'}}>
+                          <FiTrash color="red" size={16} />
+                        </IconButton>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            gap: "20px",
+                          }}
+                        >
                           <Box>
                             {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
-                           
                           </Box>
                           <Box>
-                          <Typography variant="subtitle1">
-                            <strong>{item.degree}</strong> in {item.stream}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {item.college}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {item.startDate} - {item.endDate}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            CGPA: {item.cgpa}
-                          </Typography>
-                          </Box>
-                         </Box>
-                        </Box>
-                      ))}
-                    </CardContent>
-                  </Card>
-
-                  {/* Skills Section */}
-                  <Card sx={{ mb: 2, boxShadow: 2 }}>
-                    <CardHeader
-                      title="Skills"
-                      titleTypographyProps={{ variant: "h6" }}
-                      action={
-                        <Button
-                          variant="contained"
-                          startIcon={<AddCircleOutlineIcon />}
-                          onClick={() => openModal("Skill")}
-                          size="small"
-                          sx={{ textTransform: "none" }}
-                        >
-                          Add Skill
-                        </Button>
-                      }
-                      sx={{ padding: 2 }}
-                    />
-                    <Divider />
-                    <CardContent sx={{ padding: 2 }}>
-                      {Skills.map((item, index) => (
-                        <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                          <IconButton
-                            aria-label="delete"
-                            size="small"
-                            sx={{ position: "absolute", top: 0, right: 0 }}
-                            onClick={() => deleteDetail("skill", index)}
-                          >
-                            <FiTrash color="red" size={16} />
-                          </IconButton>
-                          <Typography variant="body1">{item.skill}</Typography>
-                        </Box>
-                      ))}
-                    </CardContent>
-                  </Card>
-
-                  {/* Work Experience Section */}
-                  <Card sx={{ mb: 2, boxShadow: 2 }}>
-                    <CardHeader
-                      title="Work Experience"
-                      titleTypographyProps={{ variant: "h6" }}
-                      action={
-                        <Button
-                          variant="contained"
-                          startIcon={<AddCircleOutlineIcon />}
-                          onClick={() => openModal("Work")}
-                          size="small"
-                          sx={{ textTransform: "none" }}
-                        >
-                          Add Experience
-                        </Button>
-                      }
-                      sx={{ padding: 2 }}
-                    />
-                    <Divider />
-                    <CardContent sx={{ padding: 2 }}>
-                      {Work.map((item, index) => (
-                        <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                          <IconButton
-                            aria-label="delete"
-                            size="small"
-                            sx={{ position: "absolute", top: 0, right: 0 }}
-                            onClick={() => deleteDetail("work", index)}
-                          >
-                            <FiTrash color="red" size={16} />
-                          </IconButton>
-                          <Box sx={{display: 'flex' , flexDirection: 'row' , gap: '20px'}}>
-                          <Box>
-                            {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
-
-                          </Box>
-                          <Box>
-                          <Typography variant="subtitle1">
-                            <strong>{item.position}</strong> at {item.company}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {item.startDate} - {item.endDate}
-                          </Typography>
-                          </Box>
-                        </Box>
-                        </Box>
-                      ))}
-                    </CardContent>
-                  </Card>
-
-                  {/* Projects/Assignments Section */}
-                  <Card sx={{ mb: 2, boxShadow: 2 }}>
-                    <CardHeader
-                      title="Projects/Assignments"
-                      titleTypographyProps={{ variant: "h6" }}
-                      action={
-                        <Button
-                          variant="contained"
-                          startIcon={<AddCircleOutlineIcon />}
-                          onClick={() => openModal("Project")}
-                          size="small"
-                          sx={{ textTransform: "none" }}
-                        >
-                          Add Project
-                        </Button>
-                      }
-                      sx={{ padding: 2 }}
-                    />
-                    <Divider />
-                    <CardContent sx={{ padding: 2 }}>
-                      {Projects.map((item, index) => (
-                        <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                          <IconButton
-                            aria-label="delete"
-                            size="small"
-                            sx={{ position: "absolute", top: 0, right: 0 }}
-                            onClick={() => deleteDetail("project", index)}
-                          >
-                            <FiTrash color="red" size={16} />
-                          </IconButton>
-                       <Box>
-                        <Box sx={{display: 'flex' , flexDirection: 'row' , gap: '20px'}}>
-                          {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
-                        </Box>
-                        <Box>
-                        <Typography variant="subtitle1">
-                            <strong>{item.projectName}</strong>
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {item.duration}
-                          </Typography>
-                          {item.liveLink && (
-                            <Typography variant="body2" color="primary">
-                              <a
-                                href={item.liveLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ textDecoration: "none" }}
-                              >
-                                Live Link
-                              </a>
+                            <Typography variant="subtitle1">
+                              <strong>{item.degree}</strong> in {item.stream}
                             </Typography>
-                          )}
-                          <Typography variant="body2" color="textSecondary">
-                            {item.description}
-                          </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              {item.college}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              {item.startDate} - {item.endDate}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              CGPA: {item.cgpa}
+                            </Typography>
+                          </Box>
                         </Box>
-                       </Box>
-                        </Box>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </>
+                      </Box>
+                    ))}
+                  </CardContent>
+                </Card>
 
+                {/* Skills Section */}
+                <Card sx={{ mb: 2, boxShadow: 2 }}>
+                  <CardHeader
+                    title="Skills"
+                    titleTypographyProps={{ variant: "h6" }}
+                    action={
+                      <Button
+                        variant="contained"
+                        startIcon={<AddCircleOutlineIcon />}
+                        onClick={() => openModal("Skill")}
+                        size="small"
+                        sx={{ textTransform: "none" }}
+                      >
+                        Add Skill
+                      </Button>
+                    }
+                    sx={{ padding: 2 }}
+                  />
+                  <Divider />
+                  <CardContent sx={{ padding: 2 }}>
+                    {Skills.map((item, index) => (
+                      <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                        <IconButton
+                          aria-label="delete"
+                          size="small"
+                          sx={{ position: "absolute", top: 0, right: 0 }}
+                          onClick={() => deleteDetail("skill", index)}
+                        >
+                          <FiTrash color="red" size={16} />
+                        </IconButton>
+                        <Typography variant="body1">{item.skill}</Typography>
+                      </Box>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Work Experience Section */}
+                <Card sx={{ mb: 2, boxShadow: 2 }}>
+                  <CardHeader
+                    title="Work Experience"
+                    titleTypographyProps={{ variant: "h6" }}
+                    action={
+                      <Button
+                        variant="contained"
+                        startIcon={<AddCircleOutlineIcon />}
+                        onClick={() => openModal("Work")}
+                        size="small"
+                        sx={{ textTransform: "none" }}
+                      >
+                        Add Experience
+                      </Button>
+                    }
+                    sx={{ padding: 2 }}
+                  />
+                  <Divider />
+                  <CardContent sx={{ padding: 2 }}>
+                    {Work.map((item, index) => (
+                      <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                        <IconButton
+                          aria-label="delete"
+                          size="small"
+                          sx={{ position: "absolute", top: 0, right: 0 }}
+                          onClick={() => deleteDetail("work", index)}
+                        >
+                          <FiTrash color="red" size={16} />
+                        </IconButton>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            gap: "20px",
+                          }}
+                        >
+                          <Box>
+                            {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
+                          </Box>
+                          <Box>
+                            <Typography variant="subtitle1">
+                              <strong>{item.position}</strong> at {item.company}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              {item.startDate} - {item.endDate}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Box>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Projects/Assignments Section */}
+                <Card sx={{ mb: 2, boxShadow: 2 }}>
+                  <CardHeader
+                    title="Projects/Assignments"
+                    titleTypographyProps={{ variant: "h6" }}
+                    action={
+                      <Button
+                        variant="contained"
+                        startIcon={<AddCircleOutlineIcon />}
+                        onClick={() => openModal("Project")}
+                        size="small"
+                        sx={{ textTransform: "none" }}
+                      >
+                        Add Project
+                      </Button>
+                    }
+                    sx={{ padding: 2 }}
+                  />
+                  <Divider />
+                  <CardContent sx={{ padding: 2 }}>
+                    {Projects.map((item, index) => (
+                      <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                        <IconButton
+                          aria-label="delete"
+                          size="small"
+                          sx={{ position: "absolute", top: 0, right: 0 }}
+                          onClick={() => deleteDetail("project", index)}
+                        >
+                          <FiTrash color="red" size={16} />
+                        </IconButton>
+                        <Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              gap: "20px",
+                            }}
+                          >
+                            {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
+                          </Box>
+                          <Box>
+                            <Typography variant="subtitle1">
+                              <strong>{item.projectName}</strong>
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              {item.duration}
+                            </Typography>
+                            {item.liveLink && (
+                              <Typography variant="body2" color="primary">
+                                <a
+                                  href={item.liveLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ textDecoration: "none" }}
+                                >
+                                  Live Link
+                                </a>
+                              </Typography>
+                            )}
+                            <Typography variant="body2" color="textSecondary">
+                              {item.description}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Box>
+                    ))}
+                  </CardContent>
+                </Card>
+              </>
             </Grid>
 
             {/* Navigation Buttons */}
@@ -989,31 +1021,35 @@ export default function StepperForm() {
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent dividers>
-
-
-
-
-
             {modalType === "Education" && (
               <Grid container spacing={3}>
-                 <Grid item xs={12}>
-<Box 
-  onClick={
-    () => document.getElementById('add-logo').click()
-  }
-  sx={{ display: "flex", alignItems: 'center' ,justifyContent: "center", border: "2px dotted #ccc", padding: 2 , height: '100px' , borderRadius: '20px' , cursor: 'pointer'}}>
-      
-       <Typography variant="h6" sx={{ color: "#ccc" }}>Add logo</Typography>
-  </Box>
-  <input
-        id="add-logo"
-        type="file"
-        accept="image/*"
-        name="projectImage"
-        onChange={(e) => console.log(e.target.files[0])}
-        style={{ marginBottom: 20  , display: 'none'}}
-      />
-</Grid>
+                <Grid item xs={12}>
+                  <Box
+                    onClick={() => document.getElementById("add-logo").click()}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px dotted #ccc",
+                      padding: 2,
+                      height: "100px",
+                      borderRadius: "20px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ color: "#ccc" }}>
+                      Add logo
+                    </Typography>
+                  </Box>
+                  <input
+                    id="add-logo"
+                    type="file"
+                    accept="image/*"
+                    name="projectImage"
+                    onChange={(e) => console.log(e.target.files[0])}
+                    style={{ marginBottom: 20, display: "none" }}
+                  />
+                </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -1103,24 +1139,33 @@ export default function StepperForm() {
 
             {modalType === "Work" && (
               <Grid container spacing={3}>
-                 <Grid item xs={12}>
-<Box 
-  onClick={
-    () => document.getElementById('add-logo').click()
-  }
-  sx={{ display: "flex", alignItems: 'center' ,justifyContent: "center", border: "2px dotted #ccc", padding: 2 , height: '100px' , borderRadius: '20px' , cursor: 'pointer'}}>
-      
-       <Typography variant="h6" sx={{ color: "#ccc" }}>Add logo</Typography>
-  </Box>
-  <input
-        id="add-logo"
-        type="file"
-        accept="image/*"
-        name="projectImage"
-        onChange={(e) => console.log(e.target.files[0])}
-        style={{ marginBottom: 20  , display: 'none'}}
-      />
-</Grid>
+                <Grid item xs={12}>
+                  <Box
+                    onClick={() => document.getElementById("add-logo").click()}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px dotted #ccc",
+                      padding: 2,
+                      height: "100px",
+                      borderRadius: "20px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ color: "#ccc" }}>
+                      Add logo
+                    </Typography>
+                  </Box>
+                  <input
+                    id="add-logo"
+                    type="file"
+                    accept="image/*"
+                    name="projectImage"
+                    onChange={(e) => console.log(e.target.files[0])}
+                    style={{ marginBottom: 20, display: "none" }}
+                  />
+                </Grid>
                 <Grid item xs={12}>
                   <TextField
                     label="Position"
@@ -1172,70 +1217,79 @@ export default function StepperForm() {
               </Grid>
             )}
 
-         {modalType === "Project" && (
-  <Grid container spacing={3}>
- <Grid item xs={12}>
-<Box 
-  onClick={
-    () => document.getElementById('add-logo').click()
-  }
-  sx={{ display: "flex", alignItems: 'center' ,justifyContent: "center", border: "2px dotted #ccc", padding: 2 , height: '100px' , borderRadius: '20px' , cursor: 'pointer'}}>
-      
-       <Typography variant="h6" sx={{ color: "#ccc" }}>Select Image</Typography>
-  </Box>
-  <input
-        id="add-logo"
-        type="file"
-        accept="image/*"
-        name="projectImage"
-        onChange={(e) => console.log(e.target.files[0])}
-        style={{ marginBottom: 20  , display: 'none'}}
-      />
-</Grid>
-   
-    <Grid item xs={12}>
-      <TextField
-        label="Project Name"
-        name="projectName"
-        variant="outlined"
-        fullWidth
-        required
-        size="small"
-      />
-    </Grid>
-    <Grid item xs={12}>
-      <TextField
-        label="Duration"
-        name="duration"
-        variant="outlined"
-        fullWidth
-        required
-        size="small"
-      />
-    </Grid>
-    <Grid item xs={12}>
-      <TextField
-        label="Live Link"
-        name="liveLink"
-        variant="outlined"
-        fullWidth
-        size="small"
-      />
-    </Grid>
-    <Grid item xs={12}>
-      <TextField
-        label="Description"
-        name="description"
-        variant="outlined"
-        fullWidth
-        multiline
-        rows={3}
-        required
-        size="small"
-      />
-    </Grid>
-  </Grid>
-)}
+            {modalType === "Project" && (
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Box
+                    onClick={() => document.getElementById("add-logo").click()}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px dotted #ccc",
+                      padding: 2,
+                      height: "100px",
+                      borderRadius: "20px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ color: "#ccc" }}>
+                      Select Image
+                    </Typography>
+                  </Box>
+                  <input
+                    id="add-logo"
+                    type="file"
+                    accept="image/*"
+                    name="projectImage"
+                    onChange={(e) => console.log(e.target.files[0])}
+                    style={{ marginBottom: 20, display: "none" }}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField
+                    label="Project Name"
+                    name="projectName"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Duration"
+                    name="duration"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Live Link"
+                    name="liveLink"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Description"
+                    name="description"
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    rows={3}
+                    required
+                    size="small"
+                  />
+                </Grid>
+              </Grid>
+            )}
 
             {modalType === "Service" && (
               <Grid container spacing={3}>
@@ -1284,13 +1338,18 @@ export default function StepperForm() {
             >
               Cancel
             </Button>
+            // Inside your ProfileForm component's return statement
             <Button
-              type="submit"
               variant="contained"
               color="primary"
+              type="submit" // Changed from onClick to type="submit" for better form handling
               size="large"
+              disabled={loading} // Disable the button when loading is true
+              startIcon={
+                loading && <CircularProgress size={20} color="inherit" />
+              } // Optional: Add spinner before text
             >
-              Save
+              {loading ? "Submitting..." : "Submit"}
             </Button>
           </DialogActions>
         </form>
