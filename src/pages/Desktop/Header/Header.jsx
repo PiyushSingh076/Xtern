@@ -110,8 +110,10 @@ export default function Header() {
   onClick={()=>{navigate(ROUTES.SIGN_IN)}}
   className='hire-xpert-btn'>Log in</button>}
   {
-     !isDetailEmpty &&
-    <div className='profile-container'>
+     !isDetailEmpty && userData &&
+    <div 
+    onClick={()=>navigate('/')}
+    className='profile-container'>
           <img src={data.detail.profileImage} width={'30px'} style={{borderRadius: '50%'}}/>
           {data.detail.expertise} 
     </div>

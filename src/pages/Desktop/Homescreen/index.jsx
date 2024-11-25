@@ -33,11 +33,7 @@ export default function HomeScreen() {
             icon: ui_dev,
             description: 'Expert UI, UX, Visual, and Interaction designers as well as a wide range of illustrators, animators, and more.'
         },
-        {
-            title: 'Project Manager',
-            icon: project_manager,
-            description: 'Digital and technical project managers, scrum masters, and more with expertise in numerous PM tools, frameworks, and styles.'
-        },
+    
         {
             title: 'Product Manager',
             icon: product_manager,
@@ -81,7 +77,7 @@ export default function HomeScreen() {
       
   
       <div 
-  onClick={() => navigate('/userdetail')}
+  onClick={() => navigate('/xpertrole')}
   className="become-xpert-banner">
   <h1 className="title">
     Become <span className="domains-title">Xpert</span>

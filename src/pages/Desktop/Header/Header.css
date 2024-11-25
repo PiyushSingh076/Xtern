@@ -165,6 +165,12 @@
     color: white;
     margin-left: 40px;
 
+    :hover {
+      cursor: pointer;
+    }
+
+
+
   }
 
   .profile-icon:hover{
