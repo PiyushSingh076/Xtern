@@ -10,8 +10,15 @@ import {
     FaCalculator,
   } from "react-icons/fa";
 import './Prefference.css'
+import { useDispatch } from 'react-redux';
+import { addXpertType } from '../../../Store/Slice/UserDetail';
+import { useNavigate } from 'react-router-dom';
 
 export default function XpertRole() {
+
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const professionals = [
         { id: 1, name: "Developer", icon: <FaLaptopCode /> },
@@ -24,13 +31,22 @@ export default function XpertRole() {
         { id: 8, name: "Accountant", icon: <FaCalculator /> },
       ];
 
+
+      const setXpertType = (type) =>{
+            dispatch(addXpertType(type))
+            navigate('/userdetail')
+            
+      }
+
   return (
     <div className='xpert-role-selection-container'>
         <h2>Choose Your Type</h2>  
         <div className='xpert-role-selection'>
             {
                 professionals.map((prof, index) => (
-                    <div key={index} className='xpert-role-selection-card'>
+                    <div
+                    onClick={()=>{setXpertType(prof.name)}}
+                     key={index} className='xpert-role-selection-card'>
                          <div className="xpert-icon-select">{prof.icon}</div>
                         <span>{prof.name}</span>
                     </div>

@@ -23,9 +23,10 @@ import {
   CardHeader,
   Divider,
 } from "@mui/material";
+
 import { FiTrash } from "react-icons/fi";
 import { State, City } from "country-state-city";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setDetail } from "../../../Store/Slice/UserDetail";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
@@ -33,10 +34,15 @@ import LinkedInFetcher from "../../Teams/LinkedInFetcher";
 import CloseIcon from "@mui/icons-material/Close";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { AddPhotoAlternateIcon } from "@mui/icons-material";
 
 export default function StepperForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const dataRole = useSelector((state)=> state.user);
+
+  console.log(dataRole, 'sd')
 
   // Form Detail Elements
   const [FirstName, setFirstName] = useState("");
@@ -156,11 +162,11 @@ export default function StepperForm() {
       selectedCity
     ) {
       let data = {
+        profileImage: profileImg,
         firstName: FirstName,
         lastName: LastName,
-        expertise: Xpert,
         experience: Experience,
-        profileImage: profileImg,
+        type: dataRole.XpertType,
         state: selectedState,
         city: selectedCity,
         education: Education,
@@ -173,7 +179,10 @@ export default function StepperForm() {
         consultingDurationType: ConsultingDurationType,
       };
 
+      console.log(data)
+
       dispatch(setDetail(data));
+
       navigate(ROUTES.HOME_SCREEN);
     } else {
       // Display specific alerts
@@ -191,8 +200,25 @@ export default function StepperForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-    saveDetail(modalType, data);
+  
+    // Check if an image is uploaded
+    const imageFile = formData.get('projectImage');
+    const Fdata = Object.fromEntries(formData.entries());
+  
+    // Include image file or Base64 string in the data object
+    if (imageFile && imageFile instanceof File) {
+      // If you want to convert it to Base64 (optional)
+      const reader = new FileReader();
+      reader.onload = () => {
+        Fdata.projectImage = reader.result; // Base64 string of the image
+        saveDetail(modalType, Fdata);
+      };
+      reader.readAsDataURL(imageFile); // Convert to Base64
+    } else {
+      saveDetail(modalType, Fdata);
+    }
+  
+    console.log(Fdata, 'Submitted Data');
     closeModal();
   };
 
@@ -254,6 +280,7 @@ export default function StepperForm() {
           startDate: formatDate(edu.starts_at),
           endDate: edu.ends_at ? formatDate(edu.ends_at) : "Present",
           cgpa: edu.grade || "",
+    
         }));
         setEducation(eduData);
       }
@@ -439,7 +466,7 @@ export default function StepperForm() {
                   />
 
                   {/* Expertise Type */}
-                  <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
+                  {/* <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
                     <InputLabel id="expertise-label">Xpert Type</InputLabel>
                     <Select
                       labelId="expertise-label"
@@ -453,7 +480,7 @@ export default function StepperForm() {
                         </MenuItem>
                       ))}
                     </Select>
-                  </FormControl>
+                  </FormControl> */}
 
                   {/* Years of Experience */}
                   <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
@@ -517,12 +544,12 @@ export default function StepperForm() {
             {/* Right Column - LinkedInFetcher and Details Sections */}
             <Grid item xs={12} md={8}>
               {/* LinkedInFetcher */}
-              <Box sx={{ mb: 2 }}>
+            {!isLinkedInFetched && (  <Box sx={{ mb: 2 }}>
                 <LinkedInFetcher onFetchSuccess={handleLinkedInData} />
-              </Box>
+              </Box>)}
 
               {/* Conditionally Render Sections Only If Not Fetched via LinkedIn */}
-              {!isLinkedInFetched && (
+
                 <>
                   {/* Education Section */}
                   <Card sx={{ mb: 2, boxShadow: 2 }}>
@@ -554,6 +581,12 @@ export default function StepperForm() {
                           >
                             <FiTrash color="red" size={16} />
                           </IconButton>
+                         <Box sx={{display: 'flex' , flexDirection: 'row' , gap: '20px'}}>
+                          <Box>
+                            {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
+                           
+                          </Box>
+                          <Box>
                           <Typography variant="subtitle1">
                             <strong>{item.degree}</strong> in {item.stream}
                           </Typography>
@@ -566,6 +599,8 @@ export default function StepperForm() {
                           <Typography variant="body2" color="textSecondary">
                             CGPA: {item.cgpa}
                           </Typography>
+                          </Box>
+                         </Box>
                         </Box>
                       ))}
                     </CardContent>
@@ -637,12 +672,20 @@ export default function StepperForm() {
                           >
                             <FiTrash color="red" size={16} />
                           </IconButton>
+                          <Box sx={{display: 'flex' , flexDirection: 'row' , gap: '20px'}}>
+                          <Box>
+                            {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
+
+                          </Box>
+                          <Box>
                           <Typography variant="subtitle1">
                             <strong>{item.position}</strong> at {item.company}
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
                             {item.startDate} - {item.endDate}
                           </Typography>
+                          </Box>
+                        </Box>
                         </Box>
                       ))}
                     </CardContent>
@@ -678,7 +721,12 @@ export default function StepperForm() {
                           >
                             <FiTrash color="red" size={16} />
                           </IconButton>
-                          <Typography variant="subtitle1">
+                       <Box>
+                        <Box sx={{display: 'flex' , flexDirection: 'row' , gap: '20px'}}>
+                          {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
+                        </Box>
+                        <Box>
+                        <Typography variant="subtitle1">
                             <strong>{item.projectName}</strong>
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
@@ -700,11 +748,13 @@ export default function StepperForm() {
                             {item.description}
                           </Typography>
                         </Box>
+                       </Box>
+                        </Box>
                       ))}
                     </CardContent>
                   </Card>
                 </>
-              )}
+
             </Grid>
 
             {/* Navigation Buttons */}
@@ -939,8 +989,32 @@ export default function StepperForm() {
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent dividers>
+
+
+
+
+
             {modalType === "Education" && (
               <Grid container spacing={3}>
+                 <Grid item xs={12}>
+<Box 
+  onClick={
+    () => document.getElementById('add-logo').click()
+  }
+  sx={{ display: "flex", alignItems: 'center' ,justifyContent: "center", border: "2px dotted #ccc", padding: 2 , height: '100px' , borderRadius: '20px' , cursor: 'pointer'}}>
+      
+       <Typography variant="h6" sx={{ color: "#ccc" }}>Add logo</Typography>
+  </Box>
+  <input
+        id="add-logo"
+        type="file"
+        accept="image/*"
+        name="projectImage"
+        onChange={(e) => console.log(e.target.files[0])}
+        style={{ marginBottom: 20  , display: 'none'}}
+      />
+</Grid>
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Degree"
@@ -1029,6 +1103,24 @@ export default function StepperForm() {
 
             {modalType === "Work" && (
               <Grid container spacing={3}>
+                 <Grid item xs={12}>
+<Box 
+  onClick={
+    () => document.getElementById('add-logo').click()
+  }
+  sx={{ display: "flex", alignItems: 'center' ,justifyContent: "center", border: "2px dotted #ccc", padding: 2 , height: '100px' , borderRadius: '20px' , cursor: 'pointer'}}>
+      
+       <Typography variant="h6" sx={{ color: "#ccc" }}>Add logo</Typography>
+  </Box>
+  <input
+        id="add-logo"
+        type="file"
+        accept="image/*"
+        name="projectImage"
+        onChange={(e) => console.log(e.target.files[0])}
+        style={{ marginBottom: 20  , display: 'none'}}
+      />
+</Grid>
                 <Grid item xs={12}>
                   <TextField
                     label="Position"
@@ -1080,51 +1172,70 @@ export default function StepperForm() {
               </Grid>
             )}
 
-            {modalType === "Project" && (
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Project Name"
-                    name="projectName"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Duration"
-                    name="duration"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Live Link"
-                    name="liveLink"
-                    variant="outlined"
-                    fullWidth
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Description"
-                    name="description"
-                    variant="outlined"
-                    fullWidth
-                    multiline
-                    rows={3}
-                    required
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
-            )}
+         {modalType === "Project" && (
+  <Grid container spacing={3}>
+ <Grid item xs={12}>
+<Box 
+  onClick={
+    () => document.getElementById('add-logo').click()
+  }
+  sx={{ display: "flex", alignItems: 'center' ,justifyContent: "center", border: "2px dotted #ccc", padding: 2 , height: '100px' , borderRadius: '20px' , cursor: 'pointer'}}>
+      
+       <Typography variant="h6" sx={{ color: "#ccc" }}>Select Image</Typography>
+  </Box>
+  <input
+        id="add-logo"
+        type="file"
+        accept="image/*"
+        name="projectImage"
+        onChange={(e) => console.log(e.target.files[0])}
+        style={{ marginBottom: 20  , display: 'none'}}
+      />
+</Grid>
+   
+    <Grid item xs={12}>
+      <TextField
+        label="Project Name"
+        name="projectName"
+        variant="outlined"
+        fullWidth
+        required
+        size="small"
+      />
+    </Grid>
+    <Grid item xs={12}>
+      <TextField
+        label="Duration"
+        name="duration"
+        variant="outlined"
+        fullWidth
+        required
+        size="small"
+      />
+    </Grid>
+    <Grid item xs={12}>
+      <TextField
+        label="Live Link"
+        name="liveLink"
+        variant="outlined"
+        fullWidth
+        size="small"
+      />
+    </Grid>
+    <Grid item xs={12}>
+      <TextField
+        label="Description"
+        name="description"
+        variant="outlined"
+        fullWidth
+        multiline
+        rows={3}
+        required
+        size="small"
+      />
+    </Grid>
+  </Grid>
+)}
 
             {modalType === "Service" && (
               <Grid container spacing={3}>
