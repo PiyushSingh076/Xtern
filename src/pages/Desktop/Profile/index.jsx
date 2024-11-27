@@ -21,6 +21,7 @@ import { TimeClock } from '@mui/x-date-pickers/TimeClock';
 import { Flag } from "@mui/icons-material";
 
 
+
 // Component definition
 const SingleMentor = () => {
   // State declarations
@@ -32,6 +33,8 @@ const SingleMentor = () => {
   const [TimeContainer , setTimecontainer] = useState(false)
   const [interviewScheduled, setInterviewScheduled] = useState(false);
   const navigate = useNavigate();
+
+  const data = useSelector((state) => state.user);
 
   const { uid } = useParams();
   const {
@@ -105,7 +108,7 @@ const scheduled = () => {
   ) : (
     <div className="profile-img-info-container">
       <div className="mentor-img-sec">
-        <div className="mentor-medal-sec">
+        {/* <div className="mentor-medal-sec">
           <img
             src={medal}
             className="mentor-medal"
@@ -113,9 +116,9 @@ const scheduled = () => {
             alt="medal"
           />
           <span>{profileData?.medal}</span>
-        </div>
+        </div> */}
         <img
-          src={profileData?.photo_url}
+          src={ data.detail.profileImage || profileData?.profileImage}
           alt={profileData?.display_name || "profile image"}
           width={96}
           height={96}
@@ -126,7 +129,7 @@ const scheduled = () => {
         {profileLoading ? (
           <Skeleton variant="text" sx={{ fontSize: "1rem", width: "300px", height: "30px" }} />
         ) : (
-          <h4>{profileData?.display_name}</h4>
+          <h4>{profileData?.firstName}</h4>
         )}
         {profileLoading ? (
           <Skeleton variant="text" sx={{ fontSize: "1rem", width: "200px", height: "20px" }} />
@@ -138,7 +141,7 @@ const scheduled = () => {
         {profileLoading ? (
           <Skeleton variant="text" sx={{ fontSize: "1rem", width: "100px", height: "20px" }} />
         ) : (
-          <p className="mt-14">{profileData?.role}</p>
+          <p className="mt-14">{profileData?.type}</p>
         )}
       </div>
     </div>
@@ -162,7 +165,7 @@ const scheduled = () => {
 
             {/* Skills slider */}
             <div className="skillset-container">
-                {profileData?.skillSet.map((skillItem, index) => (
+                {profileData?.skills.map((skillItem, index) => (
                     <div className="profile-details-second-wrap-sec" key={index}>
                         <div
                             className={`mentor-icon ${
