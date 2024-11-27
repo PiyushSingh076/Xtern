@@ -26,6 +26,7 @@ import {
 } from "@mui/material";
 
 import { FiTrash } from "react-icons/fi";
+import LinkedInLogo from '../../../assets/svg/linkedin.png'
 import { State, City } from "country-state-city";
 import { useDispatch, useSelector } from "react-redux";
 import { setDetail } from "../../../Store/Slice/UserDetail";
@@ -554,11 +555,51 @@ export default function StepperForm() {
             </Grid>
 
             {/* Right Column - LinkedInFetcher and Details Sections */}
-            <Grid item xs={12} md={8}>
+            <Grid
+            sx={{
+              marginTop: '10px'
+            }}
+             item xs={12} md={8}>
+
+             <Box
+             sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'start',
+              justifyContent: 'center',
+              gap: '10px',
+              width: '100%',
+              height: '50px',
+              marginBottom: '20px'
+              }}
+             >
+             <div
+             onClick={()=>setIsLinkedInFetched(false)}
+             style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: '10px',
+              border: '1px solid #ccc',
+              padding: '10px',
+              borderRadius: '10px',
+              cursor: 'pointer'
+             }}
+             >
+             <img 
+              src={LinkedInLogo}
+              alt="LinkedIn Logo"
+              style
+              ={{width: '40px', height: '40px'}}
+              />
+              <span>Import Linkedin Profile</span>
+             </div>
+             </Box>
+
               {/* LinkedInFetcher */}
               {!isLinkedInFetched && (
                 <Box sx={{ mb: 2 }}>
-                  <LinkedInFetcher onFetchSuccess={handleLinkedInData} />
+                  <LinkedInFetcher close={setIsLinkedInFetched} onFetchSuccess={handleLinkedInData} />
                 </Box>
               )}
 
@@ -1297,8 +1338,10 @@ export default function StepperForm() {
                     variant="outlined"
                     fullWidth
                     required
-                    size="small"
-                  />
+                     size="small"
+   QAS
+   SAZ  
+   AZQ               />
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
@@ -1331,7 +1374,7 @@ export default function StepperForm() {
               onClick={closeModal}
               color="secondary"
               variant="outlined"
-              size="large"
+                size="large"
             >
               Cancel
             </Button>
