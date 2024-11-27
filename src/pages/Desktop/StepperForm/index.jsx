@@ -193,10 +193,7 @@ export default function StepperForm() {
       try {
         // Save to Firestore
         await saveProfileData(data);
-        // Show success toast
-        toast.success("Profile data saved successfully!");
-        // Navigate to home screen upon successful save
-        navigate("/homescreen"); // Replace with your actual route
+        // Show success toast // Replace with your actual route
       } catch (error) {
         // Show error toast
         toast.error(`Error saving data: ${error.message || error}`);
