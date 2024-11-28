@@ -21,7 +21,6 @@ const useSaveProfileData = () => {
     setError(null);
 
     try {
-      console.log("Starting saveProfileData...");
       const user = auth?.currentUser;
 
       if (!user) {
@@ -31,14 +30,11 @@ const useSaveProfileData = () => {
       const userUid = user?.uid;
       const userRef = doc(db, "users", userUid); // Firestore reference for the user document
 
-      console.log("Authenticated user UID:", userUid);
-
       // Update or save top-level user data
       const userData = {
         photo_url: data?.profileImage || "",
         firstName: data?.firstName || "",
         lastName: data?.lastName || "",
-        experience: data?.experience || "",
         type: data?.type || "",
         state: data?.state || "",
         city: data?.city || "",
@@ -48,15 +44,10 @@ const useSaveProfileData = () => {
         updatedAt: Timestamp.now(),
       };
 
-      console.log("Saving user data to Firestore:", userData);
-
       await setDoc(userRef, userData, { merge: true });
-      console.log("Top-level user data saved successfully.");
 
-      // Process and save skills
+      // Process and save skills as they are
       if (Array.isArray(data?.skills) && data.skills.length > 0) {
-        console.log("Updating skillSet with skills:", data.skills);
-
         const docSnapshot = await getDoc(userRef);
         let existingSkills = [];
 
@@ -68,28 +59,34 @@ const useSaveProfileData = () => {
           existingSkills = docSnapshot.data().skillSet;
         }
 
-        // Normalize the input skills array into a linear format
-        const normalizedSkills = data.skills.flatMap((skill) => {
-          if (typeof skill === "string") {
-            return skill.trim(); // Handle strings directly
-          } else if (typeof skill === "object" && skill?.skill) {
-            return skill.skill.trim(); // Handle objects with a "skill" property
-          }
-          return []; // Ignore non-valid items
-        });
+        // Normalize the input skills array to make sure each skill object has the correct structure
+        const normalizedSkills = data.skills
+          .map((skillObj) => {
+            if (skillObj?.skill && skillObj["skill-rating"] !== undefined) {
+              return {
+                skill: skillObj.skill.trim(),
+                "skill-rating": skillObj["skill-rating"], // Retain skill-rating as it is
+              };
+            }
+            return null; // Ignore invalid or incomplete skill objects
+          })
+          .filter((skill) => skill !== null); // Remove any null values from the array
 
-        // Merge existing skills with the normalized skills, removing duplicates
+        // Merge existing skills with the new ones, ensuring no duplicates
         const updatedSkills = Array.from(
-          new Set([...existingSkills, ...normalizedSkills])
-        );
-
-        console.log("Final merged skillSet array:", updatedSkills);
-
-        // Update Firestore with the linearized skills array
-        await updateDoc(userRef, {
-          skillSet: updatedSkills, // Overwrite with the updated array
+          new Set([
+            ...existingSkills.map((existingSkill) => existingSkill.skill),
+            ...normalizedSkills.map((skill) => skill.skill),
+          ])
+        ).map((skill) => {
+          return normalizedSkills.find((skillObj) => skillObj.skill === skill);
         });
-        console.log("SkillSet updated successfully.");
+
+        // Update Firestore with the updated skills array, keeping original structure
+        await updateDoc(userRef, {
+          skillSet: updatedSkills,
+        });
+
         toast.success("Skills updated successfully!");
       }
 
@@ -103,7 +100,6 @@ const useSaveProfileData = () => {
 
       // Save Education Subcollection
       if (Array.isArray(data?.education)) {
-        console.log("Saving education data...");
         const educationCollectionRef = collection(db, "education");
 
         for (const edu of data.education) {
@@ -117,16 +113,12 @@ const useSaveProfileData = () => {
             createdAt: Timestamp.now(),
           };
 
-          console.log("Saving education record:", educationData);
-
           await setDoc(doc(educationCollectionRef), educationData);
         }
-        console.log("Education data saved successfully.");
       }
 
       // Save Work Experience
       if (Array.isArray(data?.work)) {
-        console.log("Saving work experience data...");
         const workerCollectionRef = collection(db, "worker");
 
         for (const work of data.work) {
@@ -140,16 +132,12 @@ const useSaveProfileData = () => {
             createdAt: Timestamp.now(),
           };
 
-          console.log("Saving work experience record:", workData);
-
           await setDoc(doc(workerCollectionRef), workData);
         }
-        console.log("Work experience data saved successfully.");
       }
 
       // Save Projects Subcollection
       if (Array.isArray(data?.projects)) {
-        console.log("Saving projects data...");
         const projectsCollectionRef = collection(db, "projects");
 
         for (const project of data.projects) {
@@ -162,20 +150,31 @@ const useSaveProfileData = () => {
             createdAt: Timestamp.now(),
           };
 
-          console.log("Saving project record:", projectData);
-
           await setDoc(doc(projectsCollectionRef), projectData);
         }
-        console.log("Projects data saved successfully.");
+      }
+
+      // Save Services Subcollection
+      if (Array.isArray(data?.services)) {
+        const servicesCollectionRef = collection(db, "services");
+
+        for (const service of data.services) {
+          const serviceData = {
+            serviceName: service?.serviceName || "",
+            serviceDescription: service?.serviceDescription || "",
+            servicePrice: service?.servicePrice || "",
+            userRef, // Reference to the user's document
+            createdAt: Timestamp.now(),
+          };
+
+          await setDoc(doc(servicesCollectionRef), serviceData);
+        }
       }
 
       // Notify success and navigate
-      toast.success("Profile data saved successfully!");
+      toast.success("Profile and services data saved successfully!");
       navigate("/homescreen");
-
-      console.log("All profile data saved successfully.");
     } catch (err) {
-      console.error("Error saving profile data:", err);
       setError(err.message);
       toast.error(`Error saving profile data: ${err.message}`);
     } finally {
