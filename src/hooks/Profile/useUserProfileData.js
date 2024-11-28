@@ -60,12 +60,20 @@ const useUserProfileData = (uid) => {
         const projectSnapshot = await getDocs(projectQuery);
         const projectDetails = projectSnapshot.docs.map((doc) => doc.data());
 
+        // Fetch service details from `services` collection by querying for the user reference
+        const servicesQuery = query(
+          collection(db, "services"),
+          where("userRef", "==", userRef) // Use the `userRef` document reference
+        );
+        const servicesSnapshot = await getDocs(servicesQuery);
+        const serviceDetails = servicesSnapshot.docs.map((doc) => doc.data());
         // Combine all data into a single object
         const combinedData = {
           ...userData,
           workExperience,
           educationDetails,
           projectDetails,
+          serviceDetails,
         };
 
         console.log("Combined Data:", combinedData); // Final combined data
