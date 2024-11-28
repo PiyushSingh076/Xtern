@@ -54,14 +54,7 @@ console.log('skill',skillloading)
                             }`}
                             style={{ position: "relative", width: "80px", height: "80px" }}
                         >
-                            <CircularProgressbar
-                                value={skillItem.rating === 'High' ? 90 : skillItem.rating === 'Medium' ? 60 : 30}
-                                styles={buildStyles({
-                                    pathColor: skillItem.rating === 'High' ? 'green' : skillItem.rating === 'Medium' ? 'orange' : 'red',
-                                    trailColor: "#f0f0f0"
-                                })}
-                                ariaLabel={`Skill progress for ${skillItem.skill}`}
-                            />
+                          
                             <img
                                 src={code}
                                 alt={`${skillItem.skill}-icon`}
@@ -76,8 +69,8 @@ console.log('skill',skillloading)
                             />
                         </div>
                         <div className="mentor-content-single mt-12">
-                            <h3>{skillItem.skill}</h3>
-                            <p>{skillItem.rating}</p>
+                            <h3>{skillItem}</h3>
+                            
                         </div>
                     </div>
                 ))}

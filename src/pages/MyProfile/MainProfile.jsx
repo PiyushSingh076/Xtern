@@ -8,6 +8,8 @@ export default function MainProfile({ userdata, loading }) {
 
     console.log('main', loading)
 
+    
+
     return (
         <div>
             <div className="single-mentor-first-wrap">
@@ -16,12 +18,12 @@ export default function MainProfile({ userdata, loading }) {
                     <Skeleton variant="circular" width={96} height={96} />
                 ) : (
                     <div className="mentor-img-sec">
-                        {userdata?.typeUser === 'Intern' && (
+                        {/* {userdata?.typeUser === 'Intern' && (
                             <div className="mentor-medal-sec">
                                 <img src={medal} className="mentor-medal" width="24px" alt="medal" />
                                 <span>{userdata?.medal}</span>
                             </div>
-                        )}
+                        )} */}
                         <img src={userdata?.photo_url} alt="client-img" width={96} height={96} />
                     </div>
                 )}
@@ -36,17 +38,16 @@ export default function MainProfile({ userdata, loading }) {
                         </>
                     ) : (
                         <>
-                            <h3>{userdata?.display_name}</h3>
-                            {userdata?.typeUser === 'Intern' && <h4 className="mt-12">Graduation Year: {userdata?.graduationyear}</h4>}
-                            {userdata?.typeUser === 'venture' && <h4 className="mt-12">Organization: <span className="company-name">{userdata?.companyName}</span></h4>}
-                            <p className="mt-16">{userdata?.role}</p>
+                            <h3>{userdata?.firstName + ' ' + userdata?.lastName}</h3>
+                             <h4>Year of experience: {userdata?.experience}</h4>
+                            <p className="mt-16">{userdata?.type}</p>
                         </>
                     )}
                 </div>
 
                 {/* Schedule and Dollar Buttons */}
                 <div className="mentor-follow-sec">
-                    {userdata?.typeUser === 'Intern' &&  !userdata?.organization && (
+                
                         <>
                             {loading ? (
                                 <>
@@ -85,7 +86,7 @@ export default function MainProfile({ userdata, loading }) {
                                 </>
                             )}
                         </>
-                    )}
+                   
                 </div>
             </div>
         </div>

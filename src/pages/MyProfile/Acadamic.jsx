@@ -64,17 +64,23 @@ export default function Acadamic({ profileData }) {
             <div className="tab-content" id="course-tab-btn">
               {/* Work Experience Tab */}
               <div className="tab-pane fade show active mt-16" id="course-content" role="tabpanel" tabIndex="0">
-                {profileData?.workExperience?.map((work , index) => {
-                  const startDate = new Date(work.startdate.seconds * 1000);
-                  const startDateFormatted = startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+                {profileData?.linkedInProfile?.experiences?.map((work , index) => {
+                 const months = [
+                  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                ];
+                const startDate = work
+                  ? `${work?.starts_at?.day || ""} ${months[work?.starts_at?.month - 1] || ""} ${work?.starts_at?.year || ""}`.trim()
+                  : "Date not available";
+                 
                   return (
                     <div className="experience-sec" key={index}>
                       <div className="mob-work-logo-container">
                         <img src={work.logo} className="educ-logo" />
                       </div>
                       <div className="experience-info">
-                        <h4>{work.role}</h4>
-                        <p>{work.companyname} | {startDateFormatted}</p>
+                        <h4>{work.title}</h4>
+                        <p>{work.company} | {startDate}</p>
                         <button
                           className="desc-btn"
                           data-bs-toggle="collapse"

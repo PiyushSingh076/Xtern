@@ -94,11 +94,11 @@ const SingleMentor = () => {
             {/* Profile image and basic info */}
             <div className="profile-details-first-wrap">
               {profileLoading ? (
-                <Skeleton variant="circular" width={80} height={80} />
+                <Skeleton variant="circular" width={100} height={100} />
               ) : (
                 <div className="profile-img-info-container">
                   <div className="mentor-img-sec">
-                    <div className="mentor-medal-sec">
+                    {/* <div className="mentor-medal-sec">
                       <img
                         src={medal}
                         className="mentor-medal"
@@ -106,12 +106,12 @@ const SingleMentor = () => {
                         alt="medal"
                       />
                       <span>{profileData?.medal}</span>
-                    </div>
+                    </div> */}
                     <img
                       src={profileData?.photo_url}
-                      alt={profileData?.display_name || "profile image"}
-                      width={96}
-                      height={96}
+                      alt={profileData?.firstName || "profile image"}
+                      width={100}
+                      height={100}
                       onError={(e) => (e.target.src = "")}
                     />
                   </div>
@@ -126,7 +126,7 @@ const SingleMentor = () => {
                         }}
                       />
                     ) : (
-                      <h4>{profileData?.display_name}</h4>
+                      <h4>{profileData?.firstName} {profileData?.lastName}</h4>
                     )}
                     {profileLoading ? (
                       <Skeleton
@@ -139,7 +139,7 @@ const SingleMentor = () => {
                       />
                     ) : (
                       <span className="mt-12">
-                        Graduation Year: {profileData?.graduationyear}
+                        Year of Experience: {profileData?.experience}
                       </span>
                     )}
                     {profileLoading ? (
@@ -152,7 +152,7 @@ const SingleMentor = () => {
                         }}
                       />
                     ) : (
-                      <p className="mt-14">{profileData?.role}</p>
+                      <p className="mt-14">{profileData?.type}</p>
                     )}
                   </div>
                 </div>
@@ -211,8 +211,8 @@ const SingleMentor = () => {
                         }`}
                         style={{
                           position: "relative",
-                          width: "80px",
-                          height: "80px",
+                          width: "60px",
+                          height: "60px",
                         }}
                       >
                         <CircularProgressbar
@@ -248,7 +248,7 @@ const SingleMentor = () => {
                         />
                       </div>
                       <div className="mentor-content-single mt-12">
-                        <h3>{skillItem}</h3>
+                        <h4>{skillItem}</h4>
                         {/* <p>{skillItem}</p> */}
                       </div>
                     </div>
@@ -326,66 +326,75 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                      {profileData?.workExperience?.map((work, index) => {
-                        const startDate = new Date(
-                          work?.startdate?.seconds * 1000
-                        );
+                     {profileData?.linkedInProfile?.experiences?.map((work, index) => {
+  const months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  const startDate = work
+    ? `${work?.starts_at?.day || ""} ${months[work?.starts_at?.month - 1] || ""} ${work?.starts_at?.year || ""}`.trim()
+    : "Date not available";
 
-                        const startDateFormatted = startDate.toLocaleDateString(
-                          "en-US",
-                          { year: "numeric", month: "long" }
-                        );
-                        if (profileLoading)
-                          return (
-                            <Skeleton
-                              variant="rectangle"
-                              sx={{
-                                width: "100%",
-                                height: "100px",
-                                marginTop: "20px",
-                                borderRadius: "10px",
-                              }}
-                            />
-                          );
-                        else
-                          return (
-                            <div
-                              className="experience-sec"
-                              key={work?.role + work?.companyname}
-                            >
-                              <div className="work-logo-container">
-                                <img src={work?.logo} className="educ-logo" />
-                              </div>
-                              <div className="experience-info">
-                                <h4>{work?.role}</h4>
-                                <p>
-                                  {work?.companyname} | {startDateFormatted}
-                                </p>
+  if (profileLoading)
+    return (
+      <Skeleton
+        key={index}
+        variant="rectangle"
+        sx={{
+          width: "100%",
+          height: "100px",
+          marginTop: "20px",
+          borderRadius: "10px",
+        }}
+      />
+    );
 
-                                <button
-                                  className="desc-btn"
-                                  data-bs-toggle="collapse"
-                                  data-bs-target={`#collapse-${index}`}
-                                  aria-expanded="false"
-                                  aria-controls={`collapse-${index}`}
-                                >
-                                  View Description
-                                </button>
+  return (
+    <div
+      className="experience-sec"
+      key={work?.title + work?.company}
+    >
+      <div className="work-logo-container">
+        <img src={'https://cdn-icons-png.flaticon.com/512/10655/10655913.png'} className="educ-logo" alt="Company Logo" />
+      </div>
+      <div className="experience-info">
+        <h4>{work?.title}</h4>
+        <p>
+          {work?.company} | {startDate}
+        </p>
 
-                                <div
-                                  style={{ marginTop: "10px" }}
-                                  id={`collapse-${index}`}
-                                  className="collapse"
-                                  aria-labelledby={`collapse-${index}`}
-                                >
-                                  <div className="card card-body">
-                                    {work.description}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                      })}
+        <button
+          className="desc-btn"
+          data-bs-toggle="collapse"
+          data-bs-target={`#collapse-${index}`}
+          aria-expanded="false"
+          aria-controls={`collapse-${index}`}
+        >
+          View Description
+        </button>
+
+        <div
+          id={`collapse-${index}`}
+          className="collapse"
+          aria-labelledby={`collapse-${index}`}
+          style={{
+            marginTop: "10px",
+            width: "100%",
+          }}
+        >
+          <div
+            className="card card-body"
+            style={{
+              width: "100%",
+            }}
+          >
+            {work?.description || "No description available"}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+})}
                     </div>
                   </div>
                   <div className="tab-content" id="student-tabContent">
@@ -395,7 +404,7 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                      {profileData?.educationDetails?.map((educ, index) => {
+                      {profileData?.linkedInProfile?.education?.map((educ, index) => {
                         if (profileLoading) {
                           return (
                             <Skeleton
@@ -413,14 +422,14 @@ const SingleMentor = () => {
                           return (
                             <div className="experience-sec" key={index}>
                               <div className="work-logo-container">
-                                <img src={educ.logo} className="educ-logo" />
+                                <img src={'https://cdn.vectorstock.com/i/1000v/14/68/education-color-icon-vector-29051468.jpg'} className="educ-logo" />
                               </div>
                               <div className="experience-info">
-                                <h4>{educ.degree}</h4>
-                                <h6>Stream: ({educ.branch})</h6>
-                                <p>{educ.collegename}</p>
+                                <h4>{educ.degree_name}</h4>
+                                <h6>Stream: ({educ.field_of_study})</h6>
+                                <p>{educ.school}</p>
                                 <p>
-                                  Batch: {educ.startyear} - {educ.endyear}
+                                  Batch: {educ.starts_at?.year} - {educ.ends_at?.year}
                                 </p>
                               </div>
                             </div>
@@ -448,13 +457,13 @@ const SingleMentor = () => {
                         tabIndex="0"
                         aria-labelledby="reviews-tab-btn"
                       >
-                        {profileData?.projectDetails?.map((project, index) => (
+                        {profileData?.linkedInProfile?.accomplishment_projects?.map((project, index) => (
                           <div className="experience-sec" key={index}>
                             <div className="work-logo-container">
-                              <img src={project.logo} className="educ-logo" />
+                              <img src={'https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg'} className="educ-logo" />
                             </div>
                             <div className="experience-info">
-                              <h4>{project.projectname}</h4>
+                              <h4>{project.title}</h4>
 
                               <div style={{ marginTop: "5px" }}>
                                 <span>
@@ -466,6 +475,12 @@ const SingleMentor = () => {
                               </div>
 
                               <div className="desc-view-btn-container">
+
+
+                              <Link to={project.link} className="link-btn">
+                                  Live Link
+                                </Link>
+
                                 <button
                                   className="desc-btn"
                                   data-bs-toggle="collapse"
@@ -476,18 +491,19 @@ const SingleMentor = () => {
                                   View Description
                                 </button>
 
-                                <Link to={project.link} className="link-btn">
-                                  Live Link
-                                </Link>
+                              
                               </div>
 
                               <div
-                                style={{ marginTop: "10px" }}
+                                style={{ marginTop: "10px",
+                                 }}
                                 id={`collapse-${index}`}
                                 className="collapse"
                                 aria-labelledby={`collapse-${index}`}
                               >
-                                <div className="card card-body">
+                                <div 
+                                style={{width: '100%'}}
+                                className="card card-body">
                                   {project.description}
                                 </div>
                               </div>
