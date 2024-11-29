@@ -16,6 +16,25 @@ const useSaveProfileData = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Helper function to parse dates
+  const parseDateString = (dateStr) => {
+    if (!dateStr) return null; // Return null if no date string is provided
+
+    if (dateStr.toLowerCase() === "present") return "Present"; // Handle special "present" case
+
+    const [monthStr, year] = dateStr.split(" ");
+    if (!monthStr || !year) return null; // Return null if the date string format is invalid
+
+    // Attempt to create a valid Date object
+    const month = new Date(`${monthStr} 1, ${year}`).getMonth();
+    const parsedDate = new Date(year, month, 1); // Create a date with the given month and year
+
+    // Check if parsedDate is a valid Date object
+    if (isNaN(parsedDate)) return null; // Return null if it's an invalid date
+
+    return Timestamp.fromDate(parsedDate); // Return the Timestamp object if valid
+  };
+
   const saveProfileData = async (data) => {
     setLoading(true);
     setError(null);
@@ -65,7 +84,7 @@ const useSaveProfileData = () => {
             if (skillObj?.skill && skillObj["skill-rating"] !== undefined) {
               return {
                 skill: skillObj.skill.trim(),
-                "skill-rating": skillObj["skill-rating"], // Retain skill-rating as it is
+                skillRating: skillObj["skill-rating"], // Updated to "skillRating"
               };
             }
             return null; // Ignore invalid or incomplete skill objects
@@ -89,14 +108,6 @@ const useSaveProfileData = () => {
 
         toast.success("Skills updated successfully!");
       }
-
-      const parseDateString = (dateStr) => {
-        if (!dateStr) return null;
-        if (dateStr?.toLowerCase() === "present") return "Present";
-        const [monthStr, year] = dateStr?.split(" ");
-        const month = new Date(`${monthStr} 1, ${year}`).getMonth();
-        return Timestamp.fromDate(new Date(year, month, 1));
-      };
 
       // Save Education Subcollection
       if (Array.isArray(data?.education)) {
@@ -125,8 +136,8 @@ const useSaveProfileData = () => {
           const workData = {
             companyname: work?.company || "",
             description: work?.description || "",
-            startdate: parseDateString(work?.startDate),
-            enddate: parseDateString(work?.endDate),
+            startdate: parseDateString(work?.startDate), // Parse start date
+            enddate: parseDateString(work?.endDate), // Parse end date
             role: work?.position || "",
             work: userRef, // Storing as a DocumentReference
             createdAt: Timestamp.now(),
@@ -143,16 +154,15 @@ const useSaveProfileData = () => {
         for (const project of data.projects) {
           const projectData = {
             projectname: project?.projectName || "",
-           startdate: parseDateString(project?.duration?.split('-')?.[0]),
-           startdate: parseDateString(project?.duration?.split('-')?.[1]),
-           url: project?.liveLink || '',
+            startdate: parseDateString(project?.duration?.split("-")?.[0]), // Parse start date
+            enddate: parseDateString(project?.duration?.split("-")?.[1]), // Parse end date
+            url: project?.liveLink || "",
             description: project?.description || "",
             userproject: userRef, // Storing as a DocumentReference
             createdAt: Timestamp.now(),
           };
 
           await setDoc(doc(projectsCollectionRef), projectData);
-          
         }
       }
 
@@ -178,6 +188,7 @@ const useSaveProfileData = () => {
       navigate("/homescreen");
     } catch (err) {
       setError(err.message);
+      console.error(err);
       toast.error(`Error saving profile data: ${err.message}`);
     } finally {
       setLoading(false);
