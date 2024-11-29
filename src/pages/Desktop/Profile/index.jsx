@@ -219,11 +219,7 @@ const SingleMentor = () => {
                         <CircularProgressbar
                           value={
                             100
-                            // skillItem.rating == "High"
-                            //   ? 90
-                            //   : skillItem.rating == "Medium"
-                            //   ? 60
-                            //   : 30
+                            
                           }
                           styles={buildStyles({
                             pathColor: "green",
@@ -250,7 +246,8 @@ const SingleMentor = () => {
                       </div>
                       <div className="mentor-content-single mt-12">
                  
-                        <p>{skillItem}</p>
+                        <p>{skillItem.skill}</p>
+                     
                       </div>
                     </div>
                   ))}
@@ -273,11 +270,17 @@ const SingleMentor = () => {
                       </button>
                     </div>
                     <span className="service-price">
-                    ₹{profileData?.consultingPrice}/{profileData?.consultingDurationType?.split(' ')[1]}
+                    ₹{profileData?.consultingPrice}/{profileData?.consultingDuration?.split(' ')[0] + ' ' +profileData?.consultingDurationType?.split(' ')[1]}
                     </span>
 
                   </div>
-                  {profileData?.serviceDetail?.map((serviceItem, index) => (
+
+
+                  
+    
+
+
+                  {profileData?.serviceDetails?.map((serviceItem, index) => (
                     <div key={index} className="service-item">
                              <span className="service-name">{serviceItem?.serviceName}</span>
                              <span className="service-description">
@@ -360,14 +363,13 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                     {profileData?.linkedInProfile?.experiences?.map((work, index) => {
+                     {profileData?.workExperience?.map((work, index) => {
   const months = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
-  const startDate = work
-    ? `${work?.starts_at?.day || ""} ${months[work?.starts_at?.month - 1] || ""} ${work?.starts_at?.year || ""}`.trim()
-    : "Date not available";
+   
+
 
   if (profileLoading)
     return (
@@ -392,9 +394,9 @@ const SingleMentor = () => {
         <img src={'https://cdn-icons-png.flaticon.com/512/10655/10655913.png'} className="educ-logo" alt="Company Logo" />
       </div>
       <div className="experience-info">
-        <h4>{work?.title}</h4>
+        <h4>{work?.role}</h4>
         <p>
-          {work?.company} | {startDate}
+          {work?.companyname} | {dayjs.unix(work?.startdate?.seconds).format('MMMM D, YYYY')} - {dayjs.unix(work?.enddate?.seconds).format('MMMM D, YYYY') || 'Present'}
         </p>
 
         <button
@@ -438,7 +440,7 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                      {profileData?.linkedInProfile?.education?.map((educ, index) => {
+                      {profileData?.educationDetails?.map((educ, index) => {
                         if (profileLoading) {
                           return (
                             <Skeleton
@@ -459,11 +461,11 @@ const SingleMentor = () => {
                                 <img src={'https://cdn.vectorstock.com/i/1000v/14/68/education-color-icon-vector-29051468.jpg'} className="educ-logo" />
                               </div>
                               <div className="experience-info">
-                                <h4>{educ.degree_name}</h4>
-                                <h6>Stream: ({educ.field_of_study})</h6>
+                                <h4>{educ.degree}</h4>
+                                <h6>Stream: ({educ.branch})</h6>
                                 <p>{educ.school}</p>
                                 <p>
-                                  Batch: {educ.starts_at?.year} - {educ.ends_at?.year}
+                                  Batch: {educ.startyear} - {educ.endyear}
                                 </p>
                               </div>
                             </div>
@@ -491,13 +493,13 @@ const SingleMentor = () => {
                         tabIndex="0"
                         aria-labelledby="reviews-tab-btn"
                       >
-                        {profileData?.linkedInProfile?.accomplishment_projects?.map((project, index) => (
+                        {profileData?.projectDetails.map((project, index) => (
                           <div className="experience-sec" key={index}>
                             <div className="work-logo-container">
                               <img src={'https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg'} className="educ-logo" />
                             </div>
                             <div className="experience-info">
-                              <h4>{project.title}</h4>
+                              <h4>{project.projectname}</h4>
 
                               <div style={{ marginTop: "5px" }}>
                                 <span>
