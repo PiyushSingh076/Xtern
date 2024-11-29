@@ -191,7 +191,8 @@ const SingleMentor = () => {
                 }}
               />
             ) : (
-              <div>
+           <div className="skill-service-container">
+              <div className="skill-container">
                 <div className="profile-details-skill-sec">
                   <h3>Skills</h3>
                 </div>
@@ -211,8 +212,8 @@ const SingleMentor = () => {
                         }`}
                         style={{
                           position: "relative",
-                          width: "60px",
-                          height: "60px",
+                          width: "80px",
+                          height: "80px",
                         }}
                       >
                         <CircularProgressbar
@@ -242,19 +243,52 @@ const SingleMentor = () => {
                             position: "absolute",
                             top: "50%",
                             left: "50%",
-                            transform: "translate(-50%, -50%)",
+                            transform: "translate(-50%, -50%)", 
                             width: "40px",
                           }}
                         />
                       </div>
                       <div className="mentor-content-single mt-12">
-                        <h4>{skillItem}</h4>
-                        {/* <p>{skillItem}</p> */}
+                 
+                        <p>{skillItem}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+
+              <div className="service-container">
+                <h3>Services</h3>
+                <div className="service-list">
+                  <div className="service-item">
+                    <span className="service-name">
+                      Consulting Price
+                    </span>
+                    <div className="consulting-btn">
+                      <button className="chat-btn">
+                        💬 Chat
+                      </button>
+                      <button className="call-btn">
+                        📞 Call
+                      </button>
+                    </div>
+                    <span className="service-price">
+                    ₹{profileData?.consultingPrice}/{profileData?.consultingDurationType?.split(' ')[1]}
+                    </span>
+
+                  </div>
+                  {profileData?.serviceDetail?.map((serviceItem, index) => (
+                    <div key={index} className="service-item">
+                             <span className="service-name">{serviceItem?.serviceName}</span>
+                             <span className="service-description">
+                             {(serviceItem?.serviceDescription).slice(0,100) + '..'}
+                              </span>
+                             <span className="service-price">₹{serviceItem?.servicePrice}</span>
+                      </div>
+                  ))}
+                  </div>
+              </div>
+           </div>
             )}
             {/* Tabs section */}
             <div className="single-mentor-third-sec">

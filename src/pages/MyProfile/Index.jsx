@@ -97,7 +97,7 @@ const SingleMentor = () => {
                 {profileLoading ? (
                   <Skeleton variant="rounded" width={'100%'} height={'150px'} sx={{marginTop: '40px'}}/>
                 ) : (
-                  <SkillSet skill={profileData?.skillSet} />
+                  <SkillSet profileData={profileData} />
                 )}
               </>
           

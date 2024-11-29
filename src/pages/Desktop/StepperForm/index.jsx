@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -24,6 +24,8 @@ import {
   Divider,
   CircularProgress,
 } from "@mui/material";
+import Rating from '@mui/material/Rating';
+import Stack from '@mui/material/Stack';
 
 import { FiTrash } from "react-icons/fi";
 import LinkedInLogo from '../../../assets/svg/linkedin.png'
@@ -60,11 +62,15 @@ export default function StepperForm() {
   const [Education, setEducation] = useState([]);
   const [Work, setWork] = useState([]);
   const [Skills, setSkills] = useState([]);
+  const [value, setValue] = React.useState(2);
   const [Projects, setProjects] = useState([]);
   const [Services, setServices] = useState([]);
   const [ConsultingPrice, setConsultingPrice] = useState("");
   const [ConsultingDuration, setConsultingDuration] = useState("");
   const [ConsultingDurationType, setConsultingDurationType] = useState("");
+  const  [serviceData , setServiceData] = useState({})
+ const [recommendations , setRecommendation] = useState([])
+  
 
   // Flow control
   const [activeStep, setActiveStep] = useState(0);
@@ -97,7 +103,7 @@ export default function StepperForm() {
   };
 
   // Open Modal
-  const openModal = (type) => {
+  const openModal = (type , data) => {
     setModalType(type);
     setIsModalOpen(true);
   };
@@ -107,6 +113,75 @@ export default function StepperForm() {
     setIsModalOpen(false);
     setModalType("");
   };
+
+  const expertiseTypes = [
+    "Developer",
+    "Designer",
+    "Cloud Devops",
+    "Content Creator",
+    "Digital Marketing",
+    "Lawyer",
+    "HR",
+    "Accountant",
+  ];
+
+  useEffect(() => {
+    const recommendations = {
+      Developer: [
+        { title: "Web Development", description: "Build responsive and robust websites." },
+        { title: "App Development", description: "Create high-performance mobile applications." },
+      ],
+      Designer: [
+        { title: "Graphic Design", description: "Craft stunning visuals for branding." },
+        { title: "UI/UX Design", description: "Design user-friendly interfaces and experiences." },
+      ],
+      "Cloud Devops": [
+        { title: "Cloud Setup", description: "Set up scalable cloud infrastructure." },
+        { title: "DevOps Automation", description: "Streamline CI/CD pipelines and processes." },
+      ],
+      "Content Creator": [
+        { title: "Blog Writing", description: "Produce engaging and SEO-friendly articles." },
+        { title: "Video Production", description: "Create high-quality video content for platforms." },
+      ],
+      "Digital Marketing": [
+        { title: "SEO Optimization", description: "Improve website ranking on search engines." },
+        { title: "Social Media Campaigns", description: "Run targeted campaigns to grow audience." },
+      ],
+      Lawyer: [
+        { title: "Legal Advice", description: "Provide expert legal consultations." },
+        { title: "Contract Drafting", description: "Draft comprehensive legal agreements." },
+      ],
+      HR: [
+        { title: "Recruitment Services", description: "Find the right talent for your team." },
+        { title: "Employee Onboarding", description: "Streamline the onboarding process." },
+      ],
+      Accountant: [
+        { title: "Tax Filing", description: "Ensure compliance with tax regulations." },
+        { title: "Financial Planning", description: "Help plan and manage your finances effectively." },
+      ],
+      Default: [
+        { title: "General Service", description: "Offer a range of customizable services." },
+      ],
+    };
+  
+    // Set the recommendations based on XpertType
+    setRecommendation(
+      recommendations[dataRole.XpertType] || recommendations.Default
+    );
+  }, [dataRole.XpertType]);
+
+  const handleRecommendationClick = (rec) => {
+    const serviceData ={
+      serviceName: rec.title,
+      serviceDescription: rec.description,
+      servicePrice: "",
+    }
+   setServiceData(serviceData)
+    openModal("Service");
+  };
+
+  
+  
 
   // Save Detail
   const saveDetail = (type, data) => {
@@ -242,16 +317,7 @@ export default function StepperForm() {
   );
 
   // Define Expertise Types and Degrees
-  const expertiseTypes = [
-    "Developer",
-    "Designer",
-    "Cloud Devops",
-    "Content Creator",
-    "Digital Marketing",
-    "Lawyer",
-    "HR",
-    "Accountant",
-  ];
+
 
   const degrees = ["High-School", "Bachelor", "Master", "PhD"];
 
@@ -687,7 +753,7 @@ export default function StepperForm() {
                   <Divider />
                   <CardContent sx={{ padding: 2 }}>
                     {Skills.map((item, index) => (
-                      <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                      <Box key={index} sx={{ mb: 3, position: "relative" , display: 'flex' , flexDirection: 'row' , alignItems: 'center', gap: '20px'}}>
                         <IconButton
                           aria-label="delete"
                           size="small"
@@ -696,7 +762,8 @@ export default function StepperForm() {
                         >
                           <FiTrash color="red" size={16} />
                         </IconButton>
-                        <Typography variant="body1">{item.skill}</Typography>
+                        <Typography variant="body1">{item.skill.charAt(0).toUpperCase() + item.skill.slice(1)}</Typography>
+                      <Rating name="half-rating-read" defaultValue={value} size="small" readOnly sx={{color: '#3498db'}} />
                       </Box>
                     ))}
                   </CardContent>
@@ -960,47 +1027,83 @@ export default function StepperForm() {
 
               {/* Services Section */}
               <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
-                <CardHeader
-                  title="Services"
-                  titleTypographyProps={{ variant: "h6" }}
-                  action={
-                    <Button
-                      variant="contained"
-                      startIcon={<AddCircleOutlineIcon />}
-                      onClick={() => openModal("Service")}
-                      size="small"
-                      sx={{ textTransform: "none" }}
-                    >
-                      Add Service
-                    </Button>
-                  }
-                  sx={{ padding: 2 }}
-                />
-                <Divider />
-                <CardContent sx={{ padding: 2 }}>
-                  {Services.map((item, index) => (
-                    <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                      <IconButton
-                        aria-label="delete"
-                        size="small"
-                        sx={{ position: "absolute", top: 0, right: 0 }}
-                        onClick={() => deleteDetail("service", index)}
-                      >
-                        <FiTrash color="red" size={16} />
-                      </IconButton>
-                      <Typography variant="subtitle1">
-                        <strong>{item.serviceName}</strong>
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {item.serviceDescription}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Price: ₹{item.servicePrice}
-                      </Typography>
-                    </Box>
-                  ))}
-                </CardContent>
-              </Card>
+  <CardHeader
+    title="Services"
+    titleTypographyProps={{ variant: "h6" }}
+    action={
+      <Button
+        variant="contained"
+        startIcon={<AddCircleOutlineIcon />}
+        onClick={() => openModal("Service")}
+        size="small"
+        sx={{ textTransform: "none" }}
+      >
+        Add Service
+      </Button>
+    }
+    sx={{ padding: 2 }}
+  />
+  <Divider />
+  <CardContent sx={{ padding: 2 }}>
+    {Services.map((item, index) => (
+      <Box key={index} sx={{ mb: 3, position: "relative" }}>
+        <IconButton
+          aria-label="delete"
+          size="small"
+          sx={{ position: "absolute", top: 0, right: 0 }}
+          onClick={() => deleteDetail("service", index)}
+        >
+          <FiTrash color="red" size={16} />
+        </IconButton>
+        <Typography variant="subtitle1">
+          <strong>{item.serviceName}</strong>
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          {item.serviceDescription}
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          Price: ₹{item.servicePrice}
+        </Typography>
+      </Box>
+    ))}
+  </CardContent>
+</Card>
+
+
+
+{/* Recommendation Section */}
+<Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+  <CardHeader
+    title="Recommendations"
+    titleTypographyProps={{ variant: "h6" }}
+    sx={{ padding: 2 }}
+  />
+  <Divider />
+  <CardContent>
+    <Grid container spacing={2}>
+      {recommendations.map((rec, index) => (
+        <Grid item xs={12} sm={6} md={4} key={index}>
+          <Card
+            sx={{
+              boxShadow: 1,
+              cursor: "pointer",
+              ":hover": { boxShadow: 3 },
+              padding: 2,
+            }}
+            onClick={() => handleRecommendationClick(rec)}
+          >
+            <Typography variant="subtitle1" gutterBottom>
+              <strong>{rec.title}</strong>
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {rec.description}
+            </Typography>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  </CardContent>
+</Card>
 
               {/* Submit Button */}
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -1165,7 +1268,9 @@ export default function StepperForm() {
             )}
 
             {modalType === "Skill" && (
-              <TextField
+              <Box sx={{display: 'flex' , flexDirection: 'row' , alignItems: 'center' , gap: '10px'}}>
+                <TextField
+                sx={{ width: '60%'}}
                 label="Skill Name"
                 name="skill"
                 variant="outlined"
@@ -1173,7 +1278,45 @@ export default function StepperForm() {
                 required
                 size="small"
               />
-            )}
+ <Box
+ sx={{
+  height: '42px'
+  
+ }}
+ >
+  <Typography
+  sx={{
+    marginLeft: '2px',
+    color: '#1876D2',
+    fontSize: '14px',
+  }}
+   component="legend">Rating</Typography>
+<Rating
+  size="large"
+  name="skill-rating"
+  value={value}
+  onChange={(event, newValue) => {
+    setValue(newValue);
+  }}
+  sx={{
+    fontSize: "3rem", 
+    color: "#3498db", 
+    "& .MuiRating-iconFilled": {
+      color: "#3498db", 
+    },
+    "& .MuiRating-iconHover": {
+      color: "#2e6da4", 
+    },
+  }}
+/>
+</Box>
+
+      </Box>
+      
+        
+)}
+
+ 
 
             {modalType === "Work" && (
               <Grid container spacing={3}>
@@ -1329,45 +1472,56 @@ export default function StepperForm() {
               </Grid>
             )}
 
-            {modalType === "Service" && (
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Service Name"
-                    name="serviceName"
-                    variant="outlined"
-                    fullWidth
-                    required
-                     size="small"
-   QAS
-   SAZ  
-   AZQ               />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Service Description"
-                    name="serviceDescription"
-                    variant="outlined"
-                    fullWidth
-                    multiline
-                    rows={3}
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Service Price (₹)"
-                    name="servicePrice"
-                    type="number"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
-            )}
+{modalType === "Service" && (
+  <Grid container spacing={3}>
+    <Grid item xs={12}>
+      <TextField
+        label="Service Name"
+        name="serviceName"
+        variant="outlined"
+        fullWidth
+        required
+        size="small"
+        value={serviceData.serviceName}
+        onChange={(e) =>
+          setServiceData({ ...serviceData, serviceName: e.target.value })
+        }
+      />
+    </Grid>
+    <Grid item xs={12}>
+      <TextField
+        label="Service Description"
+        name="serviceDescription"
+        variant="outlined"
+        fullWidth
+        multiline
+        rows={3}
+        required
+        size="small"
+        value={serviceData.serviceDescription}
+        onChange={(e) =>
+          setServiceData({ ...serviceData, serviceDescription: e.target.value })
+        }
+      />
+    </Grid>
+    <Grid item xs={12}>
+      <TextField
+        label="Service Price (₹)"
+        name="servicePrice"
+        type="number"
+        variant="outlined"
+        fullWidth
+        required
+        size="small"
+        value={serviceData.servicePrice}
+        onChange={(e) =>
+          setServiceData({ ...serviceData, servicePrice: e.target.value })
+        }
+      />
+    </Grid>
+  
+  </Grid>
+)}
           </DialogContent>
           <DialogActions>
             <Button
@@ -1378,7 +1532,7 @@ export default function StepperForm() {
             >
               Cancel
             </Button>
-            // Inside your ProfileForm component's return statement
+         
             <Button
               variant="contained"
               color="primary"

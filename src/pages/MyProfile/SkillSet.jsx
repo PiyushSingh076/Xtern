@@ -8,13 +8,13 @@ import code from '../../assets/svg/code.svg';
 import { useSelector } from "react-redux";
 
 
-export default function SkillSet({ skill , skillloading }) {
+export default function SkillSet({ profileData , skillloading }) {
  
     const { uid } = useParams();
     
 
 
-console.log('skill',skillloading)
+console.log('skill',profileData)
 
     const settings = {
         dots: false,
@@ -46,7 +46,7 @@ console.log('skill',skillloading)
 
             {/* Skills slider */}
             <div className="skillset-container">
-                {skill.map((skillItem, index) => (
+                {profileData?.skillSet?.map((skillItem, index) => (
                     <div className="profile-details-second-wrap-sec" key={index}>
                         <div
                             className={`mentor-icon ${
@@ -74,7 +74,43 @@ console.log('skill',skillloading)
                         </div>
                     </div>
                 ))}
+
+
             </div>
+
+            <div 
+            style={{width: '100%'}}
+            className="service-container">
+                <h3>Services</h3>
+                <div className="service-list">
+                  <div className="service-item">
+                    <span className="service-name">
+                      Consulting Price
+                    </span>
+                    <div className="consulting-btn">
+                      <button className="chat-btn">
+                        💬 Chat
+                      </button>
+                      <button className="call-btn">
+                        📞 Call
+                      </button>
+                    </div>
+                    <span className="service-price">
+                    ₹{profileData?.consultingPrice}/{profileData?.consultingDurationType?.split(' ')[1]}
+                    </span>
+
+                  </div>
+                  {profileData?.serviceDetail?.map((serviceItem, index) => (
+                    <div key={index} className="service-item">
+                             <span className="service-name">{serviceItem?.serviceName}</span>
+                             <span className="service-description">
+                             {(serviceItem?.serviceDescription).slice(0,100) + '..'}
+                              </span>
+                             <span className="service-price">₹{serviceItem?.servicePrice}</span>
+                      </div>
+                  ))}
+                  </div>
+              </div>
         </div>
     );
 }
