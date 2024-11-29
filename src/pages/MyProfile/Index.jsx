@@ -86,23 +86,24 @@ const SingleMentor = () => {
 
             {/* Profile information */}
             <MainProfile userdata={profileData} loading={profileLoading} />
+            
             <div className="navbar-boder mt-24"></div>
 
-            {profileData?.organization  && <VentureOptions />}
+            {/* {profileData?.organization  && <VentureOptions />} */}
 
             {/* SkillSet section */}
-            {profileData?.typeUser === "Intern" && !profileData?.organization && (
+             
               <>
                 {profileLoading ? (
                   <Skeleton variant="rounded" width={'100%'} height={'150px'} sx={{marginTop: '40px'}}/>
                 ) : (
-                  <SkillSet skill={profileData?.skillSet} />
+                  <SkillSet profileData={profileData} />
                 )}
               </>
-            )}
+          
 
             {/* Acadamic section */}
-            {profileData?.typeUser === "Intern" && !profileData?.organization && (
+      
               <>
                 {profileLoading ? (
                   <Skeleton variant="rounded" width={'100%'} height={'350px'} sx={{marginTop: '80px'}}/>
@@ -110,7 +111,7 @@ const SingleMentor = () => {
                   <Acadamic profileData={profileData}  />
                 )}
               </>
-            )}
+   
           </div>
         </div>
       </section>

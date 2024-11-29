@@ -60,7 +60,7 @@ export default function Header() {
         { userData && (
           <div className="profile-container" onClick={handleMenuToggle}>
             <img
-              src={data.detail.profileImage || userData?.profileImage}
+              src={ userData?.photo_url}
               width="30px"
               style={{ borderRadius: '50%', cursor: 'pointer' }}
               
