@@ -112,6 +112,7 @@ export default function StepperForm() {
   const closeModal = () => {
     setIsModalOpen(false);
     setModalType("");
+    setServiceData({ })
   };
 
   const expertiseTypes = [
@@ -272,6 +273,7 @@ export default function StepperForm() {
       } catch (error) {
         // Show error toast
         toast.error(`Error saving data: ${error.message || error}`);
+        console.log(error)
       }
     } else {
       // Display specific toast alerts

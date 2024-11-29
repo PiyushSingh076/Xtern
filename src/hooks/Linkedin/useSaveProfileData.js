@@ -123,11 +123,11 @@ const useSaveProfileData = () => {
 
         for (const work of data.work) {
           const workData = {
-            companyname: work?.companyname || "",
+            companyname: work?.company || "",
             description: work?.description || "",
-            startdate: parseDateString(work?.startdate),
-            enddate: parseDateString(work?.enddate),
-            role: work?.role || "",
+            startdate: parseDateString(work?.startDate),
+            enddate: parseDateString(work?.endDate),
+            role: work?.position || "",
             work: userRef, // Storing as a DocumentReference
             createdAt: Timestamp.now(),
           };
@@ -142,15 +142,17 @@ const useSaveProfileData = () => {
 
         for (const project of data.projects) {
           const projectData = {
-            projectname: project?.projectname || "",
-            startdate: parseDateString(project?.startdate),
-            enddate: parseDateString(project?.enddate),
+            projectname: project?.projectName || "",
+           startdate: parseDateString(project?.duration?.split('-')?.[0]),
+           startdate: parseDateString(project?.duration?.split('-')?.[1]),
+           url: project?.liveLink || '',
             description: project?.description || "",
             userproject: userRef, // Storing as a DocumentReference
             createdAt: Timestamp.now(),
           };
 
           await setDoc(doc(projectsCollectionRef), projectData);
+          
         }
       }
 
