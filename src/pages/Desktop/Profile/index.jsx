@@ -19,6 +19,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { TimeClock } from "@mui/x-date-pickers/TimeClock";
 import { Flag } from "@mui/icons-material";
+import useRegisterUser from "../../../hooks/Stream/client";
 
 // Component definition
 const SingleMentor = () => {
@@ -32,6 +33,10 @@ const SingleMentor = () => {
   const [interviewScheduled, setInterviewScheduled] = useState(false);
   const navigate = useNavigate();
 
+
+
+
+
   const { uid } = useParams();
   const {
     userData: profileData,
@@ -39,6 +44,10 @@ const SingleMentor = () => {
     error: profileError,
   } = useUserProfileData(uid);
   console.log("profileData", profileData, profileError);
+
+  const registrationStatus = useRegisterUser(profileData, profileLoading, profileError);
+
+  console.log("Registration Status:", registrationStatus);
 
   // Slider settings
   // const settings = {
@@ -86,7 +95,9 @@ const SingleMentor = () => {
   };
 
   return (
+  
     <div className="desktop-profile-container">
+
       {/* Profile details section */}
       <section id="profile-details-section">
         <div className="profile-details">
@@ -160,21 +171,23 @@ const SingleMentor = () => {
 
               <div>
                 <div className="profile-details-second-wrap">
-                  <button
-                    onClick={() => setInterviewScheduled(true)}
-                    className="schedule-btn"
-                  >
-                    <img
-                      src={schedule}
-                      width={"50px"}
-                      alt="schedule"
-                      className="schedule-icon"
-                    />{" "}
-                    <div>
-                      <span>Schedule Interview</span>{" "}
-                      <span>Schedule interview at few click</span>
+                <div className="service-item">
+                    <span className="service-name">
+                      Consulting Price
+                    </span>
+                    <div className="consulting-btn">
+                      <button className="chat-btn">
+                        💬 Chat
+                      </button>
+                      <button className="call-btn">
+                        📞 Call
+                      </button>
                     </div>
-                  </button>
+                    <span className="service-price">
+                    ₹{profileData?.consultingPrice}/{profileData?.consultingDuration?.split(' ')[0] + ' ' +profileData?.consultingDurationType?.split(' ')[1]}
+                    </span>
+
+                  </div>
                   {/* <button className="chat-btn"><img src={chat} width={'50px'} alt="chat"/> Chat</button> */}
                 </div>
               </div>
@@ -257,23 +270,7 @@ const SingleMentor = () => {
               <div className="service-container">
                 <h3>Services</h3>
                 <div className="service-list">
-                  <div className="service-item">
-                    <span className="service-name">
-                      Consulting Price
-                    </span>
-                    <div className="consulting-btn">
-                      <button className="chat-btn">
-                        💬 Chat
-                      </button>
-                      <button className="call-btn">
-                        📞 Call
-                      </button>
-                    </div>
-                    <span className="service-price">
-                    ₹{profileData?.consultingPrice}/{profileData?.consultingDuration?.split(' ')[0] + ' ' +profileData?.consultingDurationType?.split(' ')[1]}
-                    </span>
-
-                  </div>
+               
 
 
                   
