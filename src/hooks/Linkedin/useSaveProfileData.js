@@ -54,6 +54,7 @@ const useSaveProfileData = () => {
         photo_url: data?.profileImage || "",
         firstName: data?.firstName || "",
         lastName: data?.lastName || "",
+        experience: data?.experience || "",
         type: data?.type || "",
         state: data?.state || "",
         city: data?.city || "",
@@ -65,7 +66,6 @@ const useSaveProfileData = () => {
 
       await setDoc(userRef, userData, { merge: true });
 
-      // Process and save skills as they are
       if (Array.isArray(data?.skills) && data.skills.length > 0) {
         const docSnapshot = await getDoc(userRef);
         let existingSkills = [];
@@ -78,12 +78,17 @@ const useSaveProfileData = () => {
           existingSkills = docSnapshot.data().skillSet;
         }
 
-        // Normalize the input skills array to make sure each skill object has the correct structure
+        // Normalize the input skills array to ensure each skill object has the correct structure
         const normalizedSkills = data.skills
           .map((skillObj) => {
-            if (skillObj?.skill && skillObj["skill-rating"] !== undefined) {
+            // Ensure skillObj has both 'skill' and 'skill-rating' properties
+            if (
+              skillObj?.skill &&
+              typeof skillObj.skill === "string" &&
+              skillObj["skill-rating"] !== undefined
+            ) {
               return {
-                skill: skillObj.skill.trim(),
+                skill: skillObj.skill.trim(), // Trim the skill name
                 skillRating: skillObj["skill-rating"], // Updated to "skillRating"
               };
             }
@@ -91,22 +96,33 @@ const useSaveProfileData = () => {
           })
           .filter((skill) => skill !== null); // Remove any null values from the array
 
-        // Merge existing skills with the new ones, ensuring no duplicates
+        // Merge existing skills with the new ones, ensuring no duplicates and valid data
         const updatedSkills = Array.from(
           new Set([
             ...existingSkills.map((existingSkill) => existingSkill.skill),
             ...normalizedSkills.map((skill) => skill.skill),
           ])
-        ).map((skill) => {
-          return normalizedSkills.find((skillObj) => skillObj.skill === skill);
-        });
+        )
+          .map((skill) => {
+            // Find the matching skill object in normalizedSkills to retrieve full data (including skillRating)
+            return normalizedSkills.find(
+              (skillObj) => skillObj.skill === skill
+            );
+          })
+          .filter((skill) => skill !== undefined); // Ensure no undefined values are included
 
-        // Update Firestore with the updated skills array, keeping original structure
-        await updateDoc(userRef, {
-          skillSet: updatedSkills,
-        });
-
-        toast.success("Skills updated successfully!");
+        // If there are still undefined values after filtering, log them for debugging
+        if (updatedSkills.some((skill) => skill === undefined)) {
+          console.error(
+            "Found undefined value in updated skills:",
+            updatedSkills
+          );
+        } else {
+          await updateDoc(userRef, {
+            skillSet: updatedSkills,
+          });
+          toast.success("Skills updated successfully!");
+        }
       }
 
       // Save Education Subcollection
@@ -117,10 +133,10 @@ const useSaveProfileData = () => {
           const educationData = {
             degree: edu?.degree || "",
             stream: edu?.stream || "",
-            collegename: edu?.collegename || "",
-            startyear: edu?.startyear || "",
-            endyear: edu?.endyear || "",
-            usereducation: userRef, // Storing as a DocumentReference
+            college: edu?.college || "",
+            startDate: parseDateString(edu?.startDate),
+            endDate: edu?.endDate ? parseDateString(edu?.endDate) : null, // Corrected endDate handling
+            usereducation: userRef, // Storing as a DocumentReference to user document
             createdAt: Timestamp.now(),
           };
 
@@ -128,22 +144,22 @@ const useSaveProfileData = () => {
         }
       }
 
-      // Save Work Experience
+      // Save Work Experience Subcollection
       if (Array.isArray(data?.work)) {
-        const workerCollectionRef = collection(db, "worker");
+        const workCollectionRef = collection(db, "worker");
 
         for (const work of data.work) {
           const workData = {
-            companyname: work?.company || "",
+            companyName: work?.company || "",
             description: work?.description || "",
-            startdate: parseDateString(work?.startDate), // Parse start date
-            enddate: parseDateString(work?.endDate), // Parse end date
+            startDate: parseDateString(work?.startDate), // Parse start date
+            endDate: parseDateString(work?.endDate), // Parse end date
             role: work?.position || "",
-            work: userRef, // Storing as a DocumentReference
+            work: userRef, // Storing as a DocumentReference to user document
             createdAt: Timestamp.now(),
           };
 
-          await setDoc(doc(workerCollectionRef), workData);
+          await setDoc(doc(workCollectionRef), workData);
         }
       }
 
@@ -153,12 +169,12 @@ const useSaveProfileData = () => {
 
         for (const project of data.projects) {
           const projectData = {
-            projectname: project?.projectName || "",
-            startdate: parseDateString(project?.duration?.split("-")?.[0]), // Parse start date
-            enddate: parseDateString(project?.duration?.split("-")?.[1]), // Parse end date
-            url: project?.liveLink || "",
+            projectName: project?.projectName || "",
+            startDate: parseDateString(project?.duration?.split("-")?.[0]), // Parse start date
+            endDate: parseDateString(project?.duration?.split("-")?.[1]), // Parse end date
+            liveDemo: project?.liveLink || "",
             description: project?.description || "",
-            userproject: userRef, // Storing as a DocumentReference
+            userproject: userRef, // Storing as a DocumentReference to user document
             createdAt: Timestamp.now(),
           };
 
@@ -175,7 +191,7 @@ const useSaveProfileData = () => {
             serviceName: service?.serviceName || "",
             serviceDescription: service?.serviceDescription || "",
             servicePrice: service?.servicePrice || "",
-            userRef, // Reference to the user's document
+            userRef: userRef, // Reference to the user's document
             createdAt: Timestamp.now(),
           };
 
