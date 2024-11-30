@@ -126,7 +126,9 @@ const SingleMentor = () => {
                         }}
                       />
                     ) : (
-                      <h4>{profileData?.firstName} {profileData?.lastName}</h4>
+                      <h4>
+                        {profileData?.firstName} {profileData?.lastName}
+                      </h4>
                     )}
                     {profileLoading ? (
                       <Skeleton
@@ -191,107 +193,99 @@ const SingleMentor = () => {
                 }}
               />
             ) : (
-           <div className="skill-service-container">
-              <div className="skill-container">
-                <div className="profile-details-skill-sec">
-                  <h3>Skills</h3>
-                </div>
+              <div className="skill-service-container">
+                <div className="skill-container">
+                  <div className="profile-details-skill-sec">
+                    <h3>Skills</h3>
+                  </div>
 
-                {/* Skills slider */}
-                <div className="skillset-container">
-                  {profileData?.skillSet?.map((skillItem, index) => (
-                    <div
-                      className="profile-details-second-wrap-sec"
-                      key={index}
-                    >
+                  {/* Skills slider */}
+                  <div className="skillset-container">
+                    {profileData?.skillSet?.map((skillItem, index) => (
                       <div
-                        className={`mentor-icon ${
-                          ["purple-bg", "green-bg", "pink-bg", "orange-bg"][
-                            index % 4
-                          ]
-                        }`}
-                        style={{
-                          position: "relative",
-                          width: "80px",
-                          height: "80px",
-                        }}
+                        className="profile-details-second-wrap-sec"
+                        key={index}
                       >
-                        <CircularProgressbar
-                          value={
-                            100
-                            
-                          }
-                          styles={buildStyles({
-                            pathColor: "green",
-                            // skillItem.rating == "High"
-                            //   ? "green"
-                            //   : skillItem.rating == "Medium"
-                            //   ? "orange"
-                            //   : "red",
-                            // trailColor: "#f0f0f0",
-                          })}
-                        />
-                        <img
-                          src={code}
-                          alt={`${skillItem}-icon`}
+                        <div
+                          className={`mentor-icon ${
+                            ["purple-bg", "green-bg", "pink-bg", "orange-bg"][
+                              index % 4
+                            ]
+                          }`}
                           style={{
-                            padding: "5px",
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)", 
-                            width: "40px",
+                            position: "relative",
+                            width: "80px",
+                            height: "80px",
                           }}
-                        />
+                        >
+                          <CircularProgressbar
+                            value={100}
+                            styles={buildStyles({
+                              pathColor: "green",
+                              // skillItem.rating == "High"
+                              //   ? "green"
+                              //   : skillItem.rating == "Medium"
+                              //   ? "orange"
+                              //   : "red",
+                              // trailColor: "#f0f0f0",
+                            })}
+                          />
+                          <img
+                            src={code}
+                            // alt={`${skillItem}-icon`}
+                            style={{
+                              padding: "5px",
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              width: "40px",
+                            }}
+                          />
+                        </div>
+                        <div className="mentor-content-single mt-12">
+                          <p>{skillItem?.skill}</p>
+                          <p>{skillItem?.skillRating} Star</p>
+                        </div>
                       </div>
-                      <div className="mentor-content-single mt-12">
-                 
-                        <p>{skillItem.skill}</p>
-                     
+                    ))}
+                  </div>
+                </div>
+
+                <div className="service-container">
+                  <h3>Services</h3>
+                  <div className="service-list">
+                    <div className="service-item">
+                      <span className="service-name">Consulting Price</span>
+                      <div className="consulting-btn">
+                        <button className="chat-btn">💬 Chat</button>
+                        <button className="call-btn">📞 Call</button>
                       </div>
+                      <span className="service-price">
+                        ₹{profileData?.consultingPrice}/
+                        {profileData?.consultingDuration?.split(" ")[0] +
+                          " " +
+                          profileData?.consultingDurationType?.split(" ")[1]}
+                      </span>
                     </div>
-                  ))}
+
+                    {profileData?.serviceDetails?.map((serviceItem, index) => (
+                      <div key={index} className="service-item">
+                        <span className="service-name">
+                          {serviceItem?.serviceName}
+                        </span>
+                        <span className="service-description">
+                          {(serviceItem?.serviceDescription).slice(0, 100) +
+                            ".."}
+                        </span>
+                        <span className="service-price">
+                          ₹{serviceItem?.servicePrice}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-
-              <div className="service-container">
-                <h3>Services</h3>
-                <div className="service-list">
-                  <div className="service-item">
-                    <span className="service-name">
-                      Consulting Price
-                    </span>
-                    <div className="consulting-btn">
-                      <button className="chat-btn">
-                        💬 Chat
-                      </button>
-                      <button className="call-btn">
-                        📞 Call
-                      </button>
-                    </div>
-                    <span className="service-price">
-                    ₹{profileData?.consultingPrice}/{profileData?.consultingDuration?.split(' ')[0] + ' ' +profileData?.consultingDurationType?.split(' ')[1]}
-                    </span>
-
-                  </div>
-
-
-                  
-    
-
-
-                  {profileData?.serviceDetails?.map((serviceItem, index) => (
-                    <div key={index} className="service-item">
-                             <span className="service-name">{serviceItem?.serviceName}</span>
-                             <span className="service-description">
-                             {(serviceItem?.serviceDescription).slice(0,100) + '..'}
-                              </span>
-                             <span className="service-price">₹{serviceItem?.servicePrice}</span>
-                      </div>
-                  ))}
-                  </div>
-              </div>
-           </div>
             )}
             {/* Tabs section */}
             <div className="single-mentor-third-sec">
@@ -363,74 +357,96 @@ const SingleMentor = () => {
                       role="tabpanel"
                       tabIndex="0"
                     >
-                     {profileData?.workExperience?.map((work, index) => {
-  const months = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
-   
+                      {profileData?.workExperience?.map((work, index) => {
+                        const months = [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun",
+                          "Jul",
+                          "Aug",
+                          "Sep",
+                          "Oct",
+                          "Nov",
+                          "Dec",
+                        ];
 
+                        if (profileLoading)
+                          return (
+                            <Skeleton
+                              key={index}
+                              variant="rectangle"
+                              sx={{
+                                width: "100%",
+                                height: "100px",
+                                marginTop: "20px",
+                                borderRadius: "10px",
+                              }}
+                            />
+                          );
 
-  if (profileLoading)
-    return (
-      <Skeleton
-        key={index}
-        variant="rectangle"
-        sx={{
-          width: "100%",
-          height: "100px",
-          marginTop: "20px",
-          borderRadius: "10px",
-        }}
-      />
-    );
+                        return (
+                          <div
+                            className="experience-sec"
+                            key={work?.role + work?.companyName}
+                          >
+                            <div className="work-logo-container">
+                              <img
+                                src={
+                                  "https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
+                                }
+                                className="educ-logo"
+                                alt="Company Logo"
+                              />
+                            </div>
+                            <div className="experience-info">
+                              <h4>{work?.role}</h4>
+                              <p>
+                                {work?.companyname} |{" "}
+                                {dayjs
+                                  .unix(work?.startdate?.seconds)
+                                  .format("MMMM D, YYYY")}{" "}
+                                -{" "}
+                                {dayjs
+                                  .unix(work?.enddate?.seconds)
+                                  .format("MMMM D, YYYY") || "Present"}
+                              </p>
 
-  return (
-    <div
-      className="experience-sec"
-      key={work?.title + work?.company}
-    >
-      <div className="work-logo-container">
-        <img src={'https://cdn-icons-png.flaticon.com/512/10655/10655913.png'} className="educ-logo" alt="Company Logo" />
-      </div>
-      <div className="experience-info">
-        <h4>{work?.role}</h4>
-        <p>
-          {work?.companyname} | {dayjs.unix(work?.startdate?.seconds).format('MMMM D, YYYY')} - {dayjs.unix(work?.enddate?.seconds).format('MMMM D, YYYY') || 'Present'}
-        </p>
+                              <button
+                                className="desc-btn"
+                                data-bs-toggle="collapse"
+                                data-bs-target={`#collapse-${index}`}
+                                aria-expanded="false"
+                                aria-controls={`collapse-${index}`}
+                              >
+                                View Description
+                              </button>
 
-        <button
-          className="desc-btn"
-          data-bs-toggle="collapse"
-          data-bs-target={`#collapse-${index}`}
-          aria-expanded="false"
-          aria-controls={`collapse-${index}`}
-        >
-          View Description
-        </button>
-
-        <div
-          id={`collapse-${index}`}
-          className="collapse"
-          aria-labelledby={`collapse-${index}`}
-          style={{
-            marginTop: "10px",
-            width: "100%",
-          }}
-        >
-          <div
-            className="card card-body"
-            style={{
-              width: "100%",
-            }}
-          >
-            {work?.description || "No description available"}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-})}
+                              <div
+                                id={`collapse-${index}`}
+                                className="collapse"
+                                aria-labelledby={`collapse-${index}`}
+                                style={{
+                                  marginTop: "10px",
+                                  width: "100%",
+                                }}
+                              >
+                                <div
+                                  className="card card-body"
+                                  style={{
+                                    width: "100%",
+                                  }}
+                                >
+                                  {work?.description ||
+                                    "No description available"}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                   <div className="tab-content" id="student-tabContent">
@@ -458,14 +474,19 @@ const SingleMentor = () => {
                           return (
                             <div className="experience-sec" key={index}>
                               <div className="work-logo-container">
-                                <img src={'https://cdn.vectorstock.com/i/1000v/14/68/education-color-icon-vector-29051468.jpg'} className="educ-logo" />
+                                <img
+                                  src={
+                                    "https://cdn.vectorstock.com/i/1000v/14/68/education-color-icon-vector-29051468.jpg"
+                                  }
+                                  className="educ-logo"
+                                />
                               </div>
                               <div className="experience-info">
-                                <h4>{educ.degree}</h4>
-                                <h6>Stream: ({educ.branch})</h6>
-                                <p>{educ.school}</p>
+                                <h4>{educ?.degree}</h4>
+                                <h6>Stream: ({educ?.stream})</h6>
+                                <p>{educ?.college}</p>
                                 <p>
-                                  Batch: {educ.startyear} - {educ.endyear}
+                                  {/* Batch: {educ.startyear} - {educ.endyear} */}
                                 </p>
                               </div>
                             </div>
@@ -496,10 +517,15 @@ const SingleMentor = () => {
                         {profileData?.projectDetails.map((project, index) => (
                           <div className="experience-sec" key={index}>
                             <div className="work-logo-container">
-                              <img src={'https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg'} className="educ-logo" />
+                              <img
+                                src={
+                                  "https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg"
+                                }
+                                className="educ-logo"
+                              />
                             </div>
                             <div className="experience-info">
-                              <h4>{project.projectname}</h4>
+                              <h4>{project?.projectname}</h4>
 
                               <div style={{ marginTop: "5px" }}>
                                 <span>
@@ -511,9 +537,10 @@ const SingleMentor = () => {
                               </div>
 
                               <div className="desc-view-btn-container">
-
-
-                              <Link to={project.link} className="link-btn">
+                                <Link
+                                  to={project?.liveDemo}
+                                  className="link-btn"
+                                >
                                   Live Link
                                 </Link>
 
@@ -526,21 +553,19 @@ const SingleMentor = () => {
                                 >
                                   View Description
                                 </button>
-
-                              
                               </div>
 
                               <div
-                                style={{ marginTop: "10px",
-                                 }}
+                                style={{ marginTop: "10px" }}
                                 id={`collapse-${index}`}
                                 className="collapse"
                                 aria-labelledby={`collapse-${index}`}
                               >
-                                <div 
-                                style={{width: '100%'}}
-                                className="card card-body">
-                                  {project.description}
+                                <div
+                                  style={{ width: "100%" }}
+                                  className="card card-body"
+                                >
+                                  {project?.description}
                                 </div>
                               </div>
                             </div>
