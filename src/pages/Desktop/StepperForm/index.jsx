@@ -1048,6 +1048,18 @@ export default function StepperForm() {
                   sx={{ padding: 2 }}
                 />
                 <Divider />
+                <CardContent>
+  {ConsultingPrice !== '' && ConsultingPrice !== 0 && (
+    <Typography variant="body1">
+      Your Consultant Charges: ₹{ConsultingPrice}
+    </Typography>
+  )}
+  {ConsultingPrice !== '' && ConsultingPrice !== 0 && (
+    <p style={{ fontSize: '8px', color: 'red' }}>
+      20% of the total amount will be deducted as Platform charge
+    </p>
+  )}
+</CardContent>
                 <CardContent sx={{ padding: 2 }}>
                   <Grid container spacing={3} alignItems="center">
                     <Grid item xs={12} sm={4}>
@@ -1055,8 +1067,13 @@ export default function StepperForm() {
                         label="Price (₹)"
                         variant="outlined"
                         fullWidth
-                        value={ConsultingPrice}
-                        onChange={(e) => setConsultingPrice(e.target.value)}
+                        
+                        onChange={(e) => {
+                          const inputPrice = parseFloat(e.target.value);
+                          if (!isNaN(inputPrice)) {
+                            setConsultingPrice((inputPrice * 0.8).toFixed(2)); // Apply 20% reduction
+                          }
+                        }}
                         required
                         size="small"
                       />
