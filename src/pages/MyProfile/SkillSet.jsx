@@ -46,34 +46,56 @@ console.log('skill',profileData)
 
             {/* Skills slider */}
             <div className="skillset-container">
-                {profileData?.skillSet?.map((skillItem, index) => (
-                    <div className="profile-details-second-wrap-sec" key={index}>
-                        <div
-                            className={`mentor-icon ${
-                                ["purple-bg", "green-bg", "pink-bg", "orange-bg"][index % 4]
-                            }`}
-                            style={{ position: "relative", width: "80px", height: "80px" }}
-                        >
-                          
-                            <img
-                                src={code}
-                                alt={`${skillItem.skill}-icon`}
-                                style={{
-                                    padding: '5px',
-                                    position: "absolute",
-                                    top: "50%",
-                                    left: "50%",
-                                    transform: "translate(-50%, -50%)",
-                                    width: "40px"
-                                }}
-                            />
-                        </div>
-                        <div className="mentor-content-single mt-12">
-                            <h3>{skillItem}</h3>
-                            
-                        </div>
-                    </div>
-                ))}
+            {profileData?.skillSet?.map((skillItem, index) => {
+  // Mapping the rating (1-5) to a percentage value (20-100)
+  const ratingPercentage = (skillItem?.skillRating / 5) * 100;
+
+  return (
+    <div className="profile-details-second-wrap-sec" key={index}>
+      <div
+        className={`mentor-icon ${
+          ["purple-bg", "green-bg", "pink-bg", "orange-bg"][
+            index % 4
+          ]
+        }`}
+        style={{
+          position: "relative",
+          width: "80px",
+          height: "80px",
+        }}
+      >
+        <CircularProgressbar
+          value={ratingPercentage} // Set progress based on the rating
+          styles={buildStyles({
+            pathColor:
+              ratingPercentage >= 80
+                ? "green"
+                : ratingPercentage >= 60
+                ? "orange"
+                : "red", // Change color based on rating
+            trailColor: "#f0f0f0",
+          })}
+        />
+        <img
+          src={code}
+          alt={`${skillItem?.skill}-icon`}
+          style={{
+            padding: "5px",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "40px",
+          }}
+        />
+      </div>
+      <div className="mentor-content-single mt-12">
+        <p>{skillItem?.skill}</p>
+        <p>{skillItem?.skillRating} Star</p>
+      </div>
+    </div>
+  );
+})}
 
 
             </div>
@@ -88,9 +110,7 @@ console.log('skill',profileData)
                       Consulting Price
                     </span>
                     <div className="consulting-btn">
-                      <button className="chat-btn">
-                        💬 Chat
-                      </button>
+                   
                       <button className="call-btn">
                         📞 Call
                       </button>
@@ -100,14 +120,14 @@ console.log('skill',profileData)
                     </span>
 
                   </div>
-                  {profileData?.serviceDetail?.map((serviceItem, index) => (
-                    <div key={index} className="service-item">
-                             <span className="service-name">{serviceItem?.serviceName}</span>
-                             <span className="service-description">
-                             {(serviceItem?.serviceDescription).slice(0,100) + '..'}
-                              </span>
-                             <span className="service-price">₹{serviceItem?.servicePrice}</span>
-                      </div>
+                  {profileData?.serviceDetails?.map((serviceItem, index) => (
+                 <div key={index} className="service-item">
+                  <span className="service-name" style={{fontSize: '0.8rem'}}>{serviceItem?.serviceName}</span>
+                  <span className="service-description" style={{fontSize: '0.6rem'}}>
+                    {(serviceItem?.serviceDescription).slice(0,100) + '..'}
+                  </span>
+                  <span className="service-price" style={{fontSize: '0.7rem'}}>₹{serviceItem?.servicePrice}</span>
+                </div>
                   ))}
                   </div>
               </div>

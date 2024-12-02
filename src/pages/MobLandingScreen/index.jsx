@@ -9,10 +9,17 @@ import ImageBtn from './ImageBtn'
 import Blog from './Blog'
 import useFetchUserData from '../../hooks/Auth/useFetchUserData'
 import Dashboard from './Dashboard'
+import { useNavigate } from 'react-router-dom'
+
 
 export default function MobHomeScreen() {
 
+  const navigate = useNavigate()
   const { userData } = useFetchUserData()
+
+  if(userData){
+      navigate('/homescreen')
+  }
 
   return (
     <div className='MobHomeScreen-container'>

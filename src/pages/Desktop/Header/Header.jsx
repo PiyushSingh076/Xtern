@@ -68,8 +68,16 @@ export default function Header() {
            {userData?.firstName}
           </div>
         )}
+         <div className="wallet-container">
+         <AiOutlineWallet className="wallet-icon" />
+       <span className="wallet-balance">₹200</span>
+
+      </div>
    
       </div>
+     
+
+
 
       {/* Dropdown Menu */}
       {menuOpen && (

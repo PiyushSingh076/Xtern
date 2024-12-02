@@ -14,8 +14,11 @@ import digital_marketing from '../../../assets/svg/digital-marketing.png'
 import hr from '../../../assets/svg/hr.png'
 import lawyer from '../../../assets/svg/lawyer.png'
 import accountant from '../../../assets/svg/accountant.png'
+import useFetchUserData from '../../../hooks/Auth/useFetchUserData'
 
 export default function HomeScreen() {
+
+    const {userData} = useFetchUserData()
 
     const categories = [
         {
@@ -76,14 +79,14 @@ export default function HomeScreen() {
     <div className='main-Home-Screen-container'>
       
   
-      <div 
+ { userData?.serviceDetails &&   <div 
   onClick={() => navigate('/xpertrole')}
   className="become-xpert-banner">
   <h1 className="title">
     Become <span className="domains-title">Xpert</span>
   </h1>
   <p className="subtitle">Join a community of world-class professionals</p>
-</div>
+</div>}
        
       <div className="categories-container">
       <h2 className="categories-title">Unlock <span style={{color: '#0A65FC'}}>X</span>pert Services,</h2>
