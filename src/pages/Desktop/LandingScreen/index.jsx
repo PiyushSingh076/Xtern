@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Homescreen.css";
 import LandingBanner from "./LandingBanner";
 import Categories from "./Categories";
@@ -15,10 +15,15 @@ import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
 import Loading from "../../../components/Loading";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
+import { useNavigate } from "react-router-dom";
 
 export default function Homepage() {
+
+  const navigate = useNavigate()
+
   const [show, setShow] = useState(false);
   const [Role, setRole] = useState("");
+
 
   const { userData, loading, error } = useFetchUserData();
   const { handleLogout, loading: logoutloading } = useOAuthLogout(); // Use the logout hook
@@ -31,6 +36,15 @@ export default function Homepage() {
   console.log("profileData", profileData, profileError);
 
   console.log(Role);
+
+  useEffect(()=>{
+
+    if(userData){
+       navigate('/homescreen')
+    }
+
+  },[userData])
+
 
   return (
     <div className="homescreen-container">

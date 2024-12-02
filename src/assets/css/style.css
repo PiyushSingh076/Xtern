@@ -684,7 +684,9 @@ textarea {
 }
 
 .mentor-img-sec {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center
 }
 
 .mentor-medal {
@@ -4336,7 +4338,10 @@ span.ongoing-txt2 {
 /* ------------------------------------- 36.Single mentor screen start ------------------------------------- */
 .single-mentor-first-wrap {
   display: flex;
-  column-gap: 16px;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  
 }
 
 .single-mentor-details h3 {
@@ -4620,13 +4625,15 @@ span.ongoing-txt2 {
 .experience-sec {
   display: flex;
   justify-content: start;
+  align-items: center;
   margin-top: 16px;
   border: 1px solid var(--border-colors);
-  padding: 12px;
+  padding: 10px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   background: var(--background-input);
   margin-bottom: 16px;
+  height: auto;
 }
 
 .experience-info {
@@ -4648,8 +4655,8 @@ span.ongoing-txt2 {
 }
 
 .educ-logo {
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
   object-fit: contain;
   border-radius: 10px;
 }
@@ -7072,6 +7079,10 @@ h2 {
 .Logo-container,
 .menu-btn-container {
   width: 33%;
+}
+
+.back-btn-container{
+ text-align: right;
 }
 
 .Logo-container {

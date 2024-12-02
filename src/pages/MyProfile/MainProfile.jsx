@@ -40,13 +40,13 @@ export default function MainProfile({ userdata, loading }) {
                         <>
                             <h3>{userdata?.firstName + ' ' + userdata?.lastName}</h3>
                              <h4>Year of experience: {userdata?.experience}</h4>
-                            <p className="mt-16">{userdata?.type}</p>
+                            <p className="">{userdata?.type}</p>
                         </>
                     )}
                 </div>
 
                 {/* Schedule and Dollar Buttons */}
-                <div className="mentor-follow-sec">
+                {/* <div className="mentor-follow-sec">
                 
                         <>
                             {loading ? (
@@ -87,7 +87,7 @@ export default function MainProfile({ userdata, loading }) {
                             )}
                         </>
                    
-                </div>
+                </div> */}
             </div>
         </div>
     );

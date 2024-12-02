@@ -33,49 +33,7 @@ const SingleMentor = () => {
   return (
     <>
       {/* Header section */}
-      <header id="top-header">
-        <div className="container">
-          <div className="top-header-full">
-            {/* Back button */}
-            <div className="back-btn">
-              <svg
-                onClick={handleBackClick}
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <mask
-                  id="mask0_330_7385"
-                  style={{ maskType: "alpha" }}
-                  maskUnits="userSpaceOnUse"
-                  x="0"
-                  y="0"
-                  width="24"
-                  height="24"
-                >
-                  <rect width="24" height="24" fill="black" />
-                </mask>
-                <g mask="url(#mask0_330_7385)">
-                  <path
-                    d="M15 18L9 12L15 6"
-                    stroke="black"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </g>
-              </svg>
-            </div>
-            {/* Header title */}
-            <div className="header-title">
-              <p>Profile</p>
-            </div>
-          </div>
-        </div>
-        <div className="navbar-boder"></div>
-      </header>
+
 
       {/* Main content section */}
       <section id="single-mentor-sec">

@@ -191,6 +191,8 @@ const useSaveProfileData = () => {
             serviceName: service?.serviceName || "",
             serviceDescription: service?.serviceDescription || "",
             servicePrice: service?.servicePrice || "",
+            serviceDuration: service?.duration || "",
+            serviceDurationType: service?.durationType || "",
             userRef: userRef, // Reference to the user's document
             createdAt: Timestamp.now(),
           };

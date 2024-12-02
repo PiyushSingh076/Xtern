@@ -1,25 +1,21 @@
 // Imports
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
-import code from "../../../assets/svg/code.svg";
 import { useSelector } from "react-redux";
-import medal from "../../../assets/svg/medal.png";
 import "./Profile.css";
 import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import Skeleton from "@mui/material/Skeleton";
-import schedule from "../../../assets/svg/calendar.png";
-import chat from "../../../assets/svg/chat.png";
 import dayjs, { Dayjs } from "dayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { TimeClock } from "@mui/x-date-pickers/TimeClock";
-import { Flag } from "@mui/icons-material";
 import useRegisterUser from "../../../hooks/Stream/client";
+import { FaClock , FaPhone} from 'react-icons/fa';
+import { MdPhone } from 'react-icons/md';
+
 
 // Component definition
 const SingleMentor = () => {
@@ -50,7 +46,7 @@ const SingleMentor = () => {
   console.log("Registration Status:", registrationStatus);
 
   // Slider settings
-  // const settings = {
+  // const settings = 
   //   infinite: false,
   //   speed: 500,
   //   slidesToShow: 2,
@@ -99,647 +95,396 @@ const SingleMentor = () => {
     <div className="desktop-profile-container">
 
       {/* Profile details section */}
-      <section id="profile-details-section">
-        <div className="profile-details">
-          <div className="profile-details-wrap mt-32">
-            {/* Profile image and basic info */}
-            <div className="profile-details-first-wrap">
-              {profileLoading ? (
-                <Skeleton variant="circular" width={100} height={100} />
-              ) : (
-                <div className="profile-img-info-container">
-                  <div className="mentor-img-sec">
-                    {/* <div className="mentor-medal-sec">
-                      <img
-                        src={medal}
-                        className="mentor-medal"
-                        width={"24px"}
-                        alt="medal"
-                      />
-                      <span>{profileData?.medal}</span>
-                    </div> */}
-                    <img
-                      src={profileData?.photo_url}
-                      alt={profileData?.firstName || "profile image"}
-                      width={100}
-                      height={100}
-                      onError={(e) => (e.target.src = "")}
-                    />
-                  </div>
-                  <div className="profile-details-details">
-                    {profileLoading ? (
-                      <Skeleton
-                        variant="text"
-                        sx={{
-                          fontSize: "1rem",
-                          width: "300px",
-                          height: "30px",
-                        }}
-                      />
-                    ) : (
-                      <h4>
-                        {profileData?.firstName} {profileData?.lastName}
-                      </h4>
-                    )}
-                    {profileLoading ? (
-                      <Skeleton
-                        variant="text"
-                        sx={{
-                          fontSize: "1rem",
-                          width: "200px",
-                          height: "20px",
-                        }}
-                      />
-                    ) : (
-                      <span className="mt-12">
-                        Year of Experience: {profileData?.experience}
-                      </span>
-                    )}
-                    {profileLoading ? (
-                      <Skeleton
-                        variant="text"
-                        sx={{
-                          fontSize: "1rem",
-                          width: "100px",
-                          height: "20px",
-                        }}
-                      />
-                    ) : (
-                      <p className="mt-14">{profileData?.type}</p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <div className="profile-details-second-wrap">
-                <div className="service-item">
-                    <span className="service-name">
-                      Consulting Price
-                    </span>
-                    <div className="consulting-btn">
-                      <button className="chat-btn">
-                        💬 Chat
-                      </button>
-                      <button className="call-btn">
-                        📞 Call
-                      </button>
-                    </div>
-                    <span className="service-price">
-                    ₹{profileData?.consultingPrice}/{profileData?.consultingDuration?.split(' ')[0] + ' ' +profileData?.consultingDurationType?.split(' ')[1]}
-                    </span>
-
-                  </div>
-                  {/* <button className="chat-btn"><img src={chat} width={'50px'} alt="chat"/> Chat</button> */}
-                </div>
-              </div>
-            </div>
-             {/* Skills section */}
+     <section id="profile-details-section">
+  <div className="profile-details">
+    <div className="profile-details-wrap">
+      {/* Profile image and basic info */}
+      <div className="profile-details-first-wrap">
+        <div className="profile-img-info-container">
+          {/* Profile Image Section */}
+          <div className="mentor-img-sec">
             {profileLoading ? (
               <Skeleton
-                variant="rectangle"
-                sx={{
-                  width: "100%",
-                  height: "200px",
-                  marginTop: "20px",
-                  borderRadius: "10px",
-                }}
+                variant="circular"
+                width={150}
+                height={150}
+                animation="wave"
               />
             ) : (
-              <div className="skill-service-container">
-                <div className="skill-container">
-                  <div className="profile-details-skill-sec">
-                    <h3>Skills</h3>
-                  </div>
-
-                  {/* Skills slider */}
-                  <div className="skillset-container">
-                    {profileData?.skillSet?.map((skillItem, index) => (
-                      <div
-                        className="profile-details-second-wrap-sec"
-                        key={index}
-                      >
-                        <div
-                          className={`mentor-icon ${
-                            ["purple-bg", "green-bg", "pink-bg", "orange-bg"][
-                              index % 4
-                            ]
-                          }`}
-                          style={{
-                            position: "relative",
-                            width: "80px",
-                            height: "80px",
-                          }}
-                        >
-                          <CircularProgressbar
-                            value={100}
-                            styles={buildStyles({
-                              pathColor: "green",
-                              // skillItem.rating == "High"
-                              //   ? "green"
-                              //   : skillItem.rating == "Medium"
-                              //   ? "orange"
-                              //   : "red",
-                              // trailColor: "#f0f0f0",
-                            })}
-                          />
-                          <img
-                            src={code}
-                            // alt={`${skillItem}-icon`}
-                            style={{
-                              padding: "5px",
-                              position: "absolute",
-                              top: "50%",
-                              left: "50%",
-                              transform: "translate(-50%, -50%)",
-                              width: "40px",
-                            }}
-                          />
-                        </div>
-                        <div className="mentor-content-single mt-12">
-                          <p>{skillItem?.skill}</p>
-                          <p>{skillItem?.skillRating} Star</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-
-                <div className="service-container">
-                  <h3>Services</h3>
-                  <div className="service-list">
-                    <div className="service-item">
-                      <span className="service-name">Consulting Price</span>
-                      <div className="consulting-btn">
-                        <button className="chat-btn">💬 Chat</button>
-                        <button className="call-btn">📞 Call</button>
-                      </div>
-                      <span className="service-price">
-                        ₹{profileData?.consultingPrice}/
-                        {profileData?.consultingDuration?.split(" ")[0] +
-                          " " +
-                          profileData?.consultingDurationType?.split(" ")[1]}
-                      </span>
-                    </div>
-
-
-                    {profileData?.serviceDetails?.map((serviceItem, index) => (
-                      <div key={index} className="service-item">
-                        <span className="service-name">
-                          {serviceItem?.serviceName}
-                        </span>
-                        <span className="service-description">
-                          {(serviceItem?.serviceDescription).slice(0, 100) +
-                            ".."}
-                        </span>
-                        <span className="service-price">
-                          ₹{serviceItem?.servicePrice}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <img
+                src={profileData?.photo_url}
+                alt={profileData?.firstName || "Profile Image"}
+                width={150}
+                height={150}
+                onError={(e) => (e.target.src = "")} // Fallback image logic
+              />
             )}
-            {/* Tabs section */}
-            <div className="single-mentor-third-sec">
-              <div className="fifth-decs-sec mt-32">
-                <div className="fifth-decs-sec-wrap">
-                  {profileLoading ? (
-                    <Skeleton
-                      variant="rectangle"
-                      sx={{
-                        width: "100%",
-                        height: "50px",
-                        marginTop: "20px",
-                        borderRadius: "10px",
-                      }}
-                    />
-                  ) : (
-                    <ul
-                      className="nav nav-pills single-mentor-tab"
-                      id="mentor-tab"
-                      role="tablist"
-                    >
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link active"
-                          id="mentor-course-tab-btn"
-                          data-bs-toggle="pill"
-                          data-bs-target="#course-content"
-                          type="button"
-                          role="tab"
-                          aria-selected="true"
-                        >
-                          Work Experience
-                        </button>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link"
-                          id="student-tab-btn"
-                          data-bs-toggle="pill"
-                          data-bs-target="#student-content"
-                          type="button"
-                          role="tab"
-                          aria-selected="false"
-                          tabIndex="-1"
-                        >
-                          Education
-                        </button>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link"
-                          id="reviews-tab-btn"
-                          data-bs-toggle="pill"
-                          data-bs-target="#reviews-content"
-                          type="button"
-                          role="tab"
-                          aria-selected="false"
-                          tabIndex="-1"
-                        >
-                          Projects
-                        </button>
-                      </li>
-                    </ul>
-                  )}
-                  <div className="tab-content" id="course-tab-btn">
-                    <div
-                      className="tab-pane fade show active mt-16"
-                      id="course-content"
-                      role="tabpanel"
-                      tabIndex="0"
-                    >
-                      {profileData?.workExperience?.map((work, index) => {
-                        const months = [
-                          "Jan",
-                          "Feb",
-                          "Mar",
-                          "Apr",
-                          "May",
-                          "Jun",
-                          "Jul",
-                          "Aug",
-                          "Sep",
-                          "Oct",
-                          "Nov",
-                          "Dec",
-                        ];
-
-                        if (profileLoading)
-                          return (
-                            <Skeleton
-                              key={index}
-                              variant="rectangle"
-                              sx={{
-                                width: "100%",
-                                height: "100px",
-                                marginTop: "20px",
-                                borderRadius: "10px",
-                              }}
-                            />
-                          );
-
-                        return (
-                          <div
-                            className="experience-sec"
-                            key={work?.role + work?.companyName}
-                          >
-                            <div className="work-logo-container">
-                              <img
-                                src={
-                                  "https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
-                                }
-                                className="educ-logo"
-                                alt="Company Logo"
-                              />
-                            </div>
-                            <div className="experience-info">
-                              <h4>{work?.role}</h4>
-                              <p>
-                                {work?.companyname} |{" "}
-                                {dayjs
-                                  .unix(work?.startdate?.seconds)
-                                  .format("MMMM D, YYYY")}{" "}
-                                -{" "}
-                                {dayjs
-                                  .unix(work?.enddate?.seconds)
-                                  .format("MMMM D, YYYY") || "Present"}
-                              </p>
-
-                              <button
-                                className="desc-btn"
-                                data-bs-toggle="collapse"
-                                data-bs-target={`#collapse-${index}`}
-                                aria-expanded="false"
-                                aria-controls={`collapse-${index}`}
-                              >
-                                View Description
-                              </button>
-
-                              <div
-                                id={`collapse-${index}`}
-                                className="collapse"
-                                aria-labelledby={`collapse-${index}`}
-                                style={{
-                                  marginTop: "10px",
-                                  width: "100%",
-                                }}
-                              >
-                                <div
-                                  className="card card-body"
-                                  style={{
-                                    width: "100%",
-                                  }}
-                                >
-                                  {work?.description ||
-                                    "No description available"}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div className="tab-content" id="student-tabContent">
-                    <div
-                      className="tab-pane fade show"
-                      id="student-content"
-                      role="tabpanel"
-                      tabIndex="0"
-                    >
-                      {profileData?.educationDetails?.map((educ, index) => {
-                        if (profileLoading) {
-                          return (
-                            <Skeleton
-                              variant="rectangle"
-                              sx={{
-                                width: "100%",
-                                height: "100px",
-                                marginTop: "20px",
-                                borderRadius: "10px",
-                              }}
-                              key={index}
-                            />
-                          );
-                        } else {
-                          return (
-                            <div className="experience-sec" key={index}>
-                              <div className="work-logo-container">
-                                <img
-                                  src={
-                                    "https://cdn.vectorstock.com/i/1000v/14/68/education-color-icon-vector-29051468.jpg"
-                                  }
-                                  className="educ-logo"
-                                />
-                              </div>
-                              <div className="experience-info">
-                                <h4>{educ?.degree}</h4>
-                                <h6>Stream: ({educ?.stream})</h6>
-                                <p>{educ?.college}</p>
-                                <p>
-                                  {/* Batch: {educ.startyear} - {educ.endyear} */}
-                                </p>
-                              </div>
-                            </div>
-                          );
-                        }
-                      })}
-                    </div>
-                  </div>
-                  {profileLoading ? (
-                    <Skeleton
-                      variant="rectangle"
-                      sx={{
-                        width: "100%",
-                        height: "200px",
-                        marginTop: "20px",
-                        borderRadius: "10px",
-                      }}
-                    />
-                  ) : (
-                    <div className="tab-content" id="review-tabContent">
-                      <div
-                        className="tab-pane fade show"
-                        id="reviews-content"
-                        role="tabpanel"
-                        tabIndex="0"
-                        aria-labelledby="reviews-tab-btn"
-                      >
-                        {profileData?.projectDetails.map((project, index) => (
-                          <div className="experience-sec" key={index}>
-                            <div className="work-logo-container">
-                              <img
-                                src={
-                                  "https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg"
-                                }
-                                className="educ-logo"
-                              />
-                            </div>
-                            <div className="experience-info">
-                              <h4>{project?.projectname}</h4>
-
-                              <div style={{ marginTop: "5px" }}>
-                                <span>
-                                  <b>Tech Stack:</b>{" "}
-                                  {project.techstack?.map((item) => (
-                                    <span key={item}> {item} |</span>
-                                  ))}
-                                </span>
-                              </div>
-
-                              <div className="desc-view-btn-container">
-                                <Link
-                                  to={project?.liveDemo}
-                                  className="link-btn"
-                                >
-                                  Live Link
-                                </Link>
-
-                                <button
-                                  className="desc-btn"
-                                  data-bs-toggle="collapse"
-                                  data-bs-target={`#collapse-${index}`}
-                                  aria-expanded="false"
-                                  aria-controls={`collapse-${index}`}
-                                >
-                                  View Description
-                                </button>
-                              </div>
-
-                              <div
-                                style={{ marginTop: "10px" }}
-                                id={`collapse-${index}`}
-                                className="collapse"
-                                aria-labelledby={`collapse-${index}`}
-                              >
-                                <div
-                                  style={{ width: "100%" }}
-                                  className="card card-body"
-                                >
-                                  {project?.description}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
-      </section>
-      {/* Similar profiles section */}
-      {/* <section id="similar-profiles-section">
-        <div className="xtern-btn-sec">
-          <div
-            className="schedule-interview-btn"
-            data-bs-toggle="modal"
-            data-bs-target="#scheduleInterviewModal"
-          >
-            <div>
-              <img
-                src={schedule}
-                className="schedule-icon me-2"
-                alt="schedule"
-                width={20}
-                height={20}
+
+          {/* Profile Details Section */}
+          <div className="profile-details-details">
+            {/* Name */}
+            {profileLoading ? (
+              <Skeleton
+                variant="text"
+                animation="wave"
+                sx={{ fontSize: "1.2rem", width: "150px", height: "30px" }}
               />
+            ) : (
+              <h4 style={{ marginTop: "10px" }}>
+                {profileData?.firstName} {profileData?.lastName}
+              </h4>
+            )}
+
+            {profileLoading ? (
+              <Skeleton
+                variant="text"
+                animation="wave"
+                sx={{ fontSize: "1rem", width: "100px", height: "20px" }}
+              />
+            ) : (
               <span>
-                {interviewScheduled
-                  ? "Reschedule Interview"
-                  : "Schedule Interview"}
+                {profileData?.city}, {profileData?.state}
               </span>
-            </div>
-            <div className="interview-scheduled-sec">
-              {interviewScheduled ? (
-                <div className="interview-scheduled-sec-wrap">
-                  <b>Interview Scheduled on:</b>{" "}
-                  <span>
-                    {interviewDate} at {interviewtime}
-                  </span>
-                </div>
-              ) : (
-                <span>No Interview Scheduled</span>
-              )}
-            </div>
-          </div>
-        </div>
+            )}
 
-         Interview scheduling modal 
-        <div
-          style={{ marginTop: "40px" }}
-          className="modal fade "
-          id="scheduleInterviewModal"
-          tabIndex="-1"
-          aria-labelledby="scheduleInterviewModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="scheduleInterviewModalLabel">
-                  Schedule an Interview
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <h6>Interview Date</h6>
-                  <input
-                    onChange={(e) => setInterviewDate(e.target.value)}
-                    type="date"
-                    className="form-control mt-3"
-                    id="interviewDate"
-                  />
-                  <input
-                    onChange={(e) => setInterviewTime(e.target.value)}
-                    type="time"
-                    className="form-control mb-3"
-                  />
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-                <button
-                  onClick={handleScheduleInterview}
-                  type="button"
-                  className="btn btn-primary"
-                  data-bs-dismiss="modal"
-                >
-                  Save changes
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-         Similar profiles 
-     
-      </section> */}
-
-      {interviewScheduled && (
-        <div className="schedule-interview-container">
-          <div className="schedule-interview-card">
-            <div className="schedule-interview-img-section">
-              <span>Schedule Inteview</span>
-              <img
-                alt="img"
-                src="https://img.freepik.com/free-vector/employee-month-concept_23-2148459815.jpg?semt=ais_hybrid"
+            {/* Experience */}
+            {profileLoading ? (
+              <Skeleton
+                variant="text"
+                animation="wave"
+                sx={{ fontSize: "1rem", width: "200px", height: "20px" }}
               />
-            </div>
-            <div className="date-time-container">
-              {DateContainer && (
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateCalendar", "DateCalendar"]}>
-                    <DemoItem>
-                      <DateCalendar
-                        value={interviewDate}
-                        onChange={(newValue) => handledatechange(newValue)}
-                      />
-                    </DemoItem>
-                  </DemoContainer>
-                </LocalizationProvider>
-              )}
+            ) : (
+              <span>Year of Experience: {profileData?.experience}</span>
+            )}
 
-              {TimeContainer && (
-                <div className="time-container">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["TimeClock", "TimeClock"]}>
-                      <DemoItem>
-                        <TimeClock
-                          value={interviewtime}
-                          onChange={(newValue) => setInterviewTime(newValue)}
-                        />
-                      </DemoItem>
-                    </DemoContainer>
-                  </LocalizationProvider>
-
-                  <button onClick={scheduled} className="btn btn-primary">
-                    Schedule
-                  </button>
-                </div>
-              )}
-            </div>
+            {/* Profile Type */}
+            {profileLoading ? (
+              <Skeleton
+                variant="text"
+                animation="wave"
+                sx={{ fontSize: "1rem", width: "100px", height: "20px" }}
+              />
+            ) : (
+              <p>{profileData?.type}</p>
+            )}
           </div>
+        </div>
+      </div>
+
+      {/* Skills section */}
+      {profileLoading ? (
+        <Skeleton
+          variant="rectangle"
+          sx={{
+            width: "100%",
+            height: "350px",
+            marginTop: "20px",
+            borderRadius: "20px",
+          }}
+        />
+      ) : (
+        <div className="skills-section">
+          <div className="skills-header">Skills</div>
+          {profileData?.skillSet.map((item) => {
+            // Convert rating (1 to 5) into percentage
+            const ratingPercentage = (parseInt(item.skillRating) / 5) * 100;
+
+            return (
+              <div className="skill-bar-card" key={item.skill}>
+                <span>{item.skill}</span>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                    alignItems: "center",
+                  }}
+                >
+                  <div
+                    className="skill-rating"
+                    style={{
+                      marginBottom: "5px",
+                      fontSize: "12px",
+                      color: "#009DED",
+                    }}
+                  >
+                    {ratingPercentage}%
+                  </div>
+                  <div className="skill-bar">
+                    <div
+                      className="skill-bar-fill"
+                      style={{
+                        width: `${ratingPercentage}%`,
+                        backgroundColor: "#009DED", // Assign color based on rating
+                        height: "5px",
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
+    </div>
+  </div>
+</section>
+    
+  <section className="acadmic-section-container">
+  {
+    profileLoading ? 
+    (
+      <Skeleton
+      animation="pulse"
+      variant="rectangular"
+      sx={{width: '100%' , height: '100px' , borderRadius: "20px"}}
+      />
+    ) :
+    (<div className="consulting-container" style={{ marginBottom: '20px' }}>
+    <div className="consulting-btn-container">
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        <span className="service-name">Consulting Now</span>
+        <div className="issue-badge">
+          {['Divorce', 'Property issue', 'Employment issue', 'Other'].map((item) => (
+            <div className="badge">{item}</div>
+          ))}
+        </div>
+      </div>
+      <div className="consulting-btn">
+        <button onClick={() => setInterviewScheduled(true)} className="chat-btn">
+          <MdPhone /> Call
+        </button>
+      </div>
+      <span className="consultant-price">
+        ₹{profileData?.consultingPrice ? profileData?.consultingPrice : 'Loading'}
+        {' '}
+        {profileData?.consultingDurationType}
+      </span>
+    </div>
+  </div>)
+  }
+
+  {
+    profileLoading ? 
+    (
+      <Skeleton
+      animation="pulse"
+      variant="rectangular"
+      sx={{width: '100%' , height: '200px' , borderRadius: "20px", marginTop: '20px'}}
+      />
+    ):
+    (<div className="service-container">
+    <h4>Service</h4>
+    <div className="service-list">
+      {profileData?.serviceDetails.map((item) => (
+        <div className="service-item">
+          <span className="service-name">{item.serviceName}</span>
+          <p>{item.serviceDescription}</p>
+          <div className="price-duration-container">
+            <span className="service-duration">
+              <FaClock /> {item?.serviceDuration || 'N/A'} {item?.serviceDurationType || 'N/A'}
+            </span>
+            <span className="service-price">₹{item.servicePrice}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>)
+  }
+
+  <div className="single-mentor-third-sec">
+    <div className="fifth-decs-sec">
+      <div className="fifth-decs-sec-wrap">
+        {profileLoading ? (
+          <Skeleton
+            variant="rectangle"
+            sx={{
+              width: '100%',
+              height: '50px',
+              marginTop: '20px',
+              borderRadius: '10px',
+            }}
+          />
+        ) : (
+          <ul
+            className="nav nav-pills single-mentor-tab"
+            id="mentor-tab"
+            role="tablist"
+          >
+            <li className="nav-item" role="presentation">
+              <button
+                className="nav-link active"
+                id="mentor-course-tab-btn"
+                data-bs-toggle="pill"
+                data-bs-target="#course-content"
+                type="button"
+                role="tab"
+                aria-selected="true"
+              >
+                Work Experience
+              </button>
+            </li>
+            <li className="nav-item" role="presentation">
+              <button
+                className="nav-link"
+                id="student-tab-btn"
+                data-bs-toggle="pill"
+                data-bs-target="#student-content"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                tabIndex="-1"
+              >
+                Education
+              </button>
+            </li>
+            <li className="nav-item" role="presentation">
+              <button
+                className="nav-link"
+                id="reviews-tab-btn"
+                data-bs-toggle="pill"
+                data-bs-target="#reviews-content"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                tabIndex="-1"
+              >
+                Projects
+              </button>
+            </li>
+          </ul>
+        )}
+
+        <div className="tab-content" id="course-tab-btn">
+          <div
+            className="tab-pane fade show active mt-16"
+            id="course-content"
+            role="tabpanel"
+            tabIndex="0"
+          >
+            {profileData?.workExperience?.map((work, index) => {
+              const months = [
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+              ];
+
+              if (profileLoading) {
+                return (
+                  <Skeleton
+                    key={index}
+                    variant="rectangle"
+                    sx={{
+                      width: '100%',
+                      height: '100px',
+                      marginTop: '20px',
+                      borderRadius: '10px',
+                    }}
+                  />
+                );
+              }
+
+              return (
+                <div
+                  className="experience-sec"
+                  key={work?.role + work?.companyName}
+                >
+                  <div className="work-logo-container">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
+                      className="educ-logo"
+                      alt="Company Logo"
+                    />
+                  </div>
+                  <div className="experience-info">
+                    <h4>{work?.role}</h4>
+                    <p>
+                      {work?.companyName} |{' '}
+                      {dayjs.unix(work.startDate?.seconds).format('D MMM YYYY')}
+                      {' - '}
+                      {work.endDate === 'present' || !work.endDate
+                        ? 'Present'
+                        : dayjs.unix(work.endDate?.seconds).format('D MMM YYYY')}
+                    </p>
+                    <button
+                      className="desc-btn"
+                      data-bs-toggle="collapse"
+                      data-bs-target={`#collapse-${index}`}
+                      aria-expanded="false"
+                      aria-controls={`collapse-${index}`}
+                    >
+                      View Description
+                    </button>
+                    <div
+                      id={`collapse-${index}`}
+                      className="collapse"
+                      aria-labelledby={`collapse-${index}`}
+                      style={{
+                        marginTop: '10px',
+                        width: '100%',
+                      }}
+                    >
+                      <div className="card card-body" style={{ width: '100%' }}>
+                        {work?.description || 'No description available'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{interviewScheduled && (
+  <div className="schedule-interview-container">
+    <div className="schedule-interview-card">
+      <div className="schedule-interview-img-section">
+        <span>Schedule Call</span>
+        <img
+          alt="img"
+          src="https://img.freepik.com/free-vector/employee-month-concept_23-2148459815.jpg?semt=ais_hybrid"
+        />
+      </div>
+      <div className="date-time-container">
+        {DateContainer && (
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={["DateCalendar", "DateCalendar"]}>
+              <DemoItem>
+                <DateCalendar
+                  value={interviewDate}
+                  onChange={(newValue) => handledatechange(newValue)}
+                />
+              </DemoItem>
+            </DemoContainer>
+          </LocalizationProvider>
+        )}
+
+        {TimeContainer && (
+          <div className="time-container">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["TimeClock", "TimeClock"]}>
+                <DemoItem>
+                  <TimeClock
+                    value={interviewtime}
+                    onChange={(newValue) => setInterviewTime(newValue)}
+                  />
+                </DemoItem>
+              </DemoContainer>
+            </LocalizationProvider>
+
+            <button onClick={scheduled} className="btn btn-primary">
+              Schedule
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
