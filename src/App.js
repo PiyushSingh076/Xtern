@@ -105,14 +105,14 @@ function App() {
 
   const selectedRole = useSelector((state) => state.role.selectedRole);
 
-  console.log("selectedRole:", selectedRole);
+  // console.log("selectedRole:", selectedRole);
 
   const [isMobileView, setIsMobileView] = useState(false);
 
-  console.log("isMobileView", isMobileView);
+  // console.log("isMobileView", isMobileView);
   useEffect(() => {
     const checkMobileView = () => {
-      console.log("window.innerWidth", window.innerWidth);
+      // console.log("window.innerWidth", window.innerWidth);
       setIsMobileView(window.innerWidth <= 992);
     };
 

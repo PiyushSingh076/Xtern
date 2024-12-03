@@ -32,7 +32,7 @@ import LinkedInLogo from "../../../assets/svg/linkedin.png";
 import { State, City } from "country-state-city";
 import { useDispatch, useSelector } from "react-redux";
 import { setDetail } from "../../../Store/Slice/UserDetail";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
 import LinkedInFetcher from "../../Teams/LinkedInFetcher";
 import CloseIcon from "@mui/icons-material/Close";
@@ -40,20 +40,18 @@ import ClearIcon from "@mui/icons-material/Clear";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { AddPhotoAlternateIcon } from "@mui/icons-material";
 import useSaveProfileData from "../../../hooks/Linkedin/useSaveProfileData";
+import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
 
+
 export default function StepperForm() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { saveProfileData, loading } = useSaveProfileData();
-  const dataRole = useSelector((state) => state.user);
 
-  console.log(dataRole, "sd");
-
-  // Form Detail Elements
+    // Form Detail Elements
+  const [profileDatas , setProfileDatas] = useState()
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
-  const [Xpert, setXpert] = useState("");
+  const [Xpert, setXpert] = useState();
   const [Experience, setExperience] = useState("");
   const [profileImg, setProfileImg] = useState(null);
   const [selectedState, setSelectedState] = useState("");
@@ -72,7 +70,45 @@ export default function StepperForm() {
   const [ConsultingDurationType, setConsultingDurationType] = useState("");
   const [serviceData, setServiceData] = useState({});
   const [recommendations, setRecommendation] = useState([]);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { saveProfileData, loading } = useSaveProfileData();
+  const { userData, loading: userDataLoading } = useFetchUserData();
+
+  const uid = userData?.uid
+
+  console.log(uid)
+
+
+
+
+
+
+    const location = useLocation();
+  const { profileData } = location.state || {}; // Safely extract profileData
+
+  console.log(profileData , 'edit')
   
+
+ 
+  const dataRole = useSelector((state) => state.user);
+
+
+ useEffect(() => {
+  if (dataRole) {
+    setXpert(dataRole.XpertType);
+  }
+}, [dataRole]);
+
+
+console.log(Xpert , 'xpert')
+
+
+  
+
+
+
 
 
 
@@ -325,9 +361,9 @@ export default function StepperForm() {
   
     // Set the recommendations based on XpertType
     setRecommendation(
-      recommendations[dataRole.XpertType] || recommendations.Default
+      recommendations[Xpert] || recommendations.Default
     );
-  }, [dataRole.XpertType]);
+  }, [Xpert]);
 
 
 
@@ -437,7 +473,7 @@ export default function StepperForm() {
       // Display specific toast alerts
       if (!FirstName) toast.error("First Name is required");
       if (!LastName) toast.error("Last Name is required");
-      if (!dataRole.XpertType) toast.error("Xpert Type is required");
+      if (!Xpert) toast.error("Xpert Type is required");
       if (!Experience) toast.error("Years of Experience is required");
       if (!selectedState) toast.error("State is required");
       if (!profileImg) toast.error("Profile Image is required");
@@ -480,9 +516,109 @@ export default function StepperForm() {
 
   const degrees = ["High-School", "Bachelor", "Master", "PhD"];
 
+
+    
+   
+
+
+    // Edit Pre-filled
+
+    useEffect(()=>{
+  if (profileData) {
+    setFirstName(profileData?.firstName || "");
+    setLastName(profileData?.lastName || "");
+    setXpert(profileData?.type || "");
+    setExperience(userData?.experience || '0');
+    setProfileImg(profileData?.photo_url || "");
+    setIsLinkedInFetched(true); 
+    setSelectedCity(profileData?.city)
+    setSelectedState(profileData?.state)
+    setConsultingPrice(profileData?.consultingPrice)
+    setConsultingDurationType(profileData?.consultingDurationType)
+    setConsultingDuration(profileData?.consultingDuration)
+
+
+    console.log(selectedCity , 'city')
+    console.log(selectedState , 'state')
+
+
+    if (profileData?.educationDetails && Array.isArray(profileData?.educationDetails)) {
+      const eduData = profileData?.educationDetails.map((edu) => ({
+        degree: edu.degree || "",
+        stream: edu.stream || "",
+        college: edu.college || "",
+        startDate: formatDate(edu.startDate),
+        endDate: edu.ends_at ? formatDate(edu.endDate) : "Present",
+        cgpa: edu.cpga || "",
+      }));
+      setEducation(eduData);
+      console.log(Education)
+    }
+
+    if (profileData?.workExperience && Array.isArray(profileData?.workExperience)) {
+      const workData = profileData?.workExperience.map((exp) => ({
+        position: exp.role || "",
+        company: exp.companyName || "",
+        startDate: formatDate(exp.startDate.seconds),
+        endDate: exp.ends_at ? formatDate(exp.endDate.seconds) : "Present",
+      }));
+      setWork(workData);
+      console.log(Work)
+    }
+
+    if (profileData?.skillSet && Array.isArray(profileData?.skillSet)) {
+      const skillData = profileData?.skillSet.map((skill) => ({
+        skill: skill.skill || "",
+        skillRating: skill.skillRating || "",
+
+
+      }));
+      setSkills(skillData);
+    }
+
+    if (profileData?.projectDetails && Array.isArray(profileData?.projectDetails)) {
+      const projectData = profileData?.projectDetails.map((proj) => ({
+        projectName: proj.projectName || "",
+        duration: `${formatDate(proj.startDate)} - ${
+          proj.ends_at ? formatDate(proj.endDate) : "Present"
+        }`,
+        liveLink: proj.liveDemo || "",
+        description: proj.description || "",
+      }));
+      setProjects(projectData);
+    }
+
+    if (profileData?.serviceDetails && Array.isArray(profileData?.serviceDetails)) {
+      const projectData = profileData?.serviceDetails.map((service) => ({
+        serviceName: service.serviceName || "",
+        serviceDescription: service.serviceDescription || '',
+        servicePrice: service.servicePrice || '',
+        serviceDuration: service.serviceDuration || '',
+        serviceDurationType: service.serviceDurationType || '',
+      }));
+      setServices(projectData);
+    }
+  }
+}, [profileData, isLinkedInFetched])
+     
+
+    
+
+
+
+      
+
+
+
+
+
+
   // Callback to handle LinkedIn data
   const handleLinkedInData = (data) => {
     console.log("Received LinkedIn Data:", data); // Debugging
+
+
+
     if (data) {
       // Auto-fill Profile Fields
       setFirstName(data.first_name || "");
@@ -1181,36 +1317,9 @@ export default function StepperForm() {
                         size="small"
                       />
                     </Grid>
+                 
                     <Grid item xs={12} sm={4}>
-                      <TextField
-                        label="Duration"
-                        variant="outlined"
-                        fullWidth
-                        value={ConsultingDuration}
-                        onChange={(e) => setConsultingDuration(e.target.value)}
-                        required
-                        size="small"
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                      <FormControl fullWidth required size="small">
-                        <InputLabel id="duration-type-label">
-                          Duration Type
-                        </InputLabel>
-                        <Select
-                          labelId="duration-type-label"
-                          value={ConsultingDurationType}
-                          label="Duration Type"
-                          onChange={(e) =>
-                            setConsultingDurationType(e.target.value)
-                          }
-                        >
-                          <MenuItem value="per hour">Per Hour</MenuItem>
-                          <MenuItem value="per day">Per Day</MenuItem>
-                          <MenuItem value="per week">Per Week</MenuItem>
-                          <MenuItem value="per month">Per Month</MenuItem>
-                        </Select>
-                      </FormControl>
+                       <Typography>Per Minute</Typography>
                     </Grid>
                   </Grid>
 
@@ -1226,7 +1335,7 @@ export default function StepperForm() {
 
 
   {ConsultingPrice !== '' && ConsultingPrice !== 0 && (
-    <p style={{ fontSize: '8px', color: 'red' }}>
+    <p style={{ fontSize: '8px', color: '#009DED' }}>
       20% will be deducted as Platform charge
     </p>
   )}
@@ -1505,7 +1614,7 @@ export default function StepperForm() {
                     }}
                     component="legend"
                   >
-                    Rating
+                    Self-Rating
                   </Typography>
                   <Rating
                     size="large"
@@ -1740,9 +1849,11 @@ export default function StepperForm() {
                 }
               />
             </Grid>
-            <Grid item xs={4}>
+          </Grid>
+
+           <Grid item xs={4}>
               <TextField
-                label="Duration"
+                label="Timeline"
                 name="duration"
                 type="number"
                 variant="outlined"
@@ -1759,29 +1870,29 @@ export default function StepperForm() {
               />
             </Grid>
             <Grid item xs={4}>
-              <TextField
-             
-                label="Duration Type"
-                name="durationType"
-                select
-                variant="outlined"
-                fullWidth
-                required
-                size="small"
-                value={serviceData.durationType}
-                onChange={(e) =>
-                  setServiceData({
-                    ...serviceData,
-                    durationType: e.target.value,
-                  })
-                }
-              >
-                <MenuItem value="day">Day</MenuItem>
-                <MenuItem value="week">Week</MenuItem>
-                <MenuItem value="month">Month</MenuItem>
-              </TextField>
+           <TextField
+  label="Timeline Type"
+  name="durationType"
+  select
+  variant="outlined"
+  fullWidth
+  required
+  size="small"
+  value={serviceData.durationType || 'day'}
+  onChange={(e) =>
+    setServiceData({
+      ...serviceData,
+      durationType: e.target.value,
+    })
+  }
+>
+  <MenuItem value="day">Day</MenuItem>
+  <MenuItem value="week">Week</MenuItem>
+  <MenuItem value="month">Month</MenuItem>
+</TextField>
             </Grid>
-          </Grid>
+
+
         </Grid>
             )}
           </DialogContent>
@@ -1805,7 +1916,9 @@ export default function StepperForm() {
                 loading && <CircularProgress size={20} color="inherit" />
               } // Optional: Add spinner before text
             >
-              {loading ? "Submitting..." : "Submit"}
+              {
+                profileData?.firstName ? "Edit" : "Submit"
+              }
             </Button>
           </DialogActions>
         </form>

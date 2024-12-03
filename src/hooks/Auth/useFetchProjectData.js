@@ -14,9 +14,9 @@ const useFetchProjectData = (projectId) => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setProjectData(docSnap.data());
-          console.log("project data", docSnap.data());
+          // console.log("project data", docSnap.data());
         } else {
-          console.log("No such document!");
+          // console.log("No such document!");
         }
       } catch (error) {
         console.error("Error fetching project data:", error);

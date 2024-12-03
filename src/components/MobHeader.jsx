@@ -23,7 +23,7 @@ export default function MobHeader() {
   }
 
   const handleMenuToggle = () => {
-    console.log('clciker')
+  
     setProfileMenu((prev) => !prev);
    
   };

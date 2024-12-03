@@ -40,10 +40,10 @@ const SignIn = () => {
           // Check if 'preferredLanguage' and 'typeUser' fields exist
           if (userData.preferredLanguage && userData.typeUser) {
             // Both fields exist, redirect to home screen
-            navigate(ROUTES.PREFERRED_ROLE); // Adjust the route as necessary
+            navigate(ROUTES.VERIFY_SCREEN); // Adjust the route as necessary
           } else {
             // One or both fields are missing, redirect to preferred language page
-            navigate(ROUTES.PREFERRED_ROLE);
+            navigate(ROUTES.VERIFY_SCREEN);
           }
         } else {
           console.error("No such user profile!");

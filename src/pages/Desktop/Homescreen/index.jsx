@@ -79,7 +79,7 @@ export default function HomeScreen() {
     <div className='main-Home-Screen-container'>
       
   
- { userData?.serviceDetails &&   <div 
+ { !userData?.linkedInProfile &&   <div 
   onClick={() => navigate('/xpertrole')}
   className="become-xpert-banner">
   <h1 className="title">

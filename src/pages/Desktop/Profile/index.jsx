@@ -15,6 +15,9 @@ import { TimeClock } from "@mui/x-date-pickers/TimeClock";
 import useRegisterUser from "../../../hooks/Stream/client";
 import { FaClock , FaPhone} from 'react-icons/fa';
 import { MdPhone } from 'react-icons/md';
+import { MdEdit } from 'react-icons/md';
+import { MdChat } from 'react-icons/md';
+
 
 
 // Component definition
@@ -45,19 +48,15 @@ const SingleMentor = () => {
 
   console.log("Registration Status:", registrationStatus);
 
-  // Slider settings
-  // const settings = 
-  //   infinite: false,
-  //   speed: 500,
-  //   slidesToShow: 2,
-  //   slidesToScroll: 2,
-  //   initialSlide: 0,
-  //   autoplay: false,
-  // };
 
-  // schedule interview modal
+  const sanitizeProfileData = (data) => {
+  return JSON.parse(JSON.stringify(data)); // Removes non-serializable fields
+};
 
-  // Hooks
+const handleEdit = () => {
+  const sanitizedData = sanitizeProfileData(profileData);
+  navigate('/userdetail', { state: { profileData: sanitizedData } });
+};
 
   const internInfo = useSelector((state) => state.internInfo);
   console.log(internInfo);
@@ -94,12 +93,19 @@ const SingleMentor = () => {
   
     <div className="desktop-profile-container">
 
+    
+   
       {/* Profile details section */}
      <section id="profile-details-section">
   <div className="profile-details">
     <div className="profile-details-wrap">
       {/* Profile image and basic info */}
       <div className="profile-details-first-wrap">
+       
+  <button onClick={handleEdit} className="edit-btn">
+    <MdEdit/>
+  </button>
+
         <div className="profile-img-info-container">
           {/* Profile Image Section */}
           <div className="mentor-img-sec">
@@ -254,13 +260,16 @@ const SingleMentor = () => {
       </div>
       <div className="consulting-btn">
         <button onClick={() => setInterviewScheduled(true)} className="chat-btn">
+          <MdChat /> Chat
+        </button>
+        <button onClick={() => setInterviewScheduled(true)} className="chat-btn">
           <MdPhone /> Call
         </button>
       </div>
       <span className="consultant-price">
         ₹{profileData?.consultingPrice ? profileData?.consultingPrice : 'Loading'}
-        {' '}
-        {profileData?.consultingDurationType}
+      
+        {'/minute'}
       </span>
     </div>
   </div>)
@@ -331,7 +340,7 @@ const SingleMentor = () => {
                 className="nav-link"
                 id="student-tab-btn"
                 data-bs-toggle="pill"
-                data-bs-target="#student-content"
+                data-bs-target="#education-content"
                 type="button"
                 role="tab"
                 aria-selected="false"
@@ -345,7 +354,7 @@ const SingleMentor = () => {
                 className="nav-link"
                 id="reviews-tab-btn"
                 data-bs-toggle="pill"
-                data-bs-target="#reviews-content"
+                data-bs-target="#projects-content"
                 type="button"
                 role="tab"
                 aria-selected="false"
@@ -357,84 +366,130 @@ const SingleMentor = () => {
           </ul>
         )}
 
-        <div className="tab-content" id="course-tab-btn">
-          <div
-            className="tab-pane fade show active mt-16"
-            id="course-content"
-            role="tabpanel"
-            tabIndex="0"
+       <div className="tab-content" id="mentor-tab-content">
+  {/* Work Experience Tab */}
+  <div className="tab-pane fade show active mt-16" id="course-content" role="tabpanel">
+    {profileData?.workExperience?.map((work, index) => (
+      <div className="experience-sec" key={`${work?.role}-${index}`}>
+        <div className="work-logo-container">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
+            className="educ-logo"
+            alt="Company Logo"
+          />
+        </div>
+        <div className="experience-info">
+          <h4>{work?.role}</h4>
+          <p>
+            {work?.companyName} |{" "}
+            {dayjs.unix(work?.startDate?.seconds).format("D MMM YYYY")} -{" "}
+            {work.endDate === "present" || !work.endDate
+              ? "Present"
+              : dayjs.unix(work?.endDate?.seconds).format("D MMM YYYY")}
+          </p>
+          <button
+            className="desc-btn"
+            data-bs-toggle="collapse"
+            data-bs-target={`#work-collapse-${index}`}
+            aria-expanded="false"
+            aria-controls={`work-collapse-${index}`}
           >
-            {profileData?.workExperience?.map((work, index) => {
-              const months = [
-                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-              ];
-
-              if (profileLoading) {
-                return (
-                  <Skeleton
-                    key={index}
-                    variant="rectangle"
-                    sx={{
-                      width: '100%',
-                      height: '100px',
-                      marginTop: '20px',
-                      borderRadius: '10px',
-                    }}
-                  />
-                );
-              }
-
-              return (
-                <div
-                  className="experience-sec"
-                  key={work?.role + work?.companyName}
-                >
-                  <div className="work-logo-container">
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
-                      className="educ-logo"
-                      alt="Company Logo"
-                    />
-                  </div>
-                  <div className="experience-info">
-                    <h4>{work?.role}</h4>
-                    <p>
-                      {work?.companyName} |{' '}
-                      {dayjs.unix(work.startDate?.seconds).format('D MMM YYYY')}
-                      {' - '}
-                      {work.endDate === 'present' || !work.endDate
-                        ? 'Present'
-                        : dayjs.unix(work.endDate?.seconds).format('D MMM YYYY')}
-                    </p>
-                    <button
-                      className="desc-btn"
-                      data-bs-toggle="collapse"
-                      data-bs-target={`#collapse-${index}`}
-                      aria-expanded="false"
-                      aria-controls={`collapse-${index}`}
-                    >
-                      View Description
-                    </button>
-                    <div
-                      id={`collapse-${index}`}
-                      className="collapse"
-                      aria-labelledby={`collapse-${index}`}
-                      style={{
-                        marginTop: '10px',
-                        width: '100%',
-                      }}
-                    >
-                      <div className="card card-body" style={{ width: '100%' }}>
-                        {work?.description || 'No description available'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            View Description
+          </button>
+          <div
+            id={`work-collapse-${index}`}
+            className="collapse"
+            aria-labelledby={`work-collapse-${index}`}
+          >
+            <div className="card card-body">
+              {work?.description || "No description available"}
+            </div>
           </div>
         </div>
+      </div>
+    ))}
+  </div>
+
+  {/* Education Tab */}
+  <div className="tab-pane fade" id="education-content" role="tabpanel">
+    {profileData?.educationDetails?.map((educ, index) => (
+      <div className="experience-sec" key={`educ-${index}`}>
+        <div className="work-logo-container">
+          <img
+            src="https://cdn.vectorstock.com/i/1000v/14/68/education-color-icon-vector-29051468.jpg"
+            className="educ-logo"
+            alt="Education Logo"
+          />
+        </div>
+        <div className="experience-info">
+          <h4>{educ?.degree}</h4>
+          <h6>Stream: {educ?.stream}</h6>
+          <p>{educ?.college}</p>
+          <p>
+            {dayjs.unix(educ?.startDate?.seconds).format("D MMM YYYY")} -{" "}
+            {educ.endDate === "present" || !educ.endDate
+              ? "Present"
+              : dayjs.unix(educ?.endDate?.seconds).format("D MMM YYYY")}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {/* Projects Tab */}
+  <div className="tab-pane fade" id="projects-content" role="tabpanel">
+    {profileData?.projectDetails?.map((project, index) => (
+      <div className="experience-sec" key={`project-${index}`}>
+        <div className="work-logo-container">
+          <img
+            src="https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg"
+            className="educ-logo"
+            alt="Project Logo"
+          />
+        </div>
+        <div className="experience-info">
+          <h4>{project?.projectName}</h4>
+          <div>
+            <b>Tech Stack:</b>{" "}
+            {project?.techstack?.map((item, idx) => (
+              <span key={idx}>{item}{idx !== project.techstack.length - 1 && ", "}</span>
+            )) || "No tech stack available"}
+          </div>
+          <div className="desc-view-btn-container">
+            {project?.liveDemo && (
+              <a
+                href={project?.liveDemo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-btn"
+              >
+                Live Link
+              </a>
+            )}
+            <button
+              className="desc-btn"
+              data-bs-toggle="collapse"
+              data-bs-target={`#project-collapse-${index}`}
+              aria-expanded="false"
+              aria-controls={`project-collapse-${index}`}
+            >
+              View Description
+            </button>
+          </div>
+          <div
+            id={`project-collapse-${index}`}
+            className="collapse"
+            aria-labelledby={`project-collapse-${index}`}
+          >
+            <div className="card card-body">
+              {project?.description || "No description available"}
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
       </div>
     </div>
   </div>

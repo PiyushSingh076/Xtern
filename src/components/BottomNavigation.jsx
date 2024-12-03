@@ -11,7 +11,7 @@ const BottomNavigation = () => {
 
   const auth = useSelector((state) => state.role.auth);
 
-  console.log(auth)
+  // console.log(auth)
   // Function to check if the current path matches the link
   const isActive = (path) => location.pathname === path;
 
