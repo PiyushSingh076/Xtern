@@ -1,8 +1,12 @@
 import React from "react";
 import "./Homescreen.css";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../../constants/routes";
 
 export default function LandingBanner({ pop, setRole }) {
   // images
+
+  const navigate = useNavigate();
 
   const images1 = [
     "https://xpert.works/wp-content/uploads/2024/10/Add-a-subheading-2.png",
@@ -43,8 +47,7 @@ export default function LandingBanner({ pop, setRole }) {
             </button> */}
             <button
               onClick={() => {
-                pop(true);
-                setRole("Hxpert");
+                navigate(ROUTES.SIGN_UP)
               }}
               className="hire-xperts-btn"
             >
