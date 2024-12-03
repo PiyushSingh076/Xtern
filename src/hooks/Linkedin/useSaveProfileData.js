@@ -137,6 +137,7 @@ const useSaveProfileData = () => {
             startDate: parseDateString(edu?.startDate),
             endDate: edu?.endDate ? parseDateString(edu?.endDate) : null, // Corrected endDate handling
             usereducation: userRef, // Storing as a DocumentReference to user document
+            cpga: edu?.cpga || "",
             createdAt: Timestamp.now(),
           };
 

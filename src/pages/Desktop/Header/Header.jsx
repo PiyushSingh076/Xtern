@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AiOutlineSearch, AiOutlinePlus } from 'react-icons/ai';
 import './Header.css';
 import { useNavigate } from 'react-router-dom';
@@ -12,24 +12,18 @@ export default function Header() {
   const data = useSelector((state) => state.user);
   const isDetailEmpty = Object.keys(data.detail).length === 0;
 
-
-  console.log(data)
-
-
-
+  console.log(data);
 
   const { userData, loading } = useFetchUserData();
+  console.log(userData);
 
-  console.log(userData)
-
-  const { handleLogout } = useOAuthLogout(); 
+  const { handleLogout } = useOAuthLogout();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false); // Menu toggle state
+  const menuRef = useRef(null); // Reference for the dropdown menu
 
   const handleMenuToggle = () => {
-    console.log('clciker')
     setMenuOpen((prev) => !prev);
-    console.log(menuOpen)
   };
 
   const handleMenuOptionClick = (route) => {
@@ -37,67 +31,69 @@ export default function Header() {
     navigate(route);
   };
 
+  // Close menu on clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="nav-bar-container">
       <div className="logo-search-container">
-        <span 
-          onClick={() => navigate(ROUTES.HOME_SCREEN)} 
-          className="logo"
-        >
+        <span onClick={() => navigate(ROUTES.HOME_SCREEN)} className="logo">
           <span style={{ color: '#0d6efd', fontSize: '34px' }}>X</span>pert
         </span>
       </div>
 
       <div className="hire-btns">
         {!userData && (
-          <button 
-            onClick={() => navigate(ROUTES.SIGN_IN)} 
-            className="hire-xpert-btn"
-          >
+          <button onClick={() => navigate(ROUTES.SIGN_IN)} className="hire-xpert-btn">
             Log in
           </button>
         )}
-        { userData && (
-          <div className="profile-container" onClick={handleMenuToggle}>
+        {userData && (
+          <button className="profile-container" onClick={handleMenuToggle}>
             <img
-              src={ userData?.photo_url}
+              src={userData?.photo_url}
               width="30px"
               style={{ borderRadius: '50%', cursor: 'pointer' }}
-              
             />
-           {userData?.firstName}
-          </div>
+            {userData?.firstName}
+          </button>
         )}
-         <div className="wallet-container">
-         <AiOutlineWallet className="wallet-icon" />
-       <span className="wallet-balance">₹200</span>
-
+        <div className="wallet-container">
+          <AiOutlineWallet className="wallet-icon" />
+          <span className="wallet-balance">₹0</span>
+        </div>
       </div>
-   
-      </div>
-     
-
-
 
       {/* Dropdown Menu */}
       {menuOpen && (
         <div 
-        className='dropdown-menu'
-        style={{
-          position: 'absolute',
-          top: '90px',
-          right: '5px',
-          backgroundColor: '#fff',
-          width: '200px',
-          height: 'auto',
-          border: '1px solid #ddd',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center'
-
-        }}
+          className="dropdown-menu"
+          ref={menuRef} // Attach ref to the dropdown
+          style={{
+            position: 'absolute',
+            top: '90px',
+            right: '40px',
+            backgroundColor: '#fff',
+            width: '200px',
+            height: 'auto',
+            border: '1px solid #ddd',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
         >
-       <div 
+          <div 
             className="dropdown-item" 
             onClick={() => handleMenuOptionClick(`profile/${userData?.uid}`)}
           >
@@ -120,7 +116,7 @@ export default function Header() {
           </div>
           <div 
             className="dropdown-item logout" 
-            onClick={()=>{ handleLogout(); setMenuOpen(false) }}
+            onClick={() => { handleLogout(); setMenuOpen(false); }}
           >
             <AiOutlineLogout className="menu-icon" />
             Log Out

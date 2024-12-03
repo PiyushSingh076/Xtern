@@ -17,7 +17,7 @@ const useFetchInternshipData = (internshipId) => {
                     const jobref = docSnap.ref.path;
                     setInternshipData({ ...data, jobref });
                 } else {
-                    console.log("No such document!");
+                    // console.log("No such document!");
                 }
             } catch (error) {
                 console.error("Error fetching internship data:", error);
