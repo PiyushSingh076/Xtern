@@ -69,7 +69,7 @@ export default function Header() {
             {userData?.firstName}
           </button>
         )}
-        <div className="wallet-container">
+        <div className="header-wallet-container">
           <AiOutlineWallet className="wallet-icon" />
           <span className="wallet-balance">₹0</span>
         </div>

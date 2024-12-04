@@ -254,7 +254,7 @@
   }
 
 
-  .wallet-container{
+  .header-wallet-container{
     display: flex;
     flex-direction: row;
     align-items: center;
