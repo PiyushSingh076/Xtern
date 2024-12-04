@@ -41,7 +41,9 @@ export default function MobHeader() {
           <img src={isOpen ? close : menu} width={'20px'}/>
         </button>
       </div>
-      <div className='Logo-container'><span style={{color: '#0d6efd' , fontSize: '22px'}}>X</span>pert</div>
+      <div
+      onClick={()=> navigate('/homescreen')}
+       className='Logo-container'><span style={{color: '#0d6efd' , fontSize: '22px'}}>X</span>pert</div>
 
       <div className='back-btn-container'>
         <img 

@@ -10,6 +10,7 @@ import { doc, setDoc } from "firebase/firestore";
 import SignInWithSocial from "../../../../components/SignInWithSocial";
 import Footer from "../../../../components/Footer";
 import "./SignUp.css";
+import useFetchUserData from "../../../../hooks/Auth/useFetchUserData";
 
 const SignUp = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -20,6 +21,14 @@ const SignUp = () => {
   const [phone, setPhone] = useState(""); // Added state for PhoneInput
   const [error, setError] = useState(""); // State to handle errors
   const navigate = useNavigate();
+
+
+    const { userData, isLoading, error: fetchError } = useFetchUserData();
+
+if (userData ) {
+  navigate('/homescreen')
+}
+  
 
   const handleBackClick = () => {
     navigate(-1); // Navigate to the previous page in the history stack

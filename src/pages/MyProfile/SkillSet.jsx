@@ -111,12 +111,14 @@ console.log('skill',profileData)
                     </span>
                     <div className="consulting-btn">
                    
-                      <button className="call-btn">
+                      <button
+                       style={{width: '200%'}}
+                       className="call-btn">
                         📞 Call
                       </button>
                     </div>
                     <span className="service-price">
-                    ₹{profileData?.consultingPrice}/{profileData?.consultingDurationType?.split(' ')[1]}
+                    ₹{profileData?.consultingPrice}/{'Min'}
                     </span>
 
                   </div>
