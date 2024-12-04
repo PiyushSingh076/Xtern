@@ -69,10 +69,10 @@ export default function Header() {
             {userData?.firstName}
           </button>
         )}
-        <div className="header-wallet-container">
+        {/* <div className="header-wallet-container">
           <AiOutlineWallet className="wallet-icon" />
           <span className="wallet-balance">₹0</span>
-        </div>
+        </div> */}
       </div>
 
       {/* Dropdown Menu */}
