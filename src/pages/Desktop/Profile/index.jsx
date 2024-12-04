@@ -253,10 +253,10 @@ const handleEdit = () => {
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <span className="service-name">Consulting Now</span>
         <div className="issue-badge">
-          {['Divorce', 'Property issue', 'Employment issue', 'Other'].map((item) => (
+{/*           {['Divorce', 'Property issue', 'Employment issue', 'Other'].map((item) => (
             <div className="badge">{item}</div>
           ))}
-        </div>
+        </div> */}
       </div>
       <div className="consulting-btn">
         <button onClick={() => setInterviewScheduled(true)} className="chat-btn">
