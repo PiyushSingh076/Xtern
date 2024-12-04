@@ -66,7 +66,7 @@ import ChatScreen from "./pages/ChatScreen";
 import SingleChatScreen from "./pages/SingleChatScreen";
 import Profile from "./pages/MyProfile/Index.jsx";
 import ProfileEdit from "./pages/ProfileEdit";
-import WalletScreen from "./pages/WalletScreen";
+import WalletScreen from "./pages/Desktop/Wallet/wallet.jsx";
 import SingleMentor from "./pages/SingleMentor";
 import NotificationOption from "./pages/NotificationOption";
 import Language from "./pages/Language";
@@ -226,6 +226,12 @@ function App() {
               <NotificationAllow />
             </ProtectedRoute>
           }
+        />
+
+
+        <Route
+        path={ROUTES.WALLET_SCREEN}
+        element={<WalletScreen/>}
         />
 
 <Route
