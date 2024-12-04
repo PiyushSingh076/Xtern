@@ -17,6 +17,7 @@ import { FaClock , FaPhone} from 'react-icons/fa';
 import { MdPhone } from 'react-icons/md';
 import { MdEdit } from 'react-icons/md';
 import { MdChat } from 'react-icons/md';
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 
 
 
@@ -30,9 +31,13 @@ const SingleMentor = () => {
   const [interviewtime, setInterviewTime] = useState(dayjs("2022-04-17T15:30"));
   const [TimeContainer, setTimecontainer] = useState(false);
   const [interviewScheduled, setInterviewScheduled] = useState(false);
+  const [Editable , setEditable] = useState(false)
   const navigate = useNavigate();
+ 
 
 
+
+  
 
 
 
@@ -44,9 +49,43 @@ const SingleMentor = () => {
   } = useUserProfileData(uid);
   console.log("profileData", profileData, profileError);
 
+  const { userData: currentUser } = useFetchUserData();
+
+
+
+useEffect(() => {
+  if (currentUser && currentUser.uid === uid) {
+    setEditable(true);
+  } else {
+    setEditable(false);
+  }
+}, [currentUser, uid]);
+
+
+  
+  
+
   const registrationStatus = useRegisterUser(profileData, profileLoading, profileError);
 
   console.log("Registration Status:", registrationStatus);
+
+
+
+
+const badgeMapping = {
+  Developer: ['Frontend', 'Backend', 'Full Stack', 'Mobile Apps'],
+  Designer: ['UI/UX', 'Graphics', 'Web Design', 'Animation'],
+  CloudDevOps: ['AWS', 'Azure', 'CI/CD', 'Kubernetes'],
+  ContentCreator: ['Blogs', 'Videos', 'Podcasts', 'Social Media'],
+  DigitalMarketing: ['SEO', 'PPC', 'Social Media', 'Email Marketing'],
+  Lawyer: ['Divorce', 'Property Issue', 'Employment Issue', 'Other'],
+  HR: ['Recruitment', 'Payroll', 'Training', 'Employee Relations'],
+  Accountant: ['Taxation', 'Auditing', 'Budgeting', 'Financial Reports'],
+  Intern: ['Learning', 'Assisting', 'Research', 'Shadowing'],
+};
+
+// Rendering badges based on profession
+const professionBadges = badgeMapping[profileData?.type] || [];
 
 
   const sanitizeProfileData = (data) => {
@@ -102,9 +141,9 @@ const handleEdit = () => {
       {/* Profile image and basic info */}
       <div className="profile-details-first-wrap">
        
-  <button onClick={handleEdit} className="edit-btn">
+{Editable &&  <button onClick={handleEdit} className="edit-btn">
     <MdEdit/>
-  </button>
+  </button>}
 
         <div className="profile-img-info-container">
           {/* Profile Image Section */}
@@ -173,7 +212,7 @@ const handleEdit = () => {
                 sx={{ fontSize: "1rem", width: "100px", height: "20px" }}
               />
             ) : (
-              <p>{profileData?.type}</p>
+              <p className='badge-type'>{profileData?.type}</p>
             )}
           </div>
         </div>
@@ -239,69 +278,72 @@ const handleEdit = () => {
 </section>
     
   <section className="acadmic-section-container">
-  {
-    profileLoading ? 
-    (
-      <Skeleton
+{
+  profileLoading ? (
+    <Skeleton
       animation="pulse"
       variant="rectangular"
-      sx={{width: '100%' , height: '100px' , borderRadius: "20px"}}
-      />
-    ) :
-    (<div className="consulting-container" style={{ marginBottom: '20px' }}>
-    <div className="consulting-btn-container">
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-        <span className="service-name">Consulting Now</span>
+      sx={{ width: '100%', height: '100px', borderRadius: "20px" }}
+    />
+  ) : (
+    profileData?.type !== 'Intern' && (
+      <div className="consulting-container" style={{ marginBottom: '20px' }}>
+        <div className="consulting-btn-container">
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+            <span className="service-name">Consulting Now</span>
         <div className="issue-badge">
-{/*           {['Divorce', 'Property issue', 'Employment issue', 'Other'].map((item) => (
-            <div className="badge">{item}</div>
-          ))}
-        </div> */}
+  {professionBadges.map((badge, index) => (
+    <div className="badge" key={index}>{badge}</div>
+  ))}
+</div>
+          </div>
+          <div className="consulting-btn">
+            <button onClick={() => setInterviewScheduled(true)} className="chat-btn">
+              <MdChat /> Chat
+            </button>
+            <button onClick={() => setInterviewScheduled(true)} className="chat-btn">
+              <MdPhone /> Call
+            </button>
+          </div>
+          <span className="consultant-price">
+            ₹{profileData?.consultingPrice ? profileData?.consultingPrice : 'Loading'}
+            {'/minute'}
+          </span>
+        </div>
       </div>
-      <div className="consulting-btn">
-        <button onClick={() => setInterviewScheduled(true)} className="chat-btn">
-          <MdChat /> Chat
-        </button>
-        <button onClick={() => setInterviewScheduled(true)} className="chat-btn">
-          <MdPhone /> Call
-        </button>
-      </div>
-      <span className="consultant-price">
-        ₹{profileData?.consultingPrice ? profileData?.consultingPrice : 'Loading'}
-      
-        {'/minute'}
-      </span>
-    </div>
-  </div>)
-  }
+    )
+  )
+}
 
-  {
-    profileLoading ? 
-    (
-      <Skeleton
+{
+  profileLoading ? (
+    <Skeleton
       animation="pulse"
       variant="rectangular"
-      sx={{width: '100%' , height: '200px' , borderRadius: "20px", marginTop: '20px'}}
-      />
-    ):
-    (<div className="service-container">
-    <h4>Service</h4>
-    <div className="service-list">
-      {profileData?.serviceDetails.map((item) => (
-        <div className="service-item">
-          <span className="service-name">{item.serviceName}</span>
-          <p>{item.serviceDescription}</p>
-          <div className="price-duration-container">
-            <span className="service-duration">
-              <FaClock /> {item?.serviceDuration || 'N/A'} {item?.serviceDurationType || 'N/A'}
-            </span>
-            <span className="service-price">₹{item.servicePrice}</span>
-          </div>
+      sx={{ width: '100%', height: '200px', borderRadius: "20px", marginTop: '20px' }}
+    />
+  ) : (
+ (
+      <div className="service-container">
+        <h4>Service</h4>
+        <div className="service-list">
+          {profileData?.serviceDetails.map((item) => (
+            <div className="service-item" key={item.serviceName}>
+              <span className="service-name">{item.serviceName}</span>
+              <p>{item.serviceDescription}</p>
+              <div className="price-duration-container">
+                <span className="service-duration">
+                  <FaClock /> {item?.serviceDuration || 'N/A'} {item?.serviceDurationType || 'N/A'}
+                </span>
+                <span className="service-price">₹{item.servicePrice}</span>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  </div>)
-  }
+      </div>
+    )
+  )
+}
 
   <div className="single-mentor-third-sec">
     <div className="fifth-decs-sec">

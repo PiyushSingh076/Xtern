@@ -8,6 +8,7 @@ import {
     FaGavel,
     FaUserTie,
     FaCalculator,
+     FaUserGraduate,
   } from "react-icons/fa";
 import './Prefference.css'
 import { useDispatch } from 'react-redux';
@@ -29,6 +30,8 @@ export default function XpertRole() {
         { id: 6, name: "Lawyer", icon: <FaGavel /> },
         { id: 7, name: "HR", icon: <FaUserTie /> },
         { id: 8, name: "Accountant", icon: <FaCalculator /> },
+        { id: 9, name: "Intern", icon: <FaUserGraduate/> },
+
       ];
 
 

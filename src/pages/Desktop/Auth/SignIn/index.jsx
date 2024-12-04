@@ -10,6 +10,7 @@ import { auth, db } from "../../../../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import SignInWithSocial from "../../../../components/SignInWithSocial";
 import "./SignIn.css";
+import useFetchUserData from "../../../../hooks/Auth/useFetchUserData";
 import { ROUTES } from "../../../../constants/routes";
 
 const SignIn = () => {
@@ -19,6 +20,13 @@ const SignIn = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const { userData, isLoading, error: fetchError } = useFetchUserData();
+
+if (userData ) {
+  navigate('/homescreen')
+}
+  
+
   const handleBackClick = () => {
     navigate("/"); // This will navigate to the previous page in the history stack
   };
@@ -26,6 +34,8 @@ const SignIn = () => {
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
+
+
 
   const handleSignIn = async (event) => {
     event.preventDefault();

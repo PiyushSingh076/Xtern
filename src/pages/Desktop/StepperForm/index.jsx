@@ -83,6 +83,7 @@ export default function StepperForm() {
 
 
 
+  console.log(Skills , 'skill')
 
 
     const location = useLocation();
@@ -867,6 +868,7 @@ console.log(Xpert , 'xpert')
                       label="Years of Experience"
                       onChange={(e) => setExperience(e.target.value)}
                     >
+                      <MenuItem value=">1">{'less than 1'}</MenuItem>
                       {Array.from({ length: 20 }, (_, i) => i + 1).map(
                         (year) => (
                           <MenuItem key={year} value={year}>
@@ -1017,7 +1019,7 @@ console.log(Xpert , 'xpert')
                         </Typography>
                         <Rating
                           name="half-rating-read"
-                          defaultValue={value}
+                          defaultValue={item.skillRating || 0}
                           size="small"
                           readOnly
                           sx={{ color: "#3498db" }}
@@ -1291,7 +1293,7 @@ console.log(Xpert , 'xpert')
             {/* Right Column - Offering Details */}
             <Grid item xs={12} md={8}>
               {/* Consulting Charges Section */}
-              <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+    {Xpert != 'Intern'  &&   <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
                 <CardHeader
                   title="Consulting Charges"
                   titleTypographyProps={{ variant: "h6" }}
@@ -1341,7 +1343,7 @@ console.log(Xpert , 'xpert')
   )}
 </CardContent>
                 </CardContent>
-              </Card>
+              </Card>}
 
               {/* Services Section */}
               <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>

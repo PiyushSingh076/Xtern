@@ -160,7 +160,7 @@ const WalletAndContactsPage = () => {
   ]);
 
   return (
-    <div className="container">
+    <div className="wallet-container">
    
       <div className="main-content">
         <div className="left-section">
