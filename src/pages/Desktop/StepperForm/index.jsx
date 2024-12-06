@@ -358,12 +358,27 @@ console.log(Xpert , 'xpert')
           description: "Offer a range of customizable services.",
         },
       ],
+   Intern : [
+  {
+    title: "Internship",
+    description: "A temporary position offering hands-on experience, typically for students or recent graduates, to gain industry skills."
+  },
+  {
+    title: "Full-Time",
+    description: "A long-term, permanent employment position with fixed working hours and responsibilities."
+  },
+  {
+    title: "Project-Basis",
+    description: "A short-term contract role focused on completing specific projects or tasks within a set timeframe."
+  }
+]
     };
   
     // Set the recommendations based on XpertType
     setRecommendation(
       recommendations[Xpert] || recommendations.Default
     );
+   
   }, [Xpert]);
 
 
@@ -1390,7 +1405,7 @@ console.log(Xpert , 'xpert')
               </Card>
 
               {/* Recommendation Section */}
-              <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+           <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
                 <CardHeader
                   title="Services Recommendations"
                   titleTypographyProps={{ variant: "h6" }}

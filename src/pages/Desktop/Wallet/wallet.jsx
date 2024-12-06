@@ -1,18 +1,31 @@
 import React, { useState } from "react";
+import { AiOutlinePlus } from "react-icons/ai";
+import { FiArrowDownCircle } from "react-icons/fi";
 import "./wallet.css"; // Import wallet.css for styling
 
 
 // Wallet Balance Component
 const WalletBalance = ({ balance, setBalance }) => {
+  const [amount, setAmount] = useState(""); // State to manage the entered amount
+  const [showInput, setShowInput] = useState(false); // State to toggle input visibility
+
   const handleAddBalance = () => {
-    const amount = prompt("Enter amount to add:");
-    if (amount) setBalance(balance + parseInt(amount, 10));
+    if (amount) {
+      setBalance(balance + parseInt(amount, 10));
+      setAmount(""); // Clear the input field after adding
+      setShowInput(false); // Hide the input field
+    } else {
+      alert("Please enter a valid amount");
+    }
   };
 
   const handleWithdrawBalance = () => {
-    const amount = prompt("Enter amount to withdraw:");
-    if (amount && balance >= amount) setBalance(balance - parseInt(amount, 10));
-    else alert("Insufficient balance");
+    const withdrawAmount = prompt("Enter amount to withdraw:");
+    if (withdrawAmount && balance >= parseInt(withdrawAmount, 10)) {
+      setBalance(balance - parseInt(withdrawAmount, 10));
+    } else {
+      alert("Insufficient balance or invalid amount");
+    }
   };
 
   return (
@@ -21,29 +34,55 @@ const WalletBalance = ({ balance, setBalance }) => {
         <p>₹{balance.toLocaleString()}</p>
       </div>
       <h2>Wallet Balance</h2>
+
+      {showInput && (
+        <div className="wallet-balance-actions">
+          <div className="input-container">
+            <span className="rupee-symbol">₹</span>
+            <input
+              type="number"
+              placeholder="Enter amount"
+              value={amount} // Bind input value to state
+              onChange={(e) => setAmount(e.target.value)} // Update state on change
+              className="add-money-input"
+            />
+          </div>
+          <button className="add-money-btn" onClick={handleAddBalance}>
+            Add
+          </button>
+        </div>
+      )}
+
       <div className="buttons">
-        <button className="add-btn" onClick={handleAddBalance}>
-          Add
+        <button
+          className="add-btn"
+          onClick={() => setShowInput(!showInput)} // Toggle input field visibility
+        >
+          <AiOutlinePlus size={18} style={{ marginRight: "8px" }} /> Add
         </button>
         <button className="withdraw-btn" onClick={handleWithdrawBalance}>
-          Withdraw
+          <FiArrowDownCircle size={18} style={{ marginRight: "8px" }} /> Withdraw
         </button>
       </div>
     </div>
   );
 };
 
+
 // Bank Account Details Component
 const BankAccountDetails = () => {
   return (
     <div className="bank-account-details">
       <h2>Bank Account Details</h2>
-      <label>Account number</label>
+      
+       <div className="bank-detail-input">
+       <label>Account number</label>
       <input type="text" placeholder="Add account number" />
       <label>Bank name</label>
       <input type="text" placeholder="Add bank name" />
       <label>IFSC</label>
       <input type="text" placeholder="Add IFSC code" />
+       </div>
     </div>
   );
 };
@@ -100,7 +139,7 @@ const TransactionTable = ({ transactions, activeTab, setActiveTab }) => {
               <td>₹{transaction.amount.toLocaleString()}</td>
               <td>{transaction.type}</td>
               <td>
-                <button>Edit</button>
+                <button className="trans-edit-btn">Edit</button>
               </td>
             </tr>
           ))}
