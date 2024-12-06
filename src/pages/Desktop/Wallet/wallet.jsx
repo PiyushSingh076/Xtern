@@ -3,7 +3,6 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { FiArrowDownCircle } from "react-icons/fi";
 import "./wallet.css"; // Import wallet.css for styling
 
-
 // Wallet Balance Component
 const WalletBalance = ({ balance, setBalance }) => {
   const [amount, setAmount] = useState(""); // State to manage the entered amount
@@ -67,7 +66,6 @@ const WalletBalance = ({ balance, setBalance }) => {
     </div>
   );
 };
-
 
 // Bank Account Details Component
 const BankAccountDetails = () => {
