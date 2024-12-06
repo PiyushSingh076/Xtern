@@ -270,6 +270,10 @@ body {
     flex-direction: column;
   }
 
+  .right-section{
+    flex: 1;
+  }
+
   .tabs button {
     padding: 8px 16px;
     font-size: 14px;
@@ -354,3 +358,4 @@ body {
 .add-money-btn:hover {
   background-color: #009DED;
 }
+
