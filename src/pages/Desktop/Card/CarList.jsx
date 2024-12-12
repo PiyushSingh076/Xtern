@@ -152,7 +152,9 @@ const CardList = ({ profession }) => {
   const cardData = [
     // Developer Profession
     {
+      uid: "dev1",
       fullname: "Aarav Sharma",
+      firstName: "Aarav",
       city: "Mumbai",
       state: "Maharashtra",
       primary: "Full Stack Developer",
@@ -164,7 +166,9 @@ const CardList = ({ profession }) => {
         "Built a payment gateway system; improved database performance.",
     },
     {
+      uid: "dev2",
       fullname: "Riya Singh",
+      firstName: "Riya",
       city: "Pune",
       state: "Maharashtra",
       primary: "Frontend Developer",
@@ -178,7 +182,9 @@ const CardList = ({ profession }) => {
 
     // Designer Profession
     {
+      uid: "des1",
       fullname: "Maya Gupta",
+      firstName: "Maya",
       city: "Bangalore",
       state: "Karnataka",
       primary: "UI/UX Designer",
@@ -191,7 +197,9 @@ const CardList = ({ profession }) => {
 
     // Cloud DevOps Profession
     {
+      uid: "devops1",
       fullname: "Rohan Verma",
+      firstName: "Rohan",
       city: "Hyderabad",
       state: "Telangana",
       primary: "Cloud DevOps Engineer",
@@ -202,7 +210,9 @@ const CardList = ({ profession }) => {
       assignments: "Automated deployment pipelines; optimized AWS costs.",
     },
     {
+      uid: "devops2",
       fullname: "Sneha Kapoor",
+      firstName: "Sneha",
       city: "Chennai",
       state: "Tamil Nadu",
       primary: "DevOps Engineer",
@@ -215,7 +225,9 @@ const CardList = ({ profession }) => {
 
     // Content Creator Profession
     {
+      uid: "cc1",
       fullname: "Ananya Roy",
+      firstName: "Ananya",
       city: "Delhi",
       state: "Delhi",
       primary: "Content Writer",
@@ -226,7 +238,9 @@ const CardList = ({ profession }) => {
       assignments: "Wrote SEO blogs; developed product copy.",
     },
     {
+      uid: "cc2",
       fullname: "Vikas Patel",
+      firstName: "Vikas",
       city: "Ahmedabad",
       state: "Gujarat",
       primary: "Content Strategist",
@@ -237,7 +251,9 @@ const CardList = ({ profession }) => {
       assignments: "Drafted white papers; curated user manuals.",
     },
     {
+      uid: "cc3",
       fullname: "Pooja Sharma",
+      firstName: "Pooja",
       city: "Lucknow",
       state: "Uttar Pradesh",
       primary: "Blogger",
@@ -250,7 +266,9 @@ const CardList = ({ profession }) => {
 
     // Digital Marketing Profession
     {
+      uid: "dm1",
       fullname: "Kabir Singh",
+      firstName: "Kabir",
       city: "Pune",
       state: "Maharashtra",
       primary: "Digital Marketing Specialist",
@@ -263,7 +281,9 @@ const CardList = ({ profession }) => {
 
     // Lawyer Profession
     {
+      uid: "law1",
       fullname: "Simran Kaur",
+      firstName: "Simran",
       city: "Chandigarh",
       state: "Punjab",
       primary: "Corporate Lawyer",
@@ -274,7 +294,9 @@ const CardList = ({ profession }) => {
       assignments: "Drafted agreements; represented clients in court.",
     },
     {
+      uid: "law2",
       fullname: "Vivek Menon",
+      firstName: "Vivek",
       city: "Cochin",
       state: "Kerala",
       primary: "Civil Lawyer",
@@ -288,7 +310,9 @@ const CardList = ({ profession }) => {
 
     // HR Profession
     {
+      uid: "hr1",
       fullname: "Arjun Mehta",
+      firstName: "Arjun",
       city: "Gurgaon",
       state: "Haryana",
       primary: "HR Manager",
@@ -301,7 +325,9 @@ const CardList = ({ profession }) => {
 
     // Accountant Profession
     {
+      uid: "acc1",
       fullname: "Pooja Das",
+      firstName: "Pooja",
       city: "Kolkata",
       state: "West Bengal",
       primary: "Accountant",
@@ -312,7 +338,9 @@ const CardList = ({ profession }) => {
       assignments: "Audited financial records; optimized tax filings.",
     },
     {
+      uid: "acc2",
       fullname: "Rahul Nair",
+      firstName: "Rahul",
       city: "Trivandrum",
       state: "Kerala",
       primary: "Financial Analyst",

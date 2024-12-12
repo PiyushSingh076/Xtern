@@ -1,5 +1,6 @@
 import React from "react";
 import "./Card.css"; // Assuming this CSS file exists and has appropriate styles
+import { useNavigate } from "react-router-dom";
 
 const Card = ({
   fullname,
@@ -11,7 +12,15 @@ const Card = ({
   education,
   workexp,
   assignments,
+  firstName,
+  uid
 }) => {
+  const navigate = useNavigate();
+
+  const handleChatClick = () => {
+    navigate(`/chat?firstName=${encodeURIComponent(firstName)}&uid=${encodeURIComponent(uid)}`);
+  };
+
   return (
     <div className="card">
       <div className="card-header">
@@ -56,7 +65,7 @@ const Card = ({
       </div>
       <div className="card-footer">
         <button>Call</button>
-        <button>Chat</button>
+        <button onClick={handleChatClick}>Chat</button>
         <button>Details</button>
       </div>
     </div>

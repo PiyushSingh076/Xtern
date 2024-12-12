@@ -61,5 +61,7 @@ export const ROUTES = {
  FILTER_SCREEN: "/filterscreen/:type",
   // PROFESSIONAL_PROFILE: "/professionalProfile/:profession",
   CARD_DESIGN: "/cardDesign",
-  STEPPER_FORM: '/userdetail'
+  STEPPER_FORM: '/userdetail',
+  CHAT: "/chat",
+  MYCHAT: '/mychat'
 };
