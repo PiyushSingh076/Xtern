@@ -9,7 +9,7 @@ import { ROUTES } from "./constants/routes"; // Import the route constants
 
 //  Desktop View
 
-import DesktopHomeScreen from './pages/Desktop/Homescreen/index.jsx'
+import DesktopHomeScreen from "./pages/Desktop/Homescreen/index.jsx";
 import DesktopLandingPage from "./pages/Desktop/LandingScreen/index";
 import Header from "./pages/Desktop/Header/Header";
 import DesktopProjectDetails from "./pages/Desktop/ProjectDetail";
@@ -25,8 +25,7 @@ import DesktopAllProjects from "./pages/Desktop/ProjectDetail/AllProjects.jsx";
 import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iffat
 // import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
 import DesktopCard from "./pages/Desktop/Card/CarList.jsx";
-import DesktopStepperForm from './pages/Desktop/StepperForm/index.jsx'
-
+import DesktopStepperForm from "./pages/Desktop/StepperForm/index.jsx";
 
 // Mobile View
 import UserType from "./pages/UserType.jsx";
@@ -173,10 +172,7 @@ function App() {
           }
         />
 
-        <Route
-          path={ROUTES.PREFERRED_ROLE}
-          element={ <DesktopPrefferRole />}
-        />
+        <Route path={ROUTES.PREFERRED_ROLE} element={<DesktopPrefferRole />} />
         {/*iffat*/}
         <Route path={ROUTES.FILTER_SCREEN} element={<DesktopFilterScreen />} />
         <Route path={ROUTES.CARD_DESIGN} element={<DesktopCard />} />
@@ -228,15 +224,9 @@ function App() {
           }
         />
 
+        <Route path={ROUTES.WALLET_SCREEN} element={<WalletScreen />} />
 
-        <Route
-        path={ROUTES.WALLET_SCREEN}
-        element={<WalletScreen/>}
-        />
-
-<Route
-path={ROUTES.STEPPER_FORM}
-element={<DesktopStepperForm/>}/>
+        <Route path={ROUTES.STEPPER_FORM} element={<DesktopStepperForm />} />
 
         <Route
           path={ROUTES.CREATE_JOB}
@@ -279,12 +269,7 @@ element={<DesktopStepperForm/>}/>
           }
         />
 
-        <Route
-        path={ROUTES.HOME_SCREEN}
-        element={<DesktopHomeScreen/>}/>
-
-
-       
+        <Route path={ROUTES.HOME_SCREEN} element={<DesktopHomeScreen />} />
 
         <Route
           path={ROUTES.NOTIFICATION}
