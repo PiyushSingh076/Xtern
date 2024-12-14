@@ -42,10 +42,14 @@ const useOAuthLogin = () => {
           }
         }
       } else {
-        // Create a new user document if it doesn't exist
         const newUserData = {
           uid: user.uid,
           display_name: user.displayName || "User",
+          firstName: user.displayName ? user.displayName.split(" ")[0] : "User", // Extract first name
+          lastName: user.displayName
+            ? user.displayName.split(" ").slice(1).join(" ") // Extract last name (if exists)
+            : "",
+          fullName: user.displayName || "User",
           email: user.email,
           photo_url: user.photoURL,
           provider: user.providerData[0]?.providerId,
