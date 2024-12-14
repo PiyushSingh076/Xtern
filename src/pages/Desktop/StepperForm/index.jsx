@@ -25,8 +25,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 import Rating from "@mui/material/Rating";
-import Stack from "@mui/material/Stack";
-
 import { FiTrash } from "react-icons/fi";
 import LinkedInLogo from "../../../assets/svg/linkedin.png";
 import { State, City } from "country-state-city";

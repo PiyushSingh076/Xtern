@@ -24,7 +24,7 @@ export default function MainProfile({ userdata, loading }) {
                                 <span>{userdata?.medal}</span>
                             </div>
                         )} */}
-                        <img src={userdata?.photo_url} alt="client-img" width={96} height={96} />
+                        <img src={userdata?.photo_url} alt="client-img" width={80} height={80} />
                     </div>
                 )}
 
@@ -39,7 +39,9 @@ export default function MainProfile({ userdata, loading }) {
                     ) : (
                         <>
                             <h3>{userdata?.firstName + ' ' + userdata?.lastName}</h3>
-                             <h4>Year of experience: {userdata?.experience}</h4>
+                             <h4 style={{
+                                fontWeight: '600'
+                             }}>Year of experience: {userdata?.experience}</h4>
                             <p className="">{userdata?.type}</p>
                         </>
                     )}

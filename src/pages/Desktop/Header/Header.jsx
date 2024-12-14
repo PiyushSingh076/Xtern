@@ -1,37 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AiOutlineSearch, AiOutlinePlus } from 'react-icons/ai';
-import './Header.css';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../../../constants/routes';
-import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
-import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
-import { useSelector } from 'react-redux';
 import { AiOutlineUser, AiOutlineWallet, AiOutlineQuestionCircle, AiOutlineLogout } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import './Header.css';
+import { ROUTES } from '../../../constants/routes';
+import useFetchUserData from '../../../hooks/Auth/useFetchUserData';
+import useOAuthLogout from '../../../hooks/Auth/useOAuthLogout';
 
 export default function Header() {
   const data = useSelector((state) => state.user);
   const isDetailEmpty = Object.keys(data.detail).length === 0;
-
-  console.log(data);
-
   const { userData, loading } = useFetchUserData();
-  console.log(userData);
-
   const { handleLogout } = useOAuthLogout();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false); // Menu toggle state
-  const menuRef = useRef(null); // Reference for the dropdown menu
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+  const profileButtonRef = useRef(null);
+  const menuRef = useRef(null);
 
   const handleMenuToggle = () => {
-    setMenuOpen((prev) => !prev);
+    if (profileButtonRef.current) {
+      const rect = profileButtonRef.current.getBoundingClientRect();
+      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
+    }
+    setMenuOpen(!menuOpen);
   };
 
   const handleMenuOptionClick = (route) => {
-    setMenuOpen(false); // Close menu on option click
+    setMenuOpen(false);
     navigate(route);
   };
 
-  // Close menu on clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -60,30 +60,30 @@ export default function Header() {
           </button>
         )}
         {userData && (
-          <button className="profile-container" onClick={handleMenuToggle}>
+          <button
+            ref={profileButtonRef}
+            className="profile-container"
+            onClick={handleMenuToggle}
+          >
             <img
               src={userData?.photo_url}
               width="30px"
               style={{ borderRadius: '50%', cursor: 'pointer' }}
+              alt="Profile"
             />
             {userData?.firstName}
           </button>
         )}
-        {/* <div className="header-wallet-container">
-          <AiOutlineWallet className="wallet-icon" />
-          <span className="wallet-balance">₹0</span>
-        </div> */}
       </div>
 
-      {/* Dropdown Menu */}
       {menuOpen && (
-        <div 
+        <div
           className="dropdown-menu"
-          ref={menuRef} // Attach ref to the dropdown
+          ref={menuRef}
           style={{
             position: 'absolute',
-            top: '90px',
-            right: '40px',
+            top: `${menuPosition.top}px`,
+            left: `${menuPosition.left}px`,
             backgroundColor: '#fff',
             width: '200px',
             height: 'auto',
@@ -93,30 +93,33 @@ export default function Header() {
             alignItems: 'center',
           }}
         >
-          <div 
-            className="dropdown-item" 
+          <div
+            className="dropdown-item"
             onClick={() => handleMenuOptionClick(`profile/${userData?.uid}`)}
           >
             <AiOutlineUser className="menu-icon" />
             Profile
           </div>
-          <div 
-            className="dropdown-item" 
+          <div
+            className="dropdown-item"
             onClick={() => handleMenuOptionClick('/wallet')}
           >
             <AiOutlineWallet className="menu-icon" />
             Wallet
           </div>
-          <div 
-            className="dropdown-item" 
+          <div
+            className="dropdown-item"
             onClick={() => handleMenuOptionClick('/support')}
           >
             <AiOutlineQuestionCircle className="menu-icon" />
             Support
           </div>
-          <div 
-            className="dropdown-item logout" 
-            onClick={() => { handleLogout(); setMenuOpen(false); }}
+          <div
+            className="dropdown-item logout"
+            onClick={() => {
+              handleLogout();
+              setMenuOpen(false);
+            }}
           >
             <AiOutlineLogout className="menu-icon" />
             Log Out

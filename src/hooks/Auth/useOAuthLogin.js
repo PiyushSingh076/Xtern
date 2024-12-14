@@ -33,12 +33,12 @@ const useOAuthLogin = () => {
           toast.success("Welcome back, Entrepreneur!", {
             position: "bottom-left",
           });
-          navigate("/homescreen");
+          navigate("/verifyscreen");
         } else if (userData.typeUser === "Intern") {
           if (!userData.skillSet || userData.skillSet.length === 0) {
             // navigate("/select-skills");
           } else {
-            navigate("/homescreen");
+            navigate("/verifyscreen");
           }
         }
       } else {

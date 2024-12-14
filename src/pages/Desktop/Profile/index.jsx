@@ -51,6 +51,12 @@ const SingleMentor = () => {
 
   const { userData: currentUser } = useFetchUserData();
 
+if(!profileLoading){
+  if(!profileData?.type){
+    navigate('/xpertrole')
+  }
+}
+
 
 
 useEffect(() => {
@@ -232,7 +238,7 @@ const handleEdit = () => {
       ) : (
         <div className="skills-section">
           <div className="skills-header">Skills</div>
-          {profileData?.skillSet.map((item) => {
+          {profileData?.skillSet?.map((item) => {
             // Convert rating (1 to 5) into percentage
             const ratingPercentage = (parseInt(item.skillRating) / 5) * 100;
 
@@ -292,7 +298,7 @@ const handleEdit = () => {
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
             <span className="service-name">Consulting Now</span>
         <div className="issue-badge">
-  {professionBadges.map((badge, index) => (
+  {professionBadges?.map((badge, index) => (
     <div className="badge" key={index}>{badge}</div>
   ))}
 </div>
@@ -327,7 +333,7 @@ const handleEdit = () => {
       <div className="service-container">
         <h4>Service</h4>
         <div className="service-list">
-          {profileData?.serviceDetails.map((item) => (
+          {profileData?.serviceDetails?.map((item) => (
             <div className="service-item" key={item.serviceName}>
               <span className="service-name">{item.serviceName}</span>
               <p>{item.serviceDescription}</p>
@@ -425,9 +431,13 @@ const handleEdit = () => {
           <p>
             {work?.companyName} |{" "}
             {dayjs.unix(work?.startDate?.seconds).format("D MMM YYYY")} -{" "}
-            {work.endDate === "present" || !work.endDate
-              ? "Present"
-              : dayjs.unix(work?.endDate?.seconds).format("D MMM YYYY")}
+            {
+              work.endDate === "present" || !work.endDate
+  ? "Present"
+  : work.endDate.seconds
+  ? dayjs.unix(work.endDate.seconds).format("D MMM YYYY")
+  : "Not Available"
+            }
           </p>
           <button
             className="desc-btn"
