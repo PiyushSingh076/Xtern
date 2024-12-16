@@ -51,11 +51,10 @@ const SingleMentor = () => {
 
   const { userData: currentUser } = useFetchUserData();
 
-if(!profileLoading){
+
   if(!profileData?.type){
-    navigate('/xpertrole')
+    navigate('/userdetail')
   }
-}
 
 
 
