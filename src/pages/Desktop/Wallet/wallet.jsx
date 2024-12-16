@@ -74,21 +74,13 @@ const handlePayment = async (amount, userId) => {
 };
 
 // Wallet Balance Component
-
 const WalletBalance = ({ balance, setBalance, userId }) => {
-
-const WalletBalance = ({ balance, setBalance }) => {
-
   const [amount, setAmount] = useState(""); // State to manage the entered amount
   const [showInput, setShowInput] = useState(false); // State to toggle input visibility
 
   const handleAddBalance = () => {
     if (amount) {
-
       handlePayment(amount, userId); // Call handlePayment with the current amount and userId
-
-      setBalance(balance + parseInt(amount, 10));
-
       setAmount(""); // Clear the input field after adding
       setShowInput(false); // Hide the input field
     } else {
@@ -145,13 +137,11 @@ const WalletBalance = ({ balance, setBalance }) => {
   );
 };
 
-
 // Bank Account Details Component
 const BankAccountDetails = () => {
   return (
     <div className="bank-account-details">
       <h2>Bank Account Details</h2>
-
       <div className="bank-detail-input">
         <label>Account number</label>
         <input type="text" placeholder="Add account number" />
@@ -160,17 +150,6 @@ const BankAccountDetails = () => {
         <label>IFSC</label>
         <input type="text" placeholder="Add IFSC code" />
       </div>
-
-      
-       <div className="bank-detail-input">
-       <label>Account number</label>
-      <input type="text" placeholder="Add account number" />
-      <label>Bank name</label>
-      <input type="text" placeholder="Add bank name" />
-      <label>IFSC</label>
-      <input type="text" placeholder="Add IFSC code" />
-       </div>
-
     </div>
   );
 };

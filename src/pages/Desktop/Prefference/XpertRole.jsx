@@ -8,20 +8,22 @@ import {
     FaGavel,
     FaUserTie,
     FaCalculator,
-     FaUserGraduate,
+    FaUserGraduate,
+    FaSpa
   } from "react-icons/fa";
 import './Prefference.css'
 import { useDispatch } from 'react-redux';
 import { addXpertType } from '../../../Store/Slice/UserDetail';
 import { useNavigate } from 'react-router-dom';
 
-export default function XpertRole() {
+export default function XpertRole({next}) {
 
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const professionals = [
+         { id: 9, name: "Yoga", icon: <FaSpa/> },
         { id: 1, name: "Developer", icon: <FaLaptopCode /> },
         { id: 2, name: "Designer", icon: <FaBrush /> },
         { id: 3, name: "Cloud DevOps", icon: <FaCloud /> },
@@ -29,15 +31,18 @@ export default function XpertRole() {
         { id: 5, name: "Digital Marketing", icon: <FaChartLine /> },
         { id: 6, name: "Lawyer", icon: <FaGavel /> },
         { id: 7, name: "HR", icon: <FaUserTie /> },
-        { id: 8, name: "Accountant", icon: <FaCalculator /> },
-        { id: 9, name: "Intern", icon: <FaUserGraduate/> },
+        { id: 8, name: "Financial Analyst", icon: <FaCalculator /> },
+       
+        { id: 10, name: "Intern", icon: <FaUserGraduate/> },
+
 
       ];
 
 
       const setXpertType = (type) =>{
-            dispatch(addXpertType(type))
-            navigate('/userdetail')
+            dispatch(addXpertType(type));
+            navigate(next(1));
+      
             
       }
 

@@ -9,6 +9,7 @@ import {
   FaGavel,
   FaUserTie,
   FaCalculator,
+  FaSpa,
 } from "react-icons/fa";
 import "./filter.css";
 import { useParams , useNavigate } from "react-router-dom";
@@ -23,6 +24,7 @@ const professionals = [
   { id: 6, name: "Lawyer", icon: <FaGavel /> },
   { id: 7, name: "HR", icon: <FaUserTie /> },
   { id: 8, name: "Accountant", icon: <FaCalculator /> },
+  { id: 9, name: "Yoga Instructor", icon: <FaSpa/> },
 ];
 
 const FilterScreen = () => {

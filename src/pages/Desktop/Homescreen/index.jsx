@@ -20,59 +20,63 @@ export default function HomeScreen() {
 
     const {userData} = useFetchUserData()
 
-    const categories = [
-        {
-            title: 'Developer',
-            icon: dev,
-            description: 'Seasoned software engineers, coders, and architects with expertise across hundreds of technologies.'
-        },
-        {
-            title: 'DevOps',
-            icon: devops,
-            description: 'Expert cloud architects to help you scale & an optimised cost & high performance.'
-        },
-        {
-            title: 'UI/UX Developer',
-            icon: ui_dev,
-            description: 'Expert UI, UX, Visual, and Interaction designers as well as a wide range of illustrators, animators, and more.'
-        },
-    
-        {
-            title: 'Product Manager',
-            icon: product_manager,
-            description: 'Digital product managers, scrum product owners with expertise in numerous industries like banking, healthcare, ecommerce, and more.'
-        },
-        {
-            title: 'Intern',
-            icon: intern,
-            description: 'Grab top coders from Tier 1 Universities helping you with the best of code quality & least technologies.'
-        },
-        {
-            title: 'Content Creator',
-            icon: content_creator,
-            description: 'Talented content creators specializing in blogs, social media, video production, and compelling storytelling across multiple platforms.'
-        },
-        {
-            title: 'Digital Marketing',
-            icon: digital_marketing,
-            description: 'Expert digital marketers skilled in SEO, social media marketing, PPC, content strategy, and data-driven marketing techniques.'
-        },
-        {
-            title: 'HR',
-            icon: hr,
-            description: 'Experienced HR professionals adept at talent acquisition, employee relations, performance management, and organizational development.'
-        },
-        {
-            title: 'Lawyer',
-            icon: lawyer,
-            description: 'Specialized legal professionals with expertise in various domains including corporate law, intellectual property, and contract management.'
-        },
-        {
-            title: 'Accountant',
-            icon: accountant,
-            description: 'Skilled accountants proficient in financial reporting, tax planning, auditing, and providing strategic financial guidance.'
-        }
-    ]
+   const categories = [
+    {
+        title: 'Developer',
+        icon: dev,
+        description: 'Seasoned software engineers, coders, and architects with expertise across hundreds of technologies.'
+    },
+    {
+        title: 'DevOps',
+        icon: devops,
+        description: 'Expert cloud architects to help you scale & an optimised cost & high performance.'
+    },
+    // {
+    //     title: 'UI/UX Developer',
+    //     icon: ui_dev,
+    //     description: 'Expert UI, UX, Visual, and Interaction designers as well as a wide range of illustrators, animators, and more.'
+    // },
+    {
+        title: 'Product Manager',
+        icon: product_manager,
+        description: 'Digital product managers, scrum product owners with expertise in numerous industries like banking, healthcare, ecommerce, and more.'
+    },
+    {
+        title: 'Intern',
+        icon: intern,
+        description: 'Grab top coders from Tier 1 Universities helping you with the best of code quality & least technologies.'
+    },
+    {
+        title: 'Content Creator',
+        icon: content_creator,
+        description: 'Talented content creators specializing in blogs, social media, video production, and compelling storytelling across multiple platforms.'
+    },
+    {
+        title: 'Digital Marketing',
+        icon: digital_marketing,
+        description: 'Expert digital marketers skilled in SEO, social media marketing, PPC, content strategy, and data-driven marketing techniques.'
+    },
+    {
+        title: 'HR',
+        icon: hr,
+        description: 'Experienced HR professionals adept at talent acquisition, employee relations, performance management, and organizational development.'
+    },
+    {
+        title: 'Lawyer',
+        icon: lawyer,
+        description: 'Specialized legal professionals with expertise in various domains including corporate law, intellectual property, and contract management.'
+    },
+    {
+        title: 'Accountant',
+        icon: accountant,
+        description: 'Skilled accountants proficient in financial reporting, tax planning, auditing, and providing strategic financial guidance.'
+    },
+    {
+        title: 'Yoga Instructor',
+        icon: 'https://cdn-icons-png.flaticon.com/512/3773/3773928.png', // Replace this with the correct path to your Yoga icon SVG/image
+        description: 'Certified yoga instructors offering personalized sessions for physical fitness, mental well-being, and stress management.'
+    }
+];
 
     const navigate = useNavigate()
   return (
@@ -80,7 +84,7 @@ export default function HomeScreen() {
       
   
  { !userData?.linkedInProfile &&   <div 
-  onClick={() => navigate('/xpertrole')}
+  onClick={() => navigate('/userdetail')}
   className="become-xpert-banner">
   <h1 className="title">
     Become <span className="domains-title">Xpert</span>
