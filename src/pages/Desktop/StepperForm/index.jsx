@@ -24,9 +24,20 @@ import {
   Divider,
   CircularProgress,
 } from "@mui/material";
+import {
+    FaLaptopCode,
+    FaBrush,
+    FaCloud,
+    FaPen,
+    FaChartLine,
+    FaGavel,
+    FaUserTie,
+    FaCalculator,
+    FaUserGraduate,
+    FaSpa
+  } from "react-icons/fa";
+import { addXpertType } from '../../../Store/Slice/UserDetail';
 import Rating from "@mui/material/Rating";
-import Stack from "@mui/material/Stack";
-
 import { FiTrash } from "react-icons/fi";
 import LinkedInLogo from "../../../assets/svg/linkedin.png";
 import { State, City } from "country-state-city";
@@ -43,6 +54,8 @@ import useSaveProfileData from "../../../hooks/Linkedin/useSaveProfileData";
 import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
+import XpertRole from '../Prefference/XpertRole'
+
 
 
 export default function StepperForm() {
@@ -70,26 +83,38 @@ export default function StepperForm() {
   const [ConsultingDurationType, setConsultingDurationType] = useState("");
   const [serviceData, setServiceData] = useState({});
   const [recommendations, setRecommendation] = useState([]);
-
+  const [activeStep, setActiveStep] = useState(0);
+  const steps = ["Xpert Type","Profile", "Offering"];
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("");
+  const [isLinkedInFetched, setIsLinkedInFetched] = useState(false); // Flag to check if LinkedIn data is fetched
+ 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { saveProfileData, loading } = useSaveProfileData();
   const { userData, loading: userDataLoading } = useFetchUserData();
 
+
   const uid = userData?.uid
-
-  console.log(uid)
-
-
+  
+ 
 
 
-  console.log(Skills , 'skill')
+
+
+
 
 
     const location = useLocation();
   const { profileData } = location.state || {}; // Safely extract profileData
 
-  console.log(profileData , 'edit')
+useEffect(() => {
+  if (profileData) {
+    setActiveStep(1);
+  }
+}, [profileData]);
+
+ 
   
 
  
@@ -107,6 +132,7 @@ console.log(Xpert , 'xpert')
 
 
   
+// Select role section
 
 
 
@@ -129,11 +155,7 @@ console.log(Xpert , 'xpert')
   }, [ConsultingPrice, comission]); // Dependency array includes both values
 
   // Flow control
-  const [activeStep, setActiveStep] = useState(0);
-  const steps = ["Profile", "Offering"];
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState("");
-  const [isLinkedInFetched, setIsLinkedInFetched] = useState(false); // Flag to check if LinkedIn data is fetched
+
 
   // Handle Profile Image Upload
   const handleProfileImage = (event) => {
@@ -144,6 +166,9 @@ console.log(Xpert , 'xpert')
       reader.readAsDataURL(file);
     }
   };
+
+
+
 
   // Clear Profile Image
   const clearProfileImage = () => {
@@ -358,13 +383,31 @@ console.log(Xpert , 'xpert')
           description: "Offer a range of customizable services.",
         },
       ],
+   Intern : [
+  {
+    title: "Internship",
+    description: "A temporary position offering hands-on experience, typically for students or recent graduates, to gain industry skills."
+  },
+  {
+    title: "Full-Time",
+    description: "A long-term, permanent employment position with fixed working hours and responsibilities."
+  },
+  {
+    title: "Project-Basis",
+    description: "A short-term contract role focused on completing specific projects or tasks within a set timeframe."
+  }
+]
     };
   
     // Set the recommendations based on XpertType
     setRecommendation(
       recommendations[Xpert] || recommendations.Default
     );
+   
   }, [Xpert]);
+
+
+  
 
 
 
@@ -745,9 +788,13 @@ console.log(Xpert , 'xpert')
         ))}
       </Stepper>
 
+      { activeStep === 0 && <XpertRole next={setActiveStep}/>
+        
+      }
+
       {/* Form Content */}
       <Box sx={{ height: "80vh", overflow: "auto" }}>
-        {activeStep === 0 && (
+        {activeStep === 1 && (
           <Grid container spacing={4} alignItems="flex-start">
             {/* Left Column - Profile Fields */}
             <Grid
@@ -926,7 +973,7 @@ console.log(Xpert , 'xpert')
               xs={12}
               md={8}
             >
-              <Box
+            {!profileData &&  <Box
                 sx={{
                   display: "flex",
                   flexDirection: "column",
@@ -958,7 +1005,7 @@ console.log(Xpert , 'xpert')
                   />
                   <span>Import Linkedin Profile</span>
                 </div>
-              </Box>
+              </Box>}
 
               {/* LinkedInFetcher */}
               {!isLinkedInFetched && (
@@ -1229,7 +1276,7 @@ console.log(Xpert , 'xpert')
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => setActiveStep(1)}
+                  onClick={() => setActiveStep(2)}
                   size="large"
                 >
                   Next Step
@@ -1239,7 +1286,8 @@ console.log(Xpert , 'xpert')
           </Grid>
         )}
 
-        {activeStep === 1 && (
+        {activeStep === 2
+         && (
           <Grid container spacing={4}>
             {/* Left Column - Profile Summary */}
             <Grid item xs={12} md={4}>
@@ -1390,7 +1438,7 @@ console.log(Xpert , 'xpert')
               </Card>
 
               {/* Recommendation Section */}
-              <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+           <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
                 <CardHeader
                   title="Services Recommendations"
                   titleTypographyProps={{ variant: "h6" }}
@@ -1428,7 +1476,7 @@ console.log(Xpert , 'xpert')
                 <Button
                   variant="outlined"
                   color="secondary"
-                  onClick={() => setActiveStep(0)}
+                  onClick={() => setActiveStep(1)}
                   size="large"
                   sx={{ mr: 2 }}
                 >

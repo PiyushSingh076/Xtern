@@ -35,10 +35,21 @@ const SingleMentor = () => {
     }
   }, [currentUser, uid]);
 
+
+    const sanitizeProfileData = (data) => {
+  return JSON.parse(JSON.stringify(data)); // Removes non-serializable fields
+};
+
   // Navigate to edit page with sanitized data
   const handleEdit = () => {
-    const sanitizedData = JSON.parse(JSON.stringify(profileData));
-    navigate("/userdetail", { state: { profileData: sanitizedData } });
+    if(profileData?.type){
+    const sanitizedData = sanitizeProfileData(profileData);
+  navigate('/userdetail', { state: { profileData: sanitizedData } });
+  }
+
+  else{
+     navigate('/userdetail')
+  }
   };
 
   // Navigate back

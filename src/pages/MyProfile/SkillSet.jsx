@@ -105,23 +105,7 @@ console.log('skill',profileData)
             className="service-container">
                 <h3>Services</h3>
                 <div className="service-list">
-                  <div className="service-item">
-                    <span className="service-name">
-                      Consulting Price
-                    </span>
-                    <div className="consulting-btn">
-                   
-                      <button
-                       style={{width: '200%'}}
-                       className="call-btn">
-                        📞 Call
-                      </button>
-                    </div>
-                    <span className="service-price">
-                    ₹{profileData?.consultingPrice}/{'Min'}
-                    </span>
-
-                  </div>
+                
                   {profileData?.serviceDetails?.map((serviceItem, index) => (
                  <div key={index} className="service-item">
                   <span className="service-name" style={{fontSize: '0.8rem'}}>{serviceItem?.serviceName}</span>

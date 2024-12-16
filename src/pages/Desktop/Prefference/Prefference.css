@@ -341,8 +341,8 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 40px;
-    width: 80%;
+    gap: 20px;
+    width: 100%;
     height: auto;
 
   }
