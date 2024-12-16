@@ -16,6 +16,7 @@ import { useParams , useNavigate } from "react-router-dom";
 
 
 const professionals = [
+   { id: 9, name: "Yoga Instructor", icon: <FaSpa/> },
   { id: 1, name: "Developer", icon: <FaLaptopCode /> },
   { id: 2, name: "Designer", icon: <FaBrush /> },
   { id: 3, name: "Cloud DevOps", icon: <FaCloud /> },
@@ -24,7 +25,7 @@ const professionals = [
   { id: 6, name: "Lawyer", icon: <FaGavel /> },
   { id: 7, name: "HR", icon: <FaUserTie /> },
   { id: 8, name: "Accountant", icon: <FaCalculator /> },
-  { id: 9, name: "Yoga Instructor", icon: <FaSpa/> },
+ 
 ];
 
 const FilterScreen = () => {

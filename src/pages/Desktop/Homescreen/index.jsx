@@ -21,6 +21,13 @@ export default function HomeScreen() {
     const {userData} = useFetchUserData()
 
    const categories = [
+
+     {
+        title: 'Yoga Instructor',
+        icon: 'https://cdn-icons-png.flaticon.com/512/3773/3773928.png', // Replace this with the correct path to your Yoga icon SVG/image
+        description: 'Certified yoga instructors offering personalized sessions for physical fitness, mental well-being, and stress management.'
+    },
+
     {
         title: 'Developer',
         icon: dev,
@@ -71,11 +78,7 @@ export default function HomeScreen() {
         icon: accountant,
         description: 'Skilled accountants proficient in financial reporting, tax planning, auditing, and providing strategic financial guidance.'
     },
-    {
-        title: 'Yoga Instructor',
-        icon: 'https://cdn-icons-png.flaticon.com/512/3773/3773928.png', // Replace this with the correct path to your Yoga icon SVG/image
-        description: 'Certified yoga instructors offering personalized sessions for physical fitness, mental well-being, and stress management.'
-    }
+   
 ];
 
     const navigate = useNavigate()
@@ -105,7 +108,7 @@ export default function HomeScreen() {
         {categories.map((category, index) => (
           <div 
           onClick={()=>navigate(`/filterscreen/${category.title}`)}
-          key={index} className="categories-card">
+          key={category.title} className="categories-card">
             <div className="catedories-card-icon-title">
               <img src={category.icon} width={"60px"} className='xpert-icon'/>
               <span className="categories-card-title">{category.title}</span>
