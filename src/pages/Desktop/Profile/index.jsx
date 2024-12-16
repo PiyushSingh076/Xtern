@@ -51,10 +51,11 @@ const SingleMentor = () => {
 
   const { userData: currentUser } = useFetchUserData();
 
-
-  if(!profileData?.type){
-    navigate('/userdetail')
-  }
+useEffect(() => {
+    if (!profileLoading && (!profileData?.type || profileData?.type.trim() === "")) {
+      navigate('/userdetail');
+    }
+  }, [profileLoading, profileData, navigate]);
 
 
 
