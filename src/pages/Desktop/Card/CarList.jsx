@@ -147,8 +147,31 @@
 // export default CardList;
 import React from "react";
 import Card from "./Card";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 const CardList = ({ profession }) => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const usersCollection = collection(db, "users");
+        const querySnapshot = await getDocs(usersCollection);
+
+        const usersData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setUsers(usersData);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
   const cardData = [
     // Developer Profession
     {
@@ -352,12 +375,16 @@ const CardList = ({ profession }) => {
     },
   ];
 
-  // Filter data based on the selected profession
-  const filteredData = cardData.filter(
-    (card) =>
-      card.primary.toLowerCase().includes(profession?.toLowerCase()) ||
-      card.secondary.toLowerCase().includes(profession?.toLowerCase())
-  );
+  const filteredData = users.filter((card) => {
+    if (card.type) {
+      const filter = card.type
+        .toLowerCase()
+        .includes(profession?.toLowerCase());
+      console.log(filter);
+      return filter;
+    }
+    return false;
+  });
 
   return (
     <div className="card-list">

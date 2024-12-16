@@ -12,31 +12,27 @@ import {
   Window,
   LoadingIndicator,
 } from "stream-chat-react";
-import { Menu } from 'lucide-react';
+import { Menu } from "lucide-react";
 import "stream-chat-react/dist/css/v2/index.css";
 import "./layoutchat.css";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 
 const App = () => {
   const [client, setClient] = useState(null);
-  const [channel, setChannel] = useState(null);
   const [userToken, setUserToken] = useState(null);
   const [isChannelListOpen, setIsChannelListOpen] = useState(true);
   const { userData } = useFetchUserData();
   const location = useLocation();
 
-  const searchParams = new URLSearchParams(location.search);
-  const user2FirstName = searchParams.get("firstName");
-  const user2Uid = searchParams.get("uid");
-
   useEffect(() => {
-    if (!userData || !user2Uid || !user2FirstName) return;
+    if (!userData) return;
 
     const initializeChat = async () => {
       try {
         const chatClient = StreamChat.getInstance("3pts2x46x4wy");
 
-        const tokenResponse = await fetch("https://us-central1-startup-a54cf.cloudfunctions.net/getToken", {
+        // Fetch token for the current user
+        const tokenResponse = await fetch("http://localhost:5000/getToken", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId: userData.uid }),
@@ -47,42 +43,12 @@ const App = () => {
         await chatClient.connectUser(
           {
             id: userData.uid,
-            name: userData.firstName,
+            name: userData.display_name,
           },
           token
         );
 
-        const filters = {
-          type: "messaging",
-          members: { $in: [userData.uid] },
-        };
-
-        const sort = { last_message_at: -1 };
-        const options = { limit: 10 };
-
         setClient(chatClient);
-
-        const members = [
-          { id: userData.uid, name: userData.firstName },
-          { id: user2Uid, name: user2FirstName },
-        ];
-
-        const channelResponse = await fetch(
-          "https://us-central1-startup-a54cf.cloudfunctions.net/getChannel",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              members: members.map((member) => member.id),
-              createdById: userData.uid,
-            }),
-          }
-        );
-        const { channelId } = await channelResponse.json();
-
-        const chatChannel = chatClient.channel("messaging", channelId);
-        await chatChannel.watch();
-        setChannel(chatChannel);
       } catch (err) {
         console.error("Error initializing chat:", err.message);
       }
@@ -93,7 +59,7 @@ const App = () => {
     return () => {
       if (client) client.disconnectUser();
     };
-  }, [userData, user2Uid, user2FirstName]);
+  }, [userData]);
 
   const toggleChannelList = () => {
     setIsChannelListOpen(!isChannelListOpen);
@@ -101,10 +67,10 @@ const App = () => {
 
   useEffect(() => {
     // Set the CSS variable for navbar height
-    document.documentElement.style.setProperty('--navbar-height', '64px'); // Adjust this value to match your navbar height
+    document.documentElement.style.setProperty("--navbar-height", "64px");
   }, []);
 
-  if (!client || !channel || !userToken) return <LoadingIndicator />;
+  if (!client || !userToken) return <LoadingIndicator />;
 
   const filters = { type: "messaging", members: { $in: [userData.uid] } };
   const sort = { last_message_at: -1 };
@@ -122,11 +88,10 @@ const App = () => {
               filters={filters}
               sort={sort}
               options={options}
-              onChannelSelect={(selectedChannel) => setChannel(selectedChannel)}
             />
           </div>
           <div className="channel-container">
-            <Channel channel={channel}>
+            <Channel>
               <Window>
                 <ChannelHeader />
                 <MessageList />
@@ -142,4 +107,3 @@ const App = () => {
 };
 
 export default App;
-

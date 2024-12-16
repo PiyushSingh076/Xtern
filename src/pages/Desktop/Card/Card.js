@@ -3,22 +3,26 @@ import "./Card.css"; // Assuming this CSS file exists and has appropriate styles
 import { useNavigate } from "react-router-dom";
 
 const Card = ({
-  fullname,
+  photo_url,
+  display_name,
   city,
   state,
-  primary,
-  secondary,
-  yearsOfExperience,
+  role,
+  skillSet,
+  experience,
   education,
   workexp,
   assignments,
   firstName,
-  uid
+  uid,
 }) => {
   const navigate = useNavigate();
-
   const handleChatClick = () => {
-    navigate(`/chat?firstName=${encodeURIComponent(firstName)}&uid=${encodeURIComponent(uid)}`);
+    navigate(
+      `/chat?firstName=${encodeURIComponent(
+        firstName
+      )}&uid=${encodeURIComponent(uid)}`
+    );
   };
 
   return (
@@ -27,27 +31,36 @@ const Card = ({
         <div
           className="blurred-dp"
           style={{
-            backgroundImage: `url("https://img.freepik.com/premium-photo/professional-photo-linkedin-profile-picture-beautiful-looking-woman-light-color_1078199-10524.jpg")`,
+            backgroundImage: `url(${photo_url})`,
           }}
         ></div>
         {/* Set the background image */}
-        <h3>{fullname}</h3>
+        <h3>{display_name}</h3>
       </div>
       <div className="card-details">
         <p>
-          <strong>Primary Role:</strong> {primary}
+          <strong>Primary Role:</strong> {role}
         </p>
         {/* Aligning primary role */}
         <p>
-          <strong>Secondary Role:</strong> {secondary}
+          <strong>Skill Set: </strong>
+          {skillSet?.length > 0
+            ? skillSet.map((skill, index) => (
+                <span key={index}>
+                  {typeof skill === "string"
+                    ? skill
+                    : `${skill.skill} (${skill.skillRating})`}{" "}
+                  {index < skillSet.length - 1 && ", "}
+                </span>
+              ))
+            : "No skills available"}
         </p>
-        {/* Aligning secondary role */}
         <p>
           <strong>Location:</strong> {city}, {state}
         </p>
         {/* Aligning location */}
         <p>
-          <strong>Experience:</strong> {yearsOfExperience} years
+          <strong>Experience:</strong> {experience} years
         </p>
         {/* Aligning experience */}
         <p>
