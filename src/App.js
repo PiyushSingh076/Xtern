@@ -26,6 +26,10 @@ import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iff
 // import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
 import DesktopCard from "./pages/Desktop/Card/CarList.jsx";
 import DesktopStepperForm from "./pages/Desktop/StepperForm/index.jsx";
+// chat
+import Chat from './pages/Desktop/Chat/Chat.jsx'
+import MyChat from './pages/Desktop/MyChats/Mychats.jsx'
+
 
 // Mobile View
 import UserType from "./pages/UserType.jsx";
@@ -143,6 +147,7 @@ function App() {
       {isMobileView && <div style={{ height: "50px" }}></div>}
       {!isMobileView && <div style={{ height: "90px" }}></div>}
       <Toaster />
+      
       <Routes>
         {/* Public Routes */}
         {/* <Route
@@ -153,6 +158,14 @@ function App() {
           path={ROUTES.SIGN_UP}
           element={isMobileView ? <SignUp /> : <DesktopSignUp />}
         />
+          <Route
+          path={ROUTES.MYCHAT}
+          element={
+            <ProtectedRoute>
+              <MyChat/>
+            </ProtectedRoute>
+          }
+          />
         <Route
           path={ROUTES.SIGN_IN}
           element={isMobileView ? <SignIn /> : <DesktopSignIn />}
@@ -590,7 +603,17 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+          {/*//---------CHATS------------// */}
+        <Route
+          path={ROUTES.CHAT}
+          element={
+            <ProtectedRoute>
+              <Chat/>
+            </ProtectedRoute>
+          }
+          />
+      
+        
         {/* Footer */}
         <Route path="" element={<Footer />} />
       </Routes>
