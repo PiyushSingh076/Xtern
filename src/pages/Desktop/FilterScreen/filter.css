@@ -3,7 +3,8 @@
   padding: 1rem;
   background-color: #f4f4f4;
   font-family: "Roboto", sans-serif;
-  min-height: 85vh;
+  min-height: 90vh;
+  height: auto;
 }
 
 /* Profession cards container */

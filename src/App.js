@@ -311,7 +311,7 @@ function App() {
           }
         />
         <Route
-          path={ROUTES.SINGLE_COURSE_DESCRIPTION + "/:projectId"}
+          path={ROUTES.SINGLE_COURSE_DESCRIPTION }
           element={
             <ProtectedRoute>
               {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />}

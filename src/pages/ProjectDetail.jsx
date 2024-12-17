@@ -16,6 +16,8 @@ import Loading from "../components/Loading";
 import useFetchProjectData from "../hooks/Auth/useFetchProjectData";
 import useFetchUserData from "../hooks/Auth/useFetchUserData";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { ImTab } from "react-icons/im";
 
 
 
@@ -23,15 +25,19 @@ const ProjectDetails = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
   const navigate = useNavigate();
-  const { projectId } = useParams();
-  const { projectData, loading, error } = useFetchProjectData(projectId);
+
+  
   const { userData } = useFetchUserData();
 
   const auth = useSelector((state) => state.role.auth);
 
   console.log(auth);
 
-  if (error) return <p>Error: {error.message}</p>;
+
+    const location = useLocation();
+  const { item } = location.state || {}; 
+
+
 
   const handleBackClick = () => {
     navigate(-1); // This will navigate to the previous page in the history stack
@@ -55,59 +61,16 @@ const ProjectDetails = () => {
     arrows: false,
   };
 
-  if (loading) {
-    return <Loading />;
-  }
+
   return (
     <>
-      <header id="top-navbar" className="top-navbar">
-        <div className="container">
-          <div className="top-navbar_full">
-            <div className="back-btn" onClick={handleBackClick}>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <mask
-                  id="mask0_330_7385"
-                  style={{ maskType: "alpha" }}
-                  maskUnits="userSpaceOnUse"
-                  x="0"
-                  y="0"
-                  width="24"
-                  height="24"
-                >
-                  <rect width="24" height="24" fill="white"></rect>
-                </mask>
-                <g mask="url(#mask0_330_7385)">
-                  <path
-                    d="M15 18L9 12L15 6"
-                    stroke="black"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                </g>
-              </svg>
-            </div>
-            <div className="top-navbar-title">
-              <p>Project Details</p>
-            </div>
-            <div></div>
-          </div>
-        </div>
-        <div className="navbar-boder"></div>
-      </header>
-      {/* <!-- Single description section start --> */}
+
       <section id="single-description-screen">
         <div className="first-desc-img-sec">
           <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
               <img
-                src={projectData?.imageUrl || HeaderImg}
+                src={HeaderImg}
                 alt="social-media-img"
                 height="350"
                 width="350"
@@ -173,21 +136,21 @@ const ProjectDetails = () => {
               <div className="first-decs-sec mt-16">
                 <div className="first-decs-sec-wrap">
                   <div className="skills-left-sec">
-                    <div className="first-left-sec">
-                      <div> {projectData?.skill || "Design"}</div>
+                    {/* <div className="first-left-sec">
+                      <div> {"Design"}</div>
                     </div>
                     <div className="first-left-sec">
-                      <div> {projectData?.skill || "UI/UX"}</div>
+                      <div> {"UI/UX"}</div>
                     </div>
                     <div className="first-left-sec">
-                      <div> {projectData?.skill || "Figma"}</div>
-                    </div>
+                      <div> {"Figma"}</div>
+                    </div> */}
                   </div>
 
                   <div className="first-right-sec">
                     <div>
-                      <span className="firs-txt1 mr-8">$199.00</span>
-                      <span className="firs-txt2">$149.00</span>
+                     
+                        <span className="firs-txt2">₹{item.servicePrice}</span>
                     </div>
                   </div>
                 </div>
@@ -196,8 +159,7 @@ const ProjectDetails = () => {
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
                     <h1 className="second-txt1">
-                      {projectData?.title ||
-                        " Responsive Design with Grids. A Guide for UX/UI Designer"}
+                      {   item.serviceName}
                     </h1>
                   </div>
                   <div className="second-decs-sec-bottom">
@@ -206,7 +168,7 @@ const ProjectDetails = () => {
                         <span className="student-img mr-8">
                           <img src={StudentIcon} alt="student-icon" />
                         </span>
-                        <span className="second-txt2">104.2k Application</span>
+                        <span className="second-txt2">0 Application</span>
                       </div>
                       <div className="mt-12">
                         <span className="student-img mr-8 fillStar">
@@ -215,17 +177,12 @@ const ProjectDetails = () => {
                         {/* <span className="second-txt2">4.3 (3.7k ratings)</span> */}
                         <span className="second-txt2">Level: Medium</span>
                       </div>
+                    
                       <div className="mt-12">
                         <span className="student-img mr-8">
                           <img src={TimeIcon} alt="student-icon" />
                         </span>
-                        <span className="second-txt2">41h 30m</span>
-                      </div>
-                      <div className="mt-12">
-                        <span className="student-img mr-8">
-                          <img src={TimeIcon} alt="student-icon" />
-                        </span>
-                        <span className="second-txt2">Due: 25-09-2024</span>
+                        <span className="second-txt2">Due: {item.serviceDuration} {item.serviceDurationType}</span>
                       </div>
                       {/* <div className="mt-12">
                         <span className="student-img mr-8">
@@ -325,19 +282,7 @@ const ProjectDetails = () => {
                         Description
                       </button>
                     </li>
-                    <li className="nav-item" role="presentation">
-                      <button
-                        className="nav-link"
-                        id="lessons-tab-btn"
-                        data-bs-toggle="pill"
-                        data-bs-target="#lesson-content"
-                        type="button"
-                        role="tab"
-                        aria-selected="false"
-                      >
-                        Assessment
-                      </button>
-                    </li>
+                   
                     <li className="nav-item" role="presentation">
                       {/* <button
                         className="nav-link"
@@ -362,40 +307,8 @@ const ProjectDetails = () => {
                       <div className="description-content-wrap mt-24">
                         <div className="description-first-content">
                           <h3 className="des-con-txt1">Details</h3>
-                          <div>
-                            {projectData?.detail || (
-                              <>
-                                {" "}
-                                <p className="des-con-txt2">
-                                  {" "}
-                                  In this className, you'll learn everything
-                                  about using grids for your UI Design.Grids are
-                                  not only your best friend when it comes to
-                                  creating a consistent layout. They are also
-                                  the backbone when it comes to responsive
-                                  design and making your product shine across
-                                  all screen sizes.
-                                </p>
-                                <p className="des-con-txt2">
-                                  Besides the classNameic Grids like Bootstrap
-                                  and co, I will tell you a bit about my
-                                  favorite grid, the CSS Grid, full of
-                                  possibilities.
-                                </p>
-                                <p className="des-con-txt2">
-                                  And yes, we will go the extra mile and look at
-                                  some basic code, all set up for UX/UI
-                                  Designers to really understand the
-                                  technicality behind the product you are
-                                  building.
-                                </p>
-                                <p className="des-con-txt2">
-                                  The Figma and code template that I will show
-                                  you are part of the course material to make
-                                  sure you can dive right into the making
-                                </p>{" "}
-                              </>
-                            )}
+                       <div style={{marginTop: '10px' , marginBottom: '10px'}}>
+                            { item.serviceDescription }
                           </div>
                         </div>
                         {/* <div className="description-second-content mt-24">
@@ -648,7 +561,7 @@ const ProjectDetails = () => {
           </div>
 
           <div className="buy-now-description">
-          { auth  ? <Link className="buy-now" to={`/applyproject/${projectId}`}>Apply Now</Link> : <Link className="buy-now" to={`/signin`}>Apply Now</Link>}
+         <Link className="buy-now">Buy Now</Link>
           </div>
         </div>
       </section>
