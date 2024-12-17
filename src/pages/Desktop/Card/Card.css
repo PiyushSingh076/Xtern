@@ -14,14 +14,13 @@
 .card {
   width: 300px;
   height: auto; /* Ensure it adjusts based on content */
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 20px;
   padding: 16px;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column; /* Makes sure the content inside the card flows vertically */
-  justify-content: space-between; /* Ensures footer is always at the bottom */
+  align-items: center;
   margin-bottom: 20px; /* Space between cards */
 }
 /* Card Header (Profile Picture) */
@@ -39,7 +38,13 @@
   background-color: #ccc;
   background-size: cover;
   background-position: center;
-  filter: blur(4px);
+
+}
+
+.filter-card-name{
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 500;
 }
 
 /* Card details (text) styling */
@@ -57,15 +62,23 @@
 
 /* Card Footer*/
 .card-footer {
+  height: 70px;
+  width: 100%;
+  background-color: white;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-top: 12px;
 }
 
 .card-footer button {
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 8px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 20px;
   background-color: #007bff;
   color: white;
   cursor: pointer;
@@ -130,6 +143,7 @@
   .card {
     max-width: 240px;
     padding: 10px;
+    height: auto;
   }
 
   .card-header {
@@ -148,6 +162,7 @@
 
   .card-footer {
     gap: 6px;
+    height: auto;
   }
 
   .card-footer button {

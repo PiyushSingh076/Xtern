@@ -19,6 +19,7 @@ import { MdEdit } from "react-icons/md";
 import { MdChat } from "react-icons/md";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
+import { NoAccounts } from "@mui/icons-material";
 
 // Component definition
 const SingleMentor = () => {
@@ -116,6 +117,18 @@ const SingleMentor = () => {
     setTimecontainer(false);
   };
 
+
+const handleService = (item) => {
+  const serializableItem = {
+    serviceName: item.serviceName,
+    serviceDescription: item.serviceDescription,
+    serviceDuration: item.serviceDuration,
+    serviceDurationType: item.serviceDurationType,
+    servicePrice: item.servicePrice,
+  };
+
+  navigate('/project', { state: { item: serializableItem } });
+};
   // Event handlers
   const toggleBookmark = () => {
     setIsBookmarked(!isBookmarked);
@@ -274,6 +287,9 @@ const SingleMentor = () => {
                     </div>
                   );
                 })}
+                {
+                  !profileData?.skillSet && (<span>No skill set available</span>)
+                }
               </div>
             )}
           </div>
@@ -352,9 +368,11 @@ const SingleMentor = () => {
             <h4>Service</h4>
             <div className="service-list">
               {profileData?.serviceDetails?.map((item) => (
-                <div className="service-item" key={item.serviceName}>
+                <div
+                onClick={()=>handleService(item)}
+                 className="service-item" key={item.serviceName}>
                   <span className="service-name">{item.serviceName}</span>
-                  <p>{item.serviceDescription}</p>
+                  <p>{item.serviceDescription.slice(0,70)+'...'}</p>
                   <div className="price-duration-container">
                     <span className="service-duration">
                       <FaClock /> {item?.serviceDuration || "N/A"}{" "}

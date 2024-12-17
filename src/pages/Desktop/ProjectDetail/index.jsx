@@ -12,12 +12,13 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Loading from "../../../components/Loading";
 import useFetchProjectData from "../../../hooks/Auth/useFetchProjectData";
 import './projectDetail.css'
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import { useSelector } from "react-redux";
+import { ImTab } from "react-icons/im";
 
 // Define the ProjectDetails component
 const ProjectDetails = () => {
@@ -28,13 +29,18 @@ const ProjectDetails = () => {
   // Hooks
   const navigate = useNavigate();
   const { projectId } = useParams();
-  const { projectData, loading, error } = useFetchProjectData(projectId);
+
   
   // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
 
-  // Handle errors
-  if (error) return <p>Error: {error.message}</p>;
+  const location = useLocation();
+  const { item } = location.state || {}; 
+
+  console.log(item , 'service')
+
+
+
 
   // Navigation function
   const handleBackClick = () => {
@@ -64,9 +70,7 @@ const ProjectDetails = () => {
   };
 
   // Show loading component while data is being fetched
-  if (loading) {
-    return <Loading />;
-  }
+  
 
   // Render the component
   return (
@@ -78,7 +82,7 @@ const ProjectDetails = () => {
           <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
               <img
-                src={projectData?.imageUrl || HeaderImg}
+                src={HeaderImg}
                 alt="social-media-img"
                 height="400"
                 width="400"
@@ -150,21 +154,21 @@ const ProjectDetails = () => {
               <div className="first-decs-sec mt-16">
                 <div className="first-decs-sec-wrap">
                   <div className="skills-left-sec">
-                    <div className="first-left-sec">
-                      <div> {projectData?.skill || "Design"}</div>
+                    {/* <div className="first-left-sec">
+                      <div> {"Design"}</div>
                     </div>
                     <div className="first-left-sec">
-                      <div> {projectData?.skill || "UI/UX"}</div>
+                      <div> {"UI/UX"}</div>
                     </div>
                     <div className="first-left-sec">
-                      <div> {projectData?.skill || "Figma"}</div>
-                    </div>
+                      <div> {"Figma"}</div>
+                    </div> */}
                   </div>
 
                   <div className="first-right-sec">
                     <div>
-                      <span className="firs-txt1 mr-8">$199.00</span>
-                      <span className="firs-txt2">$149.00</span>
+                     
+                    <span className="firs-txt2">₹{item.servicePrice}</span>
                     </div>
                   </div>
                 </div>
@@ -174,8 +178,8 @@ const ProjectDetails = () => {
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
                     <h1 className="second-txt1">
-                      {projectData?.title ||
-                        " Responsive Design with Grids. A Guide for UX/UI Designer"}
+                      {
+                       item.serviceName}
                     </h1>
                   </div>
                   <div className="second-decs-sec-bottom">
@@ -184,7 +188,7 @@ const ProjectDetails = () => {
                         <span className="student-img mr-8">
                           <img src={StudentIcon} alt="student-icon" />
                         </span>
-                        <span className="second-txt2">104.2k Application</span>
+                        <span className="second-txt2">0 Application</span>
                       </div>
                       <div className="mt-12">
                         <span className="student-img mr-8 fillStar">
@@ -196,14 +200,9 @@ const ProjectDetails = () => {
                         <span className="student-img mr-8">
                           <img src={TimeIcon} alt="student-icon" />
                         </span>
-                        <span className="second-txt2">41h 30m</span>
+                        <span className="second-txt2">{item.serviceDuration} {item.serviceDurationType}s</span>
                       </div>
-                      <div className="mt-12">
-                        <span className="student-img mr-8">
-                          <img src={TimeIcon} alt="student-icon" />
-                        </span>
-                        <span className="second-txt2">Due: 25-09-2024</span>
-                      </div>
+                      
                     </div>
                   </div>
                 </div>
@@ -230,7 +229,7 @@ const ProjectDetails = () => {
                       </button>
                     </li>
                     <li className="nav-item" role="presentation">
-                      <button
+                      {/* <button
                         className="nav-link"
                         id="lessons-tab-btn"
                         data-bs-toggle="pill"
@@ -240,7 +239,7 @@ const ProjectDetails = () => {
                         aria-selected="false"
                       >
                         Assessment
-                      </button>
+                      </button> */}
                     </li>
                     <li className="nav-item" role="presentation">
                     </li>
@@ -256,45 +255,15 @@ const ProjectDetails = () => {
                       <div className="description-content-wrap mt-24">
                         <div className="description-first-content">
                           <h3 className="des-con-txt1">Details</h3>
-                          <div>
-                            {projectData?.detail || (
-                              <>
-                                <p className="des-con-txt2">
-                                  In this className, you'll learn everything
-                                  about using grids for your UI Design.Grids are
-                                  not only your best friend when it comes to
-                                  creating a consistent layout. They are also
-                                  the backbone when it comes to responsive
-                                  design and making your product shine across
-                                  all screen sizes.
-                                </p>
-                                <p className="des-con-txt2">
-                                  Besides the classNameic Grids like Bootstrap
-                                  and co, I will tell you a bit about my
-                                  favorite grid, the CSS Grid, full of
-                                  possibilities.
-                                </p>
-                                <p className="des-con-txt2">
-                                  And yes, we will go the extra mile and look at
-                                  some basic code, all set up for UX/UI
-                                  Designers to really understand the
-                                  technicality behind the product you are
-                                  building.
-                                </p>
-                                <p className="des-con-txt2">
-                                  The Figma and code template that I will show
-                                  you are part of the course material to make
-                                  sure you can dive right into the making
-                                </p>
-                              </>
-                            )}
+                          <div style={{marginTop: '10px' , marginBottom: '10px'}}>
+                            { item.serviceDescription }
                           </div>
                           {/* Apply Now button */}
                           <div className="des-buy-now-description">
                             { auth  ?     
                               <Link className="buy-now" to={`/applyproject/${projectId}`}>Apply Now</Link> 
                               : 
-                              <Link className="buy-now" to={`/signin`}>Apply Now</Link>
+                              <Link className="buy-now" to={`/signin`}>Buy Now </Link>
                             }
                           </div>
                         </div>
