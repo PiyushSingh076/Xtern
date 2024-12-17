@@ -42,7 +42,7 @@ const SingleMentor = () => {
   } = useUserProfileData(uid);
   console.log("profileData", profileData, profileError);
   const { error, loading, users } = useFetchUsersByType("Developer");
-  console.log(users)
+  console.log(users);
   console.log(users, "Developers1");
   const { userData: currentUser } = useFetchUserData();
 
@@ -117,18 +117,17 @@ const SingleMentor = () => {
     setTimecontainer(false);
   };
 
+  const handleService = (item) => {
+    const serializableItem = {
+      serviceName: item.serviceName,
+      serviceDescription: item.serviceDescription,
+      serviceDuration: item.serviceDuration,
+      serviceDurationType: item.serviceDurationType,
+      servicePrice: item.servicePrice,
+    };
 
-const handleService = (item) => {
-  const serializableItem = {
-    serviceName: item.serviceName,
-    serviceDescription: item.serviceDescription,
-    serviceDuration: item.serviceDuration,
-    serviceDurationType: item.serviceDurationType,
-    servicePrice: item.servicePrice,
+    navigate("/project", { state: { item: serializableItem } });
   };
-
-  navigate('/project', { state: { item: serializableItem } });
-};
   // Event handlers
   const toggleBookmark = () => {
     setIsBookmarked(!isBookmarked);
@@ -287,9 +286,7 @@ const handleService = (item) => {
                     </div>
                   );
                 })}
-                {
-                  !profileData?.skillSet && (<span>No skill set available</span>)
-                }
+                {!profileData?.skillSet && <span>No skill set available</span>}
               </div>
             )}
           </div>
@@ -326,10 +323,10 @@ const handleService = (item) => {
                     ))}
                   </div>
                 </div>
+
                 <div className="consulting-btn">
-            
                   <button
-                    onClick={() => navigate('/mychat')}
+                    onClick={() => navigate("/mychat")}
                     className="chat-btn"
                   >
                     <MdChat /> Chat
@@ -340,13 +337,12 @@ const handleService = (item) => {
                   >
                     <MdPhone /> Call
                   </button>
-                  </div>
-                  <span className="consultant-price">
-                    ₹
+                </div>
+                <span className="consultant-price">
+                  ₹
                   {profileData?.consultingPrice
                     ? profileData?.consultingPrice
                     : "Loading"}
-
                   {"/minute"}
                 </span>
               </div>
@@ -371,10 +367,12 @@ const handleService = (item) => {
             <div className="service-list">
               {profileData?.serviceDetails?.map((item) => (
                 <div
-                onClick={()=>handleService(item)}
-                 className="service-item" key={item.serviceName}>
+                  onClick={() => handleService(item)}
+                  className="service-item"
+                  key={item.serviceName}
+                >
                   <span className="service-name">{item.serviceName}</span>
-                  <p>{item.serviceDescription.slice(0,70)+'...'}</p>
+                  <p>{item.serviceDescription.slice(0, 70) + "..."}</p>
                   <div className="price-duration-container">
                     <span className="service-duration">
                       <FaClock /> {item?.serviceDuration || "N/A"}{" "}
@@ -382,105 +380,77 @@ const handleService = (item) => {
                     </span>
                     <span className="service-price">₹{item.servicePrice}</span>
                   </div>
-                  </div>
-                  )
-                  )            }
-
-            {
-            profileLoading ? (
-            <Skeleton
-              animation="pulse"
-              variant="rectangular"
-              sx={{ width: '100%', height: '200px', borderRadius: "20px", marginTop: '20px' }}
-            />
-            ) : (
-            (
-              <div className="service-container">
-                <h4>Service</h4>
-                <div className="service-list">
-                  {profileData?.serviceDetails.map((item) => (
-                    <div className="service-item" key={item.serviceName}>
-                      <span className="service-name">{item.serviceName}</span>
-                      <p>{item.serviceDescription}</p>
-                      <div className="price-duration-container">
-                        <span className="service-duration">
-                          <FaClock /> {item?.serviceDuration || 'N/A'} {item?.serviceDurationType || 'N/A'}
-                        </span>
-                        <span className="service-price">₹{item.servicePrice}</span>
-                      </div>
-                    </div>
-                  ))}
                 </div>
-              </div>
-            )
-            )
-            }
+              ))}
+            </div>
+          </div>
+        )}
 
-                  <div className="single-mentor-third-sec">
-                  <div className="fifth-decs-sec">
-                    <div className="fifth-decs-sec-wrap">
-                      {profileLoading ? (
-                        <Skeleton
-                          variant="rectangle"
-                          sx={{
-                            width: "100%",
-                            height: "50px",
-                            marginTop: "20px",
-                            borderRadius: "10px",
-                          }}
-                        />
-                      ) : (
-                        <ul
-                          className="nav nav-pills single-mentor-tab"
-                          id="mentor-tab"
-                          role="tablist"
-                        >
-                          <li className="nav-item" role="presentation">
-                            <button
-                              className="nav-link active"
-                              id="mentor-course-tab-btn"
-                              data-bs-toggle="pill"
-                              data-bs-target="#course-content"
-                              type="button"
-                              role="tab"
-                              aria-selected="true"
-                            >
-                              Work Experience
-                            </button>
-                          </li>
-                          <li className="nav-item" role="presentation">
-                            <button
-                              className="nav-link"
-                              id="student-tab-btn"
-                              data-bs-toggle="pill"
-                              data-bs-target="#education-content"
-                              type="button"
-                              role="tab"
-                              aria-selected="false"
-                              tabIndex="-1"
-                            >
-                              Education
-                            </button>
-                          </li>
-                          <li className="nav-item" role="presentation">
-                            <button
-                              className="nav-link"
-                              id="reviews-tab-btn"
-                              data-bs-toggle="pill"
-                              data-bs-target="#projects-content"
-                              type="button"
-                              role="tab"
-                              aria-selected="false"
-                              tabIndex="-1"
-                            >
-                              Projects
-                            </button>
-                          </li>
-                        </ul>
-                      )}
+        <div className="single-mentor-third-sec">
+          <div className="fifth-decs-sec">
+            <div className="fifth-decs-sec-wrap">
+              {profileLoading ? (
+                <Skeleton
+                  variant="rectangle"
+                  sx={{
+                    width: "100%",
+                    height: "50px",
+                    marginTop: "20px",
+                    borderRadius: "10px",
+                  }}
+                />
+              ) : (
+                <ul
+                  className="nav nav-pills single-mentor-tab"
+                  id="mentor-tab"
+                  role="tablist"
+                >
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link active"
+                      id="mentor-course-tab-btn"
+                      data-bs-toggle="pill"
+                      data-bs-target="#course-content"
+                      type="button"
+                      role="tab"
+                      aria-selected="true"
+                    >
+                      Work Experience
+                    </button>
+                  </li>
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="student-tab-btn"
+                      data-bs-toggle="pill"
+                      data-bs-target="#education-content"
+                      type="button"
+                      role="tab"
+                      aria-selected="false"
+                      tabIndex="-1"
+                    >
+                      Education
+                    </button>
+                  </li>
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="reviews-tab-btn"
+                      data-bs-toggle="pill"
+                      data-bs-target="#projects-content"
+                      type="button"
+                      role="tab"
+                      aria-selected="false"
+                      tabIndex="-1"
+                    >
+                      Projects
+                    </button>
+                  </li>
+                </ul>
+              )}
 
-                      <div className="tab-content" id="mentor-tab-content">
-                          {/* Work Experience Tab */}
+              <div className="tab-content" id="mentor-tab-content">
+                {/* Work Experience Tab */}
                 <div
                   className="tab-pane fade show active mt-16"
                   id="course-content"
