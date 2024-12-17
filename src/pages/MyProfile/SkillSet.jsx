@@ -6,11 +6,25 @@ import { useParams } from "react-router-dom";
 import Skeleton from '@mui/material/Skeleton';
 import code from '../../assets/svg/code.svg';
 import { useSelector } from "react-redux";
-
+import { useNavigate } from "react-router-dom";
 
 export default function SkillSet({ profileData , skillloading }) {
- 
-    const { uid } = useParams();
+
+
+  const navigate = useNavigate();
+
+
+    const handleService = (item) => {
+  const serializableItem = {
+    serviceName: item.serviceName,
+    serviceDescription: item.serviceDescription,
+    serviceDuration: item.serviceDuration,
+    serviceDurationType: item.serviceDurationType,
+    servicePrice: item.servicePrice,
+  };
+
+  navigate('/project', { state: { item: serializableItem } });
+};
     
 
 
@@ -97,6 +111,10 @@ console.log('skill',profileData)
   );
 })}
 
+{
+  !profileData?.skillSet && (<span style={{color: 'red', marginBottom: '20px'}}>No skill set available</span>)
+}
+
 
             </div>
 
@@ -107,10 +125,12 @@ console.log('skill',profileData)
                 <div className="service-list">
                 
                   {profileData?.serviceDetails?.map((serviceItem, index) => (
-                 <div key={index} className="service-item">
+                 <div
+                 onClick={()=>{handleService(serviceItem)}}
+                  key={index} className="service-item">
                   <span className="service-name" style={{fontSize: '0.8rem'}}>{serviceItem?.serviceName}</span>
                   <span className="service-description" style={{fontSize: '0.6rem'}}>
-                    {(serviceItem?.serviceDescription).slice(0,100) + '..'}
+                    {(serviceItem?.serviceDescription).slice(0,50) + '..'}
                   </span>
                   <span className="service-price" style={{fontSize: '0.7rem'}}>₹{serviceItem?.servicePrice}</span>
                 </div>

@@ -16,7 +16,7 @@ import { useParams , useNavigate } from "react-router-dom";
 
 
 const professionals = [
-   { id: 9, name: "Yoga Instructor", icon: <FaSpa/> },
+   { id: 9, name: "Yoga", icon: <FaSpa/> },
   { id: 1, name: "Developer", icon: <FaLaptopCode /> },
   { id: 2, name: "Designer", icon: <FaBrush /> },
   { id: 3, name: "Cloud DevOps", icon: <FaCloud /> },
