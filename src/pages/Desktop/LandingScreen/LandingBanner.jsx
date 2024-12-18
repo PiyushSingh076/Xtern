@@ -47,14 +47,12 @@ export default function LandingBanner({ pop, setRole }) {
             </button> */}
             <button
               onClick={() => {
-                navigate(ROUTES.SIGN_UP)
+                navigate(ROUTES.SIGN_UP);
               }}
               className="hire-xperts-btn"
             >
               <h4 className="hire-xpert-title">Get Started</h4>{" "}
-              <span className="hire-xpert-subtitle">
-                Top Quality Xperts
-              </span>
+              <span className="hire-xpert-subtitle">Top Quality Xperts</span>
             </button>
           </div>
 

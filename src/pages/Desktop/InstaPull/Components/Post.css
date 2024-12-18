@@ -1,0 +1,16 @@
+/* src/Post.css */
+.post-img {
+  object-fit: cover;
+  height: 300px;
+}
+
+.overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 5px 8px;
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+}

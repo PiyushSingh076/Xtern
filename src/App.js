@@ -26,7 +26,7 @@ import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iff
 // import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
 import DesktopCard from "./pages/Desktop/Card/CarList.jsx";
 import DesktopStepperForm from "./pages/Desktop/StepperForm/index.jsx";
-
+import InstaPull from "./pages/Desktop/InstaPull/MainSection.js";
 // Mobile View
 import UserType from "./pages/UserType.jsx";
 import MobHeader from "./components/MobHeader.jsx";
@@ -158,6 +158,7 @@ function App() {
           element={isMobileView ? <SignIn /> : <DesktopSignIn />}
         />
         <Route path={ROUTES.FORGET_PASSWORD} element={<ForgetPassword />} />
+        <Route path="/insta" element={<InstaPull />} />
         <Route path={ROUTES.CHECK_MAIL_SCREEN} element={<CheckMailScreen />} />
         <Route
           path={ROUTES.RESET_PASSWORD_SCREEN}
