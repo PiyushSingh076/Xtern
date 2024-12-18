@@ -10,8 +10,6 @@ import RaviSharma from "../../../assets/images/homescreen/Ravi-Sharma.png";
 
 import RaviSharma2 from "../../../assets/images/homescreen/Ravi-Sharma-2.png";
 
-import RaviSharma2  from "../../../assets/images/homescreen/Ravi-Sharma-2.png";
-
 import RithvikShah2 from "../../../assets/images/homescreen/Rithvik-Shah-2.png";
 import RithvikShah5 from "../../../assets/images/homescreen/Rithvik-Shah-5.png";
 import RithvikShah from "../../../assets/images/homescreen/Rithvik-Shah.png";
