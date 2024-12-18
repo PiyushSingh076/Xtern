@@ -7,7 +7,9 @@ import AddA_Subheading2 from "../../../assets/images/homescreen/Add-a-subheading
 import ProductManager from "../../../assets/images/homescreen/Product-Manager.png";
 import RaviSharma1 from "../../../assets/images/homescreen/Ravi-Sharma-1.png";
 import RaviSharma from "../../../assets/images/homescreen/Ravi-Sharma.png";
-import RaviSharma2  from "../../../assets/images/homescreen/Ravi-Sharma-2.png";
+
+import RaviSharma2 from "../../../assets/images/homescreen/Ravi-Sharma-2.png";
+
 import RithvikShah2 from "../../../assets/images/homescreen/Rithvik-Shah-2.png";
 import RithvikShah5 from "../../../assets/images/homescreen/Rithvik-Shah-5.png";
 import RithvikShah from "../../../assets/images/homescreen/Rithvik-Shah.png";
@@ -18,7 +20,7 @@ export default function LandingBanner({ pop, setRole }) {
 
   const navigate = useNavigate();
 
-const images1 = [
+  const images1 = [
     AddA_Subheading2,
     AddA_Subheading1,
     SameerGupta1,
@@ -30,7 +32,7 @@ const images1 = [
     SameerGupta2, // If Sameer-Gupta-2.png exists, import and use it instead
     RithvikShah5,
     RithvikShah2,
-    RaviSharma2,  // Make sure to import Ravi-Sharma-2.png if it exists
+    RaviSharma2, // Make sure to import Ravi-Sharma-2.png if it exists
     ProductManager,
     RaviSharma,
   ];
@@ -57,14 +59,12 @@ const images1 = [
             </button> */}
             <button
               onClick={() => {
-                navigate(ROUTES.SIGN_UP)
+                navigate(ROUTES.SIGN_UP);
               }}
               className="hire-xperts-btn"
             >
               <h4 className="hire-xpert-title">Get Started</h4>{" "}
-              <span className="hire-xpert-subtitle">
-                Top Quality Xperts
-              </span>
+              <span className="hire-xpert-subtitle">Top Quality Xperts</span>
             </button>
           </div>
 
