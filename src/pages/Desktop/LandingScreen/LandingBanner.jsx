@@ -2,27 +2,37 @@ import React from "react";
 import "./Homescreen.css";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
-
+import AddA_Subheading1 from "../../../assets/images/Add-a-subheading-1.png";
+import AddA_Subheading2 from "../../../assets/images/Add-a-subheading-2.png";
+import ProductManager from "../../../assets/images/Product-Manager.png";
+import RaviSharma1 from "../../../assets/images/Ravi-Sharma-1.png";
+import RaviSharma from "../../../assets/images/Ravi-Sharma.png";
+import RaviSharma2  from "../../../assets/images/Ravi-Sharma-2.png";
+import RithvikShah2 from "../../../assets/images/Rithvik-Shah-2.png";
+import RithvikShah5 from "../../../assets/images/Rithvik-Shah-5.png";
+import RithvikShah from "../../../assets/images/Rithvik-Shah.png";
+import SameerGupta1 from "../../../assets/images/Sameer-Gupta-1.png";
+import SameerGupta2 from "../../../assets/images/Sameer-Gupta-2.png";
 export default function LandingBanner({ pop, setRole }) {
   // images
 
   const navigate = useNavigate();
 
-  const images1 = [
-    "https://xpert.works/wp-content/uploads/2024/10/Add-a-subheading-2.png",
-    "https://xpert.works/wp-content/uploads/2024/10/Add-a-subheading-1.png",
-    "https://xpert.works/wp-content/uploads/2024/10/Sameer-Gupta-1.png",
-    "https://xpert.works/wp-content/uploads/2024/10/Rithvik-Shah.png",
-    "https://xpert.works/wp-content/uploads/2024/10/Ravi-Sharma-1.png",
+const images1 = [
+    AddA_Subheading2,
+    AddA_Subheading1,
+    SameerGupta1,
+    RithvikShah,
+    RaviSharma1,
   ];
 
   const images2 = [
-    "https://xpert.works/wp-content/uploads/2024/10/Sameer-Gupta-2.png",
-    "https://xpert.works/wp-content/uploads/2024/10/Rithvik-Shah-5.png",
-    "https://xpert.works/wp-content/uploads/2024/10/Rithvik-Shah-2.png",
-    "https://xpert.works/wp-content/uploads/2024/10/Ravi-Sharma-2.png",
-    "https://xpert.works/wp-content/uploads/2024/10/Product-Manager.png",
-    "https://xpert.works/wp-content/uploads/2024/10/Ravi-Sharma.png",
+    SameerGupta2, // If Sameer-Gupta-2.png exists, import and use it instead
+    RithvikShah5,
+    RithvikShah2,
+    RaviSharma2,  // Make sure to import Ravi-Sharma-2.png if it exists
+    ProductManager,
+    RaviSharma,
   ];
 
   return (
@@ -59,7 +69,7 @@ export default function LandingBanner({ pop, setRole }) {
           </div>
 
           <span className="xpert-count">
-            Over 3000+ expect Xpert are waiting for you
+            Over 3000+ expert Xpert are waiting for you
           </span>
           <div className="counts-section">
             <div className="expert-count-section">
