@@ -2,17 +2,17 @@ import React from "react";
 import "./Homescreen.css";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
-import AddA_Subheading1 from "../../../assets/images/Add-a-subheading-1.png";
-import AddA_Subheading2 from "../../../assets/images/Add-a-subheading-2.png";
-import ProductManager from "../../../assets/images/Product-Manager.png";
-import RaviSharma1 from "../../../assets/images/Ravi-Sharma-1.png";
-import RaviSharma from "../../../assets/images/Ravi-Sharma.png";
-import RaviSharma2  from "../../../assets/images/Ravi-Sharma-2.png";
-import RithvikShah2 from "../../../assets/images/Rithvik-Shah-2.png";
-import RithvikShah5 from "../../../assets/images/Rithvik-Shah-5.png";
-import RithvikShah from "../../../assets/images/Rithvik-Shah.png";
-import SameerGupta1 from "../../../assets/images/Sameer-Gupta-1.png";
-import SameerGupta2 from "../../../assets/images/Sameer-Gupta-2.png";
+import AddA_Subheading1 from "../../../assets/images/homescreen/Add-a-subheading-1.png";
+import AddA_Subheading2 from "../../../assets/images/homescreen/Add-a-subheading-2.png";
+import ProductManager from "../../../assets/images/homescreen/Product-Manager.png";
+import RaviSharma1 from "../../../assets/images/homescreen/Ravi-Sharma-1.png";
+import RaviSharma from "../../../assets/images/homescreen/Ravi-Sharma.png";
+import RaviSharma2  from "../../../assets/images/homescreen/Ravi-Sharma-2.png";
+import RithvikShah2 from "../../../assets/images/homescreen/Rithvik-Shah-2.png";
+import RithvikShah5 from "../../../assets/images/homescreen/Rithvik-Shah-5.png";
+import RithvikShah from "../../../assets/images/homescreen/Rithvik-Shah.png";
+import SameerGupta1 from "../../../assets/images/homescreen/Sameer-Gupta-1.png";
+import SameerGupta2 from "../../../assets/images/homescreen/Sameer-Gupta-2.png";
 export default function LandingBanner({ pop, setRole }) {
   // images
 
@@ -69,12 +69,12 @@ const images1 = [
           </div>
 
           <span className="xpert-count">
-            Over 3000+ expert Xpert are waiting for you
+            Over 3000+ Xpert are waiting for you
           </span>
           <div className="counts-section">
             <div className="expert-count-section">
               <span>3K</span>
-              <span>Expert Experts</span>
+              <span>Experts</span>
             </div>
             <div className="bar"></div>
             <div className="project-count-section">
