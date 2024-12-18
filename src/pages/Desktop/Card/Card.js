@@ -1,63 +1,44 @@
 import React from "react";
-import "./Card.css"; // Assuming this CSS file exists and has appropriate styles
+import "./Card.css"; // Import related styles
+import { useNavigate } from "react-router-dom";
 
-const Card = ({
-  fullname,
-  city,
-  state,
-  primary,
-  secondary,
-  yearsOfExperience,
-  education,
-  workexp,
-  assignments,
-}) => {
+const Card = ({ data }) => {
+  const navigate = useNavigate();
+  
+  const handleChatClick = () => {
+    navigate(
+      `/chat?firstName=${encodeURIComponent(data.firstName)}&uid=${encodeURIComponent(data.uid)}`
+    );
+  };
+
   return (
     <div className="card">
-      <div className="card-header">
-        <div
-          className="blurred-dp"
-          style={{
-            backgroundImage: `url("https://img.freepik.com/premium-photo/professional-photo-linkedin-profile-picture-beautiful-looking-woman-light-color_1078199-10524.jpg")`,
-          }}
-        ></div>
-        {/* Set the background image */}
-        <h3>{fullname}</h3>
-      </div>
-      <div className="card-details">
-        <p>
-          <strong>Primary Role:</strong> {primary}
-        </p>
-        {/* Aligning primary role */}
-        <p>
-          <strong>Secondary Role:</strong> {secondary}
-        </p>
-        {/* Aligning secondary role */}
-        <p>
-          <strong>Location:</strong> {city}, {state}
-        </p>
-        {/* Aligning location */}
-        <p>
-          <strong>Experience:</strong> {yearsOfExperience} years
-        </p>
-        {/* Aligning experience */}
-        <p>
-          <strong>Education:</strong> {education}
-        </p>
-        {/* Aligning education */}
-        <p>
-          <strong>Work Experience:</strong> {workexp}
-        </p>
-        {/* Aligning work experience */}
-        <p>
-          <strong>Assignments:</strong> {assignments}
-        </p>
-        {/* Aligning assignments */}
-      </div>
+      <img
+        src={data.photo_url}
+        alt={data.name}
+        width={"100px"}
+        style={{ borderRadius: "50%", border: "1px solid #ccc" }}
+      />
+      <span className="filter-card-name">
+        {data.firstName} {data.lastName}
+      </span>
+      <span>Year of experience : {data.experience}</span>
+      <span>
+        <span style={{ color: "#009DED" }}>
+          &#8377;{data.consultingPrice}/min
+        </span>
+      </span>
+
       <div className="card-footer">
-        <button>Call</button>
-        <button>Chat</button>
-        <button>Details</button>
+        <button onClick={() => alert(`Calling ${data.phone_number}`)}>
+          Call
+        </button>
+        <button onClick={handleChatClick}>
+          Chat
+        </button>
+        <button onClick={() => navigate(`/profile/${data.uid}`)}>
+          Details
+        </button>
       </div>
     </div>
   );

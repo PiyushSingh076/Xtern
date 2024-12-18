@@ -26,7 +26,10 @@ import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iff
 // import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
 import DesktopCard from "./pages/Desktop/Card/CarList.jsx";
 import DesktopStepperForm from "./pages/Desktop/StepperForm/index.jsx";
-import InstaPull from "./pages/Desktop/InstaPull/MainSection.js";
+// chat
+import Chat from "./pages/Desktop/Chat/Chat.jsx";
+import MyChat from "./pages/Desktop/MyChats/Mychats.jsx";
+
 // Mobile View
 import UserType from "./pages/UserType.jsx";
 import MobHeader from "./components/MobHeader.jsx";
@@ -98,7 +101,7 @@ import BottomNavigationVenture from "./components/BottomNavigationVenture";
 import { RouteRounded } from "@mui/icons-material";
 import LandingBanner from "./pages/Desktop/LandingScreen/LandingBanner.jsx";
 import LandingPage from "./pages/MobLandingScreen/LandingPage.jsx";
-
+import InstaPull from "./pages/Desktop/InstaPull/MainSection.js";
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -143,6 +146,7 @@ function App() {
       {isMobileView && <div style={{ height: "50px" }}></div>}
       {!isMobileView && <div style={{ height: "90px" }}></div>}
       <Toaster />
+
       <Routes>
         {/* Public Routes */}
         {/* <Route
@@ -152,6 +156,14 @@ function App() {
         <Route
           path={ROUTES.SIGN_UP}
           element={isMobileView ? <SignUp /> : <DesktopSignUp />}
+        />
+        <Route
+          path={ROUTES.MYCHAT}
+          element={
+            <ProtectedRoute>
+              <MyChat />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={ROUTES.SIGN_IN}
@@ -312,7 +324,7 @@ function App() {
           }
         />
         <Route
-          path={ROUTES.SINGLE_COURSE_DESCRIPTION + "/:projectId"}
+          path={ROUTES.SINGLE_COURSE_DESCRIPTION}
           element={
             <ProtectedRoute>
               {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />}
@@ -588,6 +600,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Teams />
+            </ProtectedRoute>
+          }
+        />
+        {/*//---------CHATS------------// */}
+        <Route
+          path={ROUTES.CHAT}
+          element={
+            <ProtectedRoute>
+              <Chat />
             </ProtectedRoute>
           }
         />
