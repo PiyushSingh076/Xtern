@@ -7,9 +7,7 @@ import AddA_Subheading2 from "../../../assets/images/homescreen/Add-a-subheading
 import ProductManager from "../../../assets/images/homescreen/Product-Manager.png";
 import RaviSharma1 from "../../../assets/images/homescreen/Ravi-Sharma-1.png";
 import RaviSharma from "../../../assets/images/homescreen/Ravi-Sharma.png";
-
 import RaviSharma2 from "../../../assets/images/homescreen/Ravi-Sharma-2.png";
-
 import RithvikShah2 from "../../../assets/images/homescreen/Rithvik-Shah-2.png";
 import RithvikShah5 from "../../../assets/images/homescreen/Rithvik-Shah-5.png";
 import RithvikShah from "../../../assets/images/homescreen/Rithvik-Shah.png";

@@ -1,37 +1,48 @@
+// components/Profile/SingleMentor.js
+
 // Imports
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./Profile.css";
 import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
 import "react-circular-progressbar/dist/styles.css";
 import Skeleton from "@mui/material/Skeleton";
-import dayjs, { Dayjs } from "dayjs";
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { TimeClock } from "@mui/x-date-pickers/TimeClock";
 import useRegisterUser from "../../../hooks/Stream/client";
-import { FaClock, FaPhone } from "react-icons/fa";
-import { MdPhone } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
-import { MdChat } from "react-icons/md";
+import { FaClock } from "react-icons/fa";
+import { MdEdit, MdChat, MdPhone, MdCalendarToday } from "react-icons/md";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
-import { NoAccounts } from "@mui/icons-material";
+import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
+import toast from "react-hot-toast";
+
+// Import React-Bootstrap Components
+import {
+  Modal,
+  Button,
+  ProgressBar,
+  Form,
+  Container,
+  Row,
+  Col,
+} from "react-bootstrap";
 
 // Component definition
 const SingleMentor = () => {
   // State declarations
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
-  const [interviewDate, setInterviewDate] = useState(dayjs("2022-04-17"));
-  const [DateContainer, setDateContainer] = useState(true);
-  const [interviewtime, setInterviewTime] = useState(dayjs("2022-04-17T15:30"));
-  const [TimeContainer, setTimecontainer] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [interviewDate, setInterviewDate] = useState(dayjs()); // Default to today
+  const [interviewTime, setInterviewTime] = useState(dayjs()); // Default to now
+  const [description, setDescription] = useState("");
   const [interviewScheduled, setInterviewScheduled] = useState(false);
-  const [Editable, setEditable] = useState(false);
+  const [editable, setEditable] = useState(false);
   const navigate = useNavigate();
 
   const { uid } = useParams();
@@ -41,11 +52,24 @@ const SingleMentor = () => {
     error: profileError,
   } = useUserProfileData(uid);
   console.log("profileData", profileData, profileError);
-  const { error, loading, users } = useFetchUsersByType("Developer");
-  console.log(users);
+
+  const {
+    error: usersError,
+    loading: usersLoading,
+    users,
+  } = useFetchUsersByType("Developer");
   console.log(users, "Developers1");
+
   const { userData: currentUser } = useFetchUserData();
 
+  const {
+    signIn,
+    createEvent,
+    loading: scheduleLoading,
+    isInitialized,
+  } = useGoogleCalendar();
+
+  // Redirect to user detail if profile type is missing
   useEffect(() => {
     if (
       !profileLoading &&
@@ -55,6 +79,7 @@ const SingleMentor = () => {
     }
   }, [profileLoading, profileData, navigate]);
 
+  // Set editable state based on current user
   useEffect(() => {
     if (currentUser && currentUser.uid === uid) {
       setEditable(true);
@@ -104,17 +129,87 @@ const SingleMentor = () => {
 
   // Schedule interview functions
 
-  const handledatechange = (date) => {
+  const handleDateChange = (date) => {
     setInterviewDate(date);
-    setDateContainer(false);
-    setTimecontainer(true);
+    setCurrentStep(2);
   };
 
-  const scheduled = () => {
-    alert("Interview scheduled");
-    setInterviewScheduled(false);
-    setDateContainer(true);
-    setTimecontainer(false);
+  const handleTimeChange = (time) => {
+    setInterviewTime(time);
+    setCurrentStep(3);
+  };
+
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+    // Removed setCurrentStep(4) to prevent unintended navigation
+  };
+
+  const handleScheduleCall = async () => {
+    try {
+      if (!isInitialized) {
+        toast.error(
+          "Google Calendar is not initialized yet. Please try again."
+        );
+        return;
+      }
+
+      await signIn(); // Authenticate user with Google
+
+      const startDateTime = interviewDate
+        .hour(interviewTime.hour())
+        .minute(interviewTime.minute())
+        .second(0)
+        .toISOString();
+      const endDateTime = dayjs(startDateTime).add(30, "minute").toISOString();
+
+      const eventData = {
+        title: "XTERN Mentorship Call",
+        description: `
+**XTERN Mentorship Call**
+
+**Host:** ${currentUser?.firstName} ${currentUser?.lastName} (${
+          currentUser?.email
+        })
+**Recipient:** ${profileData?.firstName} ${profileData?.lastName} (${
+          profileData?.email
+        })
+
+**Date:** ${interviewDate.format("D MMM YYYY")}
+**Time:** ${interviewTime.format("h:mm A")}
+**Duration:** 30 minutes
+**Description:** ${description || "N/A"}
+
+Looking forward to our mentorship session!
+
+Best Regards,
+XTERN Team
+        `,
+        startDateTime,
+        endDateTime,
+        attendees: [
+          { email: currentUser?.email },
+          { email: profileData?.email },
+        ],
+        callId: `call-${Date.now()}`,
+        hostUserId: currentUser?.uid,
+        recipientUserId: profileData?.uid,
+        callType: "video",
+        location: "Online", // Assuming it's a video call
+      };
+
+      const response = await createEvent(eventData);
+
+      if (response.success) {
+        setInterviewScheduled(false); // Close modal
+        window.open(response.eventLink, "_blank"); // Open event in new tab
+        toast.success("Call scheduled and event opened in a new tab.");
+      } else {
+        toast.error("Failed to schedule the call. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error scheduling call:", error);
+      toast.error("An error occurred while scheduling the call.");
+    }
   };
 
   const handleService = (item) => {
@@ -128,6 +223,7 @@ const SingleMentor = () => {
 
     navigate("/project", { state: { item: serializableItem } });
   };
+
   // Event handlers
   const toggleBookmark = () => {
     setIsBookmarked(!isBookmarked);
@@ -149,7 +245,7 @@ const SingleMentor = () => {
           <div className="profile-details-wrap">
             {/* Profile image and basic info */}
             <div className="profile-details-first-wrap">
-              {Editable && (
+              {editable && (
                 <button onClick={handleEdit} className="edit-btn">
                   <MdEdit />
                 </button>
@@ -167,11 +263,11 @@ const SingleMentor = () => {
                     />
                   ) : (
                     <img
-                      src={profileData?.photo_url}
-                      alt={profileData?.firstName || "Profile Image"}
+                      src={profileData?.photo_url || "/default-profile.png"}
+                      alt={`${profileData?.firstName} ${profileData?.lastName}`}
                       width={150}
                       height={150}
-                      onError={(e) => (e.target.src = "")} // Fallback image logic
+                      onError={(e) => (e.target.src = "/default-profile.png")} // Fallback image
                     />
                   )}
                 </div>
@@ -267,7 +363,7 @@ const SingleMentor = () => {
                           style={{
                             marginBottom: "5px",
                             fontSize: "12px",
-                            color: "#009DED",
+                            color: "#007bff", // Matching blue theme
                           }}
                         >
                           {ratingPercentage}%
@@ -277,7 +373,7 @@ const SingleMentor = () => {
                             className="skill-bar-fill"
                             style={{
                               width: `${ratingPercentage}%`,
-                              backgroundColor: "#009DED", // Assign color based on rating
+                              backgroundColor: "#007bff", // Matching blue theme
                               height: "5px",
                             }}
                           />
@@ -334,10 +430,16 @@ const SingleMentor = () => {
                   <button
                     onClick={() => setInterviewScheduled(true)}
                     className="chat-btn"
+                    disabled={!isInitialized} // Disable if not initialized
                   >
-                    <MdPhone /> Call
+                    <MdCalendarToday /> Meet
                   </button>
                 </div>
+                {!isInitialized && (
+                  <span className="text-muted">
+                    Initializing Google Calendar...
+                  </span>
+                )}
                 <span className="consultant-price">
                   ₹
                   {profileData?.consultingPrice
@@ -607,52 +709,151 @@ const SingleMentor = () => {
           </div>
         </div>
       </section>
-      {interviewScheduled && (
-        <div className="schedule-interview-container">
-          <div className="schedule-interview-card">
-            <div className="schedule-interview-img-section">
-              <span>Schedule Call</span>
-              <img
-                alt="img"
-                src="https://img.freepik.com/free-vector/employee-month-concept_23-2148459815.jpg?semt=ais_hybrid"
-              />
-            </div>
-            <div className="date-time-container">
-              {DateContainer && (
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateCalendar", "DateCalendar"]}>
-                    <DemoItem>
+
+      {/* Scheduling Interview Modal */}
+      <Modal
+        show={interviewScheduled}
+        onHide={() => {
+          setInterviewScheduled(false);
+          setCurrentStep(1);
+          setInterviewDate(dayjs());
+          setInterviewTime(dayjs());
+          setDescription("");
+        }}
+        centered
+        size="lg" // Increase modal width
+        backdrop="static" // Prevent closing by clicking outside
+        keyboard={false} // Prevent closing with ESC key
+        className="custom-modal" // Custom class for additional styling
+      >
+        <Modal.Header className="bg-primary text-white" closeButton>
+          <Modal.Title>Schedule a Call</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="bg-white">
+          <Container>
+            <Row>
+              <Col>
+                <ProgressBar
+                  now={(currentStep / 4) * 100}
+                  label={`Step ${currentStep} of 4`}
+                  className="mb-4"
+                  variant="info" // Blue variant for progress bar
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                {currentStep === 1 && (
+                  <div>
+                    <h5>Select Date</h5>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateCalendar
                         value={interviewDate}
-                        onChange={(newValue) => handledatechange(newValue)}
+                        onChange={handleDateChange}
                       />
-                    </DemoItem>
-                  </DemoContainer>
-                </LocalizationProvider>
-              )}
-
-              {TimeContainer && (
-                <div className="time-container">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["TimeClock", "TimeClock"]}>
-                      <DemoItem>
-                        <TimeClock
-                          value={interviewtime}
-                          onChange={(newValue) => setInterviewTime(newValue)}
+                    </LocalizationProvider>
+                  </div>
+                )}
+                {currentStep === 2 && (
+                  <div>
+                    <h5>Select Time</h5>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <TimeClock
+                        value={interviewTime}
+                        onChange={handleTimeChange}
+                      />
+                    </LocalizationProvider>
+                  </div>
+                )}
+                {currentStep === 3 && (
+                  <div>
+                    <h5>Add Description</h5>
+                    <Form>
+                      <Form.Group controlId="description">
+                        <Form.Control
+                          as="textarea"
+                          rows={4}
+                          placeholder="Enter description for the call (optional)"
+                          value={description}
+                          onChange={handleDescriptionChange}
+                          className="form-control"
                         />
-                      </DemoItem>
-                    </DemoContainer>
-                  </LocalizationProvider>
-
-                  <button onClick={scheduled} className="btn btn-primary">
-                    Schedule
-                  </button>
+                      </Form.Group>
+                    </Form>
+                  </div>
+                )}
+                {currentStep === 4 && (
+                  <div>
+                    <h5>Confirm Details</h5>
+                    <p>
+                      <strong>Date:</strong>{" "}
+                      {interviewDate.format("D MMM YYYY")}
+                    </p>
+                    <p>
+                      <strong>Time:</strong> {interviewTime.format("h:mm A")}
+                    </p>
+                    <p>
+                      <strong>Description:</strong> {description || "N/A"}
+                    </p>
+                  </div>
+                )}
+              </Col>
+            </Row>
+          </Container>
+        </Modal.Body>
+        <Modal.Footer className="bg-white">
+          <Container>
+            <Row className="w-100">
+              <Col className="d-flex justify-content-between">
+                <div>
+                  {currentStep > 1 && (
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => setCurrentStep(currentStep - 1)}
+                      className="me-2"
+                    >
+                      Back
+                    </Button>
+                  )}
+                  {currentStep < 4 && (
+                    <Button
+                      variant="primary"
+                      onClick={() => setCurrentStep(currentStep + 1)}
+                      disabled={
+                        (currentStep === 1 && !interviewDate) ||
+                        (currentStep === 2 && !interviewTime)
+                      }
+                    >
+                      Next
+                    </Button>
+                  )}
+                  {currentStep === 4 && (
+                    <Button
+                      variant="success"
+                      onClick={handleScheduleCall}
+                      disabled={scheduleLoading}
+                    >
+                      {scheduleLoading ? "Scheduling..." : "Schedule Call"}
+                    </Button>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => {
+                    setInterviewScheduled(false);
+                    setCurrentStep(1);
+                    setInterviewDate(dayjs());
+                    setInterviewTime(dayjs());
+                    setDescription("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Col>
+            </Row>
+          </Container>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
