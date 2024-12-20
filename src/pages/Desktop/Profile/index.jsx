@@ -15,7 +15,13 @@ import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { TimeClock } from "@mui/x-date-pickers/TimeClock";
 import useRegisterUser from "../../../hooks/Stream/client";
 import { FaClock } from "react-icons/fa";
-import { MdEdit, MdChat, MdPhone, MdCalendarToday } from "react-icons/md";
+import {
+  MdEdit,
+  MdChat,
+  MdPhone,
+  MdCalendarToday,
+  MdClose,
+} from "react-icons/md";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
 import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
@@ -30,6 +36,7 @@ import {
   Container,
   Row,
   Col,
+  Image,
 } from "react-bootstrap";
 
 // Component definition
@@ -165,25 +172,26 @@ const SingleMentor = () => {
       const eventData = {
         title: "XTERN Mentorship Call",
         description: `
-**XTERN Mentorship Call**
-
-**Host:** ${currentUser?.firstName} ${currentUser?.lastName} (${
+        📞 XTERN Mentorship Call
+        
+        👤 Host: ${currentUser?.firstName} ${currentUser?.lastName} (${
           currentUser?.email
-        })
-**Recipient:** ${profileData?.firstName} ${profileData?.lastName} (${
+        })  
+        👥 Recipient: ${profileData?.firstName} ${profileData?.lastName} (${
           profileData?.email
-        })
-
-**Date:** ${interviewDate.format("D MMM YYYY")}
-**Time:** ${interviewTime.format("h:mm A")}
-**Duration:** 30 minutes
-**Description:** ${description || "N/A"}
-
-Looking forward to our mentorship session!
-
-Best Regards,
-XTERN Team
+        })  
+        
+        📅 Date: ${interviewDate.format("D MMM YYYY")}  
+        ⏰ Time: ${interviewTime.format("h:mm A")}  
+        ⏳ Duration: 30 minutes  
+        📝 Description: ${description || "N/A"}  
+        
+        💬 Looking forward to our mentorship session!  
+        
+        Best Regards,  
+        ✨ XTERN Team  
         `,
+
         startDateTime,
         endDateTime,
         attendees: [
@@ -200,8 +208,17 @@ XTERN Team
       const response = await createEvent(eventData);
 
       if (response.success) {
-        setInterviewScheduled(false); // Close modal
-        window.open(response.eventLink, "_blank"); // Open event in new tab
+        // Reset the stepper form state
+        setCurrentStep(1);
+        setInterviewDate(dayjs()); // Reset to today
+        setInterviewTime(dayjs()); // Reset to current time
+        setDescription("");
+
+        // Close the modal
+        setInterviewScheduled(false);
+
+        // Open the event link in a new tab
+        window.open(response.eventLink, "_blank");
         toast.success("Call scheduled and event opened in a new tab.");
       } else {
         toast.error("Failed to schedule the call. Please try again.");
@@ -410,7 +427,9 @@ XTERN Team
                     alignItems: "center",
                   }}
                 >
-                  <span className="service-name">Consulting Now</span>
+                  {profileData?.consultingPrice && (
+                    <span className="service-name">Consulting Now</span>
+                  )}
                   <div className="issue-badge">
                     {professionBadges?.map((badge, index) => (
                       <div className="badge" key={index}>
@@ -440,13 +459,11 @@ XTERN Team
                     Initializing Google Calendar...
                   </span>
                 )}
-                <span className="consultant-price">
-                  ₹
-                  {profileData?.consultingPrice
-                    ? profileData?.consultingPrice
-                    : "Loading"}
-                  {"/minute"}
-                </span>
+                {profileData?.consultingPrice && (
+                  <span className="consultant-price">
+                    ₹{profileData.consultingPrice}/minute
+                  </span>
+                )}
               </div>
             </div>
           )
@@ -726,8 +743,21 @@ XTERN Team
         keyboard={false} // Prevent closing with ESC key
         className="custom-modal" // Custom class for additional styling
       >
-        <Modal.Header className="bg-primary text-white" closeButton>
+        <Modal.Header className="bg-primary text-white d-flex justify-content-between align-items-center">
           <Modal.Title>Schedule a Call</Modal.Title>
+          <Button
+            variant="link"
+            onClick={() => {
+              setInterviewScheduled(false);
+              setCurrentStep(1);
+              setInterviewDate(dayjs());
+              setInterviewTime(dayjs());
+              setDescription("");
+            }}
+            style={{ color: "white", textDecoration: "none" }}
+          >
+            <MdClose size={24} />
+          </Button>
         </Modal.Header>
         <Modal.Body className="bg-white">
           <Container>
@@ -761,6 +791,8 @@ XTERN Team
                       <TimeClock
                         value={interviewTime}
                         onChange={handleTimeChange}
+                        format="hh:mm A"
+                        ampm
                       />
                     </LocalizationProvider>
                   </div>
@@ -785,16 +817,75 @@ XTERN Team
                 {currentStep === 4 && (
                   <div>
                     <h5>Confirm Details</h5>
-                    <p>
-                      <strong>Date:</strong>{" "}
-                      {interviewDate.format("D MMM YYYY")}
-                    </p>
-                    <p>
-                      <strong>Time:</strong> {interviewTime.format("h:mm A")}
-                    </p>
-                    <p>
-                      <strong>Description:</strong> {description || "N/A"}
-                    </p>
+                    <Container>
+                      <Row className="mb-3">
+                        <Col
+                          xs={12}
+                          md={6}
+                          className="d-flex align-items-center"
+                        >
+                          <Image
+                            src={
+                              currentUser?.photo_url || "/default-profile.png"
+                            }
+                            roundedCircle
+                            width={50}
+                            height={50}
+                            alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
+                            className="me-3"
+                          />
+                          <div>
+                            <strong>
+                              {currentUser?.firstName} {currentUser?.lastName}
+                            </strong>
+                            <br />
+                            <a href={`mailto:${currentUser?.email}`}>
+                              {currentUser?.email}
+                            </a>
+                          </div>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={6}
+                          className="d-flex align-items-center"
+                        >
+                          <Image
+                            src={
+                              profileData?.photo_url || "/default-profile.png"
+                            }
+                            roundedCircle
+                            width={50}
+                            height={50}
+                            alt={`${profileData?.firstName} ${profileData?.lastName}`}
+                            className="me-3"
+                          />
+                          <div>
+                            <strong>
+                              {profileData?.firstName} {profileData?.lastName}
+                            </strong>
+                            <br />
+                            <a href={`mailto:${profileData?.email}`}>
+                              {profileData?.email}
+                            </a>
+                          </div>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <p>
+                            <strong>Date:</strong>{" "}
+                            {interviewDate.format("D MMM YYYY")}
+                          </p>
+                          <p>
+                            <strong>Time:</strong>{" "}
+                            {interviewTime.format("h:mm A")}
+                          </p>
+                          <p>
+                            <strong>Description:</strong> {description || "N/A"}
+                          </p>
+                        </Col>
+                      </Row>
+                    </Container>
                   </div>
                 )}
               </Col>
@@ -804,7 +895,19 @@ XTERN Team
         <Modal.Footer className="bg-white">
           <Container>
             <Row className="w-100">
-              <Col className="d-flex justify-content-between">
+              <Col className="d-flex justify-content-between align-items-center">
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => {
+                    setInterviewScheduled(false);
+                    setCurrentStep(1);
+                    setInterviewDate(dayjs());
+                    setInterviewTime(dayjs());
+                    setDescription("");
+                  }}
+                >
+                  Cancel
+                </Button>
                 <div>
                   {currentStep > 1 && (
                     <Button
@@ -837,18 +940,6 @@ XTERN Team
                     </Button>
                   )}
                 </div>
-                <Button
-                  variant="outline-secondary"
-                  onClick={() => {
-                    setInterviewScheduled(false);
-                    setCurrentStep(1);
-                    setInterviewDate(dayjs());
-                    setInterviewTime(dayjs());
-                    setDescription("");
-                  }}
-                >
-                  Cancel
-                </Button>
               </Col>
             </Row>
           </Container>

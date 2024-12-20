@@ -1,6 +1,8 @@
+// src/Components/Admin/Profile/LinkedInFetcher.jsx
+
 import React, { useState } from "react";
 import useFetchLinkedInProfile from "../../hooks/Linkedin/useFetchLinkedInProfile";
-import linkedinLogo from '../../assets/svg/linkedin.png';
+import linkedinLogo from "../../assets/svg/linkedin.png";
 import {
   Box,
   Button,
@@ -11,7 +13,7 @@ import {
   Card,
 } from "@mui/material";
 
-const LinkedInFetcher = ({ onFetchSuccess  , close}) => {
+const LinkedInFetcher = ({ onFetchSuccess, close }) => {
   const { fetchLinkedInProfile, loading, error, successMessage, linkedInData } =
     useFetchLinkedInProfile();
   const [profileUrl, setProfileUrl] = useState("");
@@ -46,8 +48,8 @@ const LinkedInFetcher = ({ onFetchSuccess  , close}) => {
         alignItems: "center",
         justifyContent: "center",
         width: "100%",
-        height: "100vh",
-        backgroundColor: "rgba(0, 0, 0, 0.7)", // Modal-like dark overlay
+        minHeight: "100vh",
+        backgroundColor: "rgba(255, 255, 255, 0.9)", // Light overlay
         position: "fixed",
         inset: 0,
         zIndex: 1000, // Ensuring proper layer priority
@@ -55,15 +57,15 @@ const LinkedInFetcher = ({ onFetchSuccess  , close}) => {
     >
       <Card
         sx={{
-          padding: 3,
+          padding: 4,
           width: "400px", // Adjust card width for better responsiveness
-          backgroundColor: "#121212", // Dark background for the card
-          borderRadius: 5,
-          color: "white",
+          backgroundColor: "#ffffff", // White background for the card
+          borderRadius: 3,
+          color: "#000000",
           boxShadow: 6,
           transition: "transform 0.3s, box-shadow 0.3s",
           "&:hover": {
-            transform: "scale(1.05)", // Slight zoom effect on hover
+            transform: "scale(1.02)", // Slight zoom effect on hover
             boxShadow: 10,
           },
           display: "flex",
@@ -72,69 +74,91 @@ const LinkedInFetcher = ({ onFetchSuccess  , close}) => {
         }}
       >
         {/* LinkedIn Logo */}
-      <Box sx={{height: '50px' , display: 'flex', flexDirection: 'row' , alignItems: 'center' , gap: '20px' , marginBottom: '10px'}}>
-      <img
-          src={linkedinLogo}
-          alt="LinkedIn Logo"
-          style={{ width: "30px", marginBottom: "10px"  , filter: 'invert(1)'}}
-        />
-        <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
-          LinkedIn Profile
-        </Typography>
-      </Box>
-        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", width: "100%" }}>
+        <Box
+          sx={{
+            height: "50px",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "20px",
+            marginBottom: "20px",
+          }}
+        >
+          <img
+            src={linkedinLogo}
+            alt="LinkedIn Logo"
+            style={{ width: "40px", height: "40px" }}
+          />
+          <Typography variant="h5" gutterBottom sx={{ textAlign: "center" }}>
+            Import LinkedIn Profile
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            flexDirection: "column",
+            width: "100%",
+          }}
+        >
           <TextField
             label="LinkedIn Profile URL"
             variant="outlined"
             fullWidth
             value={profileUrl}
             onChange={(e) => setProfileUrl(e.target.value)}
-            size="small"
+            size="medium"
             InputProps={{
-              style: { color: "white", borderColor: "white" },
+              style: { color: "#000000", borderColor: "#000000" },
             }}
             InputLabelProps={{
-              style: { color: "#aaa" }, // Light grey label
+              style: { color: "#555555" }, // Darker grey label
             }}
-            sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
+            sx={{ backgroundColor: "#f5f5f5", borderRadius: 1 }}
           />
           <Button
             variant="contained"
             color="primary"
             onClick={handleFetch}
             disabled={loading}
-            startIcon={loading && <CircularProgress size={20} color="inherit" />}
-            size="small"
+            startIcon={
+              loading ? <CircularProgress size={20} color="inherit" /> : null
+            }
+            size="large"
             sx={{
-              marginTop: '5px',
-              width: '100%',
-            backgroundColor: "#0077b5", 
-"&:hover": { backgroundColor: "#006097" },
+              backgroundColor: "#0077b5",
+              "&:hover": { backgroundColor: "#005582" },
             }}
           >
-            {loading ? "Fetching" : "Import Profile"}
+            {loading ? "Fetching..." : "Import Profile"}
           </Button>
           <Button
-          onClick={()=>close(true)}
-          sx={{
-            marginTop: '5px',
-            width: '100%',
-            backgroundColor: "transparent",
-            border: 'none',
-            cursor: 'pointer'
-          }}
+            onClick={() => close(true)}
+            sx={{
+              marginTop: "10px",
+              width: "100%",
+              backgroundColor: "transparent",
+              border: "1px solid #0077b5",
+              color: "#0077b5",
+              borderRadius: 1,
+              padding: "10px 0",
+              cursor: "pointer",
+              "&:hover": {
+                backgroundColor: "#e6f2ff",
+              },
+            }}
           >
-            ADD  Manually
+            Add Manually
           </Button>
         </Box>
 
         {error && (
-          <Alert severity="error" sx={{ mt: 2 }}>
+          <Alert severity="error" sx={{ mt: 3, width: "100%" }}>
             {error}
           </Alert>
         )}
         {successMessage && (
-          <Alert severity="success" sx={{ mt: 2 }}>
+          <Alert severity="success" sx={{ mt: 3, width: "100%" }}>
             {successMessage}
           </Alert>
         )}
