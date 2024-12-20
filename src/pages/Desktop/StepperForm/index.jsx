@@ -1,3 +1,5 @@
+// src/Components/Admin/Profile/StepperForm.jsx
+
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -23,48 +25,69 @@ import {
   CardHeader,
   Divider,
   CircularProgress,
+  Chip,
 } from "@mui/material";
-import {
-    FaLaptopCode,
-    FaBrush,
-    FaCloud,
-    FaPen,
-    FaChartLine,
-    FaGavel,
-    FaUserTie,
-    FaCalculator,
-    FaUserGraduate,
-    FaSpa
-  } from "react-icons/fa";
-import { addXpertType } from '../../../Store/Slice/UserDetail';
 import Rating from "@mui/material/Rating";
 import { FiTrash } from "react-icons/fi";
 import LinkedInLogo from "../../../assets/svg/linkedin.png";
 import { State, City } from "country-state-city";
 import { useDispatch, useSelector } from "react-redux";
 import { setDetail } from "../../../Store/Slice/UserDetail";
-import { useNavigate , useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
 import LinkedInFetcher from "../../Teams/LinkedInFetcher";
 import CloseIcon from "@mui/icons-material/Close";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { AddPhotoAlternateIcon } from "@mui/icons-material";
 import useSaveProfileData from "../../../hooks/Linkedin/useSaveProfileData";
-import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
-import XpertRole from '../Prefference/XpertRole'
+import XpertRole from "../Prefference/XpertRole";
 
+const consultingChargesConfig = {
+  astrologist: true,
+  lawyer: true,
+};
 
+const calculateExperience = (experiences) => {
+  if (!experiences || experiences.length === 0) return "";
+  const currentDate = new Date();
+  let totalMonths = 0;
+  experiences.forEach((exp) => {
+    const start = new Date(
+      exp.starts_at.year,
+      exp.starts_at.month - 1,
+      exp.starts_at.day
+    );
+    const end = exp.ends_at
+      ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
+      : currentDate;
+    const months =
+      (end.getFullYear() - start.getFullYear()) * 12 +
+      (end.getMonth() - start.getMonth());
+    totalMonths += months;
+  });
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+  return `${years} ${years > 1 ? "Years" : "Year"} ${
+    months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
+  }`;
+};
+
+const formatDate = (dateObj) => {
+  if (!dateObj) return "";
+  const { year, month, day } = dateObj;
+  const date = new Date(year, month - 1, day);
+  return date.toLocaleDateString("default", {
+    month: "short",
+    year: "numeric",
+  });
+};
 
 export default function StepperForm() {
-
-    // Form Detail Elements
-  const [profileDatas , setProfileDatas] = useState()
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
-  const [Xpert, setXpert] = useState();
+  const [Xpert, setXpert] = useState("");
   const [Experience, setExperience] = useState("");
   const [profileImg, setProfileImg] = useState(null);
   const [selectedState, setSelectedState] = useState("");
@@ -73,91 +96,58 @@ export default function StepperForm() {
   const [Education, setEducation] = useState([]);
   const [Work, setWork] = useState([]);
   const [Skills, setSkills] = useState([]);
-  const [value, setValue] = React.useState(2);
+  const [value, setValue] = useState(2);
   const [Projects, setProjects] = useState([]);
   const [Services, setServices] = useState([]);
   const [ConsultingPrice, setConsultingPrice] = useState("");
-  const [UserconsultingPrice, setUserconsultingPrice] = useState('');
-  const [comission, setComission] = useState(0.2); 
+  const [UserconsultingPrice, setUserconsultingPrice] = useState("");
+  const [comission] = useState(0.2);
   const [ConsultingDuration, setConsultingDuration] = useState("");
   const [ConsultingDurationType, setConsultingDurationType] = useState("");
   const [serviceData, setServiceData] = useState({});
   const [recommendations, setRecommendation] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
-  const steps = ["Xpert Type","Profile", "Offering"];
+  const steps = ["Xpert Type", "Profile", "Offering"];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
-  const [isLinkedInFetched, setIsLinkedInFetched] = useState(false); // Flag to check if LinkedIn data is fetched
- 
+  const [isLinkedInFetched, setIsLinkedInFetched] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { saveProfileData, loading } = useSaveProfileData();
-  const { userData, loading: userDataLoading } = useFetchUserData();
+  const { userData } = useFetchUserData();
 
+  const location = useLocation();
+  const { profileData } = location.state || {};
 
-  const uid = userData?.uid
-  
- 
+  useEffect(() => {
+    if (profileData) {
+      setActiveStep(1);
+    }
+  }, [profileData]);
 
-
-
-
-
-
-
-    const location = useLocation();
-  const { profileData } = location.state || {}; // Safely extract profileData
-
-useEffect(() => {
-  if (profileData) {
-    setActiveStep(1);
-  }
-}, [profileData]);
-
- 
-  
-
- 
   const dataRole = useSelector((state) => state.user);
 
+  useEffect(() => {
+    if (dataRole && dataRole.XpertType) {
+      setXpert(dataRole.XpertType);
+    }
+  }, [dataRole]);
 
- useEffect(() => {
-  if (dataRole) {
-    setXpert(dataRole.XpertType);
-  }
-}, [dataRole]);
-
-
-console.log(Xpert , 'xpert')
-
-
-  
-// Select role section
-
-
-
-
-
-
-
-  // Consulting Price Logic
-
-
-  
   useEffect(() => {
     if (ConsultingPrice) {
       const price = parseFloat(ConsultingPrice);
       if (!isNaN(price)) {
-        const reducedPrice = price - (price * comission); // Reducing commission
-        setUserconsultingPrice(reducedPrice.toFixed(2)); // Set the reduced price
+        const reducedPrice = price - price * comission;
+        setUserconsultingPrice(reducedPrice.toFixed(2));
+      } else {
+        setUserconsultingPrice("");
       }
+    } else {
+      setUserconsultingPrice("");
     }
-  }, [ConsultingPrice, comission]); // Dependency array includes both values
+  }, [ConsultingPrice, comission]);
 
-  // Flow control
-
-
-  // Handle Profile Image Upload
   const handleProfileImage = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -167,15 +157,10 @@ console.log(Xpert , 'xpert')
     }
   };
 
-
-
-
-  // Clear Profile Image
   const clearProfileImage = () => {
     setProfileImg(null);
   };
 
-  // Handle State Change
   const handleStateChange = (stateCode) => {
     setSelectedState(stateCode);
     const stateCities = City.getCitiesOfState("IN", stateCode);
@@ -183,33 +168,20 @@ console.log(Xpert , 'xpert')
     setSelectedCity("");
   };
 
-  // Open Modal
-  const openModal = (type, data) => {
+  const openModal = (type) => {
     setModalType(type);
     setIsModalOpen(true);
   };
 
-  // Close Modal
   const closeModal = () => {
     setIsModalOpen(false);
     setModalType("");
     setServiceData({});
   };
 
-  const expertiseTypes = [
-    "Developer",
-    "Designer",
-    "Cloud Devops",
-    "Content Creator",
-    "Digital Marketing",
-    "Lawyer",
-    "HR",
-    "Accountant",
-  ];
-
   useEffect(() => {
-    const recommendations = {
-      Developer: [
+    const recommendationsConfig = {
+      developer: [
         {
           title: "Web Development",
           description: "Build responsive and robust websites.",
@@ -227,7 +199,7 @@ console.log(Xpert , 'xpert')
           description: "Design and maintain scalable databases.",
         },
       ],
-      Designer: [
+      designer: [
         {
           title: "Graphic Design",
           description: "Craft stunning visuals for branding.",
@@ -245,7 +217,7 @@ console.log(Xpert , 'xpert')
           description: "Create attractive packaging designs for products.",
         },
       ],
-      "Cloud Devops": [
+      "cloud devops": [
         {
           title: "Cloud Setup",
           description: "Set up scalable cloud infrastructure.",
@@ -263,7 +235,7 @@ console.log(Xpert , 'xpert')
           description: "Ensure secure and compliant cloud environments.",
         },
       ],
-      "Content Creator": [
+      "content creator": [
         {
           title: "Blog Writing",
           description: "Produce engaging and SEO-friendly articles.",
@@ -281,7 +253,7 @@ console.log(Xpert , 'xpert')
           description: "Develop content for various social media platforms.",
         },
       ],
-      "Digital Marketing": [
+      "digital marketing": [
         {
           title: "SEO Optimization",
           description: "Improve website ranking on search engines.",
@@ -299,7 +271,7 @@ console.log(Xpert , 'xpert')
           description: "Run paid search advertising campaigns for businesses.",
         },
       ],
-      Lawyer: [
+      lawyer: [
         {
           title: "Legal Advice",
           description: "Provide expert legal consultations.",
@@ -334,14 +306,16 @@ console.log(Xpert , 'xpert')
         },
         {
           title: "Immigration Law",
-          description: "Provide legal services for immigration-related matters.",
+          description:
+            "Provide legal services for immigration-related matters.",
         },
         {
           title: "Mergers & Acquisitions",
-          description: "Assist with mergers, acquisitions, and corporate restructuring.",
+          description:
+            "Assist with mergers, acquisitions, and corporate restructuring.",
         },
       ],
-      HR: [
+      hr: [
         {
           title: "Recruitment Services",
           description: "Find the right talent for your team.",
@@ -359,7 +333,7 @@ console.log(Xpert , 'xpert')
           description: "Provide HR strategy and compliance consulting.",
         },
       ],
-      Accountant: [
+      accountant: [
         {
           title: "Tax Filing",
           description: "Ensure compliance with tax regulations.",
@@ -377,52 +351,71 @@ console.log(Xpert , 'xpert')
           description: "Advise on personal and business investments.",
         },
       ],
-      Default: [
+      astrologist: [
+        {
+          title: "Personal Astrology",
+          description: "Provide personalized astrological readings.",
+        },
+        {
+          title: "Business Astrology",
+          description: "Offer astrological insights for business decisions.",
+        },
+        {
+          title: "Horoscope Creation",
+          description: "Create detailed horoscopes for clients.",
+        },
+        {
+          title: "Astrological Counseling",
+          description: "Provide guidance based on astrological analysis.",
+        },
+      ],
+      default: [
         {
           title: "General Service",
           description: "Offer a range of customizable services.",
         },
       ],
-   Intern : [
-  {
-    title: "Internship",
-    description: "A temporary position offering hands-on experience, typically for students or recent graduates, to gain industry skills."
-  },
-  {
-    title: "Full-Time",
-    description: "A long-term, permanent employment position with fixed working hours and responsibilities."
-  },
-  {
-    title: "Project-Basis",
-    description: "A short-term contract role focused on completing specific projects or tasks within a set timeframe."
-  }
-]
+      intern: [
+        {
+          title: "Internship",
+          description:
+            "A temporary position offering hands-on experience, typically for students or recent graduates, to gain industry skills.",
+        },
+        {
+          title: "Full-Time",
+          description:
+            "A long-term, permanent employment position with fixed working hours and responsibilities.",
+        },
+        {
+          title: "Project-Basis",
+          description:
+            "A short-term contract role focused on completing specific projects or tasks within a set timeframe.",
+        },
+      ],
     };
-  
-    // Set the recommendations based on XpertType
-    setRecommendation(
-      recommendations[Xpert] || recommendations.Default
-    );
-   
+
+    if (Xpert && typeof Xpert === "string") {
+      setRecommendation(
+        recommendationsConfig[Xpert.toLowerCase()] ||
+          recommendationsConfig.default
+      );
+    } else {
+      setRecommendation(recommendationsConfig.default);
+    }
   }, [Xpert]);
-
-
-  
-
-
-
 
   const handleRecommendationClick = (rec) => {
     const serviceData = {
       serviceName: rec.title,
       serviceDescription: rec.description,
       servicePrice: "",
+      duration: "",
+      durationType: "",
     };
     setServiceData(serviceData);
     openModal("Service");
   };
 
-  // Save Detail
   const saveDetail = (type, data) => {
     switch (type.toLowerCase()) {
       case "education":
@@ -445,7 +438,6 @@ console.log(Xpert , 'xpert')
     }
   };
 
-  // Delete Detail
   const deleteDetail = (type, index) => {
     switch (type.toLowerCase()) {
       case "education":
@@ -467,26 +459,26 @@ console.log(Xpert , 'xpert')
         console.error("Invalid type");
     }
   };
-  // Handle form submission
-  const handleSubmitInfo = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
 
-    // Validate required fields
-    if (
-      FirstName &&
-      LastName &&
-      dataRole.XpertType &&
-      Experience &&
-      selectedState &&
-      profileImg &&
-      selectedCity
-    ) {
+  const handleSubmitInfo = async (e) => {
+    e.preventDefault();
+
+    const missingFields = [];
+    if (!FirstName) missingFields.push("First Name");
+    if (!LastName) missingFields.push("Last Name");
+    if (!Xpert) missingFields.push("Xpert Type");
+    if (!Experience) missingFields.push("Years of Experience");
+    if (!selectedState) missingFields.push("State");
+    if (!profileImg) missingFields.push("Profile Image");
+    if (!selectedCity) missingFields.push("City");
+
+    if (missingFields.length === 0) {
       const data = {
         profileImage: profileImg,
         firstName: FirstName,
         lastName: LastName,
         experience: Experience,
-        type: dataRole.XpertType,
+        type: Xpert,
         state: selectedState,
         city: selectedCity,
         education: Education,
@@ -499,180 +491,135 @@ console.log(Xpert , 'xpert')
         consultingDurationType: ConsultingDurationType,
       };
 
-      console.log("Form Data:", data);
-
-      // Dispatch to Redux store (if necessary)
       dispatch(setDetail(data));
 
       try {
-        // Save to Firestore
         await saveProfileData(data);
-        // Show success toast // Replace with your actual route
+        toast.success("Profile saved successfully!");
+        navigate(`/profile/${userData?.uid}`);
       } catch (error) {
-        // Show error toast
         toast.error(`Error saving data: ${error.message || error}`);
         console.log(error);
       }
     } else {
-      // Display specific toast alerts
-      if (!FirstName) toast.error("First Name is required");
-      if (!LastName) toast.error("Last Name is required");
-      if (!Xpert) toast.error("Xpert Type is required");
-      if (!Experience) toast.error("Years of Experience is required");
-      if (!selectedState) toast.error("State is required");
-      if (!profileImg) toast.error("Profile Image is required");
-      if (!selectedCity) toast.error("City is required");
+      missingFields.forEach((field) => toast.error(`${field} is required`));
     }
   };
 
-  // Handle Modal Form Submission
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-
-    // Check if an image is uploaded
     const imageFile = formData.get("projectImage");
     const Fdata = Object.fromEntries(formData.entries());
 
-    // Include image file or Base64 string in the data object
     if (imageFile && imageFile instanceof File) {
-      // If you want to convert it to Base64 (optional)
       const reader = new FileReader();
       reader.onload = () => {
-        Fdata.projectImage = reader.result; // Base64 string of the image
+        Fdata.projectImage = reader.result;
         saveDetail(modalType, Fdata);
       };
-      reader.readAsDataURL(imageFile); // Convert to Base64
+      reader.readAsDataURL(imageFile);
     } else {
       saveDetail(modalType, Fdata);
     }
 
-    console.log(Fdata, "Submitted Data");
     closeModal();
   };
 
-  // Fetch Indian States
   const indiaStates = State.getAllStates().filter(
     (item) => item.countryCode === "IN"
   );
 
-  // Define Expertise Types and Degrees
+  useEffect(() => {
+    if (profileData) {
+      setFirstName(profileData?.firstName || "");
+      setLastName(profileData?.lastName || "");
+      // Note: Removing setXpert from LinkedIn data to avoid overwriting the chosen role.
+      setExperience(userData?.experience || "0");
+      setProfileImg(profileData?.photo_url || "");
+      setIsLinkedInFetched(true);
+      setSelectedCity(profileData?.city);
+      setSelectedState(profileData?.state);
+      setConsultingPrice(profileData?.consultingPrice);
+      setConsultingDurationType(profileData?.consultingDurationType);
+      setConsultingDuration(profileData?.consultingDuration);
 
-  const degrees = ["High-School", "Bachelor", "Master", "PhD"];
+      if (
+        profileData?.educationDetails &&
+        Array.isArray(profileData?.educationDetails)
+      ) {
+        const eduData = profileData.educationDetails.map((edu) => ({
+          degree: edu.degree || "",
+          stream: edu.stream || "",
+          college: edu.college || "",
+          startDate: formatDate(edu.startDate),
+          endDate: edu.ends_at ? formatDate(edu.endDate) : "Present",
+          cgpa: edu.cgpa || "",
+        }));
+        setEducation(eduData);
+      }
 
+      if (
+        profileData?.workExperience &&
+        Array.isArray(profileData?.workExperience)
+      ) {
+        const workData = profileData.workExperience.map((exp) => ({
+          position: exp.role || "",
+          company: exp.companyName || "",
+          startDate: formatDate(exp.startDate),
+          endDate: exp.ends_at ? formatDate(exp.endDate) : "Present",
+        }));
+        setWork(workData);
+      }
 
-    
-   
+      if (profileData?.skillSet && Array.isArray(profileData?.skillSet)) {
+        const skillData = profileData.skillSet.map((skill) => ({
+          skill: skill.skill || "",
+          skillRating: skill.skillRating || 0,
+        }));
+        setSkills(skillData);
+      }
 
+      if (
+        profileData?.projectDetails &&
+        Array.isArray(profileData?.projectDetails)
+      ) {
+        const projectData = profileData.projectDetails.map((proj) => ({
+          projectName: proj.projectName || "",
+          duration: `${formatDate(proj.startDate)} - ${
+            proj.ends_at ? formatDate(proj.endDate) : "Present"
+          }`,
+          liveLink: proj.liveDemo || "",
+          description: proj.description || "",
+        }));
+        setProjects(projectData);
+      }
 
-    // Edit Pre-filled
-
-    useEffect(()=>{
-  if (profileData) {
-    setFirstName(profileData?.firstName || "");
-    setLastName(profileData?.lastName || "");
-    setXpert(profileData?.type || "");
-    setExperience(userData?.experience || '0');
-    setProfileImg(profileData?.photo_url || "");
-    setIsLinkedInFetched(true); 
-    setSelectedCity(profileData?.city)
-    setSelectedState(profileData?.state)
-    setConsultingPrice(profileData?.consultingPrice)
-    setConsultingDurationType(profileData?.consultingDurationType)
-    setConsultingDuration(profileData?.consultingDuration)
-
-
-    console.log(selectedCity , 'city')
-    console.log(selectedState , 'state')
-
-
-    if (profileData?.educationDetails && Array.isArray(profileData?.educationDetails)) {
-      const eduData = profileData?.educationDetails.map((edu) => ({
-        degree: edu.degree || "",
-        stream: edu.stream || "",
-        college: edu.college || "",
-        startDate: formatDate(edu.startDate),
-        endDate: edu.ends_at ? formatDate(edu.endDate) : "Present",
-        cgpa: edu.cpga || "",
-      }));
-      setEducation(eduData);
-      console.log(Education)
+      if (
+        profileData?.serviceDetails &&
+        Array.isArray(profileData?.serviceDetails)
+      ) {
+        const serviceData = profileData.serviceDetails.map((service) => ({
+          serviceName: service.serviceName || "",
+          serviceDescription: service.serviceDescription || "",
+          servicePrice: service.servicePrice || "",
+          duration: service.serviceDuration || "",
+          durationType: service.serviceDurationType || "",
+        }));
+        setServices(serviceData);
+      }
     }
+  }, [profileData, isLinkedInFetched, userData]);
 
-    if (profileData?.workExperience && Array.isArray(profileData?.workExperience)) {
-      const workData = profileData?.workExperience.map((exp) => ({
-        position: exp.role || "",
-        company: exp.companyName || "",
-        startDate: formatDate(exp.startDate.seconds),
-        endDate: exp.ends_at ? formatDate(exp.endDate.seconds) : "Present",
-      }));
-      setWork(workData);
-      console.log(Work)
-    }
-
-    if (profileData?.skillSet && Array.isArray(profileData?.skillSet)) {
-      const skillData = profileData?.skillSet.map((skill) => ({
-        skill: skill.skill || "",
-        skillRating: skill.skillRating || "",
-
-
-      }));
-      setSkills(skillData);
-    }
-
-    if (profileData?.projectDetails && Array.isArray(profileData?.projectDetails)) {
-      const projectData = profileData?.projectDetails.map((proj) => ({
-        projectName: proj.projectName || "",
-        duration: `${formatDate(proj.startDate)} - ${
-          proj.ends_at ? formatDate(proj.endDate) : "Present"
-        }`,
-        liveLink: proj.liveDemo || "",
-        description: proj.description || "",
-      }));
-      setProjects(projectData);
-    }
-
-    if (profileData?.serviceDetails && Array.isArray(profileData?.serviceDetails)) {
-      const projectData = profileData?.serviceDetails.map((service) => ({
-        serviceName: service.serviceName || "",
-        serviceDescription: service.serviceDescription || '',
-        servicePrice: service.servicePrice || '',
-        serviceDuration: service.serviceDuration || '',
-        serviceDurationType: service.serviceDurationType || '',
-      }));
-      setServices(projectData);
-    }
-  }
-}, [profileData, isLinkedInFetched])
-     
-
-    
-
-
-
-      
-
-
-
-
-
-
-  // Callback to handle LinkedIn data
   const handleLinkedInData = (data) => {
-    console.log("Received LinkedIn Data:", data); // Debugging
-
-
-
     if (data) {
-      // Auto-fill Profile Fields
       setFirstName(data.first_name || "");
       setLastName(data.last_name || "");
-      setXpert(data.occupation || "");
+      // Not setting Xpert from LinkedIn data to avoid overwriting chosen role.
       setExperience(calculateExperience(data.experiences) || "");
       setProfileImg(data.profile_pic_url || "");
-      setIsLinkedInFetched(true); // Set flag to hide sections
+      setIsLinkedInFetched(true);
 
-      // Mapping state and city
       if (data.state && data.city) {
         const stateObj = State.getStatesOfCountry("IN").find(
           (state) => state.name.toLowerCase() === data.state.toLowerCase()
@@ -690,7 +637,6 @@ console.log(Xpert , 'xpert')
         }
       }
 
-      // Prefilling Education
       if (data.education && Array.isArray(data.education)) {
         const eduData = data.education.map((edu) => ({
           degree: edu.degree_name || "",
@@ -703,7 +649,6 @@ console.log(Xpert , 'xpert')
         setEducation(eduData);
       }
 
-      // Prefilling Work Experience
       if (data.experiences && Array.isArray(data.experiences)) {
         const workData = data.experiences.map((exp) => ({
           position: exp.title || "",
@@ -714,7 +659,6 @@ console.log(Xpert , 'xpert')
         setWork(workData);
       }
 
-      // Prefilling Projects
       if (
         data.accomplishment_projects &&
         Array.isArray(data.accomplishment_projects)
@@ -730,84 +674,73 @@ console.log(Xpert , 'xpert')
         setProjects(projectData);
       }
 
-      // Prefilling Skills
       if (data.skills && Array.isArray(data.skills)) {
         const skillData = data.skills.map((skill) => ({
           skill: skill.name || "",
+          skillRating: 0,
         }));
         setSkills(skillData);
       }
     }
   };
 
-  // Helper function to calculate total experience
-  const calculateExperience = (experiences) => {
-    if (!experiences || experiences.length === 0) return "";
-    const currentDate = new Date();
-    let totalMonths = 0;
-    experiences.forEach((exp) => {
-      const start = new Date(
-        exp.starts_at.year,
-        exp.starts_at.month - 1,
-        exp.starts_at.day
-      );
-      const end = exp.ends_at
-        ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
-        : currentDate;
-      const months =
-        (end.getFullYear() - start.getFullYear()) * 12 +
-        (end.getMonth() - start.getMonth());
-      totalMonths += months;
-    });
-    const years = Math.floor(totalMonths / 12);
-    const months = totalMonths % 12;
-    return `${years} ${years > 1 ? "Years" : "Year"} ${
-      months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
-    }`;
+  const isConsultingChargesEnabled = () => {
+    if (!Xpert || typeof Xpert !== "string") return false;
+    const formatted = Xpert.toLowerCase().trim();
+    return consultingChargesConfig[formatted] || false;
   };
 
-  // Helper function to format date
-  const formatDate = (dateObj) => {
-    if (!dateObj) return "";
-    const { year, month, day } = dateObj;
-    const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString("default", {
-      month: "short",
-      year: "numeric",
-    });
+  const handleStepClick = (step) => {
+    setActiveStep(step);
   };
 
   return (
     <Box sx={{ width: "100%", padding: 4, overflow: "hidden" }}>
-      {/* Stepper Navigation */}
-      <Stepper activeStep={activeStep} alternativeLabel>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
+      <Stepper activeStep={activeStep} alternativeLabel nonLinear>
+        {steps.map((label, index) => {
+          const displayLabel =
+            index === 0 && Xpert ? (
+              <>
+                {label} <span style={{ color: "blue" }}>({Xpert})</span>
+              </>
+            ) : (
+              label
+            );
+          return (
+            <Step key={label}>
+              <StepLabel
+                onClick={() => handleStepClick(index)}
+                sx={{ cursor: "pointer" }}
+              >
+                {displayLabel}
+              </StepLabel>
+            </Step>
+          );
+        })}
       </Stepper>
 
-      { activeStep === 0 && <XpertRole next={setActiveStep}/>
-        
-      }
+      {activeStep === 0 && Xpert && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <Chip label={Xpert} color="primary" />
+        </Box>
+      )}
 
-      {/* Form Content */}
+      {activeStep === 0 && <XpertRole next={() => setActiveStep(1)} />}
+
       <Box sx={{ height: "80vh", overflow: "auto" }}>
         {activeStep === 1 && (
           <Grid container spacing={4} alignItems="flex-start">
-            {/* Left Column - Profile Fields */}
             <Grid
               item
               xs={12}
               md={4}
               sx={{
-                position: { md: "sticky" }, // Apply sticky positioning on medium and larger screens
+                position: { md: "sticky" },
+                top: 20,
               }}
             >
               <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
                 <CardContent>
-                  {/* Profile Image */}
                   <Box
                     sx={{
                       display: "flex",
@@ -832,7 +765,7 @@ console.log(Xpert , 'xpert')
                               ? profileImg
                               : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
                           }
-                          sx={{ width: 120, height: 120 }} // Increased size
+                          sx={{ width: 120, height: 120 }}
                         />
                       </IconButton>
                     </label>
@@ -863,7 +796,6 @@ console.log(Xpert , 'xpert')
                     </Typography>
                   </Box>
 
-                  {/* First Name */}
                   <TextField
                     label="First Name"
                     variant="outlined"
@@ -875,7 +807,6 @@ console.log(Xpert , 'xpert')
                     sx={{ mb: 3 }}
                   />
 
-                  {/* Last Name */}
                   <TextField
                     label="Last Name"
                     variant="outlined"
@@ -887,24 +818,6 @@ console.log(Xpert , 'xpert')
                     sx={{ mb: 3 }}
                   />
 
-                  {/* Expertise Type */}
-                  {/* <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
-                    <InputLabel id="expertise-label">Xpert Type</InputLabel>
-                    <Select
-                      labelId="expertise-label"
-                      value={Xpert}
-                      label="Xpert Type"
-                      onChange={(e) => setXpert(e.target.value)}
-                    >
-                      {expertiseTypes.map((type) => (
-                        <MenuItem key={type} value={type}>
-                          {type}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl> */}
-
-                  {/* Years of Experience */}
                   <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
                     <InputLabel id="experience-label">
                       Years of Experience
@@ -915,7 +828,7 @@ console.log(Xpert , 'xpert')
                       label="Years of Experience"
                       onChange={(e) => setExperience(e.target.value)}
                     >
-                      <MenuItem value=">1">{'less than 1'}</MenuItem>
+                      <MenuItem value="Less than 1">Less than 1</MenuItem>
                       {Array.from({ length: 20 }, (_, i) => i + 1).map(
                         (year) => (
                           <MenuItem key={year} value={year}>
@@ -926,7 +839,6 @@ console.log(Xpert , 'xpert')
                     </Select>
                   </FormControl>
 
-                  {/* State */}
                   <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
                     <InputLabel id="state-label">State</InputLabel>
                     <Select
@@ -943,7 +855,6 @@ console.log(Xpert , 'xpert')
                     </Select>
                   </FormControl>
 
-                  {/* City */}
                   <FormControl fullWidth required size="small">
                     <InputLabel id="city-label">City</InputLabel>
                     <Select
@@ -964,7 +875,6 @@ console.log(Xpert , 'xpert')
               </Card>
             </Grid>
 
-            {/* Right Column - LinkedInFetcher and Details Sections */}
             <Grid
               sx={{
                 marginTop: "10px",
@@ -973,41 +883,43 @@ console.log(Xpert , 'xpert')
               xs={12}
               md={8}
             >
-            {!profileData &&  <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "start",
-                  justifyContent: "center",
-                  gap: "10px",
-                  width: "100%",
-                  height: "50px",
-                  marginBottom: "20px",
-                }}
-              >
-                <div
-                  onClick={() => setIsLinkedInFetched(false)}
-                  style={{
+              {!profileData && (
+                <Box
+                  sx={{
                     display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
+                    flexDirection: "column",
+                    alignItems: "start",
+                    justifyContent: "center",
                     gap: "10px",
-                    border: "1px solid #ccc",
-                    padding: "10px",
-                    borderRadius: "10px",
-                    cursor: "pointer",
+                    width: "100%",
+                    height: "50px",
+                    marginBottom: "20px",
                   }}
                 >
-                  <img
-                    src={LinkedInLogo}
-                    alt="LinkedIn Logo"
-                    style={{ width: "40px", height: "40px" }}
-                  />
-                  <span>Import Linkedin Profile</span>
-                </div>
-              </Box>}
+                  <div
+                    onClick={() => setIsLinkedInFetched(false)}
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: "10px",
+                      border: "1px solid #ccc",
+                      padding: "10px",
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                      backgroundColor: "#f5f5f5",
+                    }}
+                  >
+                    <img
+                      src={LinkedInLogo}
+                      alt="LinkedIn Logo"
+                      style={{ width: "40px", height: "40px" }}
+                    />
+                    <span>Import LinkedIn Profile</span>
+                  </div>
+                </Box>
+              )}
 
-              {/* LinkedInFetcher */}
               {!isLinkedInFetched && (
                 <Box sx={{ mb: 2 }}>
                   <LinkedInFetcher
@@ -1017,222 +929,207 @@ console.log(Xpert , 'xpert')
                 </Box>
               )}
 
-              {/* Conditionally Render Sections Only If Not Fetched via LinkedIn */}
-
-              <>
+              <Card sx={{ mb: 2, boxShadow: 2 }}>
+                <CardHeader
+                  title="Skills"
+                  titleTypographyProps={{ variant: "h6" }}
+                  action={
+                    <Button
+                      variant="contained"
+                      startIcon={<AddCircleOutlineIcon />}
+                      onClick={() => openModal("Skill")}
+                      size="small"
+                      sx={{ textTransform: "none" }}
+                    >
+                      Add Skill
+                    </Button>
+                  }
+                  sx={{ padding: 2 }}
+                />
+                <Divider />
+                <CardContent sx={{ padding: 2 }}>
+                  {Skills.map((item, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        mb: 3,
+                        position: "relative",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: "20px",
+                      }}
+                    >
+                      <IconButton
+                        aria-label="delete"
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 0 }}
+                        onClick={() => deleteDetail("skill", index)}
+                      >
+                        <FiTrash color="red" size={16} />
+                      </IconButton>
+                      <Typography variant="body1">
+                        {item.skill.charAt(0).toUpperCase() +
+                          item.skill.slice(1)}
+                      </Typography>
+                      <Rating
+                        name={`skill-rating-${index}`}
+                        value={item.skillRating || 0}
+                        size="small"
+                        readOnly
+                        sx={{ color: "#3498db" }}
+                      />
+                    </Box>
+                  ))}
+                </CardContent>
+              </Card>
 
               <Card sx={{ mb: 2, boxShadow: 2 }}>
-                  <CardHeader
-                    title="Skills"
-                    titleTypographyProps={{ variant: "h6" }}
-                    action={
-                      <Button
-                        variant="contained"
-                        startIcon={<AddCircleOutlineIcon />}
-                        onClick={() => openModal("Skill")}
+                <CardHeader
+                  title="Education"
+                  titleTypographyProps={{ variant: "h6" }}
+                  action={
+                    <Button
+                      variant="contained"
+                      startIcon={<AddCircleOutlineIcon />}
+                      onClick={() => openModal("Education")}
+                      size="small"
+                      sx={{ textTransform: "none" }}
+                    >
+                      Add Education
+                    </Button>
+                  }
+                  sx={{ padding: 2 }}
+                />
+                <Divider />
+                <CardContent sx={{ padding: 2 }}>
+                  {Education.map((item, index) => (
+                    <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                      <IconButton
+                        aria-label="delete"
                         size="small"
-                        sx={{ textTransform: "none" }}
+                        sx={{ position: "absolute", top: 0, right: 0 }}
+                        onClick={() => deleteDetail("education", index)}
                       >
-                        Add Skill
-                      </Button>
-                    }
-                    sx={{ padding: 2 }}
-                  />
-                  <Divider />
-                  <CardContent sx={{ padding: 2 }}>
-                    {Skills.map((item, index) => (
+                        <FiTrash color="red" size={16} />
+                      </IconButton>
                       <Box
-                        key={index}
                         sx={{
-                          mb: 3,
-                          position: "relative",
                           display: "flex",
                           flexDirection: "row",
-                          alignItems: "center",
                           gap: "20px",
                         }}
                       >
-                        <IconButton
-                          aria-label="delete"
-                          size="small"
-                          sx={{ position: "absolute", top: 0, right: 0 }}
-                          onClick={() => deleteDetail("skill", index)}
-                        >
-                          <FiTrash color="red" size={16} />
-                        </IconButton>
-                        <Typography variant="body1">
-                          {item.skill.charAt(0).toUpperCase() +
-                            item.skill.slice(1)}
-                        </Typography>
-                        <Rating
-                          name="half-rating-read"
-                          defaultValue={item.skillRating || 0}
-                          size="small"
-                          readOnly
-                          sx={{ color: "#3498db" }}
-                        />
-                      </Box>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                {/* Education Section */}
-                <Card sx={{ mb: 2, boxShadow: 2 }}>
-                  <CardHeader
-                    title="Education"
-                    titleTypographyProps={{ variant: "h6" }}
-                    action={
-                      <Button
-                        variant="contained"
-                        startIcon={<AddCircleOutlineIcon />}
-                        onClick={() => openModal("Education")}
-                        size="small"
-                        sx={{ textTransform: "none" }}
-                      >
-                        Add Education
-                      </Button>
-                    }
-                    sx={{ padding: 2 }}
-                  />
-                  <Divider />
-                  <CardContent sx={{ padding: 2 }}>
-                    {Education.map((item, index) => (
-                      <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                        <IconButton
-                          aria-label="delete"
-                          size="small"
-                          sx={{ position: "absolute", top: 0, right: 0 }}
-                          onClick={() => deleteDetail("education", index)}
-                        >
-                          <FiTrash color="red" size={16} />
-                        </IconButton>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            gap: "20px",
-                          }}
-                        >
-                          <Box>
-                            {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
-                          </Box>
-                          <Box>
-                            <Typography variant="subtitle1">
-                              <strong>{item.degree}</strong> in {item.stream}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {item.college}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {item.startDate} - {item.endDate}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              CGPA: {item.cgpa}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Box>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                {/* Skills Section */}
-               
-
-                {/* Work Experience Section */}
-                <Card sx={{ mb: 2, boxShadow: 2 }}>
-                  <CardHeader
-                    title="Work Experience"
-                    titleTypographyProps={{ variant: "h6" }}
-                    action={
-                      <Button
-                        variant="contained"
-                        startIcon={<AddCircleOutlineIcon />}
-                        onClick={() => openModal("Work")}
-                        size="small"
-                        sx={{ textTransform: "none" }}
-                      >
-                        Add Experience
-                      </Button>
-                    }
-                    sx={{ padding: 2 }}
-                  />
-                  <Divider />
-                  <CardContent sx={{ padding: 2 }}>
-                    {Work.map((item, index) => (
-                      <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                        <IconButton
-                          aria-label="delete"
-                          size="small"
-                          sx={{ position: "absolute", top: 0, right: 0 }}
-                          onClick={() => deleteDetail("work", index)}
-                        >
-                          <FiTrash color="red" size={16} />
-                        </IconButton>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            gap: "20px",
-                          }}
-                        >
-                          <Box>
-                            {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
-                          </Box>
-                          <Box>
-                            <Typography variant="subtitle1">
-                              <strong>{item.position}</strong> at {item.company}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {item.startDate} - {item.endDate}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Box>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                {/* Projects/Assignments Section */}
-                <Card sx={{ mb: 2, boxShadow: 2 }}>
-                  <CardHeader
-                    title="Projects/Assignments"
-                    titleTypographyProps={{ variant: "h6" }}
-                    action={
-                      <Button
-                        variant="contained"
-                        startIcon={<AddCircleOutlineIcon />}
-                        onClick={() => openModal("Project")}
-                        size="small"
-                        sx={{ textTransform: "none" }}
-                      >
-                        Add Project
-                      </Button>
-                    }
-                    sx={{ padding: 2 }}
-                  />
-                  <Divider />
-                  <CardContent sx={{ padding: 2 }}>
-                    {Projects.map((item, index) => (
-                      <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                        <IconButton
-                          aria-label="delete"
-                          size="small"
-                          sx={{ position: "absolute", top: 0, right: 0 }}
-                          onClick={() => deleteDetail("project", index)}
-                        >
-                          <FiTrash color="red" size={16} />
-                        </IconButton>
+                        <Box></Box>
                         <Box>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "row",
-                              gap: "20px",
-                            }}
-                          >
-                            {/* <img src={item.projectImage} alt="image" width={'140px'} /> */}
-                          </Box>
+                          <Typography variant="subtitle1">
+                            <strong>{item.degree}</strong> in {item.stream}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {item.college}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {item.startDate} - {item.endDate}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            CGPA: {item.cgpa}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card sx={{ mb: 2, boxShadow: 2 }}>
+                <CardHeader
+                  title="Work Experience"
+                  titleTypographyProps={{ variant: "h6" }}
+                  action={
+                    <Button
+                      variant="contained"
+                      startIcon={<AddCircleOutlineIcon />}
+                      onClick={() => openModal("Work")}
+                      size="small"
+                      sx={{ textTransform: "none" }}
+                    >
+                      Add Experience
+                    </Button>
+                  }
+                  sx={{ padding: 2 }}
+                />
+                <Divider />
+                <CardContent sx={{ padding: 2 }}>
+                  {Work.map((item, index) => (
+                    <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                      <IconButton
+                        aria-label="delete"
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 0 }}
+                        onClick={() => deleteDetail("work", index)}
+                      >
+                        <FiTrash color="red" size={16} />
+                      </IconButton>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: "20px",
+                        }}
+                      >
+                        <Box></Box>
+                        <Box>
+                          <Typography variant="subtitle1">
+                            <strong>{item.position}</strong> at {item.company}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {item.startDate} - {item.endDate}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card sx={{ mb: 2, boxShadow: 2 }}>
+                <CardHeader
+                  title="Projects/Assignments"
+                  titleTypographyProps={{ variant: "h6" }}
+                  action={
+                    <Button
+                      variant="contained"
+                      startIcon={<AddCircleOutlineIcon />}
+                      onClick={() => openModal("Project")}
+                      size="small"
+                      sx={{ textTransform: "none" }}
+                    >
+                      Add Project
+                    </Button>
+                  }
+                  sx={{ padding: 2 }}
+                />
+                <Divider />
+                <CardContent sx={{ padding: 2 }}>
+                  {Projects.map((item, index) => (
+                    <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                      <IconButton
+                        aria-label="delete"
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 0 }}
+                        onClick={() => deleteDetail("project", index)}
+                      >
+                        <FiTrash color="red" size={16} />
+                      </IconButton>
+                      <Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            gap: "20px",
+                          }}
+                        >
+                          <Box></Box>
                           <Box>
                             <Typography variant="subtitle1">
                               <strong>{item.projectName}</strong>
@@ -1258,38 +1155,49 @@ console.log(Xpert , 'xpert')
                           </Box>
                         </Box>
                       </Box>
-                    ))}
-                  </CardContent>
-                </Card>
-              </>
+                    </Box>
+                  ))}
+                </CardContent>
+              </Card>
             </Grid>
 
-            {/* Navigation Buttons */}
             <Grid item xs={12}>
               <Box
                 sx={{
                   display: "flex",
-                  justifyContent: "flex-end",
+                  justifyContent:
+                    activeStep === 1 ? "space-between" : "flex-end",
                   mt: 2,
                 }}
               >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setActiveStep(2)}
-                  size="large"
-                >
-                  Next Step
-                </Button>
+                {activeStep === 1 && (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => setActiveStep(0)}
+                    size="large"
+                    sx={{ mr: 2 }}
+                  >
+                    Back
+                  </Button>
+                )}
+                {activeStep === 1 && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setActiveStep(2)}
+                    size="large"
+                  >
+                    Next Step
+                  </Button>
+                )}
               </Box>
             </Grid>
           </Grid>
         )}
 
-        {activeStep === 2
-         && (
+        {activeStep === 2 && (
           <Grid container spacing={4}>
-            {/* Left Column - Profile Summary */}
             <Grid item xs={12} md={4}>
               <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
                 <CardContent>
@@ -1306,7 +1214,7 @@ console.log(Xpert , 'xpert')
                           ? profileImg
                           : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
                       }
-                      sx={{ width: 120, height: 120 }} // Increased size
+                      sx={{ width: 120, height: 120 }}
                     />
                     <Typography variant="h6" sx={{ mt: 3 }}>
                       {FirstName} {LastName}
@@ -1338,62 +1246,61 @@ console.log(Xpert , 'xpert')
               </Card>
             </Grid>
 
-            {/* Right Column - Offering Details */}
             <Grid item xs={12} md={8}>
-              {/* Consulting Charges Section */}
-    {Xpert != 'Intern'  &&   <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
-                <CardHeader
-                  title="Consulting Charges"
-                  titleTypographyProps={{ variant: "h6" }}
-                  sx={{ padding: 2 }}
-                />
-                <Divider />
- 
-                <CardContent sx={{ padding: 2 }}>
-                  <Grid container spacing={3} alignItems="center">
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        label="Price (₹)"
-                        variant="outlined"
-                        fullWidth
-                        
-                        onChange={(e) => {
-                          const inputPrice = parseFloat(e.target.value);
-                          if (!isNaN(inputPrice)) {
-                            setConsultingPrice(inputPrice); 
-                          }
-                        }}
-                        required
-                        size="small"
-                      />
+              {isConsultingChargesEnabled() && (
+                <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+                  <CardHeader
+                    title="Consulting Charges"
+                    titleTypographyProps={{ variant: "h6" }}
+                    sx={{ padding: 2 }}
+                  />
+                  <Divider />
+                  <CardContent sx={{ padding: 2 }}>
+                    <Grid container spacing={3} alignItems="center">
+                      <Grid item xs={12} sm={4}>
+                        <TextField
+                          label="Price (₹)"
+                          name="servicePrice"
+                          variant="outlined"
+                          fullWidth
+                          onChange={(e) => {
+                            const inputPrice = parseFloat(e.target.value);
+                            if (!isNaN(inputPrice)) {
+                              setConsultingPrice(inputPrice);
+                            } else {
+                              setConsultingPrice("");
+                            }
+                          }}
+                          required
+                          size="small"
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={4}>
+                        <Typography>Per Minute</Typography>
+                      </Grid>
                     </Grid>
-                 
-                    <Grid item xs={12} sm={4}>
-                       <Typography>Per Minute</Typography>
-                    </Grid>
-                  </Grid>
 
-                  <CardContent>
-  {ConsultingPrice !== '' && ConsultingPrice !== 0 && (
-    <Typography variant="body1">
-      Your Recieved: ₹{UserconsultingPrice}
-  
-    </Typography>
-  
-  )}
+                    <Box sx={{ mt: 2 }}>
+                      {ConsultingPrice !== "" && ConsultingPrice !== 0 && (
+                        <Typography variant="body1">
+                          Your Received: ₹{UserconsultingPrice}
+                        </Typography>
+                      )}
 
+                      {ConsultingPrice !== "" && ConsultingPrice !== 0 && (
+                        <Typography
+                          variant="body2"
+                          sx={{ fontSize: "8px", color: "#009DED" }}
+                        >
+                          20% will be deducted as Platform charge
+                        </Typography>
+                      )}
+                    </Box>
+                  </CardContent>
+                </Card>
+              )}
 
-
-  {ConsultingPrice !== '' && ConsultingPrice !== 0 && (
-    <p style={{ fontSize: '8px', color: '#009DED' }}>
-      20% will be deducted as Platform charge
-    </p>
-  )}
-</CardContent>
-                </CardContent>
-              </Card>}
-
-              {/* Services Section */}
               <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
                 <CardHeader
                   title="Services"
@@ -1432,13 +1339,17 @@ console.log(Xpert , 'xpert')
                       <Typography variant="body2" color="textSecondary">
                         Price: ₹{item.servicePrice}
                       </Typography>
+                      {item.duration && item.durationType && (
+                        <Typography variant="body2" color="textSecondary">
+                          Timeline: {item.duration} {item.durationType}
+                        </Typography>
+                      )}
                     </Box>
                   ))}
                 </CardContent>
               </Card>
 
-              {/* Recommendation Section */}
-           <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+              <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
                 <CardHeader
                   title="Services Recommendations"
                   titleTypographyProps={{ variant: "h6" }}
@@ -1455,6 +1366,7 @@ console.log(Xpert , 'xpert')
                             cursor: "pointer",
                             ":hover": { boxShadow: 3 },
                             padding: 2,
+                            height: "100%",
                           }}
                           onClick={() => handleRecommendationClick(rec)}
                         >
@@ -1471,7 +1383,6 @@ console.log(Xpert , 'xpert')
                 </CardContent>
               </Card>
 
-              {/* Submit Button */}
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button
                   variant="outlined"
@@ -1487,492 +1398,498 @@ console.log(Xpert , 'xpert')
                   color="primary"
                   onClick={handleSubmitInfo}
                   size="large"
+                  disabled={loading}
+                  startIcon={
+                    loading && <CircularProgress size={20} color="inherit" />
+                  }
                 >
-                  Submit
+                  {loading ? "Submitting..." : "Submit"}
                 </Button>
               </Box>
             </Grid>
           </Grid>
         )}
 
-        {/* You can add more steps here if needed */}
-      </Box>
+        {activeStep === 3 && (
+          <Typography variant="h6" align="center" sx={{ mt: 4 }}>
+            Profile successfully submitted!
+          </Typography>
+        )}
 
-      {/* Modal Component */}
-      <Dialog
-        open={isModalOpen}
-        onClose={closeModal}
-        fullWidth
-        maxWidth="sm"
-        PaperProps={{
-          sx: {
-            borderRadius: 3, // Slightly more rounded
-          },
-        }}
-      >
-        <DialogTitle sx={{ m: 0, p: 2 }}>
-          Add {modalType}
-          <IconButton
-            aria-label="close"
-            onClick={closeModal}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-            size="small"
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <form onSubmit={handleSubmit}>
-          <DialogContent dividers>
-            {modalType === "Education" && (
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <Box
-                    onClick={() => document.getElementById("add-logo").click()}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "2px dotted #ccc",
-                      padding: 2,
-                      height: "100px",
-                      borderRadius: "20px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ color: "#ccc" }}>
-                      Add logo
-                    </Typography>
-                  </Box>
-                  <input
-                    id="add-logo"
-                    type="file"
-                    accept="image/*"
-                    name="projectImage"
-                    onChange={(e) => console.log(e.target.files[0])}
-                    style={{ marginBottom: 20, display: "none" }}
-                  />
-                </Grid>
+        <Dialog
+          open={isModalOpen}
+          onClose={closeModal}
+          fullWidth
+          maxWidth="sm"
+          PaperProps={{
+            sx: {
+              borderRadius: 3,
+            },
+          }}
+        >
+          <DialogTitle sx={{ m: 0, p: 2 }}>
+            Add {modalType}
+            <IconButton
+              aria-label="close"
+              onClick={closeModal}
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+              size="small"
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <form onSubmit={handleSubmit}>
+            <DialogContent dividers>
+              {modalType === "Education" && (
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Box
+                      onClick={() =>
+                        document.getElementById(`add-logo-${modalType}`).click()
+                      }
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "2px dotted #ccc",
+                        padding: 2,
+                        height: "100px",
+                        borderRadius: "20px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Typography variant="h6" sx={{ color: "#ccc" }}>
+                        Add logo
+                      </Typography>
+                    </Box>
+                    <input
+                      id={`add-logo-${modalType}`}
+                      type="file"
+                      accept="image/*"
+                      name="projectImage"
+                      style={{ marginBottom: 20, display: "none" }}
+                    />
+                  </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Degree"
-                    name="degree"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Degree"
+                      name="degree"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Stream"
+                      name="stream"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="College"
+                      name="college"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Start Date"
+                      name="startDate"
+                      type="date"
+                      variant="outlined"
+                      fullWidth
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      required
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="End Date"
+                      name="endDate"
+                      type="date"
+                      variant="outlined"
+                      fullWidth
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      required
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="CGPA"
+                      name="cgpa"
+                      type="number"
+                      variant="outlined"
+                      fullWidth
+                      inputProps={{
+                        step: 0.1,
+                      }}
+                      required
+                      size="small"
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Stream"
-                    name="stream"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="College"
-                    name="college"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Start Date"
-                    name="startDate"
-                    type="date"
-                    variant="outlined"
-                    fullWidth
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="End Date"
-                    name="endDate"
-                    type="date"
-                    variant="outlined"
-                    fullWidth
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="CGPA"
-                    name="cgpa"
-                    type="number"
-                    variant="outlined"
-                    fullWidth
-                    inputProps={{
-                      step: 0.1,
-                    }}
-                    required
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
-            )}
+              )}
 
-            {modalType === "Skill" && (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <TextField
-                  sx={{ width: "60%" }}
-                  label="Skill Name"
-                  name="skill"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  size="small"
-                />
+              {modalType === "Skill" && (
                 <Box
                   sx={{
-                    height: "42px",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: "10px",
                   }}
                 >
-                  <Typography
+                  <TextField
+                    sx={{ width: "60%" }}
+                    label="Skill Name"
+                    name="skill"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    size="small"
+                  />
+                  <Box
                     sx={{
-                      marginLeft: "2px",
-                      color: "#1876D2",
-                      fontSize: "14px",
+                      height: "42px",
                     }}
-                    component="legend"
                   >
-                    Self-Rating
-                  </Typography>
-                  <Rating
-                    size="large"
-                    name="skill-rating"
-                    value={value}
-                    onChange={(event, newValue) => {
-                      setValue(newValue);
-                    }}
-                    sx={{
-                      fontSize: "3rem",
-                      color: "#3498db",
-                      "& .MuiRating-iconFilled": {
+                    <Typography
+                      sx={{
+                        marginLeft: "2px",
+                        color: "#1876D2",
+                        fontSize: "14px",
+                      }}
+                      component="legend"
+                    >
+                      Self-Rating
+                    </Typography>
+                    <Rating
+                      size="large"
+                      name="skill-rating"
+                      value={value}
+                      onChange={(event, newValue) => {
+                        setValue(newValue);
+                      }}
+                      sx={{
+                        fontSize: "3rem",
                         color: "#3498db",
-                      },
-                      "& .MuiRating-iconHover": {
-                        color: "#2e6da4",
-                      },
-                    }}
-                  />
+                        "& .MuiRating-iconFilled": {
+                          color: "#3498db",
+                        },
+                        "& .MuiRating-iconHover": {
+                          color: "#2e6da4",
+                        },
+                      }}
+                    />
+                  </Box>
                 </Box>
-              </Box>
-            )}
+              )}
 
-            {modalType === "Work" && (
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <Box
-                    onClick={() => document.getElementById("add-logo").click()}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "2px dotted #ccc",
-                      padding: 2,
-                      height: "100px",
-                      borderRadius: "20px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ color: "#ccc" }}>
-                      Add logo
-                    </Typography>
-                  </Box>
-                  <input
-                    id="add-logo"
-                    type="file"
-                    accept="image/*"
-                    name="projectImage"
-                    onChange={(e) => console.log(e.target.files[0])}
-                    style={{ marginBottom: 20, display: "none" }}
-                  />
+              {modalType === "Work" && (
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Box
+                      onClick={() =>
+                        document.getElementById(`add-logo-${modalType}`).click()
+                      }
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "2px dotted #ccc",
+                        padding: 2,
+                        height: "100px",
+                        borderRadius: "20px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Typography variant="h6" sx={{ color: "#ccc" }}>
+                        Add logo
+                      </Typography>
+                    </Box>
+                    <input
+                      id={`add-logo-${modalType}`}
+                      type="file"
+                      accept="image/*"
+                      name="projectImage"
+                      style={{ marginBottom: 20, display: "none" }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Position"
+                      name="position"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Company"
+                      name="company"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Start Date"
+                      name="startDate"
+                      type="date"
+                      variant="outlined"
+                      fullWidth
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      required
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="End Date"
+                      name="endDate"
+                      type="date"
+                      variant="outlined"
+                      fullWidth
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      required
+                      size="small"
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Position"
-                    name="position"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Company"
-                    name="company"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Start Date"
-                    name="startDate"
-                    type="date"
-                    variant="outlined"
-                    fullWidth
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="End Date"
-                    name="endDate"
-                    type="date"
-                    variant="outlined"
-                    fullWidth
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    required
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
-            )}
+              )}
 
-            {modalType === "Project" && (
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <Box
-                    onClick={() => document.getElementById("add-logo").click()}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "2px dotted #ccc",
-                      padding: 2,
-                      height: "100px",
-                      borderRadius: "20px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ color: "#ccc" }}>
-                      Select Image
-                    </Typography>
-                  </Box>
-                  <input
-                    id="add-logo"
-                    type="file"
-                    accept="image/*"
-                    name="projectImage"
-                    onChange={(e) => console.log(e.target.files[0])}
-                    style={{ marginBottom: 20, display: "none" }}
-                  />
-                </Grid>
+              {modalType === "Project" && (
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Box
+                      onClick={() =>
+                        document.getElementById(`add-logo-${modalType}`).click()
+                      }
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "2px dotted #ccc",
+                        padding: 2,
+                        height: "100px",
+                        borderRadius: "20px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Typography variant="h6" sx={{ color: "#ccc" }}>
+                        Select Image
+                      </Typography>
+                    </Box>
+                    <input
+                      id={`add-logo-${modalType}`}
+                      type="file"
+                      accept="image/*"
+                      name="projectImage"
+                      style={{ marginBottom: 20, display: "none" }}
+                    />
+                  </Grid>
 
-                <Grid item xs={12}>
-                  <TextField
-                    label="Project Name"
-                    name="projectName"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Project Name"
+                      name="projectName"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Duration"
+                      name="duration"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Live Link"
+                      name="liveLink"
+                      variant="outlined"
+                      fullWidth
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Description"
+                      name="description"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                      rows={3}
+                      required
+                      size="small"
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Duration"
-                    name="duration"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Live Link"
-                    name="liveLink"
-                    variant="outlined"
-                    fullWidth
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Description"
-                    name="description"
-                    variant="outlined"
-                    fullWidth
-                    multiline
-                    rows={3}
-                    required
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
-            )}
+              )}
 
-            {modalType === "Service" && (
-          <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <TextField
-              label="Service Name"
-              name="serviceName"
-              variant="outlined"
-              fullWidth
-              required
-              size="small"
-              value={serviceData.serviceName}
-              onChange={(e) =>
-                setServiceData({
-                  ...serviceData,
-                  serviceName: e.target.value,
-                })
-              }
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Service Description"
-              name="serviceDescription"
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={3}
-              required
-              size="small"
-              value={serviceData.serviceDescription}
-              onChange={(e) =>
-                setServiceData({
-                  ...serviceData,
-                  serviceDescription: e.target.value,
-                })
-              }
-            />
-          </Grid>
-          <Grid container spacing={3} item xs={12}>
-            <Grid item xs={4}>
-              <TextField
-                label="Service Price (₹)"
-                name="servicePrice"
-                type="number"
+              {modalType === "Service" && (
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Service Name"
+                      name="serviceName"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                      value={serviceData.serviceName}
+                      onChange={(e) =>
+                        setServiceData({
+                          ...serviceData,
+                          serviceName: e.target.value,
+                        })
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Service Description"
+                      name="serviceDescription"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                      rows={3}
+                      required
+                      size="small"
+                      value={serviceData.serviceDescription}
+                      onChange={(e) =>
+                        setServiceData({
+                          ...serviceData,
+                          serviceDescription: e.target.value,
+                        })
+                      }
+                    />
+                  </Grid>
+                  <Grid container spacing={3} item xs={12}>
+                    <Grid item xs={4}>
+                      <TextField
+                        label="Service Price (₹)"
+                        name="servicePrice"
+                        type="number"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        size="small"
+                        value={serviceData.servicePrice}
+                        onChange={(e) =>
+                          setServiceData({
+                            ...serviceData,
+                            servicePrice: e.target.value,
+                          })
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={4}>
+                    <TextField
+                      label="Timeline"
+                      name="duration"
+                      type="number"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                      value={serviceData.duration}
+                      onChange={(e) =>
+                        setServiceData({
+                          ...serviceData,
+                          duration: e.target.value,
+                        })
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField
+                      label="Timeline Type"
+                      name="durationType"
+                      select
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                      value={serviceData.durationType || "day"}
+                      onChange={(e) =>
+                        setServiceData({
+                          ...serviceData,
+                          durationType: e.target.value,
+                        })
+                      }
+                    >
+                      <MenuItem value="day">Day</MenuItem>
+                      <MenuItem value="week">Week</MenuItem>
+                      <MenuItem value="month">Month</MenuItem>
+                    </TextField>
+                  </Grid>
+                </Grid>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={closeModal}
+                color="secondary"
                 variant="outlined"
-                fullWidth
-                required
-                size="small"
-                value={serviceData.servicePrice}
-                onChange={(e) =>
-                  setServiceData({
-                    ...serviceData,
-                    servicePrice: e.target.value,
-                  })
+                size="large"
+              >
+                Cancel
+              </Button>
+
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                size="large"
+                disabled={loading}
+                startIcon={
+                  loading && <CircularProgress size={20} color="inherit" />
                 }
-              />
-            </Grid>
-          </Grid>
-
-           <Grid item xs={4}>
-              <TextField
-                label="Timeline"
-                name="duration"
-                type="number"
-                variant="outlined"
-                fullWidth
-                required
-                size="small"
-                value={serviceData.duration}
-                onChange={(e) =>
-                  setServiceData({
-                    ...serviceData,
-                    duration: e.target.value,
-                  })
-                }
-              />
-            </Grid>
-            <Grid item xs={4}>
-           <TextField
-  label="Timeline Type"
-  name="durationType"
-  select
-  variant="outlined"
-  fullWidth
-  required
-  size="small"
-  value={serviceData.durationType || 'day'}
-  onChange={(e) =>
-    setServiceData({
-      ...serviceData,
-      durationType: e.target.value,
-    })
-  }
->
-  <MenuItem value="day">Day</MenuItem>
-  <MenuItem value="week">Week</MenuItem>
-  <MenuItem value="month">Month</MenuItem>
-</TextField>
-            </Grid>
-
-
-        </Grid>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={closeModal}
-              color="secondary"
-              variant="outlined"
-              size="large"
-            >
-              Cancel
-            </Button>
-
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit" // Changed from onClick to type="submit" for better form handling
-              size="large"
-              disabled={loading} // Disable the button when loading is true
-              startIcon={
-                loading && <CircularProgress size={20} color="inherit" />
-              } // Optional: Add spinner before text
-            >
-              {
-                profileData?.firstName ? "Edit" : "Submit"
-              }
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+              >
+                {loading ? "Submitting..." : "Submit"}
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
+      </Box>
     </Box>
   );
 }
