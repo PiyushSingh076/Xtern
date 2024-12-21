@@ -1,6 +1,5 @@
 // components/Profile/SingleMentor.js
 
-// Imports
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -15,19 +14,13 @@ import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { TimeClock } from "@mui/x-date-pickers/TimeClock";
 import useRegisterUser from "../../../hooks/Stream/client";
 import { FaClock } from "react-icons/fa";
-import {
-  MdEdit,
-  MdChat,
-  MdPhone,
-  MdCalendarToday,
-  MdClose,
-} from "react-icons/md";
+import { MdEdit, MdChat, MdCalendarToday, MdClose } from "react-icons/md";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
 import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
+import useScheduledCallsForUser from "../../../hooks/Profile/useScheduledCallsForUser";
 import toast from "react-hot-toast";
-
-// Import React-Bootstrap Components
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import {
   Modal,
   Button,
@@ -39,44 +32,48 @@ import {
   Image,
 } from "react-bootstrap";
 
-// Component definition
+import ScheduledCallsModal from "./ScheduledCallsModal";
+import { Box, Tooltip } from "@mui/material";
+
 const SingleMentor = () => {
-  // State declarations
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [interviewDate, setInterviewDate] = useState(dayjs()); // Default to today
-  const [interviewTime, setInterviewTime] = useState(dayjs()); // Default to now
+  const [interviewDate, setInterviewDate] = useState(dayjs());
+  const [interviewTime, setInterviewTime] = useState(dayjs());
   const [description, setDescription] = useState("");
   const [interviewScheduled, setInterviewScheduled] = useState(false);
   const [editable, setEditable] = useState(false);
-  const navigate = useNavigate();
+  const [callsModalOpen, setCallsModalOpen] = useState(false);
 
+  const navigate = useNavigate();
   const { uid } = useParams();
+
   const {
     userData: profileData,
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(uid);
-  console.log("profileData", profileData, profileError);
 
   const {
     error: usersError,
     loading: usersLoading,
     users,
   } = useFetchUsersByType("Developer");
-  console.log(users, "Developers1");
-
   const { userData: currentUser } = useFetchUserData();
-
   const {
     signIn,
     createEvent,
+    deleteEvent,
     loading: scheduleLoading,
     isInitialized,
   } = useGoogleCalendar();
+  const {
+    calls,
+    loading: callsLoading,
+    error: callsError,
+  } = useScheduledCallsForUser(currentUser?.uid);
 
-  // Redirect to user detail if profile type is missing
   useEffect(() => {
     if (
       !profileLoading &&
@@ -86,7 +83,6 @@ const SingleMentor = () => {
     }
   }, [profileLoading, profileData, navigate]);
 
-  // Set editable state based on current user
   useEffect(() => {
     if (currentUser && currentUser.uid === uid) {
       setEditable(true);
@@ -101,8 +97,6 @@ const SingleMentor = () => {
     profileError
   );
 
-  console.log("Registration Status:", registrationStatus);
-
   const badgeMapping = {
     Developer: ["Frontend", "Backend", "Full Stack", "Mobile Apps"],
     Designer: ["UI/UX", "Graphics", "Web Design", "Animation"],
@@ -115,11 +109,10 @@ const SingleMentor = () => {
     Intern: ["Learning", "Assisting", "Research", "Shadowing"],
   };
 
-  // Rendering badges based on profession
   const professionBadges = badgeMapping[profileData?.type] || [];
 
   const sanitizeProfileData = (data) => {
-    return JSON.parse(JSON.stringify(data)); // Removes non-serializable fields
+    return JSON.parse(JSON.stringify(data));
   };
 
   const handleEdit = () => {
@@ -132,9 +125,6 @@ const SingleMentor = () => {
   };
 
   const internInfo = useSelector((state) => state.internInfo);
-  console.log(internInfo);
-
-  // Schedule interview functions
 
   const handleDateChange = (date) => {
     setInterviewDate(date);
@@ -148,7 +138,6 @@ const SingleMentor = () => {
 
   const handleDescriptionChange = (e) => {
     setDescription(e.target.value);
-    // Removed setCurrentStep(4) to prevent unintended navigation
   };
 
   const handleScheduleCall = async () => {
@@ -160,7 +149,7 @@ const SingleMentor = () => {
         return;
       }
 
-      await signIn(); // Authenticate user with Google
+      await signIn();
 
       const startDateTime = interviewDate
         .hour(interviewTime.hour())
@@ -173,25 +162,24 @@ const SingleMentor = () => {
         title: "XTERN Mentorship Call",
         description: `
         📞 XTERN Mentorship Call
-        
+
         👤 Host: ${currentUser?.firstName} ${currentUser?.lastName} (${
           currentUser?.email
-        })  
+        })
         👥 Recipient: ${profileData?.firstName} ${profileData?.lastName} (${
           profileData?.email
-        })  
-        
-        📅 Date: ${interviewDate.format("D MMM YYYY")}  
-        ⏰ Time: ${interviewTime.format("h:mm A")}  
-        ⏳ Duration: 30 minutes  
-        📝 Description: ${description || "N/A"}  
-        
-        💬 Looking forward to our mentorship session!  
-        
-        Best Regards,  
-        ✨ XTERN Team  
-        `,
+        })
 
+        📅 Date: ${interviewDate.format("D MMM YYYY")}
+        ⏰ Time: ${interviewTime.format("h:mm A")}
+        ⏳ Duration: 30 minutes
+        📝 Description: ${description || "N/A"}
+
+        💬 Looking forward to our mentorship session!
+
+        Best Regards,
+        ✨ XTERN Team
+        `,
         startDateTime,
         endDateTime,
         attendees: [
@@ -202,22 +190,18 @@ const SingleMentor = () => {
         hostUserId: currentUser?.uid,
         recipientUserId: profileData?.uid,
         callType: "video",
-        location: "Online", // Assuming it's a video call
+        location: "Online",
       };
 
       const response = await createEvent(eventData);
 
       if (response.success) {
-        // Reset the stepper form state
         setCurrentStep(1);
-        setInterviewDate(dayjs()); // Reset to today
-        setInterviewTime(dayjs()); // Reset to current time
+        setInterviewDate(dayjs());
+        setInterviewTime(dayjs());
         setDescription("");
-
-        // Close the modal
         setInterviewScheduled(false);
 
-        // Open the event link in a new tab
         window.open(response.eventLink, "_blank");
         toast.success("Call scheduled and event opened in a new tab.");
       } else {
@@ -237,11 +221,9 @@ const SingleMentor = () => {
       serviceDurationType: item.serviceDurationType,
       servicePrice: item.servicePrice,
     };
-
     navigate("/project", { state: { item: serializableItem } });
   };
 
-  // Event handlers
   const toggleBookmark = () => {
     setIsBookmarked(!isBookmarked);
   };
@@ -251,7 +233,31 @@ const SingleMentor = () => {
   };
 
   const handleBackClick = () => {
-    navigate(-1); // This will navigate to the previous page in the history stack
+    navigate(-1);
+  };
+
+  const openScheduledCallsModal = () => {
+    setCallsModalOpen(true);
+  };
+
+  const closeScheduledCallsModal = () => {
+    setCallsModalOpen(false);
+  };
+
+  /**
+   * Handle deletion of a scheduled call
+   * @param {string} eventId - Google Calendar Event ID
+   * @param {string} callDocId - Firestore Document ID
+   */
+  const handleDeleteEvent = async (eventId, callDocId) => {
+    try {
+      await deleteEvent(eventId, callDocId);
+      // Optionally, remove the deleted call from the local state
+      // This depends on how you manage your state (e.g., using hooks)
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      toast.error("An error occurred while deleting the event.");
+    }
   };
 
   return (
@@ -260,7 +266,6 @@ const SingleMentor = () => {
       <section id="profile-details-section">
         <div className="profile-details">
           <div className="profile-details-wrap">
-            {/* Profile image and basic info */}
             <div className="profile-details-first-wrap">
               {editable && (
                 <button onClick={handleEdit} className="edit-btn">
@@ -269,7 +274,6 @@ const SingleMentor = () => {
               )}
 
               <div className="profile-img-info-container">
-                {/* Profile Image Section */}
                 <div className="mentor-img-sec">
                   {profileLoading ? (
                     <Skeleton
@@ -284,14 +288,12 @@ const SingleMentor = () => {
                       alt={`${profileData?.firstName} ${profileData?.lastName}`}
                       width={150}
                       height={150}
-                      onError={(e) => (e.target.src = "/default-profile.png")} // Fallback image
+                      onError={(e) => (e.target.src = "/default-profile.png")}
                     />
                   )}
                 </div>
 
-                {/* Profile Details Section */}
                 <div className="profile-details-details">
-                  {/* Name */}
                   {profileLoading ? (
                     <Skeleton
                       variant="text"
@@ -320,7 +322,6 @@ const SingleMentor = () => {
                     </span>
                   )}
 
-                  {/* Experience */}
                   {profileLoading ? (
                     <Skeleton
                       variant="text"
@@ -331,7 +332,6 @@ const SingleMentor = () => {
                     <span>Year of Experience: {profileData?.experience}</span>
                   )}
 
-                  {/* Profile Type */}
                   {profileLoading ? (
                     <Skeleton
                       variant="text"
@@ -345,7 +345,6 @@ const SingleMentor = () => {
               </div>
             </div>
 
-            {/* Skills section */}
             {profileLoading ? (
               <Skeleton
                 variant="rectangle"
@@ -360,10 +359,8 @@ const SingleMentor = () => {
               <div className="skills-section">
                 <div className="skills-header">Skills</div>
                 {profileData?.skillSet?.map((item) => {
-                  // Convert rating (1 to 5) into percentage
                   const ratingPercentage =
                     (parseInt(item.skillRating) / 5) * 100;
-
                   return (
                     <div className="skill-bar-card" key={item.skill}>
                       <span>{item.skill}</span>
@@ -380,7 +377,7 @@ const SingleMentor = () => {
                           style={{
                             marginBottom: "5px",
                             fontSize: "12px",
-                            color: "#007bff", // Matching blue theme
+                            color: "#007bff",
                           }}
                         >
                           {ratingPercentage}%
@@ -390,7 +387,7 @@ const SingleMentor = () => {
                             className="skill-bar-fill"
                             style={{
                               width: `${ratingPercentage}%`,
-                              backgroundColor: "#007bff", // Matching blue theme
+                              backgroundColor: "#007bff",
                               height: "5px",
                             }}
                           />
@@ -449,7 +446,7 @@ const SingleMentor = () => {
                   <button
                     onClick={() => setInterviewScheduled(true)}
                     className="chat-btn"
-                    disabled={!isInitialized} // Disable if not initialized
+                    disabled={!isInitialized}
                   >
                     <MdCalendarToday /> Meet
                   </button>
@@ -465,6 +462,33 @@ const SingleMentor = () => {
                   </span>
                 )}
               </div>
+
+              {/* Modified "View Previous Calls" button as a badge-like style */}
+              <Box sx={{ marginTop: "10px", marginLeft: "3px" }}>
+                <Tooltip title="View Previous Calls" arrow>
+                  <Button
+                    onClick={openScheduledCallsModal}
+                    variant="contained"
+                    startIcon={<AccessTimeIcon />}
+                    sx={{
+                      backgroundColor: "#cce4ff",
+                      color: "#004080",
+                      border: "1px solid #004080",
+                      borderRadius: "20px",
+                      padding: "2px 12px", // Increased horizontal padding for better spacing with the icon
+                      cursor: "pointer",
+                      fontSize: "0.9rem",
+                      fontWeight: "bold",
+                      textTransform: "none", // Prevents uppercase transformation
+                      "&:hover": {
+                        backgroundColor: "#b3d7ff", // Slightly darker on hover
+                      },
+                    }}
+                  >
+                    Calls
+                  </Button>
+                </Tooltip>
+              </Box>
             </div>
           )
         )}
@@ -738,10 +762,10 @@ const SingleMentor = () => {
           setDescription("");
         }}
         centered
-        size="lg" // Increase modal width
-        backdrop="static" // Prevent closing by clicking outside
-        keyboard={false} // Prevent closing with ESC key
-        className="custom-modal" // Custom class for additional styling
+        size="lg"
+        backdrop="static"
+        keyboard={false}
+        className="custom-modal"
       >
         <Modal.Header className="bg-primary text-white d-flex justify-content-between align-items-center">
           <Modal.Title>Schedule a Call</Modal.Title>
@@ -767,7 +791,7 @@ const SingleMentor = () => {
                   now={(currentStep / 4) * 100}
                   label={`Step ${currentStep} of 4`}
                   className="mb-4"
-                  variant="info" // Blue variant for progress bar
+                  variant="info"
                 />
               </Col>
             </Row>
@@ -945,6 +969,16 @@ const SingleMentor = () => {
           </Container>
         </Modal.Footer>
       </Modal>
+
+      {/* Scheduled Calls Modal */}
+      <ScheduledCallsModal
+        open={callsModalOpen}
+        onClose={closeScheduledCallsModal}
+        loading={callsLoading}
+        calls={calls}
+        error={callsError}
+        onDeleteEvent={handleDeleteEvent}
+      />
     </div>
   );
 };
