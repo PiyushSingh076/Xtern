@@ -1,5 +1,8 @@
 import React from 'react'
 import './Homescreen.css'
+// import image1 from '../../../assets/images/xtern-images/Rectangle-3392.webp'
+// import image2 from '../../../assets/images/xtern-images/Rectangle-3392-1.webp'
+
 
 export default function ImageBtn() {
   return (

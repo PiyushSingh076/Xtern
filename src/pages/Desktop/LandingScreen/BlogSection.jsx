@@ -1,6 +1,8 @@
 import React from 'react'
 import './Homescreen.css'
 import { Link } from 'react-router-dom'
+// import images from '../../../assets/images/xtern-images/Rectangle-3392.webp'
+
 
 export default function BlogSection() {
   return (

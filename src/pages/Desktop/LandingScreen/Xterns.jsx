@@ -1,5 +1,7 @@
 import React from 'react'
 import './Homescreen.css'
+// import rectangle from '../../../assets/images/xtern-images/Rectangle-3586-min.png'
+// import mask from '../../../assets/images/xtern-images/Mask-group-1-min-1.png'
 
 export default function Xterns() {
     const quality = [

@@ -30,7 +30,7 @@ const Card = ({ data }) => {
       </span>
 
       <div className="card-footer">
-        <button onClick={() => alert(`Calling ${data.phone_number}`)}>
+        <button onClick={() => navigate(`/videocall?firstName=${encodeURIComponent(data.firstName)}&uid=${encodeURIComponent(data.uid)}`)}>
           Call
         </button>
         <button onClick={handleChatClick}>

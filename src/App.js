@@ -29,6 +29,9 @@ import DesktopStepperForm from "./pages/Desktop/StepperForm/index.jsx";
 // chat
 import Chat from "./pages/Desktop/Chat/Chat.jsx";
 import MyChat from "./pages/Desktop/MyChats/Mychats.jsx";
+// video call
+import VideoCall from "./pages/Desktop/VideoCall/VideoCall.jsx";
+import MyVideoCall from "./pages/Desktop/MyVideoCall/MyVideoCall.jsx";
 
 // Mobile View
 import UserType from "./pages/UserType.jsx";
@@ -107,6 +110,7 @@ function App() {
 
   const selectedRole = useSelector((state) => state.role.selectedRole);
 
+  const isVideoCallRoute = location.pathname === ROUTES.VIDEOCALL;
   // console.log("selectedRole:", selectedRole);
 
   const [isMobileView, setIsMobileView] = useState(false);
@@ -141,10 +145,10 @@ function App() {
 
   return (
     <div className="App">
-      {!isMobileView && <Header />}
-      {isMobileView && <MobHeader />}
-      {isMobileView && <div style={{ height: "50px" }}></div>}
-      {!isMobileView && <div style={{ height: "90px" }}></div>}
+      {!isMobileView && !isVideoCallRoute && <Header />}
+      {isMobileView && !isVideoCallRoute && <MobHeader />}
+      {isMobileView && !isVideoCallRoute && <div style={{ height: "50px" }}></div>}
+      {!isMobileView && !isVideoCallRoute && <div style={{ height: "90px" }}></div>}
       <Toaster />
 
       <Routes>
@@ -162,6 +166,22 @@ function App() {
           element={
             <ProtectedRoute>
               <MyChat />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.VIDEOCALL}
+          element={
+            <ProtectedRoute>
+              <VideoCall />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.MYVIDEOCALL}
+          element={
+            <ProtectedRoute>
+              <MyVideoCall />
             </ProtectedRoute>
           }
         />

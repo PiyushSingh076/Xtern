@@ -62,6 +62,10 @@ export const ROUTES = {
   // PROFESSIONAL_PROFILE: "/professionalProfile/:profession",
   CARD_DESIGN: "/cardDesign",
   STEPPER_FORM: '/userdetail',
+  //chats
   CHAT: "/chat",
-  MYCHAT: '/mychat'
+  MYCHAT: '/mychat',
+  //video call
+  VIDEOCALL: '/videocall',
+  MYVIDEOCALL: '/myvideocall'
 };

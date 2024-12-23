@@ -115,6 +115,13 @@ export default function Header() {
             Support
           </div>
           <div
+            className="dropdown-item"
+            onClick={() => navigate('/myvideocall')}
+          >
+            <AiOutlineQuestionCircle className="menu-icon" />
+            My Schedule
+          </div>
+          <div
             className="dropdown-item logout"
             onClick={() => {
               handleLogout();
