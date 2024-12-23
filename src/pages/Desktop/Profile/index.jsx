@@ -411,86 +411,86 @@ const SingleMentor = () => {
             sx={{ width: "100%", height: "100px", borderRadius: "20px" }}
           />
         ) : (
-          profileData?.type !== "Intern" && (
-            <div
-              className="consulting-container"
-              style={{ marginBottom: "20px" }}
-            >
-              <div className="consulting-btn-container">
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  {profileData?.consultingPrice && (
-                    <span className="service-name">Consulting Now</span>
-                  )}
-                  <div className="issue-badge">
-                    {professionBadges?.map((badge, index) => (
-                      <div className="badge" key={index}>
-                        {badge}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="consulting-btn">
-                  <button
-                    onClick={() => navigate("/mychat")}
-                    className="chat-btn"
-                  >
-                    <MdChat /> Chat
-                  </button>
-                  <button
-                    onClick={() => setInterviewScheduled(true)}
-                    className="chat-btn"
-                    disabled={!isInitialized}
-                  >
-                    <MdCalendarToday /> Meet
-                  </button>
-                </div>
-                {!isInitialized && (
-                  <span className="text-muted">
-                    Initializing Google Calendar...
-                  </span>
-                )}
+          // profileData?.type !== "Intern" && (
+          <div
+            className="consulting-container"
+            style={{ marginBottom: "20px" }}
+          >
+            <div className="consulting-btn-container">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
                 {profileData?.consultingPrice && (
-                  <span className="consultant-price">
-                    ₹{profileData.consultingPrice}/minute
-                  </span>
+                  <span className="service-name">Consulting Now</span>
                 )}
+                <div className="issue-badge">
+                  {profileData?.skillSet?.map((skill, index) => (
+                    <div className="badge" key={index}>
+                      {skill.skill}
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Modified "View Previous Calls" button as a badge-like style */}
-              <Box sx={{ marginTop: "10px", marginLeft: "3px" }}>
-                <Tooltip title="View Previous Calls" arrow>
-                  <Button
-                    onClick={openScheduledCallsModal}
-                    variant="contained"
-                    startIcon={<AccessTimeIcon />}
-                    sx={{
-                      backgroundColor: "#cce4ff",
-                      color: "#004080",
-                      border: "1px solid #004080",
-                      borderRadius: "20px",
-                      padding: "2px 12px", // Increased horizontal padding for better spacing with the icon
-                      cursor: "pointer",
-                      fontSize: "0.9rem",
-                      fontWeight: "bold",
-                      textTransform: "none", // Prevents uppercase transformation
-                      "&:hover": {
-                        backgroundColor: "#b3d7ff", // Slightly darker on hover
-                      },
-                    }}
-                  >
-                    Calls
-                  </Button>
-                </Tooltip>
-              </Box>
+              <div className="consulting-btn">
+                <button
+                  onClick={() => navigate("/mychat")}
+                  className="chat-btn"
+                >
+                  <MdChat /> Chat
+                </button>
+                <button
+                  onClick={() => setInterviewScheduled(true)}
+                  className="chat-btn"
+                  disabled={!isInitialized}
+                >
+                  <MdCalendarToday /> Meet
+                </button>
+              </div>
+              {!isInitialized && (
+                <span className="text-muted">
+                  Initializing Google Calendar...
+                </span>
+              )}
+              {profileData?.consultingPrice && (
+                <span className="consultant-price">
+                  ₹{profileData.consultingPrice}/minute
+                </span>
+              )}
             </div>
-          )
+
+            {/* Modified "View Previous Calls" button as a badge-like style */}
+            <Box sx={{ marginTop: "10px", marginLeft: "3px" }}>
+              <Tooltip title="View Previous Calls" arrow>
+                <Button
+                  onClick={openScheduledCallsModal}
+                  variant="contained"
+                  startIcon={<AccessTimeIcon />}
+                  sx={{
+                    backgroundColor: "#cce4ff",
+                    color: "#004080",
+                    border: "1px solid #004080",
+                    borderRadius: "20px",
+                    padding: "2px 12px", // Increased horizontal padding for better spacing with the icon
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                    fontWeight: "bold",
+                    textTransform: "none", // Prevents uppercase transformation
+                    "&:hover": {
+                      backgroundColor: "#b3d7ff", // Slightly darker on hover
+                    },
+                  }}
+                >
+                  Calls
+                </Button>
+              </Tooltip>
+            </Box>
+          </div>
+          // )
         )}
 
         {profileLoading ? (
@@ -517,11 +517,18 @@ const SingleMentor = () => {
                   <span className="service-name">{item.serviceName}</span>
                   <p>{item.serviceDescription.slice(0, 70) + "..."}</p>
                   <div className="price-duration-container">
-                    <span className="service-duration">
-                      <FaClock /> {item?.serviceDuration || "N/A"}{" "}
-                      {item?.serviceDurationType || "N/A"}
-                    </span>
-                    <span className="service-price">₹{item.servicePrice}</span>
+                    {item?.serviceDuration && (
+                      <span className="service-duration">
+                        <FaClock /> {item?.serviceDuration || "N/A"}{" "}
+                        {item?.serviceDurationType || "N/A"}
+                      </span>
+                    )}
+
+                    {item.servicePrice && (
+                      <span className="service-price">
+                        ₹{item.servicePrice}
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}

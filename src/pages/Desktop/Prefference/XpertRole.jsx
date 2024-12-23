@@ -1,5 +1,3 @@
-// src/Components/Admin/Profile/Prefference/XpertRole.jsx
-
 import React from "react";
 import {
   FaLaptopCode,
@@ -13,6 +11,7 @@ import {
   FaUserGraduate,
   FaSpa,
   FaStar,
+  FaBookOpen,
 } from "react-icons/fa";
 import "./Prefference.css";
 import { useDispatch } from "react-redux";
@@ -22,8 +21,9 @@ export default function XpertRole({ next }) {
   const dispatch = useDispatch();
 
   const professionals = [
-    { id: 9, name: "Yoga", icon: <FaSpa /> },
+    { id: 12, name: "Phonics English", icon: <FaBookOpen /> }, // New entry
     { id: 1, name: "Developer", icon: <FaLaptopCode /> },
+    { id: 9, name: "Yoga", icon: <FaSpa /> },
     { id: 2, name: "Designer", icon: <FaBrush /> },
     { id: 3, name: "Cloud DevOps", icon: <FaCloud /> },
     { id: 4, name: "Content Creator", icon: <FaPen /> },
