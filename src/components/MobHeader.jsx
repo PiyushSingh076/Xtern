@@ -91,6 +91,13 @@ export default function MobHeader() {
               Support
             </div>
             <div 
+              className="dropdown-item" 
+              onClick={() => handleMenuOptionClick('/support')}
+            >
+              <AiOutlineQuestionCircle className="menu-icon" />
+              My Schedule
+            </div>
+            <div 
               className="dropdown-item logout" 
               onClick={()=>{ handleLogout(); setProfileMenu(false) }}
             >
