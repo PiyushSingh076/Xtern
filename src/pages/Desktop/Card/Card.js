@@ -1,3 +1,5 @@
+// src/Components/Admin/Profile/Card.jsx
+
 import React from "react";
 import "./Card.css"; // Import related styles
 import { useNavigate } from "react-router-dom";
@@ -22,7 +24,13 @@ const Card = ({ data }) => {
 
   const handleCallClick = (event) => {
     event.stopPropagation(); // Prevent card click from triggering
-    alert(`Calling ${data.phone_number}`);
+    navigate(
+      `/videocall?firstName=${encodeURIComponent(
+        data.firstName
+      )}&uid=${encodeURIComponent(data.uid)}`
+    );
+    // If you prefer using an alert instead of navigation, uncomment the line below:
+    // alert(`Calling ${data.phone_number}`);
   };
 
   const handleCardClick = () => {
@@ -64,7 +72,11 @@ const Card = ({ data }) => {
         }}
       >
         <img
-          src={photo_url}
+          src={
+            photo_url
+              ? photo_url
+              : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
+          }
           alt={`${firstName} ${lastName}`}
           style={{
             width: "100%",
@@ -108,15 +120,30 @@ const Card = ({ data }) => {
       )}
 
       {/* Location */}
-      <div className="location-details" style={{ marginTop: "10px" }}>
-        {city && <span>City: {city}</span>}
-        {state && <span>State: {state}</span>}
+      <div
+        className="location-details"
+        style={{ marginTop: "10px", color: "#777" }}
+      >
+        {state && <span>📍 {state}</span>}
+
+        {city && <span style={{ marginRight: "10px" }}>, {city}</span>}
       </div>
 
       {/* Action Buttons */}
       <div className="card-footer" style={{ marginTop: "15px" }}>
-        <button onClick={handleCallClick}>Call</button>
+        {/* Call Button */}
+        <button
+          onClick={(event) => {
+            handleCallClick(event);
+          }}
+        >
+          Call
+        </button>
+
+        {/* Chat Button */}
         <button onClick={handleChatClick}>Chat</button>
+
+        {/* Details Button */}
         <button
           onClick={(event) => {
             event.stopPropagation(); // Prevent card click from triggering
