@@ -411,6 +411,13 @@ export default function StepperForm() {
       servicePrice: "",
       duration: "",
       durationType: "",
+      // Add intern-specific fields if Xpert is intern
+      ...(Xpert.toLowerCase() === "intern" && {
+        startDate: "",
+        endDate: "",
+        availability: "full time",
+        hoursPerDay: "",
+      }),
     };
     setServiceData(serviceData);
     openModal("Service");
@@ -1303,6 +1310,45 @@ export default function StepperForm() {
 
               <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
                 <CardHeader
+                  title={
+                    Xpert.toLowerCase() === "intern"
+                      ? "Recommendations"
+                      : "Services Recommendations"
+                  }
+                  titleTypographyProps={{ variant: "h6" }}
+                  sx={{ padding: 2 }}
+                />
+                <Divider />
+                <CardContent>
+                  <Grid container spacing={2}>
+                    {recommendations.map((rec, index) => (
+                      <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Card
+                          sx={{
+                            boxShadow: 1,
+                            cursor: "pointer",
+                            ":hover": { boxShadow: 3 },
+                            padding: 2,
+                            height: "100%",
+                          }}
+                          onClick={() => handleRecommendationClick(rec)}
+                        >
+                          <Typography variant="subtitle1" gutterBottom>
+                            <strong>{rec.title}</strong>
+                          </Typography>
+                          {/* Uncomment the description if needed */}
+                          {/* <Typography variant="body2" color="textSecondary">
+                            {rec.description}
+                          </Typography> */}
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </CardContent>
+              </Card>
+
+              <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+                <CardHeader
                   title="Services"
                   titleTypographyProps={{ variant: "h6" }}
                   action={
@@ -1330,56 +1376,63 @@ export default function StepperForm() {
                       >
                         <FiTrash color="red" size={16} />
                       </IconButton>
+
                       <Typography variant="subtitle1">
                         <strong>{item.serviceName}</strong>
                       </Typography>
+
                       <Typography variant="body2" color="textSecondary">
                         {item.serviceDescription}
                       </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Price: ₹{item.servicePrice}
-                      </Typography>
-                      {item.duration && item.durationType && (
-                        <Typography variant="body2" color="textSecondary">
-                          Timeline: {item.duration} {item.durationType}
-                        </Typography>
+
+                      {Xpert.toLowerCase() === "intern" ? (
+                        <>
+                          <Typography variant="body2" color="textSecondary">
+                            Internship Start Date:{" "}
+                            {item.startDate
+                              ? new Date(item.startDate).toLocaleDateString(
+                                  "default",
+                                  { month: "short", year: "numeric" }
+                                )
+                              : "N/A"}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            Internship End Date:{" "}
+                            {item.endDate
+                              ? new Date(item.endDate).toLocaleDateString(
+                                  "default",
+                                  { month: "short", year: "numeric" }
+                                )
+                              : "N/A"}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            Availability:{" "}
+                            {item.availability
+                              ? item.availability.replace(/^\w/, (c) =>
+                                  c.toUpperCase()
+                                )
+                              : "N/A"}
+                          </Typography>
+                          {item.availability === "part time" && (
+                            <Typography variant="body2" color="textSecondary">
+                              Hours Per Day: {item.hoursPerDay || "N/A"}
+                            </Typography>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <Typography variant="body2" color="textSecondary">
+                            Price: ₹{item.servicePrice}
+                          </Typography>
+                          {item.duration && item.durationType && (
+                            <Typography variant="body2" color="textSecondary">
+                              Timeline: {item.duration} {item.durationType}
+                            </Typography>
+                          )}
+                        </>
                       )}
                     </Box>
                   ))}
-                </CardContent>
-              </Card>
-
-              <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
-                <CardHeader
-                  title="Services Recommendations"
-                  titleTypographyProps={{ variant: "h6" }}
-                  sx={{ padding: 2 }}
-                />
-                <Divider />
-                <CardContent>
-                  <Grid container spacing={2}>
-                    {recommendations.map((rec, index) => (
-                      <Grid item xs={12} sm={6} md={4} key={index}>
-                        <Card
-                          sx={{
-                            boxShadow: 1,
-                            cursor: "pointer",
-                            ":hover": { boxShadow: 3 },
-                            padding: 2,
-                            height: "100%",
-                          }}
-                          onClick={() => handleRecommendationClick(rec)}
-                        >
-                          <Typography variant="subtitle1" gutterBottom>
-                            <strong>{rec.title}</strong>
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {rec.description}
-                          </Typography>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
                 </CardContent>
               </Card>
 
@@ -1800,67 +1853,155 @@ export default function StepperForm() {
                       }
                     />
                   </Grid>
-                  <Grid container spacing={3} item xs={12}>
-                    <Grid item xs={4}>
-                      <TextField
-                        label="Service Price (₹)"
-                        name="servicePrice"
-                        type="number"
-                        variant="outlined"
-                        fullWidth
-                        required
-                        size="small"
-                        value={serviceData.servicePrice}
-                        onChange={(e) =>
-                          setServiceData({
-                            ...serviceData,
-                            servicePrice: e.target.value,
-                          })
-                        }
-                      />
-                    </Grid>
-                  </Grid>
 
-                  <Grid item xs={4}>
-                    <TextField
-                      label="Timeline"
-                      name="duration"
-                      type="number"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      size="small"
-                      value={serviceData.duration}
-                      onChange={(e) =>
-                        setServiceData({
-                          ...serviceData,
-                          duration: e.target.value,
-                        })
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <TextField
-                      label="Timeline Type"
-                      name="durationType"
-                      select
-                      variant="outlined"
-                      fullWidth
-                      required
-                      size="small"
-                      value={serviceData.durationType || "day"}
-                      onChange={(e) =>
-                        setServiceData({
-                          ...serviceData,
-                          durationType: e.target.value,
-                        })
-                      }
-                    >
-                      <MenuItem value="day">Day</MenuItem>
-                      <MenuItem value="week">Week</MenuItem>
-                      <MenuItem value="month">Month</MenuItem>
-                    </TextField>
-                  </Grid>
+                  {Xpert.toLowerCase() === "intern" ? (
+                    <>
+                      <Grid item xs={6}>
+                        <TextField
+                          label="Internship Start Date"
+                          name="startDate"
+                          type="date"
+                          variant="outlined"
+                          fullWidth
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          required
+                          size="small"
+                          value={serviceData.startDate || ""}
+                          onChange={(e) =>
+                            setServiceData({
+                              ...serviceData,
+                              startDate: e.target.value,
+                            })
+                          }
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <TextField
+                          label="Internship End Date"
+                          name="endDate"
+                          type="date"
+                          variant="outlined"
+                          fullWidth
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          required
+                          size="small"
+                          value={serviceData.endDate || ""}
+                          onChange={(e) =>
+                            setServiceData({
+                              ...serviceData,
+                              endDate: e.target.value,
+                            })
+                          }
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <TextField
+                          label="Availability"
+                          name="availability"
+                          select
+                          variant="outlined"
+                          fullWidth
+                          required
+                          size="small"
+                          value={serviceData.availability || "full time"}
+                          onChange={(e) =>
+                            setServiceData({
+                              ...serviceData,
+                              availability: e.target.value,
+                            })
+                          }
+                        >
+                          <MenuItem value="full time">Full Time</MenuItem>
+                          <MenuItem value="part time">Part Time</MenuItem>
+                        </TextField>
+                      </Grid>
+                      {serviceData.availability === "part time" && (
+                        <Grid item xs={6}>
+                          <TextField
+                            label="Hours Per Day"
+                            name="hoursPerDay"
+                            type="number"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            size="small"
+                            value={serviceData.hoursPerDay || ""}
+                            onChange={(e) =>
+                              setServiceData({
+                                ...serviceData,
+                                hoursPerDay: e.target.value,
+                              })
+                            }
+                          />
+                        </Grid>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Grid item xs={4}>
+                        <TextField
+                          label="Service Price (₹)"
+                          name="servicePrice"
+                          type="number"
+                          variant="outlined"
+                          fullWidth
+                          required
+                          size="small"
+                          value={serviceData.servicePrice}
+                          onChange={(e) =>
+                            setServiceData({
+                              ...serviceData,
+                              servicePrice: e.target.value,
+                            })
+                          }
+                        />
+                      </Grid>
+                      <Grid item xs={4}>
+                        <TextField
+                          label="Timeline"
+                          name="duration"
+                          type="number"
+                          variant="outlined"
+                          fullWidth
+                          required
+                          size="small"
+                          value={serviceData.duration}
+                          onChange={(e) =>
+                            setServiceData({
+                              ...serviceData,
+                              duration: e.target.value,
+                            })
+                          }
+                        />
+                      </Grid>
+                      <Grid item xs={4}>
+                        <TextField
+                          label="Timeline Type"
+                          name="durationType"
+                          select
+                          variant="outlined"
+                          fullWidth
+                          required
+                          size="small"
+                          value={serviceData.durationType || "day"}
+                          onChange={(e) =>
+                            setServiceData({
+                              ...serviceData,
+                              durationType: e.target.value,
+                            })
+                          }
+                        >
+                          <MenuItem value="day">Day</MenuItem>
+                          <MenuItem value="week">Week</MenuItem>
+                          <MenuItem value="month">Month</MenuItem>
+                        </TextField>
+                      </Grid>
+                    </>
+                  )}
                 </Grid>
               )}
             </DialogContent>

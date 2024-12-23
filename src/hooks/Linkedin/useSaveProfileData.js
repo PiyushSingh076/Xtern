@@ -121,8 +121,28 @@ const useSaveProfileData = () => {
           await updateDoc(userRef, {
             skillSet: updatedSkills,
           });
-          toast.success("Skills updated successfully!");
         }
+      }
+
+      // Save Intern Role Data
+      if (
+        data?.type?.toLowerCase() === "intern" &&
+        Array.isArray(data?.services)
+      ) {
+        const internData = data.services.map((service) => ({
+          serviceName: service?.serviceName || "",
+          serviceDescription: service?.serviceDescription || "",
+          startDate: parseDateString(service?.startDate), // Parse start date
+          endDate: parseDateString(service?.endDate), // Parse end date
+          availability: service?.availability || "full time",
+          hoursPerDay:
+            service?.availability === "part time"
+              ? service?.hoursPerDay || ""
+              : null,
+        }));
+
+        // Save Intern-specific data in the "users" collection
+        await updateDoc(userRef, { internDetails: internData });
       }
 
       // Save Education Subcollection
@@ -203,7 +223,7 @@ const useSaveProfileData = () => {
       }
 
       // Notify success and navigate
-      toast.success("Profile and services data saved successfully!");
+      toast.success("data saved successfully!");
       navigate("/homescreen");
     } catch (err) {
       setError(err.message);
