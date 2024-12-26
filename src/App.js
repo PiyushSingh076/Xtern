@@ -277,14 +277,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path={ROUTES.INTEREST_SCREEN}
           element={
             <ProtectedRoute allowedRoles={["Intern"]}>
               <SelectSkills />
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path={ROUTES.SELECT_COURSES_SCREEN}
           element={

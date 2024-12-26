@@ -451,11 +451,11 @@ const SingleMentor = () => {
                   <MdCalendarToday /> Meet
                 </button>
               </div>
-              {!isInitialized && (
+              {/* {!isInitialized && (
                 <span className="text-muted">
                   Initializing Google Calendar...
                 </span>
-              )}
+              )} */}
               {profileData?.consultingPrice && (
                 <span className="consultant-price">
                   ₹{profileData.consultingPrice}/minute
