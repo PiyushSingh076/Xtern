@@ -56,10 +56,8 @@ const useGoogleCalendar = () => {
       try {
         await authInstance.signIn();
         setIsAuthenticated(true);
-        console.log("User signed in successfully.");
       } catch (error) {
         console.error("Error during sign-in:", error);
-        toast.error("Failed to sign in to Google.");
       }
     } else {
       console.log("User is already authenticated.");
@@ -172,16 +170,14 @@ const useGoogleCalendar = () => {
         error.result.error &&
         error.result.error.message === "Resource has been deleted"
       ) {
-        toast.error("Event has already been deleted from Google Calendar.");
+        toast.error("Event has already been deleted.");
         // Optionally, delete the Firestore document since the event is already gone
         try {
           await deleteDoc(doc(db, "scheduledCalls", callDocId));
-          toast.success(
-            "Firestore record deleted as the event was already deleted."
-          );
+          toast.success(" already deleted.");
         } catch (firestoreError) {
           console.error("Error deleting Firestore document:", firestoreError);
-          toast.error("Failed to delete the Firestore record.");
+          toast.error("Failed to delete the record.");
         }
       } else if (error.code === "permission_denied") {
         // Handle Firestore permission errors
