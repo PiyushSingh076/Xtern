@@ -143,14 +143,18 @@ function App() {
     ROUTES.COURSE_ONGOING_SCREEN,
   ];
 
+  // comment
   return (
     <div className="App">
       {!isMobileView && !isVideoCallRoute && <Header />}
       {isMobileView && !isVideoCallRoute && <MobHeader />}
-      {isMobileView && !isVideoCallRoute && <div style={{ height: "50px" }}></div>}
-      {!isMobileView && !isVideoCallRoute && <div style={{ height: "90px" }}></div>}
+      {isMobileView && !isVideoCallRoute && (
+        <div style={{ height: "50px" }}></div>
+      )}
+      {!isMobileView && !isVideoCallRoute && (
+        <div style={{ height: "90px" }}></div>
+      )}
       <Toaster />
-
       <Routes>
         {/* Public Routes */}
         {/* <Route
@@ -654,5 +658,4 @@ function App() {
   );
 }
 
-            
 export default App;
