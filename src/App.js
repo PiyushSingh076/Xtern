@@ -8,7 +8,7 @@ import "./assets/css/media-query.css";
 import { ROUTES } from "./constants/routes"; // Import the route constants
 
 //  Desktop View
-
+import Entrepreneur from "./pages/Desktop/Entrepreneur/index.jsx";
 import DesktopHomeScreen from "./pages/Desktop/Homescreen/index.jsx";
 import DesktopLandingPage from "./pages/Desktop/LandingScreen/index";
 import Header from "./pages/Desktop/Header/Header";
@@ -499,6 +499,11 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path={ROUTES.ENTREPRENEUR} element={
+          <ProtectedRoute>
+            <Entrepreneur></Entrepreneur>
+          </ProtectedRoute>
+        } />
         <Route
           path={ROUTES.PROFILE_EDIT}
           element={
