@@ -47,7 +47,7 @@ const SingleMentor = () => {
 
   const navigate = useNavigate();
   const { uid } = useParams();
-    //TODO: Implement functions back
+  //TODO: Implement functions back
   //   const {
   //     userData: profileData,
   //     loading: profileLoading,
@@ -56,6 +56,17 @@ const SingleMentor = () => {
 
   const profileData = {
     type: "entrepreneur",
+    companyDetails: [
+      {
+        logo: "https://cdn-icons-png.flaticon.com/512/10655/10655913.png",
+        name: "Google",
+        description:
+          "Google is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.",
+        startDate: Date.now() / 1000,
+        endDate: "present",
+      },
+      {},
+    ],
   };
   const profileLoading = false;
   const profileError = false;
@@ -97,11 +108,11 @@ const SingleMentor = () => {
     }
   }, [currentUser, uid]);
 
-//   const registrationStatus = useRegisterUser(
-//     profileData,
-//     profileLoading,
-//     profileError
-//   );
+  //   const registrationStatus = useRegisterUser(
+  //     profileData,
+  //     profileLoading,
+  //     profileError
+  //   );
 
   const badgeMapping = {
     Developer: ["Frontend", "Backend", "Full Stack", "Mobile Apps"],
@@ -470,12 +481,9 @@ const SingleMentor = () => {
             </div>
 
             {/* Modified "View Previous Calls" button as a badge-like style */}
-            
           </div>
           // )
         )}
-
-        
 
         <div className="single-mentor-third-sec">
           <div className="fifth-decs-sec">
@@ -526,39 +534,33 @@ const SingleMentor = () => {
               )}
 
               <div className="tab-content" id="mentor-tab-content">
-                {/* Work Experience Tab */}
+                {/* Company Details tab */}
                 <div
                   className="tab-pane fade show active mt-16"
                   id="course-content"
                   role="tabpanel"
                 >
-                  {profileData?.workExperience?.map((work, index) => (
+                  {profileData?.companyDetails?.map((company, index) => (
                     <div
                       className="experience-sec"
-                      key={`${work?.role}-${index}`}
+                      key={`${company.name}-${index}`}
                     >
                       <div className="work-logo-container">
                         <img
-                          src="https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
+                          src={company.logo}
                           className="educ-logo"
                           alt="Company Logo"
                         />
                       </div>
                       <div className="experience-info">
-                        <h4>{work?.role}</h4>
+                        <h4>{company?.name}</h4>
                         <p>
-                          {work?.companyName} |{" "}
-                          {dayjs
-                            .unix(work?.startDate?.seconds)
-                            .format("D MMM YYYY")}{" "}
-                          -{" "}
-                          {work.endDate === "present" || !work.endDate
-                            ? "Present"
-                            : work.endDate.seconds
-                            ? dayjs
-                                .unix(work.endDate.seconds)
-                                .format("D MMM YYYY")
-                            : "Not Available"}
+                          {dayjs.unix(company?.startDate).format("D MMM YYYY")}{" "}
+                          -
+                          {" "}
+                          {company.endDate === "present"
+                            ? "Now"
+                            : dayjs.unix(company.endDate).format("D MMM YYYY")}
                         </p>
                         <button
                           className="desc-btn"
@@ -575,7 +577,7 @@ const SingleMentor = () => {
                           aria-labelledby={`work-collapse-${index}`}
                         >
                           <div className="card card-body">
-                            {work?.description || "No description available"}
+                            {company?.description || "No description available"}
                           </div>
                         </div>
                       </div>
