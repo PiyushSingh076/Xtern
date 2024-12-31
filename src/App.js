@@ -105,6 +105,7 @@ import { RouteRounded } from "@mui/icons-material";
 import LandingBanner from "./pages/Desktop/LandingScreen/LandingBanner.jsx";
 import LandingPage from "./pages/MobLandingScreen/LandingPage.jsx";
 import InstaPull from "./pages/Desktop/InstaPull/MainSection.js";
+import Test from "./hooks/Auth/test.js";
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -205,6 +206,7 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
               <VerifyScreen />
+              
             </ProtectedRoute>
           }
         />

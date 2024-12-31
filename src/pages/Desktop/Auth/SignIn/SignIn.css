@@ -1,10 +1,12 @@
 .des-signin-container{
-    margin-top: 100px;
+    margin-top: 5px;
     width: 30%;
     border: 1px grey solid;
-    padding: 20px;
+    padding: 10px;
     border-radius: 20px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    
+
 
 }
 
