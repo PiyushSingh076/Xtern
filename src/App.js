@@ -26,6 +26,8 @@ import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iff
 // import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
 import DesktopCard from "./pages/Desktop/Card/CarList.jsx";
 import DesktopStepperForm from "./pages/Desktop/StepperForm/index.jsx";
+import EntrepreneurDetailsForm from "./pages/Desktop/StepperForm/EntrepreneurDetailsForm.js";
+
 // chat
 import Chat from "./pages/Desktop/Chat/Chat.jsx";
 import MyChat from "./pages/Desktop/MyChats/Mychats.jsx";
@@ -267,6 +269,7 @@ function App() {
 
         <Route path={ROUTES.STEPPER_FORM} element={<DesktopStepperForm />} />
 
+<Route path={ROUTES.ENTREPRENEURS_FORM} element={<EntrepreneurDetailsForm/>} />
         <Route
           path={ROUTES.CREATE_JOB}
           element={

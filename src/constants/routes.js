@@ -63,6 +63,7 @@ export const ROUTES = {
   // PROFESSIONAL_PROFILE: "/professionalProfile/:profession",
   CARD_DESIGN: "/cardDesign",
   STEPPER_FORM: '/userdetail',
+  ENTREPRENEURS_FORM:"/entrepreneurdetails",
   //chats
   CHAT: "/chat",
   MYCHAT: '/mychat',
