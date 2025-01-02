@@ -2,10 +2,12 @@ import React from "react";
 import "./styles.css";
 import { IconButton } from "@mui/material";
 import { PencilIcon, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const JobPostings = () => {
   const jobs = [
     {
+      id: 1,
       title: "Software Engineer",
       company: "Google",
       city: "New York",
@@ -13,6 +15,7 @@ const JobPostings = () => {
       applicants: 5,
     },
     {
+        id: 2,
         title: "Software Engineer",
         company: "Google",
         city: "New York",
@@ -20,6 +23,7 @@ const JobPostings = () => {
         applicants: 5,
       },
       {
+        id: 3,
         title: "Frontend Developer",
         company: "Google",
         city: "Bengaluru",
@@ -27,6 +31,7 @@ const JobPostings = () => {
         applicants: 25,
       },
       {
+        id: 4,
         title: "Fullstack Intern",
         company: "Google",
         city: "Delhi",
@@ -34,6 +39,7 @@ const JobPostings = () => {
         applicants: 56,
       },
       {
+        id: 5,
         title: "Backend Intern",
         company: "Google",
         city: "Kolkata",
@@ -41,6 +47,7 @@ const JobPostings = () => {
         applicants: 26,
       },
       {
+        id: 6,
         title: "Fullstack Developer",
         company: "Google",
         city: "Kolkata",
@@ -63,8 +70,12 @@ const JobPostings = () => {
 };
 
 const Job = ({job}) => {
+  const navigate  =  useNavigate();
+  function handleRedirectJob() {
+    navigate(`/jobstats/${job.id}`);
+  }
   return (
-    <div className="jb-job-card">
+    <div onClick={handleRedirectJob} className="jb-job-card">
       <div className="jb-job-details">
         <div className="jb-job-logo">
           {" "}

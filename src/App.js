@@ -106,6 +106,7 @@ import LandingBanner from "./pages/Desktop/LandingScreen/LandingBanner.jsx";
 import LandingPage from "./pages/MobLandingScreen/LandingPage.jsx";
 import InstaPull from "./pages/Desktop/InstaPull/MainSection.js";
 import JobPostings from "./pages/Desktop/Job Postings/JobPostings";
+import JobStats from "./pages/Desktop/Job Stats/JobStats.jsx";
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -506,10 +507,17 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path={ROUTES.JOBSPOSTINGS} element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['entrepreneur']}>
             <JobPostings></JobPostings>
           </ProtectedRoute>
         } ></Route>
+        <Route path={ROUTES.JOBSTATS} element={
+          <ProtectedRoute>
+            <JobStats></JobStats>
+          </ProtectedRoute>
+        }>
+
+        </Route>
         <Route
           path={ROUTES.PROFILE_EDIT}
           element={
