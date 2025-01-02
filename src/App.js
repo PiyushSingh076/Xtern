@@ -105,6 +105,7 @@ import { RouteRounded } from "@mui/icons-material";
 import LandingBanner from "./pages/Desktop/LandingScreen/LandingBanner.jsx";
 import LandingPage from "./pages/MobLandingScreen/LandingPage.jsx";
 import InstaPull from "./pages/Desktop/InstaPull/MainSection.js";
+import JobPostings from "./pages/Desktop/Job Postings/JobPostings";
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -504,6 +505,11 @@ function App() {
             <Entrepreneur></Entrepreneur>
           </ProtectedRoute>
         } />
+        <Route path={ROUTES.JOBSPOSTINGS} element={
+          <ProtectedRoute>
+            <JobPostings></JobPostings>
+          </ProtectedRoute>
+        } ></Route>
         <Route
           path={ROUTES.PROFILE_EDIT}
           element={
