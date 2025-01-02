@@ -44,7 +44,6 @@ const SingleMentor = () => {
   const [interviewScheduled, setInterviewScheduled] = useState(false);
   const [editable, setEditable] = useState(false);
   const [callsModalOpen, setCallsModalOpen] = useState(false);
-
   const navigate = useNavigate();
   const { uid } = useParams();
   //TODO: Implement functions back
@@ -55,17 +54,46 @@ const SingleMentor = () => {
   //   } = useUserProfileData(uid);
 
   const profileData = {
+    photo_url: "https://static.vecteezy.com/system/resources/thumbnails/049/174/246/small_2x/a-smiling-young-indian-man-with-formal-shirts-outdoors-photo.jpg",
+    firstName: "John",
+    lastName: "Doe",
+    city: "Mumbai",
+    experience: 5,
+    state: "Maharashtra",
     type: "entrepreneur",
+    skillSet: [{
+      skill: "React",
+      skillRating: 4,
+    }],
     companyDetails: [
       {
-        logo: "https://cdn-icons-png.flaticon.com/512/10655/10655913.png",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png",
         name: "Google",
         description:
           "Google is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.",
         startDate: Date.now() / 1000,
         endDate: "present",
       },
-      {},
+    ],
+    jobDetails: [
+      {
+        role: "Fronten Intern",
+        techstack: ["React", "Redux", "HTML", "CSS"],
+        description:
+          "Frontend Intern at Google working on building web applications using React and Redux",
+        lastDate: Date.now() / 1000,
+        company: "Optacloud",
+        salary: "9lpa",
+      },
+      {
+        role: "Fullstack Developer",
+        techstack: ["React", "Redux", "Express", "Firebase"],
+        description:
+          "Fullstack Developer at Google working on building web applications using React and Redux",
+        lastDate: Date.now() / 1000,
+        company: "Google",
+        salary: "20lpa",
+      },
     ],
   };
   const profileLoading = false;
@@ -98,6 +126,10 @@ const SingleMentor = () => {
     ) {
       navigate("/userdetail");
     }
+    if (profileData && profileData.type != "entrepreneur") {
+      toast("Profile not found");
+      navigate("/homescreen");
+    }
   }, [profileLoading, profileData, navigate]);
 
   useEffect(() => {
@@ -113,20 +145,6 @@ const SingleMentor = () => {
   //     profileLoading,
   //     profileError
   //   );
-
-  const badgeMapping = {
-    Developer: ["Frontend", "Backend", "Full Stack", "Mobile Apps"],
-    Designer: ["UI/UX", "Graphics", "Web Design", "Animation"],
-    CloudDevOps: ["AWS", "Azure", "CI/CD", "Kubernetes"],
-    ContentCreator: ["Blogs", "Videos", "Podcasts", "Social Media"],
-    DigitalMarketing: ["SEO", "PPC", "Social Media", "Email Marketing"],
-    Lawyer: ["Divorce", "Property Issue", "Employment Issue", "Other"],
-    HR: ["Recruitment", "Payroll", "Training", "Employee Relations"],
-    Accountant: ["Taxation", "Auditing", "Budgeting", "Financial Reports"],
-    Intern: ["Learning", "Assisting", "Research", "Shadowing"],
-  };
-
-  const professionBadges = badgeMapping[profileData?.type] || [];
 
   const sanitizeProfileData = (data) => {
     return JSON.parse(JSON.stringify(data));
@@ -356,7 +374,7 @@ const SingleMentor = () => {
                       sx={{ fontSize: "1rem", width: "100px", height: "20px" }}
                     />
                   ) : (
-                    <p className="badge-type">{profileData?.type}</p>
+                    <p className="badge-type">Entrepreneur</p>
                   )}
                 </div>
               </div>
@@ -444,13 +462,7 @@ const SingleMentor = () => {
                 {profileData?.consultingPrice && (
                   <span className="service-name">Consulting Now</span>
                 )}
-                <div className="issue-badge">
-                  {profileData?.skillSet?.map((skill, index) => (
-                    <div className="badge" key={index}>
-                      {skill.skill}
-                    </div>
-                  ))}
-                </div>
+                
               </div>
 
               <div className="consulting-btn">
@@ -537,7 +549,7 @@ const SingleMentor = () => {
                 {/* Company Details tab */}
                 <div
                   className="tab-pane fade show active mt-16"
-                  id="course-content"
+                  id="company-content"
                   role="tabpanel"
                 >
                   {profileData?.companyDetails?.map((company, index) => (
@@ -556,8 +568,7 @@ const SingleMentor = () => {
                         <h4>{company?.name}</h4>
                         <p>
                           {dayjs.unix(company?.startDate).format("D MMM YYYY")}{" "}
-                          -
-                          {" "}
+                          -{" "}
                           {company.endDate === "present"
                             ? "Now"
                             : dayjs.unix(company.endDate).format("D MMM YYYY")}
@@ -585,78 +596,29 @@ const SingleMentor = () => {
                   ))}
                 </div>
 
-                {/* Education Tab */}
-                <div
-                  className="tab-pane fade"
-                  id="education-content"
-                  role="tabpanel"
-                >
-                  {profileData?.educationDetails?.map((educ, index) => (
-                    <div className="experience-sec" key={`educ-${index}`}>
-                      <div className="work-logo-container">
-                        <img
-                          src="https://cdn.vectorstock.com/i/1000v/14/68/education-color-icon-vector-29051468.jpg"
-                          className="educ-logo"
-                          alt="Education Logo"
-                        />
-                      </div>
-                      <div className="experience-info">
-                        <h4>{educ?.degree}</h4>
-                        <h6>Stream: {educ?.stream}</h6>
-                        <p>{educ?.college}</p>
-                        <p>
-                          {dayjs
-                            .unix(educ?.startDate?.seconds)
-                            .format("D MMM YYYY")}{" "}
-                          -{" "}
-                          {educ.endDate === "present" || !educ.endDate
-                            ? "Present"
-                            : dayjs
-                                .unix(educ?.endDate?.seconds)
-                                .format("D MMM YYYY")}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
                 {/* Projects Tab */}
-                <div
-                  className="tab-pane fade"
-                  id="projects-content"
-                  role="tabpanel"
-                >
-                  {profileData?.projectDetails?.map((project, index) => (
+                <div className="tab-pane fade" id="job-content" role="tabpanel">
+                  {profileData?.jobDetails?.map((job, index) => (
                     <div className="experience-sec" key={`project-${index}`}>
-                      <div className="work-logo-container">
-                        <img
-                          src="https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg"
-                          className="educ-logo"
-                          alt="Project Logo"
-                        />
-                      </div>
                       <div className="experience-info">
-                        <h4>{project?.projectName}</h4>
+                        <h4>{job?.role}</h4>
+                        <b>{job.company}</b>
                         <div>
-                          <b>Tech Stack:</b>{" "}
-                          {project?.techstack?.map((item, idx) => (
+                          <b>Tech Stack:</b>
+                          {job?.techstack?.map((item, idx) => (
                             <span key={idx}>
                               {item}
-                              {idx !== project.techstack.length - 1 && ", "}
+                              {idx !== job.techstack.length - 1 && ", "}
                             </span>
                           )) || "No tech stack available"}
                         </div>
-                        <div className="desc-view-btn-container">
-                          {project?.liveDemo && (
-                            <a
-                              href={project?.liveDemo}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="link-btn"
-                            >
-                              Live Link
-                            </a>
-                          )}
+                        <b>Salary: {job.salary}</b>
+                        <b>
+                          Last Date:{" "}
+                          {dayjs.unix(job?.lastDate).format("D MMM YYYY")}
+                        </b>
+
+                        <div className="desc-view-job-btn-container">
                           <button
                             className="desc-btn"
                             data-bs-toggle="collapse"
@@ -666,6 +628,7 @@ const SingleMentor = () => {
                           >
                             View Description
                           </button>
+                          <button className="desc-btn">Apply</button>
                         </div>
                         <div
                           id={`project-collapse-${index}`}
@@ -673,7 +636,7 @@ const SingleMentor = () => {
                           aria-labelledby={`project-collapse-${index}`}
                         >
                           <div className="card card-body">
-                            {project?.description || "No description available"}
+                            {job?.description || "No description available"}
                           </div>
                         </div>
                       </div>
