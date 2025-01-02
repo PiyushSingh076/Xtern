@@ -9,9 +9,10 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig"; // Ensure the path is correct
 import toast from "react-hot-toast";
+import { Email } from "@mui/icons-material";
 const CLIENT_ID =
-  "876440760888-esjd63mvff2km3duo1p9gmg0mbu681tu.apps.googleusercontent.com";
-const API_KEY = "AIzaSyD1yJGRAttSxdMuQiGmkZ4kvSAn0nSZJFc";
+  "944126676030-asroeqpq79h6amvfbi6kasd45bi6j84v.apps.googleusercontent.com";
+const API_KEY = "AIzaSyAUxFdxBmlbsrph7bfQuePPooC2s2nVGOE";
 const SCOPES = "https://www.googleapis.com/auth/calendar.events";
 
 const useGoogleCalendar = () => {
@@ -69,7 +70,7 @@ const useGoogleCalendar = () => {
    * @param {Object} eventData - Data required to create and store the event
    */
   const createEvent = async (eventData) => {
-    console.log("Attempting to create event:", eventData);
+    console.log("Attempting to create event with Google Meet:", eventData);
     setLoading(true);
 
     const event = {
@@ -84,6 +85,15 @@ const useGoogleCalendar = () => {
         timeZone: "Asia/Kolkata",
       },
       attendees: eventData.attendees,
+      conferenceData: {
+        createRequest: {
+          requestId: `meet-${Date.now()}`,
+          conferenceSolutionKey: { type: "hangoutsMeet" },
+        },
+      },
+      organizer: {
+        email: "info@xpert.works",
+      },
     };
 
     try {
@@ -95,16 +105,21 @@ const useGoogleCalendar = () => {
         throw new Error("Google Calendar API is not loaded.");
       }
 
-      console.log("Creating event with data:", event);
+      console.log("Creating event with conference data:", event);
       const response = await gapi.client.calendar.events.insert({
         calendarId: "primary",
         resource: event,
+        conferenceDataVersion: 1, // Required for creating conference data
       });
 
-      console.log("Event created successfully:", response);
+      console.log(
+        "Event with Google Meet link created successfully:",
+        response
+      );
 
       const eventId = response.result.id;
       const eventLink = response.result.htmlLink;
+      const meetLink = response.result.conferenceData?.entryPoints?.[0]?.uri;
 
       // Create DocumentReferences for the host and recipient users
       const hostUserRef = doc(db, "users", eventData.hostUserId);
@@ -115,22 +130,23 @@ const useGoogleCalendar = () => {
         callId: eventData.callId,
         hostUserRef,
         recipientUserRef,
-        hostUserId: eventData.hostUserId, // Add this field
-        recipientUserId: eventData.recipientUserId, // Add this field
+        hostUserId: eventData.hostUserId,
+        recipientUserId: eventData.recipientUserId,
         scheduledDateTime: eventData.startDateTime,
         callType: eventData.callType,
         eventId,
         eventLink,
+        meetLink, // Save the Meet link
         createdAt: serverTimestamp(),
       };
 
       await addDoc(collection(db, "scheduledCalls"), callData);
       toast.success("Call scheduled successfully!");
 
-      return { success: true, eventId, eventLink };
+      return { success: true, eventId, eventLink, meetLink };
     } catch (error) {
       toast.error("Error creating event.");
-      console.error("Error creating event:", error);
+      console.error("Error creating event with conference data:", error);
       return { success: false, error };
     } finally {
       setLoading(false);

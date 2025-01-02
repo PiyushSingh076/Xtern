@@ -1,5 +1,4 @@
 // components/Profile/SingleMentor.js
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -45,6 +44,7 @@ const SingleMentor = () => {
   const [interviewScheduled, setInterviewScheduled] = useState(false);
   const [editable, setEditable] = useState(false);
   const [callsModalOpen, setCallsModalOpen] = useState(false);
+  const [meetLink, setMeetLink] = useState('')
 
   const navigate = useNavigate();
   const { uid } = useParams();
@@ -175,6 +175,8 @@ const SingleMentor = () => {
         ⏳ Duration: 30 minutes
         📝 Description: ${description || "N/A"}
 
+        Meet Link: ${meetLink}
+
         💬 Looking forward to our mentorship session!
 
         Best Regards,
@@ -201,6 +203,10 @@ const SingleMentor = () => {
         setInterviewTime(dayjs());
         setDescription("");
         setInterviewScheduled(false);
+        console.log(response)
+        setMeetLink(response.meetLink)
+        console.log(meetLink)
+        
 
         window.open(response.eventLink, "_blank");
         toast.success("Call scheduled and event opened in a new tab.");
