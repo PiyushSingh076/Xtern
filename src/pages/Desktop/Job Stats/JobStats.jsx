@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import dayjs from "dayjs";
+import { useFetchJob } from "../../../hooks/Jobs/useFetchJob";
 
 const data = [
   {
@@ -146,6 +147,7 @@ const data = [
 
 
 const JobStats = () => {
+  const {loading} = useFetchJob(123);
   const jobDetails = {
     title: "Software Engineer",
     company: "Google",

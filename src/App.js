@@ -109,6 +109,7 @@ import LandingPage from "./pages/MobLandingScreen/LandingPage.jsx";
 import InstaPull from "./pages/Desktop/InstaPull/MainSection.js";
 import JobPostings from "./pages/Desktop/Job Postings/JobPostings";
 import JobStats from "./pages/Desktop/Job Stats/JobStats.jsx";
+import ViewJob from "./pages/Desktop/View Job/ViewJob.jsx";
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -569,6 +570,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path={ROUTES.VIEWJOB} element={<ViewJob></ViewJob>} ></Route>
         <Route
           path={ROUTES.CURRENCY}
           element={
