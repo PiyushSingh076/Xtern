@@ -111,6 +111,7 @@ export default function StepperForm() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [isLinkedInFetched, setIsLinkedInFetched] = useState(false);
+  const [expandedServiceIndex, setExpandedServiceIndex] = useState(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -119,6 +120,11 @@ export default function StepperForm() {
 
   const location = useLocation();
   const { profileData } = location.state || {};
+  const handleServiceToggle = (index) => {
+    setExpandedServiceIndex((prevIndex) =>
+      prevIndex === index ? null : index
+    );
+  };
 
   useEffect(() => {
     if (profileData) {
@@ -502,7 +508,6 @@ export default function StepperForm() {
 
       try {
         await saveProfileData(data);
-        toast.success("Profile saved successfully!");
         navigate(`/profile/${userData?.uid}`);
       } catch (error) {
         toast.error(`Error saving data: ${error.message || error}`);
@@ -542,6 +547,7 @@ export default function StepperForm() {
       setFirstName(profileData?.firstName || "");
       setLastName(profileData?.lastName || "");
       // Note: Removing setXpert from LinkedIn data to avoid overwriting the chosen role.
+      setXpert(profileData?.Type || profileData?.type || "");
       setExperience(userData?.experience || "0");
       setProfileImg(profileData?.photo_url || "");
       setIsLinkedInFetched(true);
@@ -700,6 +706,11 @@ export default function StepperForm() {
   const handleStepClick = (step) => {
     setActiveStep(step);
   };
+  useEffect(() => {
+    if (profileData) {
+      setActiveStep(1);
+    }
+  }, [profileData]);
 
   return (
     <Box sx={{ width: "100%", padding: 4, overflow: "hidden" }}>

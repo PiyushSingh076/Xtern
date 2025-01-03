@@ -1,3 +1,5 @@
+// src/Components/Admin/Prefference/XpertRole.jsx
+
 import React from "react";
 import {
   FaLaptopCode,
@@ -14,14 +16,15 @@ import {
   FaBookOpen,
 } from "react-icons/fa";
 import "./Prefference.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addXpertType } from "../../../Store/Slice/UserDetail";
 
 export default function XpertRole({ next }) {
   const dispatch = useDispatch();
+  const currentXpertType = useSelector((state) => state.user.XpertType);
 
   const professionals = [
-    { id: 12, name: "Phonics English", icon: <FaBookOpen /> }, // New entry
+    { id: 12, name: "Phonics English", icon: <FaBookOpen /> },
     { id: 1, name: "Developer", icon: <FaLaptopCode /> },
     { id: 9, name: "Yoga", icon: <FaSpa /> },
     { id: 2, name: "Designer", icon: <FaBrush /> },
@@ -48,7 +51,9 @@ export default function XpertRole({ next }) {
           <div
             onClick={() => setXpertType(prof.name)}
             key={prof.id}
-            className="xpert-role-selection-card"
+            className={`xpert-role-selection-card ${
+              currentXpertType === prof.name ? "selected" : ""
+            }`} // Add 'selected' class if it's the current type
           >
             <div className="xpert-icon-select">{prof.icon}</div>
             <span>{prof.name}</span>
