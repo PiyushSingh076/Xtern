@@ -609,6 +609,7 @@ const Stepper = () => {
               <button
                 type="submit"
                 className="btn btn-primary px-5 py-3 w-100"
+                onClick={() => navigate("/viewjob/123")}
                 disabled={loading || submitLoading}
               >
                 {submitLoading ? "Submitting..." : "Post Job"}

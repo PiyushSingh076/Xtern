@@ -19,7 +19,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import LinkedInLogo from "../../../assets/svg/linkedin.png";
 import LinkedInFetcher from "../../Teams/LinkedInFetcher";
 import { useNavigate, useLocation } from "react-router-dom";
-import {useDispatch} from "react-redux"
+import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import { setEntrepreneurDetails } from "../../../Store/Slice/EntrepreneurDetails";
@@ -34,8 +34,8 @@ export default function EntrepreneurProfileForm() {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [yearsInOperation, setYearsInOperation] = useState("");
   const [industry, setIndustry] = useState("");
-  const[state,setState]=useState("")
-  const[city,setCity]=useState("")
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
   const [skillsRequired, setSkillsRequired] = useState("");
   const [linkedinProfile, setLinkedinProfile] = useState(""); // New state for LinkedIn
   const [activeStep, setActiveStep] = useState(0);
@@ -62,15 +62,16 @@ export default function EntrepreneurProfileForm() {
       reader.readAsDataURL(file);
     }
   };
- 
+
   const { userData } = useFetchUserData();
-   const navigate = useNavigate();
-const location = useLocation();
-const dispatch=useDispatch()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
 
   const { profileData } = location.state || {};
 
-  const{saveEntrepreneurDetails,loading}=useSaveEntrepreneurDetailsbFirebaseData();
+  const { saveEntrepreneurDetails, loading } =
+    useSaveEntrepreneurDetailsbFirebaseData();
 
   const clearProfileImage = () => {
     setProfileImg(null);
@@ -81,18 +82,18 @@ const dispatch=useDispatch()
       setFirstName(data.first_name || "");
       setLastName(data.last_name || "");
       setProfileImg(data.profile_pic_url || "");
-  
+
       // Entrepreneur-specific fields
       setCompanyName(data.company_name || "");
       setYearsInOperation(data.years_in_operation || "");
-      
+
       // Set website URL if available
       if (data.website_url) {
         setWebsiteUrl(data.website_url);
       }
     }
-  }
-    
+  };
+
   const handleEntreneurSubmitInfo = async (e) => {
     e.preventDefault();
 
@@ -114,15 +115,14 @@ const dispatch=useDispatch()
         yearsInOperation,
         industry,
         websiteUrl: websiteUrl || null,
-       
-       
       };
 
-dispatch(setEntrepreneurDetails(entrepreneurData));
+      dispatch(setEntrepreneurDetails(entrepreneurData));
       try {
-        await saveEntrepreneurDetails(entrepreneurData);
+        //TODO: firebase fix
+        // await saveEntrepreneurDetails(entrepreneurData);
         toast.success("Entrepreneur profile saved successfully!");
-        navigate("/profile");
+        navigate("/entrepreneur/" + 123);
       } catch (error) {
         toast.error(`Error saving profile: ${error.message || error}`);
         console.error(error);
@@ -132,47 +132,47 @@ dispatch(setEntrepreneurDetails(entrepreneurData));
     }
   };
 
-
-
-  const handleSubmit = () => {
-    
-  };
+  const handleSubmit = () => {};
 
   return (
     <Box sx={{ width: "80wh", overflow: "auto" }}>
       <Stepper activeStep={activeStep} alternativeLabel>
         <Step key="Entrepreneur Details">
-          <StepLabel sx={{
-        "& .MuiStepLabel-label": {
-          fontSize: "1.25rem", 
-          fontWeight: "bold",
-          mb:3
-        },
-      }}>Entrepreneur Details</StepLabel>
+          <StepLabel
+            sx={{
+              "& .MuiStepLabel-label": {
+                fontSize: "1.25rem",
+                fontWeight: "bold",
+                mb: 3,
+              },
+            }}
+          >
+            Entrepreneur Details
+          </StepLabel>
         </Step>
       </Stepper>
 
       <Grid container spacing={4} justifyContent="flex-start">
-                  <Grid
-                    item
-                    xs={12}
-                    md={4}
-                    sx={{
-                      position: { md: "sticky" },
-                      top: 20,
-                    }}
-                  >
-                    
-           <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
-                  <CardContent>
-                      <Box
-                               sx={{
-                                 display: "flex",
-                                 flexDirection: "column",
-                                 alignItems: "center",
-                                 mb: 4,
-                                 position: "relative",
-                               }}>
+        <Grid
+          item
+          xs={12}
+          md={4}
+          sx={{
+            position: { md: "sticky" },
+            top: 20,
+          }}
+        >
+          <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
+            <CardContent>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  mb: 4,
+                  position: "relative",
+                }}
+              >
                 <input
                   accept="image/*"
                   style={{ display: "none" }}
@@ -208,7 +208,11 @@ dispatch(setEntrepreneurDetails(entrepreneurData));
                     <ClearIcon fontSize="small" />
                   </IconButton>
                 )}
-                <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
+                <Typography
+                  variant="caption"
+                  color="textSecondary"
+                  sx={{ mt: 1 }}
+                >
                   Click to upload
                 </Typography>
               </Box>
@@ -223,7 +227,6 @@ dispatch(setEntrepreneurDetails(entrepreneurData));
                 error={errors.firstName}
                 helperText={errors.firstName ? "First name is required" : ""}
                 sx={{ mb: 3 }}
-          
               />
               <TextField
                 label="Last Name"
@@ -236,7 +239,6 @@ dispatch(setEntrepreneurDetails(entrepreneurData));
                 error={errors.lastName}
                 helperText={errors.lastName ? "Last name is required" : ""}
                 sx={{ mb: 3 }}
-               
               />
               <TextField
                 label="state"
@@ -246,9 +248,7 @@ dispatch(setEntrepreneurDetails(entrepreneurData));
                 onChange={(e) => setState(e.target.value)}
                 required
                 size="small"
-              
                 sx={{ mb: 3 }}
-              
               />
               <TextField
                 label="City"
@@ -258,166 +258,153 @@ dispatch(setEntrepreneurDetails(entrepreneurData));
                 onChange={(e) => setCity(e.target.value)}
                 required
                 size="small"
-              
                 sx={{ mb: 3 }}
-              
               />
-              
-             
             </CardContent>
-        
           </Card>
         </Grid>
 
         {/* Second Column */}
-         <Grid
-                      sx={{
-                        marginTop: "10px",
-                      }}
-                      item
-                      xs={12}
-                      md={8}
-                    >
-                      {!profileData &&
-        (<Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "start",
-                    justifyContent: "center",
-                    gap: "10px",
-                    width: "100%",
-                    height: "50px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <div
-                    onClick={() => setIsLinkedInFetched(false)}
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: "10px",
-                      border: "1px solid #ccc",
-                      padding: "10px",
-                      borderRadius: "10px",
-                      cursor: "pointer",
-                      backgroundColor: "#f5f5f5",
-                    }}
-                  >
-                    <img
-                      src={LinkedInLogo}
-                      alt="LinkedIn Logo"
-                      style={{ width: "40px", height: "40px" }}
-                    />
-                    <span>Import LinkedIn Profile</span>
-                  </div>
-                </Box>
-              )}
-              
-              {!isLinkedInFetched && (
-                <Box sx={{ mb: 2 }}>
-                  <LinkedInFetcher
-                    close={setIsLinkedInFetched}
-                    onFetchSuccess={handleLinkedInEntrepreneurData}
-                  />
-                </Box>
-              )}
- <TextField
-                label="Company Name"
-                variant="outlined"
-                fullWidth
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                required
-                size="small"
-                
-                helperText={errors.businessName ? "Company name is required" : ""}
-                sx={{ mb: 3 }}
-              
-              />
-              <TextField
-                label="Website URL"
-                variant="outlined"
-                fullWidth
-                value={websiteUrl}
-                onChange={(e) => setWebsiteUrl(e.target.value)}
-                size="small"
-                error={errors.websiteUrl}
-                helperText={errors.websiteUrl ? "Website URL is required" : ""}
-                sx={{ mb: 3 }}
-              />
+        <Grid
+          sx={{
+            marginTop: "10px",
+          }}
+          item
+          xs={12}
+          md={8}
+        >
+          {!profileData && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "start",
+                justifyContent: "center",
+                gap: "10px",
+                width: "100%",
+                height: "50px",
+                marginBottom: "20px",
+              }}
+            >
+              <div
+                onClick={() => setIsLinkedInFetched(false)}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "10px",
+                  border: "1px solid #ccc",
+                  padding: "10px",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  backgroundColor: "#f5f5f5",
+                }}
+              >
+                <img
+                  src={LinkedInLogo}
+                  alt="LinkedIn Logo"
+                  style={{ width: "40px", height: "40px" }}
+                />
+                <span>Import LinkedIn Profile</span>
+              </div>
+            </Box>
+          )}
 
-       
-        
-              <TextField
-                label="Years in Experience"
-                variant="outlined"
-                fullWidth
-                type="number"
-                value={yearsInOperation}
-                onChange={(e) => setYearsInOperation(e.target.value)}
-                required
-                size="small"
-                error={errors.yearsInOperation}
-                helperText={errors.yearsInOperation ? "Years in operation is required" : ""}
-                sx={{ mb: 3 }}
-               
+          {!isLinkedInFetched && (
+            <Box sx={{ mb: 2 }}>
+              <LinkedInFetcher
+                close={setIsLinkedInFetched}
+                onFetchSuccess={handleLinkedInEntrepreneurData}
               />
-              <TextField
-                label="Industry"
-                variant="outlined"
-                fullWidth
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-                required
-                size="small"
-                error={errors.industry}
-                helperText={errors.industry ? "Industry is required" : ""}
-                sx={{ mb: 3 }}
-              />
-              
-              <TextField
-                label="Skills Required"
-                variant="outlined"
-                fullWidth
-                value={skillsRequired}
-                onChange={(e) => setSkillsRequired(e.target.value)}
-                required
-                size="small"
-                error={errors.skillsRequired}
-                helperText={errors.skillsRequired ? "Skills are required" : ""}
-         
-              />
-              <TextField
-                label="LinkedIn Profile"
-                variant="outlined"
-                fullWidth
-                value={linkedinProfile}
-                onChange={(e) => setLinkedinProfile(e.target.value)}
-                size="small"
-                error={errors.linkedinProfile}
-                helperText={errors.linkedinProfile ? "LinkedIn profile URL is required" : ""}
-                sx={{ mt: 3 }}
-              
-              />
-            
+            </Box>
+          )}
+          <TextField
+            label="Company Name"
+            variant="outlined"
+            fullWidth
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            required
+            size="small"
+            helperText={errors.businessName ? "Company name is required" : ""}
+            sx={{ mb: 3 }}
+          />
+          <TextField
+            label="Website URL"
+            variant="outlined"
+            fullWidth
+            value={websiteUrl}
+            onChange={(e) => setWebsiteUrl(e.target.value)}
+            size="small"
+            error={errors.websiteUrl}
+            helperText={errors.websiteUrl ? "Website URL is required" : ""}
+            sx={{ mb: 3 }}
+          />
+
+          <TextField
+            label="Years in Experience"
+            variant="outlined"
+            fullWidth
+            type="number"
+            value={yearsInOperation}
+            onChange={(e) => setYearsInOperation(e.target.value)}
+            required
+            size="small"
+            error={errors.yearsInOperation}
+            helperText={
+              errors.yearsInOperation ? "Years in operation is required" : ""
+            }
+            sx={{ mb: 3 }}
+          />
+          <TextField
+            label="Industry"
+            variant="outlined"
+            fullWidth
+            value={industry}
+            onChange={(e) => setIndustry(e.target.value)}
+            required
+            size="small"
+            error={errors.industry}
+            helperText={errors.industry ? "Industry is required" : ""}
+            sx={{ mb: 3 }}
+          />
+
+          <TextField
+            label="Skills Required"
+            variant="outlined"
+            fullWidth
+            value={skillsRequired}
+            onChange={(e) => setSkillsRequired(e.target.value)}
+            required
+            size="small"
+            error={errors.skillsRequired}
+            helperText={errors.skillsRequired ? "Skills are required" : ""}
+          />
+          <TextField
+            label="LinkedIn Profile"
+            variant="outlined"
+            fullWidth
+            value={linkedinProfile}
+            onChange={(e) => setLinkedinProfile(e.target.value)}
+            size="small"
+            error={errors.linkedinProfile}
+            helperText={
+              errors.linkedinProfile ? "LinkedIn profile URL is required" : ""
+            }
+            sx={{ mt: 3 }}
+          />
         </Grid>
-    </Grid> 
-    <Grid item={4} sx={{m:3,display:"flex",justifyContent:"flex-end"}} >
-          <Button 
-            variant="contained"
-            color="primary"
-         onClick={handleEntreneurSubmitInfo}
-            disabled={Object.values(errors).includes(true)} // Disable button if any error exists
-          >
-            Submit
-          </Button>
-          </Grid>
-         
-          
-       
-          </Box>
+      </Grid>
+      <Grid item={4} sx={{ m: 3, display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleEntreneurSubmitInfo}
+          disabled={Object.values(errors).includes(true)} // Disable button if any error exists
+        >
+          Submit
+        </Button>
+      </Grid>
+    </Box>
   );
-
-  }
+}
