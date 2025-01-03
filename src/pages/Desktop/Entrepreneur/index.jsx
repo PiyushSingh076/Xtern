@@ -1,11 +1,8 @@
-// components/Profile/SingleMentor.js
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./Profile.css";
-
-import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
+import useSaveEntrepreneurDetails from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
 import "react-circular-progressbar/dist/styles.css";
 import Skeleton from "@mui/material/Skeleton";
 import {Button as ButtonM} from "@mui/material";
@@ -162,6 +159,9 @@ const SingleMentor = () => {
   };
 
   const internInfo = useSelector((state) => state.internInfo);
+ 
+  const entrepreneurDetails = useSelector((state) => state.entrepreneur.entrepreneurDetails);
+const {saveEntrepreneurDetails }=useSaveEntrepreneurDetails()
 
   const handleDateChange = (date) => {
     setInterviewDate(date);
@@ -321,7 +321,7 @@ const SingleMentor = () => {
                     />
                   ) : (
                     <img
-                      src={profileData?.photo_url || "/default-profile.png"}
+                      src={profileData ?.photo_url || "/default-profile.png"}
                       alt={`${profileData?.firstName} ${profileData?.lastName}`}
                       width={150}
                       height={150}

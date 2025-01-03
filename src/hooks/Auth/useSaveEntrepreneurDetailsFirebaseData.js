@@ -1,41 +1,25 @@
-import { useState } from "react";
-import { doc, setDoc, addDoc, collection, Timestamp } from "firebase/firestore";
-import { db } from "../../../src/firebaseConfig"; // Adjust the path based on your project structure
-import toast from "react-hot-toast";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../../../src/firebaseConfig";
 
-const useSaveEntrepreneurDetailsbFirebaseData = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const saveData = async ({ collectionName, docId, data }) => {
-    setLoading(true);
-    setError(null);
-
+const useSaveEntrepreneurDetails = () => {
+  const saveEntrepreneurDetails = async (data) => {
     try {
-      const timestampedData = {
-        ...data,
-        createdAt: Timestamp.now(),
-      };
+      // Validate that the data exists
+      if (!data) throw new Error("No data provided");
 
-      if (docId) {
-        
-        await setDoc(doc(db, collectionName, docId), timestampedData, { merge: true });
-      } else {
-       
-        await addDoc(collection(db, collectionName), timestampedData);
-      }
+      // Validate the Firestore instance
+      if (!db) throw new Error("Firestore instance not initialized");
 
-      toast.success("Data saved successfully!");
-    } catch (err) {
-      setError(err.message);
-      toast.error(`Error saving data: ${err.message}`);
-      console.error("Firebase save error:", err);
-    } finally {
-      setLoading(false);
+      // Save data in the "entrepreneurs" collection
+      const docRef = await addDoc(collection(db, "entrepreneurs"), data);
+      return docRef.id; // Return document ID
+    } catch (error) {
+      throw new Error("Failed to save entrepreneur details: " + error.message);
     }
   };
 
-  return { saveData, loading, error };
+  return { saveEntrepreneurDetails };
 };
 
-export default useSaveEntrepreneurDetailsbFirebaseData;
+export default useSaveEntrepreneurDetails;
+

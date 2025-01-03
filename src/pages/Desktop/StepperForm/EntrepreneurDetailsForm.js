@@ -19,20 +19,23 @@ import ClearIcon from "@mui/icons-material/Clear";
 import LinkedInLogo from "../../../assets/svg/linkedin.png";
 import LinkedInFetcher from "../../Teams/LinkedInFetcher";
 import { useNavigate, useLocation } from "react-router-dom";
+import {useDispatch} from "react-redux"
 import toast from "react-hot-toast";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
+import { setEntrepreneurDetails } from "../../../Store/Slice/EntrepreneurDetails";
 import useSaveEntrepreneurDetailsbFirebaseData from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
+import useSaveEntrepreneurDetails from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
 
 export default function EntrepreneurProfileForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [profileImg, setProfileImg] = useState(null);
-  const [businessName, setBusinessName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [yearsInOperation, setYearsInOperation] = useState("");
   const [industry, setIndustry] = useState("");
-  const [numCandidates, setNumCandidates] = useState("");
-  const [jobRoles, setJobRoles] = useState("");
+  const[state,setState]=useState("")
+  const[city,setCity]=useState("")
   const [skillsRequired, setSkillsRequired] = useState("");
   const [linkedinProfile, setLinkedinProfile] = useState(""); // New state for LinkedIn
   const [activeStep, setActiveStep] = useState(0);
@@ -41,7 +44,7 @@ export default function EntrepreneurProfileForm() {
   const [errors, setErrors] = useState({
     firstName: false,
     lastName: false,
-    businessName: false,
+    companyName: false,
     websiteUrl: false,
     yearsInOperation: false,
     industry: false,
@@ -63,10 +66,11 @@ export default function EntrepreneurProfileForm() {
   const { userData } = useFetchUserData();
    const navigate = useNavigate();
 const location = useLocation();
+const dispatch=useDispatch()
 
   const { profileData } = location.state || {};
 
-  const{saveData,loading}=useSaveEntrepreneurDetailsbFirebaseData();
+  const{saveEntrepreneurDetails,loading}=useSaveEntrepreneurDetailsbFirebaseData();
 
   const clearProfileImage = () => {
     setProfileImg(null);
@@ -79,50 +83,23 @@ const location = useLocation();
       setProfileImg(data.profile_pic_url || "");
   
       // Entrepreneur-specific fields
-      setBusinessName(data.business_name || "");
+      setCompanyName(data.company_name || "");
       setYearsInOperation(data.years_in_operation || "");
       
       // Set website URL if available
       if (data.website_url) {
         setWebsiteUrl(data.website_url);
       }
-      
-      setIndustry(data.industry || "");
-      setNumCandidates(data.num_candidates || "");
-  
-      if (data.job_roles && Array.isArray(data.job_roles)) {
-        const jobRoleData = data.job_roles.map((role) => ({
-          roleName: role.title || "",
-          roleDescription: role.description || "",
-        }));
-        setJobRoles(jobRoleData);
-      }
-  
-      if (data.skills_required && Array.isArray(data.skills_required)) {
-        const skillsRequiredData = data.skills_required.map((skill) => ({
-          skill: skill.name || "",
-          skillRating: 0,
-        }));
-        setSkillsRequired(skillsRequiredData);
-      }
     }
-  };
-  
-
-  const handleBlur = (field) => {
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [field]: !eval(field), // Check if the field value is empty
-    }));
-  };
-
-  const handleSubmitInfo = async (e) => {
+  }
+    
+  const handleEntreneurSubmitInfo = async (e) => {
     e.preventDefault();
 
     const missingFields = [];
     if (!firstName) missingFields.push("First Name");
     if (!lastName) missingFields.push("Last Name");
-    if (!businessName) missingFields.push("Business Name");
+    if (!companyName) missingFields.push("Company Name");
     if (!yearsInOperation) missingFields.push("Years in Operation");
     if (!industry) missingFields.push("Industry");
 
@@ -131,17 +108,19 @@ const location = useLocation();
         profileImage: profileImg || null,
         firstName,
         lastName,
-        businessName,
+        state,
+        city,
+        companyName,
         yearsInOperation,
         industry,
         websiteUrl: websiteUrl || null,
-        numCandidates,
-        jobRoles,
-        skillsRequired,
+       
+       
       };
 
+dispatch(setEntrepreneurDetails(entrepreneurData));
       try {
-        await saveData(entrepreneurData);
+        await saveEntrepreneurDetails(entrepreneurData);
         toast.success("Entrepreneur profile saved successfully!");
         navigate("/profile");
       } catch (error) {
@@ -160,10 +139,16 @@ const location = useLocation();
   };
 
   return (
-    <Box sx={{ width: "80wh", overflow: "auto"  }}>
+    <Box sx={{ width: "80wh", overflow: "auto" }}>
       <Stepper activeStep={activeStep} alternativeLabel>
-        <Step key="Profile">
-          <StepLabel>Profile</StepLabel>
+        <Step key="Entrepreneur Details">
+          <StepLabel sx={{
+        "& .MuiStepLabel-label": {
+          fontSize: "1.25rem", 
+          fontWeight: "bold",
+          mb:3
+        },
+      }}>Entrepreneur Details</StepLabel>
         </Step>
       </Stepper>
 
@@ -238,7 +223,7 @@ const location = useLocation();
                 error={errors.firstName}
                 helperText={errors.firstName ? "First name is required" : ""}
                 sx={{ mb: 3 }}
-                onBlur={() => handleBlur("firstName")}
+          
               />
               <TextField
                 label="Last Name"
@@ -251,33 +236,34 @@ const location = useLocation();
                 error={errors.lastName}
                 helperText={errors.lastName ? "Last name is required" : ""}
                 sx={{ mb: 3 }}
-                onBlur={() => handleBlur("lastName")}
+               
               />
               <TextField
-                label="Business Name"
+                label="state"
                 variant="outlined"
                 fullWidth
-                value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
+                value={state}
+                onChange={(e) => setState(e.target.value)}
                 required
                 size="small"
-                error={errors.businessName}
-                helperText={errors.businessName ? "Business name is required" : ""}
+              
                 sx={{ mb: 3 }}
-                onBlur={() => handleBlur("businessName")}
-              />
-              <TextField
-                label="Website URL"
-                variant="outlined"
-                fullWidth
-                value={websiteUrl}
-                onChange={(e) => setWebsiteUrl(e.target.value)}
-                size="small"
-                error={errors.websiteUrl}
-                helperText={errors.websiteUrl ? "Website URL is required" : ""}
               
               />
-
+              <TextField
+                label="City"
+                variant="outlined"
+                fullWidth
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                required
+                size="small"
+              
+                sx={{ mb: 3 }}
+              
+              />
+              
+             
             </CardContent>
         
           </Card>
@@ -337,12 +323,35 @@ const location = useLocation();
                   />
                 </Box>
               )}
+ <TextField
+                label="Company Name"
+                variant="outlined"
+                fullWidth
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                required
+                size="small"
+                
+                helperText={errors.businessName ? "Company name is required" : ""}
+                sx={{ mb: 3 }}
+              
+              />
+              <TextField
+                label="Website URL"
+                variant="outlined"
+                fullWidth
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                size="small"
+                error={errors.websiteUrl}
+                helperText={errors.websiteUrl ? "Website URL is required" : ""}
+                sx={{ mb: 3 }}
+              />
 
        
-          <Card sx={{ padding: 3 }}>
-            <CardContent>
+        
               <TextField
-                label="Years in Operation"
+                label="Years in Experience"
                 variant="outlined"
                 fullWidth
                 type="number"
@@ -353,7 +362,7 @@ const location = useLocation();
                 error={errors.yearsInOperation}
                 helperText={errors.yearsInOperation ? "Years in operation is required" : ""}
                 sx={{ mb: 3 }}
-                onBlur={() => handleBlur("yearsInOperation")}
+               
               />
               <TextField
                 label="Industry"
@@ -366,35 +375,8 @@ const location = useLocation();
                 error={errors.industry}
                 helperText={errors.industry ? "Industry is required" : ""}
                 sx={{ mb: 3 }}
-                onBlur={() => handleBlur("industry")}
               />
-              <TextField
-                label="Number of Candidates"
-                variant="outlined"
-                fullWidth
-                type="number"
-                value={numCandidates}
-                onChange={(e) => setNumCandidates(e.target.value)}
-                required
-                size="small"
-                error={errors.numCandidates}
-                helperText={errors.numCandidates ? "Number of candidates is required" : ""}
-                sx={{ mb: 3 }}
-                onBlur={() => handleBlur("numCandidates")}
-              />
-              <TextField
-                label="Job Roles"
-                variant="outlined"
-                fullWidth
-                value={jobRoles}
-                onChange={(e) => setJobRoles(e.target.value)}
-                required
-                size="small"
-                error={errors.jobRoles}
-                helperText={errors.jobRoles ? "Job roles are required" : ""}
-                sx={{ mb: 3 }}
-                onBlur={() => handleBlur("jobRoles")}
-              />
+              
               <TextField
                 label="Skills Required"
                 variant="outlined"
@@ -405,7 +387,7 @@ const location = useLocation();
                 size="small"
                 error={errors.skillsRequired}
                 helperText={errors.skillsRequired ? "Skills are required" : ""}
-                onBlur={() => handleBlur("skillsRequired")}
+         
               />
               <TextField
                 label="LinkedIn Profile"
@@ -419,17 +401,14 @@ const location = useLocation();
                 sx={{ mt: 3 }}
               
               />
-            </CardContent>
-          </Card>
+            
         </Grid>
     </Grid> 
     <Grid item={4} sx={{m:3,display:"flex",justifyContent:"flex-end"}} >
           <Button 
             variant="contained"
             color="primary"
-        
-           
-            onClick={handleSubmitInfo}
+         onClick={handleEntreneurSubmitInfo}
             disabled={Object.values(errors).includes(true)} // Disable button if any error exists
           >
             Submit
@@ -440,4 +419,5 @@ const location = useLocation();
        
           </Box>
   );
-}
+
+  }

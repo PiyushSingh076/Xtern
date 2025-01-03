@@ -505,9 +505,9 @@ function App() {
           }
         />
         <Route path={ROUTES.ENTREPRENEUR} element={
-          <ProtectedRoute>
-            <Entrepreneur></Entrepreneur>
-          </ProtectedRoute>
+        
+            <Entrepreneur/>
+          
         } />
         <Route path={ROUTES.JOBSPOSTINGS} element={
           <ProtectedRoute allowedRoles={['entrepreneur']}>
