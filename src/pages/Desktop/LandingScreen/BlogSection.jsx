@@ -1,7 +1,7 @@
 import React from "react";
 import "./Homescreen.css";
 import { Link } from "react-router-dom";
-import images from "../../../assets/images/homescreen/bg-top-compressed-_2_.webp";
+import images from "../../../assets/images/homescreen/Aman3.png";
 
 export default function BlogSection() {
   return (
