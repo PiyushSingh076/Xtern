@@ -34,8 +34,9 @@ export default function EntrepreneurProfileForm() {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [yearsInOperation, setYearsInOperation] = useState("");
   const [industry, setIndustry] = useState("");
-  const[state,setState]=useState("")
-  const[city,setCity]=useState("")
+  const[state,setState]=useState("");
+  const[city,setCity]=useState("");
+  const[aboutComapny,setAboutCompany]=useState("");
   const [skillsRequired, setSkillsRequired] = useState("");
   const [linkedinProfile, setLinkedinProfile] = useState(""); // New state for LinkedIn
   const [activeStep, setActiveStep] = useState(0);
@@ -110,6 +111,7 @@ const dispatch=useDispatch()
         lastName,
         state,
         city,
+        aboutComapny,
         companyName,
         yearsInOperation,
         industry,
@@ -332,7 +334,18 @@ dispatch(setEntrepreneurDetails(entrepreneurData));
                 required
                 size="small"
                 
-                helperText={errors.businessName ? "Company name is required" : ""}
+                
+                sx={{ mb: 3 }}
+              
+              />
+              <TextField
+                label="About Company"
+                variant="outlined"
+                fullWidth
+                value={aboutComapny}
+                onChange={(e) => setAboutCompany(e.target.value)}
+                required
+                size="small"
                 sx={{ mb: 3 }}
               
               />

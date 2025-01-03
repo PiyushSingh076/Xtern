@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
 import "./styles.css";
 import {
   Box,
@@ -147,7 +147,24 @@ const data = [
 
 
 const JobStats = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const {loading} = useFetchJob(123);
+
+  const openModal = (applicant) => {
+    setSelectedUser(applicant);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedUser(null);
+  };
+
+  const handleSubscribe = () => {
+    alert("Subscribed to job notifications!");
+  };
+
   const jobDetails = {
     title: "Software Engineer",
     company: "Google",
@@ -216,7 +233,7 @@ const JobStats = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row, index) => (
+              {data.map((applicant, index) => (
                 <TableRow
                   hover
                   sx={{
@@ -226,9 +243,9 @@ const JobStats = () => {
                   }}
                   key={index}
                 >
-                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{applicant.name}</TableCell>
                   <TableCell>
-                    {dayjs(row.dateApplied).format("MM/DD/YYYY")}
+                    {dayjs(applicant.dateApplied).format("MM/DD/YYYY")}
                   </TableCell>
                   
                   <TableCell>
@@ -242,6 +259,7 @@ const JobStats = () => {
                         padding: "5px",
                         color: "#FF6D6DFF",
                       }}
+                      onClick={() => openModal(applicant)}
                     >
                       View
                     </Button>
@@ -252,6 +270,50 @@ const JobStats = () => {
           </Table>
         </TableContainer>
       </div>
+      {showModal && selectedUser && (
+        <div className="modal show d-block mt-7" tabIndex="-1" role="dialog" >
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">{selectedUser.name}</h5>
+                <button
+                  type="button"
+                  className="close"
+                  onClick={closeModal}
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <p><strong>Location:</strong> {selectedUser.location}</p>
+                <p>
+                  <strong>Video Link:</strong>{" "}
+                  <a href={selectedUser.videoLink} target="_blank" rel="noopener noreferrer">
+                    {selectedUser.videoLink}
+                  </a>
+                </p>
+                <p>
+                  <strong>GitHub:</strong>{" "}
+                  <a href={selectedUser.github} target="_blank" rel="noopener noreferrer">
+                    {selectedUser.github}
+                  </a>
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button onClick={handleSubscribe} className="btn btn-primary">Subscribe</button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={closeModal}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+ 
     </div>
   );
 };
