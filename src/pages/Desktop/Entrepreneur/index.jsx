@@ -5,7 +5,7 @@ import "./Profile.css";
 import useSaveEntrepreneurDetails from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
 import "react-circular-progressbar/dist/styles.css";
 import Skeleton from "@mui/material/Skeleton";
-import { Button as ButtonM } from "@mui/material";
+import {Button as ButtonM} from "@mui/material";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -34,6 +34,7 @@ import {
 import { Box, Tooltip } from "@mui/material";
 
 const SingleMentor = () => {
+  
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -53,20 +54,17 @@ const SingleMentor = () => {
   //   } = useUserProfileData(uid);
 
   const profileData = {
-    photo_url:
-      "https://static.vecteezy.com/system/resources/thumbnails/049/174/246/small_2x/a-smiling-young-indian-man-with-formal-shirts-outdoors-photo.jpg",
+    photo_url: "https://static.vecteezy.com/system/resources/thumbnails/049/174/246/small_2x/a-smiling-young-indian-man-with-formal-shirts-outdoors-photo.jpg",
     firstName: "John",
     lastName: "Doe",
     city: "Mumbai",
     experience: 5,
     state: "Maharashtra",
     type: "entrepreneur",
-    skillSet: [
-      {
-        skill: "React",
-        skillRating: 4,
-      },
-    ],
+    skillSet: [{
+      skill: "React",
+      skillRating: 4,
+    }],
     companyDetails: [
       {
         logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png",
@@ -162,11 +160,9 @@ const SingleMentor = () => {
   };
 
   const internInfo = useSelector((state) => state.internInfo);
-
-  const entrepreneurDetails = useSelector(
-    (state) => state.entrepreneur.entrepreneurDetails
-  );
-  const { saveEntrepreneurDetails } = useSaveEntrepreneurDetails();
+ 
+  const entrepreneurDetails = useSelector((state) => state.entrepreneur.entrepreneurDetails);
+const {saveEntrepreneurDetails }=useSaveEntrepreneurDetails()
 
   const handleDateChange = (date) => {
     setInterviewDate(date);
@@ -326,7 +322,7 @@ const SingleMentor = () => {
                     />
                   ) : (
                     <img
-                      src={profileData?.photo_url || "/default-profile.png"}
+                      src={profileData ?.photo_url || "/default-profile.png"}
                       alt={`${profileData?.firstName} ${profileData?.lastName}`}
                       width={150}
                       height={150}
@@ -459,21 +455,20 @@ const SingleMentor = () => {
             style={{ marginBottom: "20px" }}
           >
             <div className="consulting-btn-container">
-              
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                {profileData?.consultingPrice && (
+                  <span className="service-name">Consulting Now</span>
+                )}
+                
+              </div>
 
-              <div className="consulting-btn-entrepreneur">
-              <button
-                  onClick={() => navigate("/createjob")}
-                  className="chat-btn"
-                >
-                  Create Job
-                </button>
-                <button
-                  onClick={() => navigate("/jobpostings")}
-                  className="chat-btn"
-                >
-                  View Jobs
-                </button>
+              <div className="consulting-btn">
                 <button
                   onClick={() => navigate("/mychat")}
                   className="chat-btn"

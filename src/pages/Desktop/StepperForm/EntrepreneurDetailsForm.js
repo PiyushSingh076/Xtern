@@ -27,6 +27,7 @@ import useSaveEntrepreneurDetailsbFirebaseData from "../../../hooks/Auth/useSave
 import useSaveEntrepreneurDetails from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
 
 export default function EntrepreneurProfileForm() {
+   const [Id, setId] = useState(1);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [profileImg, setProfileImg] = useState(null);
@@ -122,9 +123,9 @@ export default function EntrepreneurProfileForm() {
       dispatch(setEntrepreneurDetails(entrepreneurData));
       try {
         //TODO: firebase fix
-        // await saveEntrepreneurDetails(entrepreneurData);
+         await saveEntrepreneurDetails(entrepreneurData);
         toast.success("Entrepreneur profile saved successfully!");
-        navigate("/entrepreneur/" + 123);
+        navigate(`/entrepreneur/${saveEntrepreneurDetails.Id}`);
       } catch (error) {
         toast.error(`Error saving profile: ${error.message || error}`);
         console.error(error);
@@ -356,37 +357,7 @@ export default function EntrepreneurProfileForm() {
                 sx={{ mb: 3 }}
               />
 
-          {!isLinkedInFetched && (
-            <Box sx={{ mb: 2 }}>
-              <LinkedInFetcher
-                close={setIsLinkedInFetched}
-                onFetchSuccess={handleLinkedInEntrepreneurData}
-              />
-            </Box>
-          )}
-          <TextField
-            label="Company Name"
-            variant="outlined"
-            fullWidth
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            required
-            size="small"
-            helperText={errors.businessName ? "Company name is required" : ""}
-            sx={{ mb: 3 }}
-          />
-          <TextField
-            label="Website URL"
-            variant="outlined"
-            fullWidth
-            value={websiteUrl}
-            onChange={(e) => setWebsiteUrl(e.target.value)}
-            size="small"
-            error={errors.websiteUrl}
-            helperText={errors.websiteUrl ? "Website URL is required" : ""}
-            sx={{ mb: 3 }}
-          />
-
+         
           <TextField
             label="Years in Experience"
             variant="outlined"
