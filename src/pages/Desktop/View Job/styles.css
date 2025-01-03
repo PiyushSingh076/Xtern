@@ -100,10 +100,18 @@
   }
   
 
-  #view-jobs-container{
+  #view-job-container{
     width: "100%";
-    height: "100%";
-    display: "flex";
+    height: calc(100vh - 90px);
+    display: flex;
     align-items: center;
     justify-content: center;
+   
+  }
+
+  #view-job-card{
+    height: 90%;
+    width: 50%;
+    position: relative;
+    padding: 10px;
   }
