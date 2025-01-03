@@ -1,4 +1,5 @@
-// components/Profile/SingleMentor.js
+// src/Components/Profile/SingleMentor.js
+
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -12,55 +13,102 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { TimeClock } from "@mui/x-date-pickers/TimeClock";
 import useRegisterUser from "../../../hooks/Stream/client";
-import { FaClock } from "react-icons/fa";
+import { FaClock, FaRegClock, FaRegFolderOpen } from "react-icons/fa";
 import { MdEdit, MdChat, MdCalendarToday, MdClose } from "react-icons/md";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
 import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../../hooks/Profile/useScheduledCallsForUser";
 import toast from "react-hot-toast";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import {
   Modal,
   Button,
-  ProgressBar,
   Form,
   Container,
   Row,
   Col,
   Image,
+  ProgressBar,
 } from "react-bootstrap";
-
 import ScheduledCallsModal from "./ScheduledCallsModal";
-import { Box, Tooltip } from "@mui/material";
+import { Box, Tooltip, IconButton } from "@mui/material";
+import ShareIcon from "@mui/icons-material/Share";
+
+/**
+ * Utility to safely format dates whether they're Firestore timestamps
+ * (with .seconds) or normal strings ("2025-01-31", "Present", etc.).
+ */
+function formatDateGeneric(value) {
+  if (!value) return "N/A";
+
+  // If it's a Firestore timestamp object
+  if (value.seconds !== undefined) {
+    return dayjs.unix(value.seconds).format("D MMM YYYY");
+  }
+
+  // If it's the string "Present"
+  if (typeof value === "string" && value.toLowerCase() === "present") {
+    return "Present";
+  }
+
+  // Otherwise, try to parse it as a date string
+  const parsed = dayjs(value);
+  return parsed.isValid() ? parsed.format("D MMM YYYY") : value;
+}
+
+/**
+ * Helper to format experience:
+ * - If no/zero, returns "Less than 1"
+ * - Otherwise returns integer (e.g., "3")
+ */
+function formatExperience(expValue) {
+  const parsed = parseInt(expValue || "0", 10);
+  if (parsed === 0) return "Less than 1";
+  return parsed.toString();
+}
 
 const SingleMentor = () => {
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
+  const navigate = useNavigate();
+  const { uid } = useParams();
+
+  // For scheduling calls
+  const [interviewScheduled, setInterviewScheduled] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [interviewDate, setInterviewDate] = useState(dayjs());
   const [interviewTime, setInterviewTime] = useState(dayjs());
   const [description, setDescription] = useState("");
-  const [interviewScheduled, setInterviewScheduled] = useState(false);
-  const [editable, setEditable] = useState(false);
   const [callsModalOpen, setCallsModalOpen] = useState(false);
-  const [meetLink, setMeetLink] = useState('')
+  const [meetLink, setMeetLink] = useState("");
 
-  const navigate = useNavigate();
-  const { uid } = useParams();
+  // For toggling descriptions in Work and Projects
+  const [workOpen, setWorkOpen] = useState({});
+  const [projectOpen, setProjectOpen] = useState({});
 
+  const toggleWorkDesc = (index) => {
+    setWorkOpen((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+  const toggleProjectDesc = (index) => {
+    setProjectOpen((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  // Hook to fetch this profile's data by UID
   const {
     userData: profileData,
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(uid);
 
+  // Example: fetching other users by type (not critical)
   const {
-    error: usersError,
-    loading: usersLoading,
     users,
+    loading: usersLoading,
+    error: usersError,
   } = useFetchUsersByType("Developer");
+
+  // Current user (the one logged in)
   const { userData: currentUser } = useFetchUserData();
+
+  // Google Calendar integration
   const {
     signIn,
     createEvent,
@@ -68,21 +116,16 @@ const SingleMentor = () => {
     loading: scheduleLoading,
     isInitialized,
   } = useGoogleCalendar();
+
+  // Calls for the user (history)
   const {
     calls,
     loading: callsLoading,
     error: callsError,
   } = useScheduledCallsForUser(currentUser?.uid);
 
-  useEffect(() => {
-    if (
-      !profileLoading &&
-      (!profileData?.type || profileData?.type.trim() === "")
-    ) {
-      navigate("/userdetail");
-    }
-  }, [profileLoading, profileData, navigate]);
-
+  // If the user is viewing their own profile, let them edit
+  const [editable, setEditable] = useState(false);
   useEffect(() => {
     if (currentUser && currentUser.uid === uid) {
       setEditable(true);
@@ -91,55 +134,45 @@ const SingleMentor = () => {
     }
   }, [currentUser, uid]);
 
+  // If no .type, redirect to fill detail
+  useEffect(() => {
+    if (!profileLoading && (!profileData?.type || profileData?.type === "")) {
+      navigate("/userdetail");
+    }
+  }, [profileLoading, profileData, navigate]);
+
+  // For Stream registration (optional)
   const registrationStatus = useRegisterUser(
     profileData,
     profileLoading,
     profileError
   );
 
-  const badgeMapping = {
-    Developer: ["Frontend", "Backend", "Full Stack", "Mobile Apps"],
-    Designer: ["UI/UX", "Graphics", "Web Design", "Animation"],
-    CloudDevOps: ["AWS", "Azure", "CI/CD", "Kubernetes"],
-    ContentCreator: ["Blogs", "Videos", "Podcasts", "Social Media"],
-    DigitalMarketing: ["SEO", "PPC", "Social Media", "Email Marketing"],
-    Lawyer: ["Divorce", "Property Issue", "Employment Issue", "Other"],
-    HR: ["Recruitment", "Payroll", "Training", "Employee Relations"],
-    Accountant: ["Taxation", "Auditing", "Budgeting", "Financial Reports"],
-    Intern: ["Learning", "Assisting", "Research", "Shadowing"],
-  };
-
-  const professionBadges = badgeMapping[profileData?.type] || [];
-
-  const sanitizeProfileData = (data) => {
-    return JSON.parse(JSON.stringify(data));
-  };
-
+  // On "Edit" -> go to StepperForm with data preloaded
   const handleEdit = () => {
     if (profileData?.type) {
-      const sanitizedData = sanitizeProfileData(profileData);
+      // Deep copy to avoid accidental mutation
+      const sanitizedData = JSON.parse(JSON.stringify(profileData));
       navigate("/userdetail", { state: { profileData: sanitizedData } });
     } else {
       navigate("/userdetail");
     }
   };
 
-  const internInfo = useSelector((state) => state.internInfo);
-
+  // Scheduling calls
   const handleDateChange = (date) => {
     setInterviewDate(date);
     setCurrentStep(2);
   };
-
   const handleTimeChange = (time) => {
     setInterviewTime(time);
     setCurrentStep(3);
   };
-
   const handleDescriptionChange = (e) => {
     setDescription(e.target.value);
   };
 
+  // Submit a call to Google Calendar
   const handleScheduleCall = async () => {
     try {
       if (!isInitialized) {
@@ -196,18 +229,15 @@ const SingleMentor = () => {
       };
 
       const response = await createEvent(eventData);
-
       if (response.success) {
         setCurrentStep(1);
         setInterviewDate(dayjs());
         setInterviewTime(dayjs());
         setDescription("");
         setInterviewScheduled(false);
-        console.log(response)
-        setMeetLink(response.meetLink)
-        console.log(meetLink)
-        
+        setMeetLink(response.meetLink);
 
+        // Open the event link in a new tab
         window.open(response.eventLink, "_blank");
         toast.success("Call scheduled and event opened in a new tab.");
       } else {
@@ -219,6 +249,7 @@ const SingleMentor = () => {
     }
   };
 
+  // If user clicks a "Service" item (for demonstration)
   const handleService = (item) => {
     const serializableItem = {
       serviceName: item.serviceName,
@@ -230,40 +261,27 @@ const SingleMentor = () => {
     navigate("/project", { state: { item: serializableItem } });
   };
 
-  const toggleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
-  };
+  // Show/hide scheduled calls
+  const openScheduledCallsModal = () => setCallsModalOpen(true);
+  const closeScheduledCallsModal = () => setCallsModalOpen(false);
 
-  const toggleBookmarkedIcon = () => {
-    setIsBookmarkedIcon(!isBookmarkedIcon);
-  };
-
-  const handleBackClick = () => {
-    navigate(-1);
-  };
-
-  const openScheduledCallsModal = () => {
-    setCallsModalOpen(true);
-  };
-
-  const closeScheduledCallsModal = () => {
-    setCallsModalOpen(false);
-  };
-
-  /**
-   * Handle deletion of a scheduled call
-   * @param {string} eventId - Google Calendar Event ID
-   * @param {string} callDocId - Firestore Document ID
-   */
+  // Delete a scheduled call from the calendar
   const handleDeleteEvent = async (eventId, callDocId) => {
     try {
       await deleteEvent(eventId, callDocId);
-      // Optionally, remove the deleted call from the local state
-      // This depends on how you manage your state (e.g., using hooks)
     } catch (error) {
       console.error("Error deleting event:", error);
       toast.error("An error occurred while deleting the event.");
     }
+  };
+
+  // "Share" functionality
+  const handleShare = () => {
+    const url = window.location.href; // current page URL
+    navigator.clipboard
+      .writeText(url)
+      .then(() => toast.success("Profile link copied to clipboard!"))
+      .catch(() => toast.error("Failed to copy link. Please try again."));
   };
 
   return (
@@ -273,6 +291,7 @@ const SingleMentor = () => {
         <div className="profile-details">
           <div className="profile-details-wrap">
             <div className="profile-details-first-wrap">
+              {/* Show the "Edit" button if I'm the owner */}
               {editable && (
                 <button onClick={handleEdit} className="edit-btn">
                   <MdEdit />
@@ -280,7 +299,30 @@ const SingleMentor = () => {
               )}
 
               <div className="profile-img-info-container">
-                <div className="mentor-img-sec">
+                <div
+                  className="mentor-img-sec"
+                  style={{ position: "relative" }}
+                >
+                  {/* Share button in top-left corner of the avatar */}
+                  <Tooltip title="Share Profile" arrow>
+                    <IconButton
+                      onClick={handleShare}
+                      sx={{
+                        position: "absolute",
+                        top: 5,
+                        left: 5,
+                        backgroundColor: "#007bff",
+                        color: "#fff",
+                        "&:hover": {
+                          backgroundColor: "#0056b3",
+                        },
+                      }}
+                      size="small"
+                    >
+                      <ShareIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+
                   {profileLoading ? (
                     <Skeleton
                       variant="circular"
@@ -335,7 +377,10 @@ const SingleMentor = () => {
                       sx={{ fontSize: "1rem", width: "200px", height: "20px" }}
                     />
                   ) : (
-                    <span>Year of Experience: {profileData?.experience}</span>
+                    <span>
+                      Year of Experience:{" "}
+                      {formatExperience(profileData?.experience)}
+                    </span>
                   )}
 
                   {profileLoading ? (
@@ -364,45 +409,49 @@ const SingleMentor = () => {
             ) : (
               <div className="skills-section">
                 <div className="skills-header">Skills</div>
-                {profileData?.skillSet?.map((item) => {
-                  const ratingPercentage =
-                    (parseInt(item.skillRating) / 5) * 100;
-                  return (
-                    <div className="skill-bar-card" key={item.skill}>
-                      <span>{item.skill}</span>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          width: "100%",
-                          alignItems: "center",
-                        }}
-                      >
+                {profileData?.skillSet?.length > 0 ? (
+                  profileData.skillSet.map((item) => {
+                    // skillRating is out of 5 -> convert to percentage
+                    const ratingPercentage =
+                      (parseInt(item.skillRating) / 5) * 100;
+                    return (
+                      <div className="skill-bar-card" key={item.skill}>
+                        <span>{item.skill}</span>
                         <div
-                          className="skill-rating"
                           style={{
-                            marginBottom: "5px",
-                            fontSize: "12px",
-                            color: "#007bff",
+                            display: "flex",
+                            flexDirection: "column",
+                            width: "100%",
+                            alignItems: "center",
                           }}
                         >
-                          {ratingPercentage}%
-                        </div>
-                        <div className="skill-bar">
                           <div
-                            className="skill-bar-fill"
+                            className="skill-rating"
                             style={{
-                              width: `${ratingPercentage}%`,
-                              backgroundColor: "#007bff",
-                              height: "5px",
+                              marginBottom: "5px",
+                              fontSize: "12px",
+                              color: "#007bff",
                             }}
-                          />
+                          >
+                            {ratingPercentage}%
+                          </div>
+                          <div className="skill-bar">
+                            <div
+                              className="skill-bar-fill"
+                              style={{
+                                width: `${ratingPercentage}%`,
+                                backgroundColor: "#007bff",
+                                height: "5px",
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-                {!profileData?.skillSet && <span>No skill set available</span>}
+                    );
+                  })
+                ) : (
+                  <span>No skill set available</span>
+                )}
               </div>
             )}
           </div>
@@ -417,7 +466,6 @@ const SingleMentor = () => {
             sx={{ width: "100%", height: "100px", borderRadius: "20px" }}
           />
         ) : (
-          // profileData?.type !== "Intern" && (
           <div
             className="consulting-container"
             style={{ marginBottom: "20px" }}
@@ -433,35 +481,35 @@ const SingleMentor = () => {
                 {profileData?.consultingPrice && (
                   <span className="service-name">Consulting Now</span>
                 )}
-                <div className="issue-badge">
+                {/* If there's a skillSet, display them as badges */}
+                <div className="issue-badge mt-2">
                   {profileData?.skillSet?.map((skill, index) => (
-                    <div className="badge" key={index}>
+                    <div className="badge p-2" key={index}>
                       {skill.skill}
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="consulting-btn">
-                <button
-                  onClick={() => navigate("/mychat")}
-                  className="chat-btn"
-                >
-                  <MdChat /> Chat
-                </button>
-                <button
-                  onClick={() => setInterviewScheduled(true)}
-                  className="chat-btn"
-                  disabled={!isInitialized}
-                >
-                  <MdCalendarToday /> Meet
-                </button>
-              </div>
-              {/* {!isInitialized && (
-                <span className="text-muted">
-                  Initializing Google Calendar...
-                </span>
-              )} */}
+              {/* Hide Chat/Meet if I'm viewing my own profile */}
+              {!editable && (
+                <div className="consulting-btn">
+                  <button
+                    onClick={() => navigate("/mychat")}
+                    className="chat-btn"
+                  >
+                    <MdChat /> Chat
+                  </button>
+                  <button
+                    onClick={() => setInterviewScheduled(true)}
+                    className="chat-btn"
+                    disabled={!isInitialized}
+                  >
+                    <MdCalendarToday /> Meet
+                  </button>
+                </div>
+              )}
+
               {profileData?.consultingPrice && (
                 <span className="consultant-price">
                   ₹{profileData.consultingPrice}/minute
@@ -469,25 +517,34 @@ const SingleMentor = () => {
               )}
             </div>
 
-            {/* Modified "View Previous Calls" button as a badge-like style */}
-            <Box sx={{ marginTop: "10px", marginLeft: "3px" }}>
+            <Box
+              sx={{
+                marginTop: "0px",
+                marginLeft: "3px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               <Tooltip title="View Previous Calls" arrow>
                 <Button
                   onClick={openScheduledCallsModal}
                   variant="contained"
-                  startIcon={<AccessTimeIcon />}
+                  startIcon={<FaRegClock size={20} />}
                   sx={{
-                    backgroundColor: "#cce4ff",
-                    color: "#004080",
-                    border: "1px solid #004080",
-                    borderRadius: "20px",
-                    padding: "2px 12px", // Increased horizontal padding for better spacing with the icon
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
+                    backgroundColor: "#e8f4ff",
+                    color: "#003366",
+                    border: "1px solid #003366",
+                    borderRadius: "24px",
+                    padding: "8px 16px",
+                    fontSize: "1rem",
                     fontWeight: "bold",
-                    textTransform: "none", // Prevents uppercase transformation
+                    textTransform: "none",
+                    boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
                     "&:hover": {
-                      backgroundColor: "#b3d7ff", // Slightly darker on hover
+                      backgroundColor: "#d4ebff",
+                      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
                     },
                   }}
                 >
@@ -496,7 +553,6 @@ const SingleMentor = () => {
               </Tooltip>
             </Box>
           </div>
-          // )
         )}
 
         {profileLoading ? (
@@ -513,32 +569,71 @@ const SingleMentor = () => {
         ) : (
           <div className="service-container">
             <h4>Service</h4>
-            <div className="service-list">
-              {profileData?.serviceDetails?.map((item) => (
-                <div
-                  onClick={() => handleService(item)}
-                  className="service-item"
-                  key={item.serviceName}
-                >
-                  <span className="service-name">{item.serviceName}</span>
-                  <p>{item.serviceDescription.slice(0, 70) + "..."}</p>
-                  <div className="price-duration-container">
-                    {item?.serviceDuration && (
-                      <span className="service-duration">
-                        <FaClock /> {item?.serviceDuration || "N/A"}{" "}
-                        {item?.serviceDurationType || "N/A"}
-                      </span>
-                    )}
+            {profileData?.serviceDetails?.length > 0 ? (
+              <div className="service-list" style={{ cursor: "pointer" }}>
+                {profileData.serviceDetails.map((item, index) => (
+                  <div
+                    onClick={() => handleService(item)}
+                    className="service-item"
+                    key={`${item.serviceName}-${index}`}
+                  >
+                    <span className="service-name">{item.serviceName}</span>
+                    <p>
+                      {item.serviceDescription.slice(0, 70)}
+                      {item.serviceDescription.length > 70 ? "..." : ""}
+                    </p>
 
-                    {item.servicePrice && (
-                      <span className="service-price">
-                        ₹{item.servicePrice}
-                      </span>
+                    {/* If user is "intern", show internship fields */}
+                    {profileData?.type?.toLowerCase() === "intern" ? (
+                      <>
+                        <div className="price-duration-container">
+                          <span className="service-duration">
+                            <strong>Availability:</strong> {item.availability}
+                            {item.availability === "part time" &&
+                              item.hoursPerDay && (
+                                <> / {item.hoursPerDay} hours/day</>
+                              )}
+                          </span>
+                        </div>
+                        <div className="price-duration-container">
+                          <span>
+                            <strong>Start:</strong>{" "}
+                            {formatDateGeneric(item.startDate)}
+                          </span>
+                          <span style={{ marginLeft: "10px" }}>
+                            <strong>End:</strong>{" "}
+                            {formatDateGeneric(item.endDate)}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="price-duration-container">
+                        {item.serviceDuration && (
+                          <span className="service-duration">
+                            <FaClock /> {item.serviceDuration}{" "}
+                            {item.serviceDurationType}
+                          </span>
+                        )}
+                        {item.servicePrice && (
+                          <span className="service-price">
+                            ₹{item.servicePrice}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ textAlign: "center", marginTop: "20px" }}>
+                <FaRegFolderOpen
+                  size={50}
+                  color="#ccc"
+                  style={{ marginBottom: "10px" }}
+                />
+                <p>No services available</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -612,55 +707,63 @@ const SingleMentor = () => {
                   id="course-content"
                   role="tabpanel"
                 >
-                  {profileData?.workExperience?.map((work, index) => (
-                    <div
-                      className="experience-sec"
-                      key={`${work?.role}-${index}`}
-                    >
-                      <div className="work-logo-container">
-                        <img
-                          src="https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
-                          className="educ-logo"
-                          alt="Company Logo"
-                        />
-                      </div>
-                      <div className="experience-info">
-                        <h4>{work?.role}</h4>
-                        <p>
-                          {work?.companyName} |{" "}
-                          {dayjs
-                            .unix(work?.startDate?.seconds)
-                            .format("D MMM YYYY")}{" "}
-                          -{" "}
-                          {work.endDate === "present" || !work.endDate
-                            ? "Present"
-                            : work.endDate.seconds
-                            ? dayjs
-                                .unix(work.endDate.seconds)
-                                .format("D MMM YYYY")
-                            : "Not Available"}
-                        </p>
-                        <button
-                          className="desc-btn"
-                          data-bs-toggle="collapse"
-                          data-bs-target={`#work-collapse-${index}`}
-                          aria-expanded="false"
-                          aria-controls={`work-collapse-${index}`}
-                        >
-                          View Description
-                        </button>
-                        <div
-                          id={`work-collapse-${index}`}
-                          className="collapse"
-                          aria-labelledby={`work-collapse-${index}`}
-                        >
-                          <div className="card card-body">
-                            {work?.description || "No description available"}
-                          </div>
+                  {profileLoading ? (
+                    <Skeleton
+                      animation="pulse"
+                      variant="rectangular"
+                      sx={{
+                        width: "100%",
+                        height: "200px",
+                        borderRadius: "20px",
+                        marginTop: "20px",
+                      }}
+                    />
+                  ) : profileData?.workExperience?.length > 0 ? (
+                    profileData.workExperience.map((work, index) => (
+                      <div
+                        className="experience-sec"
+                        key={`${work?.role}-${index}`}
+                      >
+                        <div className="work-logo-container">
+                          <img
+                            src="https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
+                            className="educ-logo"
+                            alt="Company Logo"
+                          />
+                        </div>
+                        <div className="experience-info">
+                          <h4>{work?.role}</h4>
+                          <p>
+                            {work?.companyName} |{" "}
+                            {formatDateGeneric(work?.startDate)} -{" "}
+                            {formatDateGeneric(work?.endDate)}
+                          </p>
+                          <button
+                            className="desc-btn"
+                            onClick={() => toggleWorkDesc(index)}
+                          >
+                            {workOpen[index]
+                              ? "Hide Description"
+                              : "View Description"}
+                          </button>
+                          {workOpen[index] && (
+                            <div className="w-full" style={{ marginTop: 5 }}>
+                              {work?.description || "No description available"}
+                            </div>
+                          )}
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: "center", marginTop: "20px" }}>
+                      <FaRegFolderOpen
+                        size={50}
+                        color="#ccc"
+                        style={{ marginBottom: "10px" }}
+                      />
+                      <p>No work experience found</p>
                     </div>
-                  ))}
+                  )}
                 </div>
 
                 {/* Education Tab */}
@@ -669,33 +772,48 @@ const SingleMentor = () => {
                   id="education-content"
                   role="tabpanel"
                 >
-                  {profileData?.educationDetails?.map((educ, index) => (
-                    <div className="experience-sec" key={`educ-${index}`}>
-                      <div className="work-logo-container">
-                        <img
-                          src="https://cdn.vectorstock.com/i/1000v/14/68/education-color-icon-vector-29051468.jpg"
-                          className="educ-logo"
-                          alt="Education Logo"
-                        />
+                  {profileLoading ? (
+                    <Skeleton
+                      animation="pulse"
+                      variant="rectangular"
+                      sx={{
+                        width: "100%",
+                        height: "200px",
+                        borderRadius: "20px",
+                        marginTop: "20px",
+                      }}
+                    />
+                  ) : profileData?.educationDetails?.length > 0 ? (
+                    profileData.educationDetails.map((educ, index) => (
+                      <div className="experience-sec" key={`educ-${index}`}>
+                        <div className="work-logo-container">
+                          <img
+                            src="https://cdn.vectorstock.com/i/1000x1000/14/68/education-color-icon-vector-29051468.jpg"
+                            className="educ-logo"
+                            alt="Education Logo"
+                          />
+                        </div>
+                        <div className="experience-info">
+                          <h4>{educ?.degree}</h4>
+                          <h6>Stream: {educ?.stream}</h6>
+                          <p>{educ?.college}</p>
+                          <p>
+                            {formatDateGeneric(educ?.startDate)} -{" "}
+                            {formatDateGeneric(educ?.endDate)}
+                          </p>
+                        </div>
                       </div>
-                      <div className="experience-info">
-                        <h4>{educ?.degree}</h4>
-                        <h6>Stream: {educ?.stream}</h6>
-                        <p>{educ?.college}</p>
-                        <p>
-                          {dayjs
-                            .unix(educ?.startDate?.seconds)
-                            .format("D MMM YYYY")}{" "}
-                          -{" "}
-                          {educ.endDate === "present" || !educ.endDate
-                            ? "Present"
-                            : dayjs
-                                .unix(educ?.endDate?.seconds)
-                                .format("D MMM YYYY")}
-                        </p>
-                      </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: "center", marginTop: "20px" }}>
+                      <FaRegFolderOpen
+                        size={50}
+                        color="#ccc"
+                        style={{ marginBottom: "10px" }}
+                      />
+                      <p>No education details found</p>
                     </div>
-                  ))}
+                  )}
                 </div>
 
                 {/* Projects Tab */}
@@ -704,59 +822,81 @@ const SingleMentor = () => {
                   id="projects-content"
                   role="tabpanel"
                 >
-                  {profileData?.projectDetails?.map((project, index) => (
-                    <div className="experience-sec" key={`project-${index}`}>
-                      <div className="work-logo-container">
-                        <img
-                          src="https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg"
-                          className="educ-logo"
-                          alt="Project Logo"
-                        />
-                      </div>
-                      <div className="experience-info">
-                        <h4>{project?.projectName}</h4>
-                        <div>
-                          <b>Tech Stack:</b>{" "}
-                          {project?.techstack?.map((item, idx) => (
-                            <span key={idx}>
-                              {item}
-                              {idx !== project.techstack.length - 1 && ", "}
-                            </span>
-                          )) || "No tech stack available"}
+                  {profileLoading ? (
+                    <Skeleton
+                      animation="pulse"
+                      variant="rectangular"
+                      sx={{
+                        width: "100%",
+                        height: "200px",
+                        borderRadius: "20px",
+                        marginTop: "20px",
+                      }}
+                    />
+                  ) : profileData?.projectDetails?.length > 0 ? (
+                    profileData.projectDetails.map((project, index) => (
+                      <div className="experience-sec" key={`project-${index}`}>
+                        <div className="work-logo-container">
+                          <img
+                            src="https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg"
+                            className="educ-logo"
+                            alt="Project Logo"
+                          />
                         </div>
-                        <div className="desc-view-btn-container">
-                          {project?.liveDemo && (
-                            <a
-                              href={project?.liveDemo}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="link-btn"
+                        <div className="experience-info">
+                          <h4>{project?.projectName}</h4>
+                          {project?.techstack &&
+                            project?.techstack.length > 0 && (
+                              <div>
+                                <b>Tech Stack:</b>{" "}
+                                {project.techstack.map((item, idx) => (
+                                  <span key={idx}>
+                                    {item}
+                                    {idx !== project.techstack.length - 1 &&
+                                      ", "}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          <div className="desc-view-btn-container">
+                            {project?.liveDemo && (
+                              <a
+                                href={project?.liveDemo}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="link-btn"
+                              >
+                                Live Link
+                              </a>
+                            )}
+                            <button
+                              className="desc-btn"
+                              onClick={() => toggleProjectDesc(index)}
                             >
-                              Live Link
-                            </a>
-                          )}
-                          <button
-                            className="desc-btn"
-                            data-bs-toggle="collapse"
-                            data-bs-target={`#project-collapse-${index}`}
-                            aria-expanded="false"
-                            aria-controls={`project-collapse-${index}`}
-                          >
-                            View Description
-                          </button>
-                        </div>
-                        <div
-                          id={`project-collapse-${index}`}
-                          className="collapse"
-                          aria-labelledby={`project-collapse-${index}`}
-                        >
-                          <div className="card card-body">
-                            {project?.description || "No description available"}
+                              {projectOpen[index]
+                                ? "Hide Description"
+                                : "View Description"}
+                            </button>
                           </div>
+                          {projectOpen[index] && (
+                            <div className="w-full" style={{ marginTop: 5 }}>
+                              {project?.description ||
+                                "No description available"}
+                            </div>
+                          )}
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: "center", marginTop: "20px" }}>
+                      <FaRegFolderOpen
+                        size={50}
+                        color="#ccc"
+                        style={{ marginBottom: "10px" }}
+                      />
+                      <p>No projects found</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>

@@ -1,3 +1,5 @@
+/* src/Components/Filter/filter.css */
+
 /* Main container for the profile grid */
 .filter-container {
   padding: 1rem;
@@ -26,8 +28,8 @@
   background-color: white;
   text-align: center;
   padding: 1rem;
-  min-width: 150px; /* Ensure cards are a consistent size */
-  height: 150px;
+  /* min-width: 150px; Ensure cards are a consistent size */
+  /* height: 150px; */
   cursor: pointer;
   transition: transform 0.2s, background-color 0.3s, color 0.3s;
 }
@@ -67,6 +69,6 @@
   }
 
   .profession-cards .card .icon {
-    font-size: 1.2rem; /* Smaller icon size for mobile */
+    font-size: 1.9rem; /* Smaller icon size for mobile */
   }
 }
