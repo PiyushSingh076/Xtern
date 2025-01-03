@@ -613,25 +613,26 @@
   }
 }
 
-.consulting-btn {
-  width: 50%;
+.consulting-btn-entrepreneur {
+  width: 100%;
   height: 100%;
-  height: 60px;
+  
   display: flex;
   align-items: center;
   justify-content: end;
   flex-direction: row;
   gap: 15px;
-  margin-bottom: 10px;
+  
 }
 
-.consulting-btn button {
+.consulting-btn-entrepreneur button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   font-size: 14px;
   font-weight: 500;
+  width: 100%;
   color: #fff;
   border: none;
   border-radius: 10px;
