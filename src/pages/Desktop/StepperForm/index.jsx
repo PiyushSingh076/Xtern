@@ -44,16 +44,14 @@ import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
 
 /**
- * Certain roles (astrologist, lawyer) have "consulting charges"
+ * Some roles (astrologist, lawyer) have "consulting charges"
  */
 const consultingChargesConfig = {
   astrologist: true,
   lawyer: true,
 };
 
-/**
- * Calculate total years and months from LinkedIn experiences
- */
+/** For LinkedIn experiences date calculations */
 const calculateExperience = (experiences) => {
   if (!experiences || experiences.length === 0) return "";
   const currentDate = new Date();
@@ -82,25 +80,12 @@ const calculateExperience = (experiences) => {
   }`;
 };
 
-/**
- * Format a date object from LinkedIn's day/month/year into "MMM YYYY"
- */
-const formatDate = (dateObj) => {
-  if (!dateObj) return "";
-  const { year, month, day } = dateObj;
-  const date = new Date(year, month - 1, day);
-  return date.toLocaleDateString("default", {
-    month: "short",
-    year: "numeric",
-  });
-};
-
 export default function StepperForm() {
   // Basic personal data
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
   const [Xpert, setXpert] = useState("");
-  const [Experience, setExperience] = useState("");
+  const [Experience, setExperience] = useState(""); // Usually a string or number
   const [profileImg, setProfileImg] = useState(null);
 
   // Location
@@ -134,10 +119,7 @@ export default function StepperForm() {
   const [modalType, setModalType] = useState("");
   const [editIndex, setEditIndex] = useState(null);
 
-  /**
-   * Single object that holds the form data for the modal
-   * (Skills, Education, Work, Projects, Services).
-   */
+  // Single object that holds form data for the modal
   const [modalFormData, setModalFormData] = useState({});
 
   // Redux / Navigation
@@ -165,8 +147,8 @@ export default function StepperForm() {
     if (ConsultingPrice) {
       const price = parseFloat(ConsultingPrice);
       if (!isNaN(price)) {
-        const reducedPrice = price - price * comission;
-        setUserconsultingPrice(reducedPrice.toFixed(2));
+        const net = price - price * comission;
+        setUserconsultingPrice(net.toFixed(2));
       } else {
         setUserconsultingPrice("");
       }
@@ -175,7 +157,7 @@ export default function StepperForm() {
     }
   }, [ConsultingPrice, comission]);
 
-  // Show next step if user came from an existing profile
+  // If there's a profileData, jump to step 1
   useEffect(() => {
     if (profileData) {
       setActiveStep(1);
@@ -196,8 +178,8 @@ export default function StepperForm() {
   };
 
   // Profile image
-  const handleProfileImage = (event) => {
-    const file = event.target.files[0];
+  const handleProfileImage = (e) => {
+    const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => setProfileImg(reader.result);
@@ -216,37 +198,38 @@ export default function StepperForm() {
   // If we already had a user profile (editing), load it
   useEffect(() => {
     if (profileData) {
-      setFirstName(profileData?.firstName || "");
-      setLastName(profileData?.lastName || "");
-      setXpert(profileData?.Type || profileData?.type || "");
-      setExperience(userData?.experience || "0");
-      setProfileImg(profileData?.photo_url || "");
+      setFirstName(profileData.firstName || "");
+      setLastName(profileData.lastName || "");
+      setXpert(profileData.Type || profileData.type || "");
+      setExperience(profileData.experience || "0");
+      setProfileImg(profileData.photo_url || "");
       setIsLinkedInFetched(true);
 
-      if (profileData?.state) {
+      if (profileData.state) {
         setSelectedState(profileData.state);
         const stateCities = City.getCitiesOfState("IN", profileData.state);
         setCities(stateCities);
-        if (profileData?.city) {
+        if (profileData.city) {
           setSelectedCity(profileData.city);
         }
       }
 
-      setConsultingPrice(profileData?.consultingPrice || "");
-      setConsultingDurationType(profileData?.consultingDurationType || "");
-      setConsultingDuration(profileData?.consultingDuration || "");
+      setConsultingPrice(profileData.consultingPrice || "");
+      setConsultingDurationType(profileData.consultingDurationType || "");
+      setConsultingDuration(profileData.consultingDuration || "");
 
       // Education
       if (
-        profileData?.educationDetails &&
-        Array.isArray(profileData?.educationDetails)
+        profileData.educationDetails &&
+        Array.isArray(profileData.educationDetails)
       ) {
         const eduData = profileData.educationDetails.map((edu) => ({
           degree: edu.degree || "",
           stream: edu.stream || "",
-          college: edu.college || "",
-          startDate: formatDate(edu.startDate),
-          endDate: edu.ends_at ? formatDate(edu.endDate) : "Present",
+          college: edu.collegename || "",
+          startDate: edu.startyear ? edu.startyear?.split("T")[0] : "",
+          endDate:
+            edu.endyear && !edu.ends_at ? edu.endyear?.split("T")[0] : "", // or "Present" if you want
           cgpa: edu.cgpa || "",
         }));
         setEducation(eduData);
@@ -254,64 +237,77 @@ export default function StepperForm() {
 
       // Work
       if (
-        profileData?.workExperience &&
-        Array.isArray(profileData?.workExperience)
+        profileData.workExperience &&
+        Array.isArray(profileData.workExperience)
       ) {
         const workData = profileData.workExperience.map((exp) => ({
           position: exp.role || "",
           company: exp.companyName || "",
-          startDate: formatDate(exp.startDate),
-          endDate: exp.ends_at ? formatDate(exp.endDate) : "Present",
+          startDate: exp.startDate ? exp.startDate?.split("T")[0] : "",
+          endDate:
+            exp.endDate && !exp.ends_at ? exp.endDate?.split("T")[0] : "",
           description: exp.description || "",
         }));
         setWork(workData);
       }
 
       // Skills
-      if (profileData?.skillSet && Array.isArray(profileData?.skillSet)) {
-        const skillData = profileData.skillSet.map((skill) => ({
+      if (profileData.skillSet && Array.isArray(profileData.skillSet)) {
+        const sData = profileData.skillSet.map((skill) => ({
           skill: skill.skill || "",
           skillRating: skill.skillRating || 0,
         }));
-        setSkills(skillData);
+        setSkills(sData);
       }
 
       // Projects
       if (
-        profileData?.projectDetails &&
-        Array.isArray(profileData?.projectDetails)
+        profileData.projectDetails &&
+        Array.isArray(profileData.projectDetails)
       ) {
-        const projectData = profileData.projectDetails.map((proj) => ({
+        const projData = profileData.projectDetails.map((proj) => ({
           projectName: proj.projectName || "",
-          duration: `${formatDate(proj.startDate)} - ${
-            proj.ends_at ? formatDate(proj.endDate) : "Present"
-          }`,
+          duration: proj.duration || "",
           liveLink: proj.liveDemo || "",
           description: proj.description || "",
         }));
-        setProjects(projectData);
+        setProjects(projData);
       }
 
       // Services
       if (
-        profileData?.serviceDetails &&
-        Array.isArray(profileData?.serviceDetails)
+        profileData.serviceDetails &&
+        Array.isArray(profileData.serviceDetails)
       ) {
-        const serviceData = profileData.serviceDetails.map((service) => ({
+        const servData = profileData.serviceDetails.map((service) => ({
           serviceName: service.serviceName || "",
           serviceDescription: service.serviceDescription || "",
           servicePrice: service.servicePrice || "",
           duration: service.serviceDuration || "",
           durationType: service.serviceDurationType || "",
-          startDate: service.startDate || "",
-          endDate: service.endDate || "",
+          startDate: service.startDate ? service.startDate?.split("T")[0] : "",
+          endDate: service.endDate ? service.endDate?.split("T")[0] : "",
           availability: service.availability || "",
           hoursPerDay: service.hoursPerDay || "",
         }));
-        setServices(serviceData);
+        setServices(servData);
       }
     }
-  }, [profileData, userData]);
+  }, [profileData]);
+
+  // If user sets the consulting price, compute net after 20%
+  useEffect(() => {
+    if (ConsultingPrice) {
+      const val = parseFloat(ConsultingPrice);
+      if (!isNaN(val)) {
+        setUserconsultingPrice((val - val * 0.2).toFixed(2));
+      } else {
+        setUserconsultingPrice("");
+      }
+    } else {
+      setUserconsultingPrice("");
+    }
+  }, [ConsultingPrice]);
 
   // LinkedIn data
   const handleLinkedInData = (data) => {
@@ -323,14 +319,14 @@ export default function StepperForm() {
       setIsLinkedInFetched(true);
 
       if (data.state && data.city) {
-        const stateObj = State.getStatesOfCountry("IN").find(
+        const stObj = State.getStatesOfCountry("IN").find(
           (st) => st.name.toLowerCase() === data.state.toLowerCase()
         );
-        if (stateObj) {
-          setSelectedState(stateObj.isoCode);
-          const stateCities = City.getCitiesOfState("IN", stateObj.isoCode);
-          setCities(stateCities);
-          const cityObj = stateCities.find(
+        if (stObj) {
+          setSelectedState(stObj.isoCode);
+          const stCities = City.getCitiesOfState("IN", stObj.isoCode);
+          setCities(stCities);
+          const cityObj = stCities.find(
             (ct) => ct.name.toLowerCase() === data.city.toLowerCase()
           );
           if (cityObj) {
@@ -341,27 +337,51 @@ export default function StepperForm() {
 
       // Education
       if (data.education && Array.isArray(data.education)) {
-        const eduData = data.education.map((edu) => ({
+        const eData = data.education.map((edu) => ({
           degree: edu.degree_name || "",
           stream: edu.field_of_study || "",
           college: edu.school || "",
-          startDate: formatDate(edu.starts_at),
-          endDate: edu.ends_at ? formatDate(edu.ends_at) : "Present",
+          startDate: edu.starts_at
+            ? new Date(
+                edu.starts_at.year,
+                edu.starts_at.month - 1,
+                edu.starts_at.day
+              )
+                .toISOString()
+                ?.split("T")[0]
+            : "",
+          endDate: edu.ends_at
+            ? new Date(edu.ends_at.year, edu.ends_at.month - 1, edu.ends_at.day)
+                .toISOString()
+                ?.split("T")[0]
+            : "",
           cgpa: edu.grade || "",
         }));
-        setEducation(eduData);
+        setEducation(eData);
       }
 
       // Work
       if (data.experiences && Array.isArray(data.experiences)) {
-        const workData = data.experiences.map((exp) => ({
+        const wData = data.experiences.map((exp) => ({
           position: exp.title || "",
           company: exp.company || "",
-          startDate: formatDate(exp.starts_at),
-          endDate: exp.ends_at ? formatDate(exp.ends_at) : "Present",
+          startDate: exp.starts_at
+            ? new Date(
+                exp.starts_at.year,
+                exp.starts_at.month - 1,
+                exp.starts_at.day
+              )
+                .toISOString()
+                ?.split("T")[0]
+            : "",
+          endDate: exp.ends_at
+            ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
+                .toISOString()
+                ?.split("T")[0]
+            : "",
           description: exp.description || "",
         }));
-        setWork(workData);
+        setWork(wData);
       }
 
       // Projects
@@ -369,45 +389,41 @@ export default function StepperForm() {
         data.accomplishment_projects &&
         Array.isArray(data.accomplishment_projects)
       ) {
-        const projectData = data.accomplishment_projects.map((proj) => ({
+        const pData = data.accomplishment_projects.map((proj) => ({
           projectName: proj.title || "",
-          duration: `${formatDate(proj.starts_at)} - ${
-            proj.ends_at ? formatDate(proj.ends_at) : "Present"
-          }`,
+          duration: "", // We'll store actual dates in the future
           liveLink: proj.url || "",
           description: proj.description || "",
         }));
-        setProjects(projectData);
+        setProjects(pData);
       }
 
       // Skills
       if (data.skills && Array.isArray(data.skills)) {
-        const skillData = data.skills.map((skill) => ({
+        const sData = data.skills.map((skill) => ({
           skill: skill.name || "",
           skillRating: 0,
         }));
-        setSkills(skillData);
+        setSkills(sData);
       }
     }
   };
 
-  // Check if consulting charges are enabled
+  // If role is one that supports consulting
   const isConsultingChargesEnabled = () => {
     if (!Xpert || typeof Xpert !== "string") return false;
-    const formatted = Xpert.toLowerCase().trim();
-    return consultingChargesConfig[formatted] || false;
+    const lower = Xpert.toLowerCase().trim();
+    return consultingChargesConfig[lower] || false;
   };
 
-  /**
-   * Open the modal in either "Add" or "Edit" mode.
-   */
+  // Open modal to add or edit item
   const openModal = (type, index = null, itemData = {}) => {
     setModalType(type);
     setIsModalOpen(true);
     setEditIndex(index);
 
-    // If editing an existing item, populate modalFormData
-    if (index !== null && itemData) {
+    if (itemData && Object.keys(itemData).length > 0) {
+      // Prefill modalFormData based on the type
       if (type.toLowerCase() === "skill") {
         setModalFormData({
           skill: itemData.skill || "",
@@ -451,7 +467,6 @@ export default function StepperForm() {
         });
       }
     } else {
-      // Adding brand new item
       setModalFormData({});
     }
   };
@@ -463,95 +478,84 @@ export default function StepperForm() {
     setModalFormData({});
   };
 
-  /**
-   * Add or update (if editing) the relevant array in local state
-   */
+  // Add or update item in local arrays
   const saveDetail = (type, dataObj, index) => {
-    const normalizedType = type.toLowerCase();
-    if (normalizedType === "education") {
+    const lower = type.toLowerCase();
+    if (lower === "education") {
       if (index !== null) {
-        const updated = [...Education];
-        updated[index] = dataObj;
-        setEducation(updated);
+        const newArr = [...Education];
+        newArr[index] = dataObj;
+        setEducation(newArr);
       } else {
         setEducation([...Education, dataObj]);
       }
-    } else if (normalizedType === "work") {
+    } else if (lower === "work") {
       if (index !== null) {
-        const updated = [...Work];
-        updated[index] = dataObj;
-        setWork(updated);
+        const newArr = [...Work];
+        newArr[index] = dataObj;
+        setWork(newArr);
       } else {
         setWork([...Work, dataObj]);
       }
-    } else if (normalizedType === "skill") {
+    } else if (lower === "skill") {
       if (index !== null) {
-        const updated = [...Skills];
-        updated[index] = dataObj;
-        setSkills(updated);
+        const newArr = [...Skills];
+        newArr[index] = dataObj;
+        setSkills(newArr);
       } else {
         setSkills([...Skills, dataObj]);
       }
-    } else if (normalizedType === "project") {
+    } else if (lower === "project") {
       if (index !== null) {
-        const updated = [...Projects];
-        updated[index] = dataObj;
-        setProjects(updated);
+        const newArr = [...Projects];
+        newArr[index] = dataObj;
+        setProjects(newArr);
       } else {
         setProjects([...Projects, dataObj]);
       }
-    } else if (normalizedType === "service") {
+    } else if (lower === "service") {
       if (Xpert.toLowerCase() === "intern") {
-        // If user is intern, only keep 1 service
         if (index !== null) {
-          const updated = [...Services];
-          updated[index] = dataObj;
-          setServices(updated);
+          const newArr = [...Services];
+          newArr[index] = dataObj;
+          setServices(newArr);
         } else {
           setServices([dataObj]);
         }
       } else {
         if (index !== null) {
-          const updated = [...Services];
-          updated[index] = dataObj;
-          setServices(updated);
+          const newArr = [...Services];
+          newArr[index] = dataObj;
+          setServices(newArr);
         } else {
           setServices([...Services, dataObj]);
         }
       }
     } else {
-      console.error("Invalid type");
+      console.error("Invalid type to save");
     }
   };
 
-  // Remove item
+  // Delete item
   const deleteDetail = (type, index) => {
-    switch (type.toLowerCase()) {
-      case "education":
-        setEducation(Education.filter((_, i) => i !== index));
-        break;
-      case "work":
-        setWork(Work.filter((_, i) => i !== index));
-        break;
-      case "skill":
-        setSkills(Skills.filter((_, i) => i !== index));
-        break;
-      case "project":
-        setProjects(Projects.filter((_, i) => i !== index));
-        break;
-      case "service":
-        setServices(Services.filter((_, i) => i !== index));
-        break;
-      default:
-        console.error("Invalid type");
+    const lower = type.toLowerCase();
+    if (lower === "education") {
+      setEducation(Education.filter((_, i) => i !== index));
+    } else if (lower === "work") {
+      setWork(Work.filter((_, i) => i !== index));
+    } else if (lower === "skill") {
+      setSkills(Skills.filter((_, i) => i !== index));
+    } else if (lower === "project") {
+      setProjects(Projects.filter((_, i) => i !== index));
+    } else if (lower === "service") {
+      setServices(Services.filter((_, i) => i !== index));
     }
   };
 
-  // When user clicks "Submit" in the final step
+  // Final Submit of the entire form
   const handleSubmitInfo = async (e) => {
     e.preventDefault();
 
-    // Validate required fields
     const missingFields = [];
     if (!FirstName) missingFields.push("First Name");
     if (!LastName) missingFields.push("Last Name");
@@ -562,11 +566,11 @@ export default function StepperForm() {
     if (!selectedCity) missingFields.push("City");
 
     if (missingFields.length > 0) {
-      missingFields.forEach((field) => toast.error(`${field} is required`));
+      missingFields.forEach((f) => toast.error(`${f} is required`));
       return;
     }
 
-    // Gather all data
+    // Gather data
     const data = {
       profileImage: profileImg,
       firstName: FirstName,
@@ -586,30 +590,29 @@ export default function StepperForm() {
     };
 
     dispatch(setDetail(data));
-
     try {
       await saveProfileData(data);
       navigate(`/profile/${userData?.uid}`);
-    } catch (error) {
-      toast.error(`Error saving data: ${error.message || error}`);
-      console.log(error);
+    } catch (err) {
+      toast.error(`Error saving data: ${err.message}`);
+      console.log(err);
     }
   };
 
-  // Submit the modal form (add or edit item)
+  // Submit the modal form
   const handleModalSubmit = (e) => {
     e.preventDefault();
     saveDetail(modalType, modalFormData, editIndex);
     closeModal();
   };
 
-  // Load recommended services based on role
+  // Load recommended services based on Xpert role
   const [recommendations, setRecommendation] = useState([]);
   useEffect(() => {
     const recommendationsConfig = {
       developer: [
         { title: "Web Development", description: "Build websites." },
-        { title: "App Development", description: "Mobile applications." },
+        { title: "App Development", description: "Mobile apps." },
         { title: "Backend Development", description: "Server-side apps." },
         { title: "Database Management", description: "Scalable databases." },
       ],
@@ -619,58 +622,11 @@ export default function StepperForm() {
         { title: "Branding", description: "Brand identities." },
         { title: "Packaging Design", description: "Attractive packaging." },
       ],
-      "cloud devops": [
-        { title: "Cloud Setup", description: "Scalable cloud infra." },
-        { title: "DevOps Automation", description: "Streamline CI/CD." },
-        { title: "Server Management", description: "Maintain servers." },
-        { title: "Cloud Security", description: "Secure environments." },
-      ],
-      "content creator": [
-        { title: "Blog Writing", description: "SEO-friendly articles." },
-        { title: "Video Production", description: "High-quality videos." },
-        { title: "Podcasting", description: "Engaging podcasts." },
-        { title: "Social Media Content", description: "Various platforms." },
-      ],
-      "digital marketing": [
-        { title: "SEO Optimization", description: "Improve rankings." },
-        { title: "Social Media Campaigns", description: "Targeted campaigns." },
-        { title: "Email Marketing", description: "Effective email blasts." },
-        { title: "PPC", description: "Paid search ads." },
-      ],
-      lawyer: [
-        { title: "Legal Advice", description: "Expert consultations." },
-        { title: "Contract Drafting", description: "Draft agreements." },
-        { title: "Business Law", description: "Business legal matters." },
-        { title: "Intellectual Property", description: "Protect IP rights." },
-        { title: "Family Law", description: "Family-related legal issues." },
-        { title: "Criminal Defense", description: "Defense for crimes." },
-        { title: "Real Estate Law", description: "Property matters." },
-        { title: "Employment Law", description: "Employment disputes." },
-        { title: "Immigration Law", description: "Immigration services." },
-        { title: "Mergers & Acquisitions", description: "Handle M&A deals." },
-      ],
-      hr: [
-        { title: "Recruitment Services", description: "Find right talent." },
-        { title: "Employee Onboarding", description: "Onboarding process." },
-        { title: "Employee Training", description: "Training programs." },
-        { title: "HR Consulting", description: "HR strategy & compliance." },
-      ],
-      accountant: [
-        { title: "Tax Filing", description: "Tax compliance." },
-        { title: "Financial Planning", description: "Plan finances." },
-        { title: "Bookkeeping", description: "Accurate records." },
-        { title: "Investment Advisory", description: "Business investments." },
-      ],
-      astrologist: [
-        { title: "Personal Astrology", description: "Personal readings." },
-        { title: "Business Astrology", description: "Insights for business." },
-        { title: "Horoscope Creation", description: "Detailed horoscopes." },
-        { title: "Astrological Counseling", description: "Guidance by stars." },
-      ],
+      // More roles ...
       intern: [
         {
           title: "Internship",
-          description: "Hands-on experience for students/graduates.",
+          description: "Hands-on experience for students/fresh graduates.",
         },
         {
           title: "Full-Time",
@@ -678,7 +634,7 @@ export default function StepperForm() {
         },
         {
           title: "Part-Time",
-          description: "Short-term contract with specific tasks/workload.",
+          description: "Short-term contract with specific tasks.",
         },
       ],
       default: [
@@ -687,6 +643,7 @@ export default function StepperForm() {
           description: "A range of customizable services.",
         },
       ],
+      // Add other roles like "cloud devops", "lawyer", etc. as needed
     };
 
     if (Xpert && typeof Xpert === "string") {
@@ -699,7 +656,7 @@ export default function StepperForm() {
     }
   }, [Xpert]);
 
-  // If user clicks on a recommended service
+  // If user clicks on recommended item
   const handleRecommendationClick = (rec) => {
     const newServiceData = {
       serviceName: rec.title,
@@ -741,7 +698,6 @@ export default function StepperForm() {
         })}
       </Stepper>
 
-      {/* If the user has chosen something on step 0, show a chip */}
       {activeStep === 0 && Xpert && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
           <Chip label={Xpert} color="primary" />
@@ -753,16 +709,8 @@ export default function StepperForm() {
       <Box sx={{ height: "80vh", overflow: "auto" }}>
         {/* Step 1: Profile */}
         {activeStep === 1 && (
-          <Grid container spacing={4} alignItems="flex-start">
-            <Grid
-              item
-              xs={12}
-              md={4}
-              sx={{
-                position: { md: "sticky" },
-                top: 20,
-              }}
-            >
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
               <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
                 <CardContent>
                   {/* Profile Image */}
@@ -832,7 +780,6 @@ export default function StepperForm() {
                     size="small"
                     sx={{ mb: 3 }}
                   />
-
                   <TextField
                     label="Last Name"
                     variant="outlined"
@@ -845,13 +792,11 @@ export default function StepperForm() {
                   />
 
                   <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
-                    <InputLabel id="experience-label">
-                      Years of Experience
-                    </InputLabel>
+                    <InputLabel id="experience-label">Experience</InputLabel>
                     <Select
                       labelId="experience-label"
                       value={Experience}
-                      label="Years of Experience"
+                      label="Experience"
                       onChange={(e) => setExperience(e.target.value)}
                     >
                       <MenuItem value="Less than 1">Less than 1</MenuItem>
@@ -880,7 +825,6 @@ export default function StepperForm() {
                       ))}
                     </Select>
                   </FormControl>
-
                   <FormControl fullWidth required size="small">
                     <InputLabel id="city-label">City</InputLabel>
                     <Select
@@ -901,9 +845,8 @@ export default function StepperForm() {
               </Card>
             </Grid>
 
-            {/* Right side: LinkedIn, Skills, Education, etc. */}
-            <Grid item xs={12} md={8} sx={{ marginTop: "10px" }}>
-              {/* LinkedIn Import */}
+            {/* Right side */}
+            <Grid item xs={12} md={8}>
               {!profileData && (
                 <Box
                   sx={{
@@ -921,7 +864,6 @@ export default function StepperForm() {
                     onClick={() => setIsLinkedInFetched(false)}
                     style={{
                       display: "flex",
-                      flexDirection: "row",
                       alignItems: "center",
                       gap: "10px",
                       border: "1px solid #ccc",
@@ -961,7 +903,6 @@ export default function StepperForm() {
                       startIcon={<AddCircleOutlineIcon />}
                       onClick={() => openModal("Skill")}
                       size="small"
-                      sx={{ textTransform: "none" }}
                     >
                       Add Skill
                     </Button>
@@ -982,26 +923,20 @@ export default function StepperForm() {
                         gap: "20px",
                       }}
                     >
-                      {/* Edit icon */}
                       <IconButton
-                        aria-label="edit"
                         size="small"
                         sx={{ position: "absolute", top: 0, right: 30 }}
                         onClick={() => openModal("Skill", index, item)}
                       >
                         <FiEdit color="blue" size={16} />
                       </IconButton>
-
-                      {/* Delete icon */}
                       <IconButton
-                        aria-label="delete"
                         size="small"
                         sx={{ position: "absolute", top: 0, right: 0 }}
                         onClick={() => deleteDetail("skill", index)}
                       >
                         <FiTrash color="red" size={16} />
                       </IconButton>
-
                       <Typography variant="body1">
                         {item.skill.charAt(0).toUpperCase() +
                           item.skill.slice(1)}
@@ -1029,7 +964,6 @@ export default function StepperForm() {
                       startIcon={<AddCircleOutlineIcon />}
                       onClick={() => openModal("Education")}
                       size="small"
-                      sx={{ textTransform: "none" }}
                     >
                       Add Education
                     </Button>
@@ -1040,19 +974,14 @@ export default function StepperForm() {
                 <CardContent sx={{ padding: 2 }}>
                   {Education.map((item, index) => (
                     <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                      {/* Edit icon */}
                       <IconButton
-                        aria-label="edit"
                         size="small"
                         sx={{ position: "absolute", top: 0, right: 30 }}
                         onClick={() => openModal("Education", index, item)}
                       >
                         <FiEdit color="blue" size={16} />
                       </IconButton>
-
-                      {/* Delete icon */}
                       <IconButton
-                        aria-label="delete"
                         size="small"
                         sx={{ position: "absolute", top: 0, right: 0 }}
                         onClick={() => deleteDetail("education", index)}
@@ -1063,13 +992,11 @@ export default function StepperForm() {
                         <Typography variant="subtitle1">
                           <strong>{item.degree}</strong> in {item.stream}
                         </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          {item.college}
+                        <Typography variant="body2">{item.college}</Typography>
+                        <Typography variant="body2">
+                          {item.startDate} - {item.endDate || "Present"}
                         </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          {item.startDate} - {item.endDate}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary">
+                        <Typography variant="body2">
                           CGPA: {item.cgpa}
                         </Typography>
                       </Box>
@@ -1089,7 +1016,6 @@ export default function StepperForm() {
                       startIcon={<AddCircleOutlineIcon />}
                       onClick={() => openModal("Work")}
                       size="small"
-                      sx={{ textTransform: "none" }}
                     >
                       Add Experience
                     </Button>
@@ -1100,18 +1026,14 @@ export default function StepperForm() {
                 <CardContent sx={{ padding: 2 }}>
                   {Work.map((item, index) => (
                     <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                      {/* Edit icon */}
                       <IconButton
-                        aria-label="edit"
                         size="small"
                         sx={{ position: "absolute", top: 0, right: 30 }}
                         onClick={() => openModal("Work", index, item)}
                       >
                         <FiEdit color="blue" size={16} />
                       </IconButton>
-                      {/* Delete icon */}
                       <IconButton
-                        aria-label="delete"
                         size="small"
                         sx={{ position: "absolute", top: 0, right: 0 }}
                         onClick={() => deleteDetail("work", index)}
@@ -1122,15 +1044,11 @@ export default function StepperForm() {
                         <Typography variant="subtitle1">
                           <strong>{item.position}</strong> at {item.company}
                         </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          {item.startDate} - {item.endDate}
+                        <Typography variant="body2">
+                          {item.startDate} - {item.endDate || "Present"}
                         </Typography>
                         {item.description && (
-                          <Typography
-                            variant="body2"
-                            color="textSecondary"
-                            sx={{ mt: 1 }}
-                          >
+                          <Typography variant="body2" sx={{ mt: 1 }}>
                             {item.description}
                           </Typography>
                         )}
@@ -1151,7 +1069,6 @@ export default function StepperForm() {
                       startIcon={<AddCircleOutlineIcon />}
                       onClick={() => openModal("Project")}
                       size="small"
-                      sx={{ textTransform: "none" }}
                     >
                       Add Project
                     </Button>
@@ -1162,18 +1079,14 @@ export default function StepperForm() {
                 <CardContent sx={{ padding: 2 }}>
                   {Projects.map((item, index) => (
                     <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                      {/* Edit icon */}
                       <IconButton
-                        aria-label="edit"
                         size="small"
                         sx={{ position: "absolute", top: 0, right: 30 }}
                         onClick={() => openModal("Project", index, item)}
                       >
                         <FiEdit color="blue" size={16} />
                       </IconButton>
-                      {/* Delete icon */}
                       <IconButton
-                        aria-label="delete"
                         size="small"
                         sx={{ position: "absolute", top: 0, right: 0 }}
                         onClick={() => deleteDetail("project", index)}
@@ -1184,22 +1097,23 @@ export default function StepperForm() {
                         <Typography variant="subtitle1">
                           <strong>{item.projectName}</strong>
                         </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          {item.duration}
-                        </Typography>
+                        {/* If you want to show the date range:
+                          <Typography variant="body2">
+                            {item.startDate} - {item.endDate || "Present"}
+                          </Typography> */}
+                        <Typography variant="body2">{item.duration}</Typography>
                         {item.liveLink && (
                           <Typography variant="body2" color="primary">
                             <a
                               href={item.liveLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              style={{ textDecoration: "none" }}
                             >
                               Live Link
                             </a>
                           </Typography>
                         )}
-                        <Typography variant="body2" color="textSecondary">
+                        <Typography variant="body2">
                           {item.description}
                         </Typography>
                       </Box>
@@ -1209,7 +1123,7 @@ export default function StepperForm() {
               </Card>
             </Grid>
 
-            {/* Step Navigation Buttons */}
+            {/* Step Navigation */}
             <Grid item xs={12}>
               <Box
                 sx={{
@@ -1225,7 +1139,6 @@ export default function StepperForm() {
                     color="secondary"
                     onClick={() => setActiveStep(0)}
                     size="large"
-                    sx={{ mr: 2 }}
                   >
                     Back
                   </Button>
@@ -1278,7 +1191,7 @@ export default function StepperForm() {
                       {Xpert}
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
-                      {Experience} {Experience === 1 ? "Year" : "Years"} of
+                      {Experience} {Experience === "1" ? "Year" : "Years"} of
                       Experience
                     </Typography>
                     <Typography
@@ -1297,32 +1210,27 @@ export default function StepperForm() {
               </Card>
             </Grid>
 
-            {/* Right side: Consulting Price & Services */}
+            {/* Right side: Consulting & Services */}
             <Grid item xs={12} md={8}>
-              {/* Consulting Price (if role is astrologist/lawyer) */}
+              {/* Consulting Price if needed */}
               {isConsultingChargesEnabled() && (
-                <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+                <Card sx={{ mb: 4, boxShadow: 2 }}>
                   <CardHeader
                     title="Consulting Charges"
                     titleTypographyProps={{ variant: "h6" }}
                     sx={{ padding: 2 }}
                   />
                   <Divider />
-                  <CardContent sx={{ padding: 2 }}>
+                  <CardContent>
                     <Grid container spacing={3} alignItems="center">
                       <Grid item xs={12} sm={4}>
                         <TextField
                           label="Price (₹)"
-                          name="servicePrice"
                           variant="outlined"
                           fullWidth
                           onChange={(e) => {
-                            const inputPrice = parseFloat(e.target.value);
-                            if (!isNaN(inputPrice)) {
-                              setConsultingPrice(inputPrice);
-                            } else {
-                              setConsultingPrice("");
-                            }
+                            const val = parseFloat(e.target.value);
+                            setConsultingPrice(!isNaN(val) ? val : "");
                           }}
                           required
                           size="small"
@@ -1333,14 +1241,12 @@ export default function StepperForm() {
                         <Typography>Per Minute</Typography>
                       </Grid>
                     </Grid>
-
                     <Box sx={{ mt: 2 }}>
                       {ConsultingPrice !== "" && ConsultingPrice !== 0 && (
                         <Typography variant="body1">
                           Your Received: ₹{UserconsultingPrice}
                         </Typography>
                       )}
-
                       {ConsultingPrice !== "" && ConsultingPrice !== 0 && (
                         <Typography
                           variant="body2"
@@ -1354,15 +1260,14 @@ export default function StepperForm() {
                 </Card>
               )}
 
-              {/* Recommendations (Services) */}
-              <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+              {/* Recommended Services */}
+              <Card sx={{ mb: 4, boxShadow: 2 }}>
                 <CardHeader
                   title={
                     Xpert.toLowerCase() === "intern"
                       ? "Recommendations"
                       : "Services Recommendations"
                   }
-                  titleTypographyProps={{ variant: "h6" }}
                   sx={{ padding: 2 }}
                 />
                 <Divider />
@@ -1375,7 +1280,7 @@ export default function StepperForm() {
                             boxShadow: 1,
                             cursor: "pointer",
                             ":hover": { boxShadow: 3 },
-                            padding: 2,
+                            p: 2,
                             height: "100%",
                           }}
                           onClick={() => handleRecommendationClick(rec)}
@@ -1383,6 +1288,10 @@ export default function StepperForm() {
                           <Typography variant="subtitle1" gutterBottom>
                             <strong>{rec.title}</strong>
                           </Typography>
+                          {/* If you want to show the description:
+                              <Typography variant="body2">
+                                {rec.description}
+                              </Typography> */}
                         </Card>
                       </Grid>
                     ))}
@@ -1391,7 +1300,7 @@ export default function StepperForm() {
               </Card>
 
               {/* Services list */}
-              <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
+              <Card sx={{ mb: 4, boxShadow: 2 }}>
                 <CardHeader
                   title="Services"
                   titleTypographyProps={{ variant: "h6" }}
@@ -1401,7 +1310,6 @@ export default function StepperForm() {
                       startIcon={<AddCircleOutlineIcon />}
                       onClick={() => openModal("Service")}
                       size="small"
-                      sx={{ textTransform: "none" }}
                     >
                       Add Service
                     </Button>
@@ -1409,42 +1317,36 @@ export default function StepperForm() {
                   sx={{ padding: 2 }}
                 />
                 <Divider />
-                <CardContent sx={{ padding: 2 }}>
+                <CardContent>
                   {Services.map((item, index) => (
                     <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                      {/* Edit icon */}
                       <IconButton
-                        aria-label="edit"
                         size="small"
                         sx={{ position: "absolute", top: 0, right: 30 }}
                         onClick={() => openModal("Service", index, item)}
                       >
                         <FiEdit color="blue" size={16} />
                       </IconButton>
-                      {/* Delete icon */}
                       <IconButton
-                        aria-label="delete"
                         size="small"
                         sx={{ position: "absolute", top: 0, right: 0 }}
                         onClick={() => deleteDetail("service", index)}
                       >
                         <FiTrash color="red" size={16} />
                       </IconButton>
-
                       <Typography variant="subtitle1">
                         <strong>{item.serviceName}</strong>
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
                         {item.serviceDescription}
                       </Typography>
-
                       {Xpert.toLowerCase() === "intern" ? (
                         <>
                           <Typography variant="body2" color="textSecondary">
-                            Internship Start Date: {item.startDate || "N/A"}
+                            Internship Start Date: {item.startDate || "Not Set"}
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
-                            Internship End Date: {item.endDate || "N/A"}
+                            Internship End Date: {item.endDate || "Not Set"}
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
                             Availability:{" "}
@@ -1477,7 +1379,6 @@ export default function StepperForm() {
                 </CardContent>
               </Card>
 
-              {/* Final Submit */}
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button
                   variant="outlined"
@@ -1505,7 +1406,6 @@ export default function StepperForm() {
           </Grid>
         )}
 
-        {/* Step 3: Confirmation */}
         {activeStep === 3 && (
           <Typography variant="h6" align="center" sx={{ mt: 4 }}>
             Profile successfully submitted!
@@ -1536,7 +1436,6 @@ export default function StepperForm() {
               <CloseIcon />
             </IconButton>
           </DialogTitle>
-
           <form onSubmit={handleModalSubmit}>
             <DialogContent dividers>
               {/* Education Form */}
@@ -1597,11 +1496,12 @@ export default function StepperForm() {
                     <TextField
                       label="Start Date"
                       name="startDate"
-                      type="text"
+                      type="date"
                       variant="outlined"
                       fullWidth
                       required
                       size="small"
+                      InputLabelProps={{ shrink: true }}
                       value={modalFormData.startDate || ""}
                       onChange={(e) =>
                         setModalFormData((prev) => ({
@@ -1615,11 +1515,12 @@ export default function StepperForm() {
                     <TextField
                       label="End Date"
                       name="endDate"
-                      type="text"
+                      type="date"
                       variant="outlined"
                       fullWidth
                       required
                       size="small"
+                      InputLabelProps={{ shrink: true }}
                       value={modalFormData.endDate || ""}
                       onChange={(e) =>
                         setModalFormData((prev) => ({
@@ -1672,14 +1573,7 @@ export default function StepperForm() {
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <Typography
-                      sx={{
-                        marginLeft: "2px",
-                        color: "#1876D2",
-                        fontSize: "14px",
-                      }}
-                      component="legend"
-                    >
+                    <Typography sx={{ fontSize: "14px" }}>
                       Self-Rating
                     </Typography>
                     <Rating
@@ -1742,13 +1636,14 @@ export default function StepperForm() {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
-                      label="Start Date (e.g. Jan 2023)"
+                      label="Start Date"
                       name="startDate"
-                      type="text"
+                      type="date"
                       variant="outlined"
                       fullWidth
                       required
                       size="small"
+                      InputLabelProps={{ shrink: true }}
                       value={modalFormData.startDate || ""}
                       onChange={(e) =>
                         setModalFormData((prev) => ({
@@ -1760,13 +1655,14 @@ export default function StepperForm() {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
-                      label="End Date (e.g. Present)"
+                      label="End Date"
                       name="endDate"
-                      type="text"
+                      type="date"
                       variant="outlined"
                       fullWidth
                       required
                       size="small"
+                      InputLabelProps={{ shrink: true }}
                       value={modalFormData.endDate || ""}
                       onChange={(e) =>
                         setModalFormData((prev) => ({
@@ -1817,13 +1713,13 @@ export default function StepperForm() {
                       }
                     />
                   </Grid>
+                  {/* If you want start/end date fields, you can add them here. */}
                   <Grid item xs={12}>
                     <TextField
-                      label="Duration (e.g. Jan 2023 - Present)"
+                      label="Duration eg 2 Months"
                       name="duration"
                       variant="outlined"
                       fullWidth
-                      required
                       size="small"
                       value={modalFormData.duration || ""}
                       onChange={(e) =>
@@ -1918,11 +1814,12 @@ export default function StepperForm() {
                         <TextField
                           label="Internship Start Date"
                           name="startDate"
-                          type="text"
+                          type="date"
                           variant="outlined"
                           fullWidth
                           required
                           size="small"
+                          InputLabelProps={{ shrink: true }}
                           value={modalFormData.startDate || ""}
                           onChange={(e) =>
                             setModalFormData((prev) => ({
@@ -1936,11 +1833,12 @@ export default function StepperForm() {
                         <TextField
                           label="Internship End Date"
                           name="endDate"
-                          type="text"
+                          type="date"
                           variant="outlined"
                           fullWidth
                           required
                           size="small"
+                          InputLabelProps={{ shrink: true }}
                           value={modalFormData.endDate || ""}
                           onChange={(e) =>
                             setModalFormData((prev) => ({
@@ -1957,7 +1855,6 @@ export default function StepperForm() {
                           </InputLabel>
                           <Select
                             labelId="availability-label"
-                            name="availability"
                             label="Availability"
                             value={modalFormData.availability || ""}
                             onChange={(e) =>
@@ -2038,7 +1935,6 @@ export default function StepperForm() {
                           </InputLabel>
                           <Select
                             labelId="duration-type-label"
-                            name="durationType"
                             label="Timeline Type"
                             value={modalFormData.durationType || ""}
                             onChange={(e) =>
@@ -2059,7 +1955,6 @@ export default function StepperForm() {
                 </Grid>
               )}
             </DialogContent>
-
             <DialogActions>
               <Button
                 onClick={closeModal}
@@ -2069,7 +1964,6 @@ export default function StepperForm() {
               >
                 Cancel
               </Button>
-
               <Button
                 variant="contained"
                 color="primary"

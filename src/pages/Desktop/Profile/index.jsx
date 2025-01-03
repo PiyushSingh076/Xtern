@@ -2,10 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 import "./Profile.css";
 import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
-import "react-circular-progressbar/dist/styles.css";
 import Skeleton from "@mui/material/Skeleton";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -31,39 +29,32 @@ import {
   ProgressBar,
 } from "react-bootstrap";
 import ScheduledCallsModal from "./ScheduledCallsModal";
-import { Box, Tooltip, IconButton } from "@mui/material";
+import { Box, Tooltip, IconButton, Chip } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
 
 /**
- * Utility to safely format dates whether they're Firestore timestamps
- * (with .seconds) or normal strings ("2025-01-31", "Present", etc.).
+ * Utility to safely format Firestore Timestamp or "Present"/string.
  */
 function formatDateGeneric(value) {
   if (!value) return "N/A";
-
-  // If it's a Firestore timestamp object
-  if (value.seconds !== undefined) {
-    return dayjs.unix(value.seconds).format("D MMM YYYY");
+  if (typeof value === "string") {
+    if (value.toLowerCase() === "present") {
+      return "Present";
+    }
+    // Parse the date string
+    const parsed = dayjs(value);
+    return parsed.isValid() ? parsed.format("D MMM YYYY") : value;
   }
-
-  // If it's the string "Present"
-  if (typeof value === "string" && value.toLowerCase() === "present") {
-    return "Present";
-  }
-
-  // Otherwise, try to parse it as a date string
-  const parsed = dayjs(value);
-  return parsed.isValid() ? parsed.format("D MMM YYYY") : value;
+  // If it's a Firestore Timestamp (not applicable as per latest changes)
+  return "N/A";
 }
 
 /**
- * Helper to format experience:
- * - If no/zero, returns "Less than 1"
- * - Otherwise returns integer (e.g., "3")
+ * Format experience if it's numeric or zero
  */
 function formatExperience(expValue) {
   const parsed = parseInt(expValue || "0", 10);
-  if (parsed === 0) return "Less than 1";
+  if (parsed <= 0) return "Less than 1";
   return parsed.toString();
 }
 
@@ -80,35 +71,36 @@ const SingleMentor = () => {
   const [callsModalOpen, setCallsModalOpen] = useState(false);
   const [meetLink, setMeetLink] = useState("");
 
-  // For toggling descriptions in Work and Projects
+  // Toggling descriptions in Work & Projects
   const [workOpen, setWorkOpen] = useState({});
   const [projectOpen, setProjectOpen] = useState({});
+  const [serviceOpen, setServiceOpen] = useState({}); // New state for Services
 
-  const toggleWorkDesc = (index) => {
+  const toggleWorkDesc = (index) =>
     setWorkOpen((prev) => ({ ...prev, [index]: !prev[index] }));
-  };
-  const toggleProjectDesc = (index) => {
+  const toggleProjectDesc = (index) =>
     setProjectOpen((prev) => ({ ...prev, [index]: !prev[index] }));
-  };
+  const toggleServiceDesc = (index) =>
+    setServiceOpen((prev) => ({ ...prev, [index]: !prev[index] }));
 
-  // Hook to fetch this profile's data by UID
+  // Hook to fetch this user’s data
   const {
     userData: profileData,
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(uid);
 
-  // Example: fetching other users by type (not critical)
+  // Example: fetching other users by type
   const {
     users,
     loading: usersLoading,
     error: usersError,
   } = useFetchUsersByType("Developer");
 
-  // Current user (the one logged in)
+  // Current user
   const { userData: currentUser } = useFetchUserData();
 
-  // Google Calendar integration
+  // Google Calendar
   const {
     signIn,
     createEvent,
@@ -117,7 +109,7 @@ const SingleMentor = () => {
     isInitialized,
   } = useGoogleCalendar();
 
-  // Calls for the user (history)
+  // Calls for user
   const {
     calls,
     loading: callsLoading,
@@ -127,11 +119,8 @@ const SingleMentor = () => {
   // If the user is viewing their own profile, let them edit
   const [editable, setEditable] = useState(false);
   useEffect(() => {
-    if (currentUser && currentUser.uid === uid) {
-      setEditable(true);
-    } else {
-      setEditable(false);
-    }
+    if (currentUser && currentUser.uid === uid) setEditable(true);
+    else setEditable(false);
   }, [currentUser, uid]);
 
   // If no .type, redirect to fill detail
@@ -141,19 +130,17 @@ const SingleMentor = () => {
     }
   }, [profileLoading, profileData, navigate]);
 
-  // For Stream registration (optional)
   const registrationStatus = useRegisterUser(
     profileData,
     profileLoading,
     profileError
   );
 
-  // On "Edit" -> go to StepperForm with data preloaded
+  // On "Edit" -> go to StepperForm
   const handleEdit = () => {
     if (profileData?.type) {
-      // Deep copy to avoid accidental mutation
-      const sanitizedData = JSON.parse(JSON.stringify(profileData));
-      navigate("/userdetail", { state: { profileData: sanitizedData } });
+      const sanitized = JSON.parse(JSON.stringify(profileData));
+      navigate("/userdetail", { state: { profileData: sanitized } });
     } else {
       navigate("/userdetail");
     }
@@ -172,18 +159,13 @@ const SingleMentor = () => {
     setDescription(e.target.value);
   };
 
-  // Submit a call to Google Calendar
   const handleScheduleCall = async () => {
     try {
       if (!isInitialized) {
-        toast.error(
-          "Google Calendar is not initialized yet. Please try again."
-        );
+        toast.error("Google Calendar not ready. Please try again.");
         return;
       }
-
       await signIn();
-
       const startDateTime = interviewDate
         .hour(interviewTime.hour())
         .minute(interviewTime.minute())
@@ -194,26 +176,14 @@ const SingleMentor = () => {
       const eventData = {
         title: "XTERN Mentorship Call",
         description: `
-        📞 XTERN Mentorship Call
-
-        👤 Host: ${currentUser?.firstName} ${currentUser?.lastName} (${
-          currentUser?.email
-        })
-        👥 Recipient: ${profileData?.firstName} ${profileData?.lastName} (${
-          profileData?.email
-        })
-
-        📅 Date: ${interviewDate.format("D MMM YYYY")}
-        ⏰ Time: ${interviewTime.format("h:mm A")}
-        ⏳ Duration: 30 minutes
-        📝 Description: ${description || "N/A"}
-
-        Meet Link: ${meetLink}
-
-        💬 Looking forward to our mentorship session!
-
-        Best Regards,
-        ✨ XTERN Team
+          Mentorship Call with ${profileData?.firstName} ${
+          profileData?.lastName
+        }
+          Host: ${currentUser?.firstName} ${currentUser?.lastName}
+          Date: ${interviewDate.format("D MMM YYYY")}
+          Time: ${interviewTime.format("h:mm A")}
+          Description: ${description || "N/A"}
+          Meet Link: ${meetLink}
         `,
         startDateTime,
         endDateTime,
@@ -236,74 +206,66 @@ const SingleMentor = () => {
         setDescription("");
         setInterviewScheduled(false);
         setMeetLink(response.meetLink);
-
-        // Open the event link in a new tab
         window.open(response.eventLink, "_blank");
-        toast.success("Call scheduled and event opened in a new tab.");
+        toast.success("Call scheduled and event opened.");
       } else {
-        toast.error("Failed to schedule the call. Please try again.");
+        toast.error("Failed to schedule. Try again.");
       }
-    } catch (error) {
-      console.error("Error scheduling call:", error);
-      toast.error("An error occurred while scheduling the call.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error scheduling call.");
     }
   };
 
-  // If user clicks a "Service" item (for demonstration)
+  // If user clicks "Service" item
   const handleService = (item) => {
-    const serializableItem = {
-      serviceName: item.serviceName,
-      serviceDescription: item.serviceDescription,
-      serviceDuration: item.serviceDuration,
-      serviceDurationType: item.serviceDurationType,
-      servicePrice: item.servicePrice,
-    };
+    const serializableItem = { ...item };
     navigate("/project", { state: { item: serializableItem } });
   };
 
-  // Show/hide scheduled calls
+  // Show/hide calls
   const openScheduledCallsModal = () => setCallsModalOpen(true);
   const closeScheduledCallsModal = () => setCallsModalOpen(false);
 
-  // Delete a scheduled call from the calendar
+  // Delete event from calendar
   const handleDeleteEvent = async (eventId, callDocId) => {
     try {
       await deleteEvent(eventId, callDocId);
-    } catch (error) {
-      console.error("Error deleting event:", error);
-      toast.error("An error occurred while deleting the event.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error deleting event.");
     }
   };
 
   // "Share" functionality
   const handleShare = () => {
-    const url = window.location.href; // current page URL
+    const url = window.location.href;
     navigator.clipboard
       .writeText(url)
-      .then(() => toast.success("Profile link copied to clipboard!"))
-      .catch(() => toast.error("Failed to copy link. Please try again."));
+      .then(() => toast.success("Profile link copied!"))
+      .catch(() => toast.error("Failed to copy link."));
   };
 
   return (
     <div className="desktop-profile-container">
-      {/* Profile details section */}
       <section id="profile-details-section">
         <div className="profile-details">
           <div className="profile-details-wrap">
             <div className="profile-details-first-wrap">
-              {/* Show the "Edit" button if I'm the owner */}
               {editable && (
-                <button onClick={handleEdit} className="edit-btn">
+                <button
+                  onClick={handleEdit}
+                  className="edit-btn"
+                  title="Edit Profile"
+                >
                   <MdEdit />
                 </button>
               )}
-
               <div className="profile-img-info-container">
                 <div
                   className="mentor-img-sec"
                   style={{ position: "relative" }}
                 >
-                  {/* Share button in top-left corner of the avatar */}
                   <Tooltip title="Share Profile" arrow>
                     <IconButton
                       onClick={handleShare}
@@ -313,23 +275,15 @@ const SingleMentor = () => {
                         left: 5,
                         backgroundColor: "#007bff",
                         color: "#fff",
-                        "&:hover": {
-                          backgroundColor: "#0056b3",
-                        },
+                        "&:hover": { backgroundColor: "#0056b3" },
                       }}
                       size="small"
                     >
                       <ShareIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
-
                   {profileLoading ? (
-                    <Skeleton
-                      variant="circular"
-                      width={150}
-                      height={150}
-                      animation="wave"
-                    />
+                    <Skeleton variant="circular" width={150} height={150} />
                   ) : (
                     <img
                       src={profileData?.photo_url || "/default-profile.png"}
@@ -340,17 +294,11 @@ const SingleMentor = () => {
                     />
                   )}
                 </div>
-
                 <div className="profile-details-details">
                   {profileLoading ? (
                     <Skeleton
                       variant="text"
-                      animation="wave"
-                      sx={{
-                        fontSize: "1.2rem",
-                        width: "150px",
-                        height: "30px",
-                      }}
+                      sx={{ fontSize: "1.2rem", width: "150px" }}
                     />
                   ) : (
                     <h4 style={{ marginTop: "10px" }}>
@@ -359,11 +307,7 @@ const SingleMentor = () => {
                   )}
 
                   {profileLoading ? (
-                    <Skeleton
-                      variant="text"
-                      animation="wave"
-                      sx={{ fontSize: "1rem", width: "100px", height: "20px" }}
-                    />
+                    <Skeleton sx={{ fontSize: "1rem", width: "100px" }} />
                   ) : (
                     <span>
                       {profileData?.city}, {profileData?.state}
@@ -371,49 +315,33 @@ const SingleMentor = () => {
                   )}
 
                   {profileLoading ? (
-                    <Skeleton
-                      variant="text"
-                      animation="wave"
-                      sx={{ fontSize: "1rem", width: "200px", height: "20px" }}
-                    />
+                    <Skeleton sx={{ fontSize: "1rem", width: "100px" }} />
                   ) : (
                     <span>
-                      Year of Experience:{" "}
+                      Years of Experience:{" "}
                       {formatExperience(profileData?.experience)}
                     </span>
                   )}
 
                   {profileLoading ? (
-                    <Skeleton
-                      variant="text"
-                      animation="wave"
-                      sx={{ fontSize: "1rem", width: "100px", height: "20px" }}
-                    />
+                    <Skeleton sx={{ width: "50px" }} />
                   ) : (
                     <p className="badge-type">{profileData?.type}</p>
                   )}
                 </div>
               </div>
             </div>
-
             {profileLoading ? (
               <Skeleton
-                variant="rectangle"
-                sx={{
-                  width: "100%",
-                  height: "350px",
-                  marginTop: "20px",
-                  borderRadius: "20px",
-                }}
+                variant="rectangular"
+                sx={{ width: "100%", height: "350px", marginTop: "20px" }}
               />
             ) : (
               <div className="skills-section">
                 <div className="skills-header">Skills</div>
-                {profileData?.skillSet?.length > 0 ? (
+                {profileData?.skillSet?.length ? (
                   profileData.skillSet.map((item) => {
-                    // skillRating is out of 5 -> convert to percentage
-                    const ratingPercentage =
-                      (parseInt(item.skillRating) / 5) * 100;
+                    const ratingPct = (parseInt(item.skillRating) / 5) * 100;
                     return (
                       <div className="skill-bar-card" key={item.skill}>
                         <span>{item.skill}</span>
@@ -427,19 +355,15 @@ const SingleMentor = () => {
                         >
                           <div
                             className="skill-rating"
-                            style={{
-                              marginBottom: "5px",
-                              fontSize: "12px",
-                              color: "#007bff",
-                            }}
+                            style={{ marginBottom: "5px", fontSize: "12px" }}
                           >
-                            {ratingPercentage}%
+                            {ratingPct}%
                           </div>
                           <div className="skill-bar">
                             <div
                               className="skill-bar-fill"
                               style={{
-                                width: `${ratingPercentage}%`,
+                                width: `${ratingPct}%`,
                                 backgroundColor: "#007bff",
                                 height: "5px",
                               }}
@@ -460,29 +384,18 @@ const SingleMentor = () => {
 
       <section className="acadmic-section-container">
         {profileLoading ? (
-          <Skeleton
-            animation="pulse"
-            variant="rectangular"
-            sx={{ width: "100%", height: "100px", borderRadius: "20px" }}
-          />
+          <Skeleton sx={{ width: "100%", height: "100px" }} />
         ) : (
           <div
             className="consulting-container"
             style={{ marginBottom: "20px" }}
           >
             <div className="consulting-btn-container">
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
+              <div style={{ display: "flex", alignItems: "center" }}>
                 {profileData?.consultingPrice && (
                   <span className="service-name">Consulting Now</span>
                 )}
-                {/* If there's a skillSet, display them as badges */}
-                <div className="issue-badge mt-2">
+                <div className="issue-badge mt-4">
                   {profileData?.skillSet?.map((skill, index) => (
                     <div className="badge p-2" key={index}>
                       {skill.skill}
@@ -490,8 +403,6 @@ const SingleMentor = () => {
                   ))}
                 </div>
               </div>
-
-              {/* Hide Chat/Meet if I'm viewing my own profile */}
               {!editable && (
                 <div className="consulting-btn">
                   <button
@@ -509,44 +420,19 @@ const SingleMentor = () => {
                   </button>
                 </div>
               )}
-
               {profileData?.consultingPrice && (
-                <span className="consultant-price">
+                <span className="consultant-price fs-6 fw-bold">
                   ₹{profileData.consultingPrice}/minute
                 </span>
               )}
             </div>
-
-            <Box
-              sx={{
-                marginTop: "0px",
-                marginLeft: "3px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
+            <Box sx={{ marginTop: "0px", marginLeft: "3px" }}>
               <Tooltip title="View Previous Calls" arrow>
                 <Button
                   onClick={openScheduledCallsModal}
                   variant="contained"
                   startIcon={<FaRegClock size={20} />}
-                  sx={{
-                    backgroundColor: "#e8f4ff",
-                    color: "#003366",
-                    border: "1px solid #003366",
-                    borderRadius: "24px",
-                    padding: "8px 16px",
-                    fontSize: "1rem",
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      backgroundColor: "#d4ebff",
-                      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
-                    },
-                  }}
+                  sx={{ textTransform: "none" }}
                 >
                   Calls
                 </Button>
@@ -557,56 +443,55 @@ const SingleMentor = () => {
 
         {profileLoading ? (
           <Skeleton
-            animation="pulse"
-            variant="rectangular"
-            sx={{
-              width: "100%",
-              height: "200px",
-              borderRadius: "20px",
-              marginTop: "20px",
-            }}
+            sx={{ width: "100%", height: "200px", marginTop: "20px" }}
           />
         ) : (
           <div className="service-container">
             <h4>Service</h4>
-            {profileData?.serviceDetails?.length > 0 ? (
-              <div className="service-list" style={{ cursor: "pointer" }}>
+            {profileData?.serviceDetails?.length ? (
+              <div className="service-list">
                 {profileData.serviceDetails.map((item, index) => (
                   <div
                     onClick={() => handleService(item)}
                     className="service-item"
-                    key={`${item.serviceName}-${index}`}
+                    key={index}
                   >
                     <span className="service-name">{item.serviceName}</span>
-                    <p>
-                      {item.serviceDescription.slice(0, 70)}
-                      {item.serviceDescription.length > 70 ? "..." : ""}
-                    </p>
 
-                    {/* If user is "intern", show internship fields */}
+                    {/* **Interactive Description with Tooltip** */}
+                    <Tooltip
+                      title={
+                        item.serviceDescription || "No description available"
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <p>
+                        {item.serviceDescription?.length > 70
+                          ? `${item.serviceDescription.slice(0, 70)}...`
+                          : item.serviceDescription}
+                      </p>
+                    </Tooltip>
+
                     {profileData?.type?.toLowerCase() === "intern" ? (
-                      <>
-                        <div className="price-duration-container">
-                          <span className="service-duration">
-                            <strong>Availability:</strong> {item.availability}
-                            {item.availability === "part time" &&
-                              item.hoursPerDay && (
-                                <> / {item.hoursPerDay} hours/day</>
-                              )}
-                          </span>
-                        </div>
-                        <div className="price-duration-container">
-                          <span>
-                            <strong>Start:</strong>{" "}
-                            {formatDateGeneric(item.startDate)}
-                          </span>
-                          <span style={{ marginLeft: "10px" }}>
-                            <strong>End:</strong>{" "}
-                            {formatDateGeneric(item.endDate)}
-                          </span>
-                        </div>
-                      </>
+                      /* **1. Compact Badge for Interns** */
+                      <Chip
+                        label={`Avail: ${item.availability}, ${
+                          item.hoursPerDay
+                        }h/day | ${formatDateGeneric(
+                          item.startDate
+                        )}, ${formatDateGeneric(item.endDate)}`}
+                        size="small"
+                        color="primary"
+                        sx={{
+                          marginTop: 1,
+                          backgroundColor: "#f5f5f5", // Lighter background
+                          border: "1px solid #424242", // Dark border
+                          color: "#424242", // Dark text for contrast
+                        }}
+                      />
                     ) : (
+                      /* **2. Service Duration and Price for Non-Interns** */
                       <div className="price-duration-container">
                         {item.serviceDuration && (
                           <span className="service-duration">
@@ -626,11 +511,7 @@ const SingleMentor = () => {
               </div>
             ) : (
               <div style={{ textAlign: "center", marginTop: "20px" }}>
-                <FaRegFolderOpen
-                  size={50}
-                  color="#ccc"
-                  style={{ marginBottom: "10px" }}
-                />
+                <FaRegFolderOpen size={50} color="#ccc" />
                 <p>No services available</p>
               </div>
             )}
@@ -642,13 +523,7 @@ const SingleMentor = () => {
             <div className="fifth-decs-sec-wrap">
               {profileLoading ? (
                 <Skeleton
-                  variant="rectangle"
-                  sx={{
-                    width: "100%",
-                    height: "50px",
-                    marginTop: "20px",
-                    borderRadius: "10px",
-                  }}
+                  sx={{ width: "100%", height: "50px", marginTop: "20px" }}
                 />
               ) : (
                 <ul
@@ -656,43 +531,35 @@ const SingleMentor = () => {
                   id="mentor-tab"
                   role="tablist"
                 >
-                  <li className="nav-item" role="presentation">
+                  <li className="nav-item">
                     <button
                       className="nav-link active"
-                      id="mentor-course-tab-btn"
                       data-bs-toggle="pill"
                       data-bs-target="#course-content"
                       type="button"
                       role="tab"
-                      aria-selected="true"
                     >
                       Work Experience
                     </button>
                   </li>
-                  <li className="nav-item" role="presentation">
+                  <li className="nav-item">
                     <button
                       className="nav-link"
-                      id="student-tab-btn"
                       data-bs-toggle="pill"
                       data-bs-target="#education-content"
                       type="button"
                       role="tab"
-                      aria-selected="false"
-                      tabIndex="-1"
                     >
                       Education
                     </button>
                   </li>
-                  <li className="nav-item" role="presentation">
+                  <li className="nav-item">
                     <button
                       className="nav-link"
-                      id="reviews-tab-btn"
                       data-bs-toggle="pill"
                       data-bs-target="#projects-content"
                       type="button"
                       role="tab"
-                      aria-selected="false"
-                      tabIndex="-1"
                     >
                       Projects
                     </button>
@@ -700,7 +567,7 @@ const SingleMentor = () => {
                 </ul>
               )}
 
-              <div className="tab-content" id="mentor-tab-content">
+              <div className="tab-content">
                 {/* Work Experience Tab */}
                 <div
                   className="tab-pane fade show active mt-16"
@@ -709,26 +576,25 @@ const SingleMentor = () => {
                 >
                   {profileLoading ? (
                     <Skeleton
-                      animation="pulse"
-                      variant="rectangular"
-                      sx={{
-                        width: "100%",
-                        height: "200px",
-                        borderRadius: "20px",
-                        marginTop: "20px",
-                      }}
+                      sx={{ width: "100%", height: "200px", marginTop: "20px" }}
                     />
-                  ) : profileData?.workExperience?.length > 0 ? (
+                  ) : profileData?.workExperience?.length ? (
                     profileData.workExperience.map((work, index) => (
                       <div
                         className="experience-sec"
-                        key={`${work?.role}-${index}`}
+                        key={index}
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "10px",
+                        }}
                       >
                         <div className="work-logo-container">
                           <img
                             src="https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
                             className="educ-logo"
                             alt="Company Logo"
+                            style={{ width: "50px", height: "50px" }}
                           />
                         </div>
                         <div className="experience-info">
@@ -738,16 +604,29 @@ const SingleMentor = () => {
                             {formatDateGeneric(work?.startDate)} -{" "}
                             {formatDateGeneric(work?.endDate)}
                           </p>
-                          <button
-                            className="desc-btn"
-                            onClick={() => toggleWorkDesc(index)}
+                          <Tooltip
+                            title={
+                              work.description || "No description available"
+                            }
+                            arrow
+                            placement="top"
                           >
-                            {workOpen[index]
-                              ? "Hide Description"
-                              : "View Description"}
-                          </button>
+                            <span
+                              className="desc-toggle-text"
+                              onClick={() => toggleWorkDesc(index)}
+                              style={{
+                                color: "blue",
+                                cursor: "pointer",
+                                textDecoration: "underline",
+                              }}
+                            >
+                              {workOpen[index]
+                                ? "Hide Description"
+                                : "View Description"}
+                            </span>
+                          </Tooltip>
                           {workOpen[index] && (
-                            <div className="w-full" style={{ marginTop: 5 }}>
+                            <div style={{ marginTop: 5 }}>
                               {work?.description || "No description available"}
                             </div>
                           )}
@@ -756,11 +635,7 @@ const SingleMentor = () => {
                     ))
                   ) : (
                     <div style={{ textAlign: "center", marginTop: "20px" }}>
-                      <FaRegFolderOpen
-                        size={50}
-                        color="#ccc"
-                        style={{ marginBottom: "10px" }}
-                      />
+                      <FaRegFolderOpen size={50} color="#ccc" />
                       <p>No work experience found</p>
                     </div>
                   )}
@@ -774,43 +649,41 @@ const SingleMentor = () => {
                 >
                   {profileLoading ? (
                     <Skeleton
-                      animation="pulse"
-                      variant="rectangular"
-                      sx={{
-                        width: "100%",
-                        height: "200px",
-                        borderRadius: "20px",
-                        marginTop: "20px",
-                      }}
+                      sx={{ width: "100%", height: "200px", marginTop: "20px" }}
                     />
-                  ) : profileData?.educationDetails?.length > 0 ? (
+                  ) : profileData?.educationDetails?.length ? (
                     profileData.educationDetails.map((educ, index) => (
-                      <div className="experience-sec" key={`educ-${index}`}>
+                      <div
+                        className="experience-sec"
+                        key={index}
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "10px",
+                        }}
+                      >
                         <div className="work-logo-container">
                           <img
                             src="https://cdn.vectorstock.com/i/1000x1000/14/68/education-color-icon-vector-29051468.jpg"
                             className="educ-logo"
                             alt="Education Logo"
+                            style={{ width: "50px", height: "50px" }}
                           />
                         </div>
                         <div className="experience-info">
                           <h4>{educ?.degree}</h4>
                           <h6>Stream: {educ?.stream}</h6>
-                          <p>{educ?.college}</p>
+                          <p>{educ?.collegename}</p>
                           <p>
-                            {formatDateGeneric(educ?.startDate)} -{" "}
-                            {formatDateGeneric(educ?.endDate)}
+                            {formatDateGeneric(educ?.startyear)} -{" "}
+                            {formatDateGeneric(educ?.endyear)}
                           </p>
                         </div>
                       </div>
                     ))
                   ) : (
                     <div style={{ textAlign: "center", marginTop: "20px" }}>
-                      <FaRegFolderOpen
-                        size={50}
-                        color="#ccc"
-                        style={{ marginBottom: "10px" }}
-                      />
+                      <FaRegFolderOpen size={50} color="#ccc" />
                       <p>No education details found</p>
                     </div>
                   )}
@@ -824,34 +697,37 @@ const SingleMentor = () => {
                 >
                   {profileLoading ? (
                     <Skeleton
-                      animation="pulse"
-                      variant="rectangular"
-                      sx={{
-                        width: "100%",
-                        height: "200px",
-                        borderRadius: "20px",
-                        marginTop: "20px",
-                      }}
+                      sx={{ width: "100%", height: "200px", marginTop: "20px" }}
                     />
-                  ) : profileData?.projectDetails?.length > 0 ? (
+                  ) : profileData?.projectDetails?.length ? (
                     profileData.projectDetails.map((project, index) => (
-                      <div className="experience-sec" key={`project-${index}`}>
+                      <div
+                        className="experience-sec"
+                        key={index}
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "10px",
+                        }}
+                      >
                         <div className="work-logo-container">
                           <img
                             src="https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg"
                             className="educ-logo"
                             alt="Project Logo"
+                            style={{ width: "50px", height: "50px" }}
                           />
                         </div>
                         <div className="experience-info">
                           <h4>{project?.projectName}</h4>
+                          {project?.duration && <h6>{project?.duration}</h6>}
                           {project?.techstack &&
                             project?.techstack.length > 0 && (
                               <div>
                                 <b>Tech Stack:</b>{" "}
-                                {project.techstack.map((item, idx) => (
+                                {project.techstack.map((itm, idx) => (
                                   <span key={idx}>
-                                    {item}
+                                    {itm}
                                     {idx !== project.techstack.length - 1 &&
                                       ", "}
                                   </span>
@@ -859,27 +735,54 @@ const SingleMentor = () => {
                               </div>
                             )}
                           <div className="desc-view-btn-container">
+                            {/* Tooltip for Live Link */}
                             {project?.liveDemo && (
-                              <a
-                                href={project?.liveDemo}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="link-btn"
+                              <Tooltip
+                                title={project.liveDemo}
+                                arrow
+                                placement="top"
                               >
-                                Live Link
-                              </a>
+                                <a
+                                  href={project.liveDemo}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="link-btn"
+                                  style={{
+                                    marginRight: "10px", // Add spacing between link and description
+                                  }}
+                                >
+                                  Live Link
+                                </a>
+                              </Tooltip>
                             )}
-                            <button
-                              className="desc-btn"
-                              onClick={() => toggleProjectDesc(index)}
+
+                            {/* Tooltip for View Description */}
+                            <Tooltip
+                              title={
+                                project.description ||
+                                "No description available"
+                              }
+                              arrow
+                              placement="top"
                             >
-                              {projectOpen[index]
-                                ? "Hide Description"
-                                : "View Description"}
-                            </button>
+                              <span
+                                className="desc-toggle-text"
+                                onClick={() => toggleProjectDesc(index)}
+                                style={{
+                                  color: "blue",
+                                  cursor: "pointer",
+                                  textDecoration: "underline",
+                                }}
+                              >
+                                {projectOpen[index]
+                                  ? "Hide Description"
+                                  : "View Description"}
+                              </span>
+                            </Tooltip>
                           </div>
+
                           {projectOpen[index] && (
-                            <div className="w-full" style={{ marginTop: 5 }}>
+                            <div style={{ marginTop: 5 }}>
                               {project?.description ||
                                 "No description available"}
                             </div>
@@ -889,11 +792,7 @@ const SingleMentor = () => {
                     ))
                   ) : (
                     <div style={{ textAlign: "center", marginTop: "20px" }}>
-                      <FaRegFolderOpen
-                        size={50}
-                        color="#ccc"
-                        style={{ marginBottom: "10px" }}
-                      />
+                      <FaRegFolderOpen size={50} color="#ccc" />
                       <p>No projects found</p>
                     </div>
                   )}
@@ -904,7 +803,7 @@ const SingleMentor = () => {
         </div>
       </section>
 
-      {/* Scheduling Interview Modal */}
+      {/* Scheduling Modal */}
       <Modal
         show={interviewScheduled}
         onHide={() => {
@@ -920,7 +819,7 @@ const SingleMentor = () => {
         keyboard={false}
         className="custom-modal"
       >
-        <Modal.Header className="bg-primary text-white d-flex justify-content-between align-items-center">
+        <Modal.Header className="bg-primary text-white">
           <Modal.Title>Schedule a Call</Modal.Title>
           <Button
             variant="link"
@@ -978,14 +877,13 @@ const SingleMentor = () => {
                   <div>
                     <h5>Add Description</h5>
                     <Form>
-                      <Form.Group controlId="description">
+                      <Form.Group>
                         <Form.Control
                           as="textarea"
                           rows={4}
-                          placeholder="Enter description for the call (optional)"
+                          placeholder="Enter description..."
                           value={description}
                           onChange={handleDescriptionChange}
-                          className="form-control"
                         />
                       </Form.Group>
                     </Form>
