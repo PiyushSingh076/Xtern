@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -25,9 +25,11 @@ import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import { setEntrepreneurDetails } from "../../../Store/Slice/EntrepreneurDetails";
 import useSaveEntrepreneurDetailsbFirebaseData from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
 import useSaveEntrepreneurDetails from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 export default function EntrepreneurProfileForm() {
-   const [Id, setId] = useState(1);
+  const [Id, setId] = useState(1);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [profileImg, setProfileImg] = useState(null);
@@ -35,9 +37,9 @@ export default function EntrepreneurProfileForm() {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [yearsInOperation, setYearsInOperation] = useState("");
   const [industry, setIndustry] = useState("");
-  const[state,setState]=useState("");
-  const[city,setCity]=useState("");
-  const[aboutComapny,setAboutCompany]=useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [aboutComapny, setAboutCompany] = useState("");
   const [skillsRequired, setSkillsRequired] = useState("");
   const [linkedinProfile, setLinkedinProfile] = useState(""); // New state for LinkedIn
   const [activeStep, setActiveStep] = useState(0);
@@ -55,6 +57,17 @@ export default function EntrepreneurProfileForm() {
     skillsRequired: false,
     linkedinProfile: false, // Error state for LinkedIn
   });
+
+  // useEffect(() => {
+  //   async function test() {
+  //     const test = await addDoc(collection(db, "entrepreneurs"), {
+  //       test: "test21",
+  //     });
+  //     console.log(test);
+  //   }
+
+  //   test();
+  // }, []);
 
   const handleProfileImage = (event) => {
     const file = event.target.files[0];
@@ -98,6 +111,7 @@ export default function EntrepreneurProfileForm() {
 
   const handleEntreneurSubmitInfo = async (e) => {
     e.preventDefault();
+   
 
     const missingFields = [];
     if (!firstName) missingFields.push("First Name");
@@ -108,7 +122,7 @@ export default function EntrepreneurProfileForm() {
 
     if (missingFields.length === 0) {
       const entrepreneurData = {
-        profileImage: profileImg || null,
+        profileImage: null,
         firstName,
         lastName,
         state,
@@ -123,9 +137,13 @@ export default function EntrepreneurProfileForm() {
       dispatch(setEntrepreneurDetails(entrepreneurData));
       try {
         //TODO: firebase fix
-         await saveEntrepreneurDetails(entrepreneurData);
+        // const test = await addDoc(collection(db, "entrepreneurs"), {
+        //   test: "test21",
+        // });
+        // console.log(test);
+        const userId = await saveEntrepreneurDetails(entrepreneurData);
         toast.success("Entrepreneur profile saved successfully!");
-        navigate(`/entrepreneur/${saveEntrepreneurDetails.Id}`);
+        navigate(`/entrepreneur/${userId}`);
       } catch (error) {
         toast.error(`Error saving profile: ${error.message || error}`);
         console.error(error);
@@ -268,96 +286,91 @@ export default function EntrepreneurProfileForm() {
         </Grid>
 
         {/* Second Column */}
-         <Grid
-                      sx={{
-                        marginTop: "10px",
-                      }}
-                      item
-                      xs={12}
-                      md={8}
-                    >
-                      {!profileData &&
-        (<Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "start",
-                    justifyContent: "center",
-                    gap: "10px",
-                    width: "100%",
-                    height: "50px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <div
-                    onClick={() => setIsLinkedInFetched(false)}
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: "10px",
-                      border: "1px solid #ccc",
-                      padding: "10px",
-                      borderRadius: "10px",
-                      cursor: "pointer",
-                      backgroundColor: "#f5f5f5",
-                    }}
-                  >
-                    <img
-                      src={LinkedInLogo}
-                      alt="LinkedIn Logo"
-                      style={{ width: "40px", height: "40px" }}
-                    />
-                    <span>Import LinkedIn Profile</span>
-                  </div>
-                </Box>
-              )}
-              
-              {!isLinkedInFetched && (
-                <Box sx={{ mb: 2 }}>
-                  <LinkedInFetcher
-                    close={setIsLinkedInFetched}
-                    onFetchSuccess={handleLinkedInEntrepreneurData}
-                  />
-                </Box>
-              )}
- <TextField
-                label="Company Name"
-                variant="outlined"
-                fullWidth
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                required
-                size="small"
-                
-                
-                sx={{ mb: 3 }}
-              
-              />
-              <TextField
-                label="About Company"
-                variant="outlined"
-                fullWidth
-                value={aboutComapny}
-                onChange={(e) => setAboutCompany(e.target.value)}
-                required
-                size="small"
-                sx={{ mb: 3 }}
-              
-              />
-              <TextField
-                label="Website URL"
-                variant="outlined"
-                fullWidth
-                value={websiteUrl}
-                onChange={(e) => setWebsiteUrl(e.target.value)}
-                size="small"
-                error={errors.websiteUrl}
-                helperText={errors.websiteUrl ? "Website URL is required" : ""}
-                sx={{ mb: 3 }}
-              />
+        <Grid
+          sx={{
+            marginTop: "10px",
+          }}
+          item
+          xs={12}
+          md={8}
+        >
+          {!profileData && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "start",
+                justifyContent: "center",
+                gap: "10px",
+                width: "100%",
+                height: "50px",
+                marginBottom: "20px",
+              }}
+            >
+              <div
+                onClick={() => setIsLinkedInFetched(false)}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "10px",
+                  border: "1px solid #ccc",
+                  padding: "10px",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  backgroundColor: "#f5f5f5",
+                }}
+              >
+                <img
+                  src={LinkedInLogo}
+                  alt="LinkedIn Logo"
+                  style={{ width: "40px", height: "40px" }}
+                />
+                <span>Import LinkedIn Profile</span>
+              </div>
+            </Box>
+          )}
 
-         
+          {!isLinkedInFetched && (
+            <Box sx={{ mb: 2 }}>
+              <LinkedInFetcher
+                close={setIsLinkedInFetched}
+                onFetchSuccess={handleLinkedInEntrepreneurData}
+              />
+            </Box>
+          )}
+          <TextField
+            label="Company Name"
+            variant="outlined"
+            fullWidth
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            required
+            size="small"
+            sx={{ mb: 3 }}
+          />
+          <TextField
+            label="About Company"
+            variant="outlined"
+            fullWidth
+            value={aboutComapny}
+            onChange={(e) => setAboutCompany(e.target.value)}
+            required
+            size="small"
+            sx={{ mb: 3 }}
+          />
+          <TextField
+            label="Website URL"
+            variant="outlined"
+            fullWidth
+            value={websiteUrl}
+            onChange={(e) => setWebsiteUrl(e.target.value)}
+            size="small"
+            error={errors.websiteUrl}
+            helperText={errors.websiteUrl ? "Website URL is required" : ""}
+            sx={{ mb: 3 }}
+          />
+
           <TextField
             label="Years in Experience"
             variant="outlined"

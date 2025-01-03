@@ -5,7 +5,7 @@ import "./Profile.css";
 import useSaveEntrepreneurDetails from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
 import "react-circular-progressbar/dist/styles.css";
 import Skeleton from "@mui/material/Skeleton";
-import {Button as ButtonM} from "@mui/material";
+import { Button as ButtonM, Chip } from "@mui/material";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -34,9 +34,9 @@ import {
 import { Box, Tooltip } from "@mui/material";
 import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
+import { useEntrepreneurDetails } from "../../../hooks/Entrepreneur/useEntrepreneurDetails";
 
 const SingleMentor = () => {
-  
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isBookmarkedIcon, setIsBookmarkedIcon] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -47,7 +47,7 @@ const SingleMentor = () => {
   const [editable, setEditable] = useState(false);
   const [callsModalOpen, setCallsModalOpen] = useState(false);
   const navigate = useNavigate();
-  const { uid } = useParams();
+
   //TODO: Implement functions back
   //   const {
   //     userData: profileData,
@@ -55,57 +55,58 @@ const SingleMentor = () => {
   //     error: profileError,
   //   } = useUserProfileData(uid);
 
-  const profileData = {
-    photo_url: "https://static.vecteezy.com/system/resources/thumbnails/049/174/246/small_2x/a-smiling-young-indian-man-with-formal-shirts-outdoors-photo.jpg",
-    firstName: "John",
-    lastName: "Doe",
-    city: "Mumbai",
-    experience: 5,
-    state: "Maharashtra",
-    type: "entrepreneur",
-    skillSet: [{
-      skill: "React",
-      skillRating: 4,
-    }],
-    companyDetails: [
-      {
-        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png",
-        name: "Google",
-        description:
-          "Google is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.",
-        startDate: Date.now() / 1000,
-        endDate: "present",
-      },
-    ],
-    jobDetails: [
-      {
-        role: "Fronten Intern",
-        techstack: ["React", "Redux", "HTML", "CSS"],
-        description:
-          "Frontend Intern at Google working on building web applications using React and Redux",
-        lastDate: Date.now() / 1000,
-        company: "Optacloud",
-        salary: "9lpa",
-      },
-      {
-        role: "Fullstack Developer",
-        techstack: ["React", "Redux", "Express", "Firebase"],
-        description:
-          "Fullstack Developer at Google working on building web applications using React and Redux",
-        lastDate: Date.now() / 1000,
-        company: "Google",
-        salary: "20lpa",
-      },
-    ],
-  };
-  const profileLoading = false;
-  const profileError = false;
+  const { uid } = useParams();
+  const { loading: profileLoading, userData: profileData } =
+    useEntrepreneurDetails(uid);
 
-  const {
-    error: usersError,
-    loading: usersLoading,
-    users,
-  } = useFetchUsersByType("Developer");
+  useEffect(() => {
+    console.log(profileLoading);
+  }, [profileLoading]);
+
+  // const profileData = {
+  //   photo_url: "https://static.vecteezy.com/system/resources/thumbnails/049/174/246/small_2x/a-smiling-young-indian-man-with-formal-shirts-outdoors-photo.jpg",
+  //   firstName: "John",
+  //   lastName: "Doe",
+  //   city: "Mumbai",
+  //   experience: 5,
+  //   state: "Maharashtra",
+  //   type: "entrepreneur",
+  //   skillSet: [{
+  //     skill: "React",
+  //     skillRating: 4,
+  //   }],
+  //   companyDetails: [
+  //     {
+  //       logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png",
+  //       name: "Google",
+  //       description:
+  //         "Google is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.",
+  //       startDate: Date.now() / 1000,
+  //       endDate: "present",
+  //     },
+  //   ],
+  //   jobDetails: [
+  //     {
+  //       role: "Fronten Intern",
+  //       techstack: ["React", "Redux", "HTML", "CSS"],
+  //       description:
+  //         "Frontend Intern at Google working on building web applications using React and Redux",
+  //       lastDate: Date.now() / 1000,
+  //       company: "Optacloud",
+  //       salary: "9lpa",
+  //     },
+  //     {
+  //       role: "Fullstack Developer",
+  //       techstack: ["React", "Redux", "Express", "Firebase"],
+  //       description:
+  //         "Fullstack Developer at Google working on building web applications using React and Redux",
+  //       lastDate: Date.now() / 1000,
+  //       company: "Google",
+  //       salary: "20lpa",
+  //     },
+  //   ],
+  // };
+
   //   const { userData: currentUser } = useFetchUserData();
   const currentUser = {};
   const {
@@ -121,64 +122,11 @@ const SingleMentor = () => {
     error: callsError,
   } = useScheduledCallsForUser(currentUser?.uid);
 
-  useEffect(() => {
-    if (
-      !profileLoading &&
-      (!profileData?.type || profileData?.type.trim() === "")
-    ) {
-      navigate("/userdetail");
-    }
-    if (profileData && profileData.type != "entrepreneur") {
-      toast("Profile not found");
-      navigate("/homescreen");
-    }
-  }, [profileLoading, profileData, navigate]);
-
-  useEffect(() => {
-    if (currentUser && currentUser.uid === uid) {
-      setEditable(true);
-    } else {
-      setEditable(false);
-    }
-  }, [currentUser, uid]);
-
-  useEffect(() => {
-    async function test(){
-      // const doc = await getDocs(collection(db, "jobPosting"));
-      // doc.forEach((doc) => {
-      //   console.log(doc.data());
-      // });
-      const docref = await addDoc(collection(db, "jobPosting"), {
-        title: "test",
-        companyName: "test",});
-      console.log("Document written with ID: ", docref.id);
-    }
-    test();
-  }, [])
-
   //   const registrationStatus = useRegisterUser(
   //     profileData,
   //     profileLoading,
   //     profileError
   //   );
-
-  const sanitizeProfileData = (data) => {
-    return JSON.parse(JSON.stringify(data));
-  };
-
-  const handleEdit = () => {
-    if (profileData?.type) {
-      const sanitizedData = sanitizeProfileData(profileData);
-      navigate("/userdetail", { state: { profileData: sanitizedData } });
-    } else {
-      navigate("/userdetail");
-    }
-  };
-
-  const internInfo = useSelector((state) => state.internInfo);
- 
-  const entrepreneurDetails = useSelector((state) => state.entrepreneur.entrepreneurDetails);
-const {saveEntrepreneurDetails }=useSaveEntrepreneurDetails()
 
   const handleDateChange = (date) => {
     setInterviewDate(date);
@@ -321,12 +269,6 @@ const {saveEntrepreneurDetails }=useSaveEntrepreneurDetails()
         <div className="profile-details">
           <div className="profile-details-wrap">
             <div className="profile-details-first-wrap">
-              {editable && (
-                <button onClick={handleEdit} className="edit-btn">
-                  <MdEdit />
-                </button>
-              )}
-
               <div className="profile-img-info-container">
                 <div className="mentor-img-sec">
                   {profileLoading ? (
@@ -337,13 +279,16 @@ const {saveEntrepreneurDetails }=useSaveEntrepreneurDetails()
                       animation="wave"
                     />
                   ) : (
-                    <img
-                      src={profileData ?.photo_url || "/default-profile.png"}
-                      alt={`${profileData?.firstName} ${profileData?.lastName}`}
-                      width={150}
-                      height={150}
-                      onError={(e) => (e.target.src = "/default-profile.png")}
-                    />
+                    <div className="size-[150px] relative">
+                      <img
+                        src={
+                          profileData?.profilePhoto || "/default-profile.png"
+                        }
+                        alt={`${profileData?.firstName} ${profileData?.lastName}`}
+                        className="size-full absolute left-0 top-0 object-cover"
+                        onError={(e) => (e.target.src = "/default-profile.png")}
+                      />
+                    </div>
                   )}
                 </div>
 
@@ -383,7 +328,9 @@ const {saveEntrepreneurDetails }=useSaveEntrepreneurDetails()
                       sx={{ fontSize: "1rem", width: "200px", height: "20px" }}
                     />
                   ) : (
-                    <span>Year of Experience: {profileData?.experience}</span>
+                    <span>
+                      Year of Experience: {profileData?.yearsInOperation}
+                    </span>
                   )}
 
                   {profileLoading ? (
@@ -412,45 +359,12 @@ const {saveEntrepreneurDetails }=useSaveEntrepreneurDetails()
             ) : (
               <div className="skills-section">
                 <div className="skills-header">Skills</div>
-                {profileData?.skillSet?.map((item) => {
-                  const ratingPercentage =
-                    (parseInt(item.skillRating) / 5) * 100;
-                  return (
-                    <div className="skill-bar-card" key={item.skill}>
-                      <span>{item.skill}</span>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          width: "100%",
-                          alignItems: "center",
-                        }}
-                      >
-                        <div
-                          className="skill-rating"
-                          style={{
-                            marginBottom: "5px",
-                            fontSize: "12px",
-                            color: "#007bff",
-                          }}
-                        >
-                          {ratingPercentage}%
-                        </div>
-                        <div className="skill-bar">
-                          <div
-                            className="skill-bar-fill"
-                            style={{
-                              width: `${ratingPercentage}%`,
-                              backgroundColor: "#007bff",
-                              height: "5px",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-                {!profileData?.skillSet && <span>No skill set available</span>}
+                <div className="flex flex-wrap gap-2 justify-center items-center">
+                  {profileData?.skills?.map((item) => {
+                    return <Chip label={item}></Chip>;
+                  })}
+                </div>
+                {!profileData?.skills && <span>No skill set available</span>}
               </div>
             )}
           </div>
@@ -481,11 +395,23 @@ const {saveEntrepreneurDetails }=useSaveEntrepreneurDetails()
                 {profileData?.consultingPrice && (
                   <span className="service-name">Consulting Now</span>
                 )}
-                
               </div>
 
-              <div className="consulting-btn">
+              <div className="consulting-btn !w-full !mb-0">
                 <button
+                  
+                  className="chat-btn"
+                  onClick={() => navigate("/createjob")}
+                >
+                  Create job
+                </button>
+                <button
+                  
+                  className="chat-btn"
+                >
+                  View jobs
+                </button>
+                {/* <button
                   onClick={() => navigate("/mychat")}
                   className="chat-btn"
                 >
@@ -497,18 +423,8 @@ const {saveEntrepreneurDetails }=useSaveEntrepreneurDetails()
                   disabled={!isInitialized}
                 >
                   <MdCalendarToday /> Meet
-                </button>
+                </button> */}
               </div>
-              {/* {!isInitialized && (
-                <span className="text-muted">
-                  Initializing Google Calendar...
-                </span>
-              )} */}
-              {profileData?.consultingPrice && (
-                <span className="consultant-price">
-                  ₹{profileData.consultingPrice}/minute
-                </span>
-              )}
             </div>
 
             {/* Modified "View Previous Calls" button as a badge-like style */}
@@ -567,52 +483,40 @@ const {saveEntrepreneurDetails }=useSaveEntrepreneurDetails()
               <div className="tab-content" id="mentor-tab-content">
                 {/* Company Details tab */}
                 <div
-                  className="tab-pane fade show active mt-16"
+                  className="tab-pane fade show active mt-0"
                   id="company-content"
                   role="tabpanel"
                 >
-                  {profileData?.companyDetails?.map((company, index) => (
-                    <div
-                      className="experience-sec"
-                      key={`${company.name}-${index}`}
-                    >
-                      <div className="work-logo-container">
-                        <img
-                          src={company.logo}
-                          className="educ-logo"
-                          alt="Company Logo"
-                        />
-                      </div>
-                      <div className="experience-info">
-                        <h4>{company?.name}</h4>
-                        <p>
+                  {profileLoading ? (
+                    <></>
+                  ) : (
+                    <>
+                      <div
+                        className="experience-sec"
+                        key={`${profileData.companyName}`}
+                      >
+                        <div className="size-[60px] rounded-full shrink-0 overflow-hidden mr-4 relative">
+                          <img
+                            src={profileData.companyLogo}
+                            className="absolute"
+                          />
+                        </div>
+                        <div className="experience-info">
+                          <h4>{profileData.companyName}</h4>
+                          {/* <p>
                           {dayjs.unix(company?.startDate).format("D MMM YYYY")}{" "}
                           -{" "}
                           {company.endDate === "present"
                             ? "Now"
                             : dayjs.unix(company.endDate).format("D MMM YYYY")}
-                        </p>
-                        <button
-                          className="desc-btn"
-                          data-bs-toggle="collapse"
-                          data-bs-target={`#work-collapse-${index}`}
-                          aria-expanded="false"
-                          aria-controls={`work-collapse-${index}`}
-                        >
-                          View Description
-                        </button>
-                        <div
-                          id={`work-collapse-${index}`}
-                          className="collapse"
-                          aria-labelledby={`work-collapse-${index}`}
-                        >
-                          <div className="card card-body">
-                            {company?.description || "No description available"}
-                          </div>
+                        </p> */}
+                          <h4 className="text-black/60">
+                            {profileData.aboutCompany}
+                          </h4>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    </>
+                  )}
                 </div>
 
                 {/* Projects Tab */}
