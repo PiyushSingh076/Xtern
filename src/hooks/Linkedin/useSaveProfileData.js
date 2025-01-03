@@ -10,7 +10,6 @@ import {
   query,
   where,
   writeBatch,
-  Timestamp,
 } from "firebase/firestore";
 import { auth, db } from "../../firebaseConfig";
 import {
@@ -22,112 +21,64 @@ import {
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-/**
- * Attempt to parse a date string in "MMM YYYY" (e.g. "Jan 2023") or "Present".
- * - If "Present", returns "Present".
- * - Otherwise, returns a Timestamp if valid, else the raw string.
- */
-function parseDateString(dateStr) {
-  if (!dateStr) return null;
-
-  const lower = dateStr.trim().toLowerCase();
-  if (lower === "present") {
-    return "Present";
-  }
-
-  const [monthStr, yearStr] = dateStr.split(" ");
-  if (!monthStr || !yearStr) {
-    return dateStr; // fallback
-  }
-
-  const dateObj = new Date(`${monthStr} 01, ${yearStr}`);
-  if (isNaN(dateObj.getTime())) {
-    return dateStr;
-  }
-
-  return Timestamp.fromDate(dateObj);
-}
-
 const useSaveProfileData = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Firebase Storage
   const storage = getStorage();
 
   /**
-   * Delete all documents in a top-level collection where `fieldName` == userRef.
+   * Delete all documents in a collection where `fieldName == userRef`.
    */
   async function deleteDocsInCollection(collectionName, fieldName, userRef) {
-    try {
-      const collRef = collection(db, collectionName);
-      const qRef = query(collRef, where(fieldName, "==", userRef));
-      const snapshot = await getDocs(qRef);
-
-      if (!snapshot.empty) {
-        const batch = writeBatch(db);
-        snapshot.forEach((docSnap) => {
-          batch.delete(docSnap.ref);
-        });
-        await batch.commit();
-      }
-    } catch (err) {
-      console.error(`Error deleting documents in '${collectionName}':`, err);
-      throw err;
+    const collRef = collection(db, collectionName);
+    const qRef = query(collRef, where(fieldName, "==", userRef));
+    const snapshot = await getDocs(qRef);
+    if (!snapshot.empty) {
+      const batch = writeBatch(db);
+      snapshot.forEach((docSnap) => {
+        batch.delete(docSnap.ref);
+      });
+      await batch.commit();
     }
   }
 
   /**
-   * Batch-add multiple docs to a top-level collection, linking them to the user doc reference.
+   * Batch-add multiple docs to a top-level collection
    */
   async function batchAddDocuments(
     collectionName,
     fieldName,
-    documents,
+    docsArray,
     userRef
   ) {
-    try {
-      if (!documents || !documents.length) return;
-
-      const collRef = collection(db, collectionName);
-      const batch = writeBatch(db);
-
-      documents.forEach((item) => {
-        const newDocRef = doc(collRef); // auto-generate ID
-        batch.set(newDocRef, {
-          ...item,
-          [fieldName]: userRef,
-          createdAt: Timestamp.now(),
-        });
+    if (!docsArray || !docsArray.length) return;
+    const collRef = collection(db, collectionName);
+    const batch = writeBatch(db);
+    docsArray.forEach((item) => {
+      const newDocRef = doc(collRef); // auto-ID
+      batch.set(newDocRef, {
+        ...item,
+        [fieldName]: userRef,
+        createdAt: new Date().toISOString(), // Store as string
       });
-
-      await batch.commit();
-    } catch (err) {
-      console.error(`Error adding documents to '${collectionName}':`, err);
-      throw err;
-    }
+    });
+    await batch.commit();
   }
 
-  /**
-   * Main function to save/update user profile data.
-   * 1) If data.profileImage is base64 -> upload to Storage -> get URL
-   * 2) Merge user doc with top-level fields
-   * 3) Overwrite skillSet on user doc
-   * 4) Overwrite top-level collections (education, worker, projects, services)
-   */
+  // Main function that saves/updates user’s profile data
   const saveProfileData = async (data) => {
     setLoading(true);
     setError(null);
-
+    console.log(data, "datadatadata");
     try {
-      const user = auth?.currentUser;
+      const user = auth.currentUser;
       if (!user) throw new Error("User not authenticated.");
-
       const userRef = doc(db, "users", user.uid);
 
       let photoURL = "";
-      // 1) If base64 image
+      // 1) If data.profileImage is base64 -> upload to Storage
       if (
         data.profileImage &&
         typeof data.profileImage === "string" &&
@@ -143,7 +94,7 @@ const useSaveProfileData = () => {
         photoURL = data.profileImage || "";
       }
 
-      // 2) Merge with user doc
+      // 2) Merge user doc
       const userData = {
         photo_url: photoURL,
         firstName: data.firstName || "",
@@ -155,12 +106,12 @@ const useSaveProfileData = () => {
         consultingPrice: data.consultingPrice || "",
         consultingDuration: data.consultingDuration || "",
         consultingDurationType: data.consultingDurationType || "",
-        updatedAt: Timestamp.now(),
+        updatedAt: new Date().toISOString(), // Store as string
       };
 
       await setDoc(userRef, userData, { merge: true });
 
-      // 3) Overwrite skillSet
+      // 3) skillSet
       if (Array.isArray(data.skills)) {
         const normalizedSkills = data.skills
           .map((skillObj) => {
@@ -175,7 +126,7 @@ const useSaveProfileData = () => {
         await updateDoc(userRef, { skillSet: normalizedSkills });
       }
 
-      // 4) Overwrite sub-collections
+      // 4) Overwrite top-level collections
 
       // EDUCATION
       await deleteDocsInCollection("education", "usereducation", userRef);
@@ -183,9 +134,10 @@ const useSaveProfileData = () => {
         const educationDocs = data.education.map((edu) => ({
           collegename: edu.college || "",
           degree: edu.degree || "",
-          startyear: parseDateString(edu.startDate),
-          endyear: parseDateString(edu.endDate),
-          branch: edu.stream || "",
+          // Store dates as strings
+          startyear: edu.startDate || "",
+          endyear: edu.endDate || "",
+          stream: edu.stream || "",
           cgpa: edu.cgpa || "",
         }));
         await batchAddDocuments(
@@ -202,8 +154,9 @@ const useSaveProfileData = () => {
         const workDocs = data.work.map((w) => ({
           companyName: w.company || "",
           description: w.description || "",
-          startDate: parseDateString(w.startDate),
-          endDate: parseDateString(w.endDate),
+          // Store dates as strings
+          startDate: w.startDate || "",
+          endDate: w.endDate || "",
           role: w.position || "",
         }));
         await batchAddDocuments("worker", "work", workDocs, userRef);
@@ -212,17 +165,13 @@ const useSaveProfileData = () => {
       // PROJECTS
       await deleteDocsInCollection("projects", "userproject", userRef);
       if (Array.isArray(data.projects) && data.projects.length > 0) {
-        const projectsDocs = data.projects.map((proj) => {
-          // e.g. "Jan 2023 - Present"
-          const [startStr, endStr] = proj.duration?.split(" - ") || [];
-          return {
-            projectName: proj.projectName || "",
-            startDate: parseDateString(startStr),
-            endDate: endStr ? parseDateString(endStr) : "Present",
-            liveDemo: proj.liveLink || "",
-            description: proj.description || "",
-          };
-        });
+        const projectsDocs = data.projects.map((proj) => ({
+          projectName: proj.projectName || "",
+          liveDemo: proj.liveLink || "",
+          description: proj.description || "",
+          duration: proj.duration || "",
+          // Store dates as strings if needed
+        }));
         await batchAddDocuments(
           "projects",
           "userproject",
@@ -235,18 +184,16 @@ const useSaveProfileData = () => {
       await deleteDocsInCollection("services", "userRef", userRef);
       if (Array.isArray(data.services) && data.services.length > 0) {
         const servicesDocs = data.services.map((srv) => {
-          if (data.type?.toLowerCase() === "intern") {
-            // For an intern
+          if ((data.type || "").toLowerCase() === "intern") {
             return {
               serviceName: srv.serviceName || "",
               serviceDescription: srv.serviceDescription || "",
-              startDate: parseDateString(srv.startDate),
-              endDate: parseDateString(srv.endDate),
+              startDate: srv.startDate || "",
+              endDate: srv.endDate || "",
               availability: srv.availability || "full time",
               hoursPerDay: srv.hoursPerDay || null,
             };
           } else {
-            // Normal
             return {
               serviceName: srv.serviceName || "",
               serviceDescription: srv.serviceDescription || "",
@@ -256,7 +203,6 @@ const useSaveProfileData = () => {
             };
           }
         });
-
         await batchAddDocuments("services", "userRef", servicesDocs, userRef);
       }
 
