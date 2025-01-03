@@ -162,7 +162,7 @@ const JobStats = () => {
   };
 
   const handleSubscribe = () => {
-    alert("Subscribed to job notifications!");
+    alert("Subscribed to  this Applicant!");
   };
 
   const jobDetails = {
@@ -271,8 +271,8 @@ const JobStats = () => {
         </TableContainer>
       </div>
       {showModal && selectedUser && (
-        <div className="modal show d-block mt-7" tabIndex="-1" role="dialog" >
-          <div className="modal-dialog" role="document">
+        <div className="modal show d-block modal-overlay" tabIndex="-1" role="dialog" >
+          <div className="modal-dialog m-7" role="document" >
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">{selectedUser.name}</h5>

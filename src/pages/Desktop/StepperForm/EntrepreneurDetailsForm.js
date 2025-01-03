@@ -34,14 +34,9 @@ export default function EntrepreneurProfileForm() {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [yearsInOperation, setYearsInOperation] = useState("");
   const [industry, setIndustry] = useState("");
-<<<<<<< HEAD
   const[state,setState]=useState("");
   const[city,setCity]=useState("");
   const[aboutComapny,setAboutCompany]=useState("");
-=======
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
->>>>>>> abb2bd5dbd34e93bee95f09693acf79ff1859454
   const [skillsRequired, setSkillsRequired] = useState("");
   const [linkedinProfile, setLinkedinProfile] = useState(""); // New state for LinkedIn
   const [activeStep, setActiveStep] = useState(0);
@@ -272,7 +267,6 @@ export default function EntrepreneurProfileForm() {
         </Grid>
 
         {/* Second Column */}
-<<<<<<< HEAD
          <Grid
                       sx={{
                         marginTop: "10px",
@@ -361,52 +355,6 @@ export default function EntrepreneurProfileForm() {
                 helperText={errors.websiteUrl ? "Website URL is required" : ""}
                 sx={{ mb: 3 }}
               />
-=======
-        <Grid
-          sx={{
-            marginTop: "10px",
-          }}
-          item
-          xs={12}
-          md={8}
-        >
-          {!profileData && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "start",
-                justifyContent: "center",
-                gap: "10px",
-                width: "100%",
-                height: "50px",
-                marginBottom: "20px",
-              }}
-            >
-              <div
-                onClick={() => setIsLinkedInFetched(false)}
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: "10px",
-                  border: "1px solid #ccc",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                  backgroundColor: "#f5f5f5",
-                }}
-              >
-                <img
-                  src={LinkedInLogo}
-                  alt="LinkedIn Logo"
-                  style={{ width: "40px", height: "40px" }}
-                />
-                <span>Import LinkedIn Profile</span>
-              </div>
-            </Box>
-          )}
->>>>>>> abb2bd5dbd34e93bee95f09693acf79ff1859454
 
           {!isLinkedInFetched && (
             <Box sx={{ mb: 2 }}>
