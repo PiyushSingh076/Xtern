@@ -1,11 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { AiOutlineUser, AiOutlineWallet, AiOutlineQuestionCircle, AiOutlineLogout } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import './Header.css';
-import { ROUTES } from '../../../constants/routes';
-import useFetchUserData from '../../../hooks/Auth/useFetchUserData';
-import useOAuthLogout from '../../../hooks/Auth/useOAuthLogout';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  AiOutlineUser,
+  AiOutlineWallet,
+  AiOutlineQuestionCircle,
+  AiOutlineLogout,
+} from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import "./Header.css";
+import { ROUTES } from "../../../constants/routes";
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
+import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 
 export default function Header() {
   const data = useSelector((state) => state.user);
@@ -13,7 +18,7 @@ export default function Header() {
   const { userData, loading } = useFetchUserData();
   const { handleLogout } = useOAuthLogout();
   const navigate = useNavigate();
-
+  console.log(userData, "ddddd");
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const profileButtonRef = useRef(null);
@@ -39,9 +44,9 @@ export default function Header() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -49,13 +54,16 @@ export default function Header() {
     <div className="nav-bar-container">
       <div className="logo-search-container">
         <span onClick={() => navigate(ROUTES.HOME_SCREEN)} className="logo">
-          <span style={{ color: '#0d6efd', fontSize: '34px' }}>X</span>pert
+          <span style={{ color: "#0d6efd", fontSize: "34px" }}>X</span>pert
         </span>
       </div>
 
       <div className="hire-btns">
         {!userData && (
-          <button onClick={() => navigate(ROUTES.SIGN_IN)} className="hire-xpert-btn">
+          <button
+            onClick={() => navigate(ROUTES.SIGN_IN)}
+            className="hire-xpert-btn"
+          >
             Log in
           </button>
         )}
@@ -66,10 +74,12 @@ export default function Header() {
             onClick={handleMenuToggle}
           >
             <img
-              src={userData?.photo_url}
+              src={userData?.photo_url || userData}
               width="30px"
-              style={{ borderRadius: '50%', cursor: 'pointer' }}
-              alt="Profile"
+              height="30px"
+              className="border"
+              style={{ borderRadius: "50%", cursor: "pointer" }}
+              alt={userData?.firstName || "User"}
             />
             {userData?.firstName}
           </button>
@@ -81,16 +91,16 @@ export default function Header() {
           className="dropdown-menu"
           ref={menuRef}
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: `${menuPosition.top}px`,
             left: `${menuPosition.left}px`,
-            backgroundColor: '#fff',
-            width: '200px',
-            height: 'auto',
-            border: '1px solid #ddd',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            backgroundColor: "#fff",
+            width: "200px",
+            height: "auto",
+            border: "1px solid #ddd",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
           <div
@@ -102,21 +112,21 @@ export default function Header() {
           </div>
           <div
             className="dropdown-item"
-            onClick={() => handleMenuOptionClick('/wallet')}
+            onClick={() => handleMenuOptionClick("/wallet")}
           >
             <AiOutlineWallet className="menu-icon" />
             Wallet
           </div>
           <div
             className="dropdown-item"
-            onClick={() => handleMenuOptionClick('/support')}
+            onClick={() => handleMenuOptionClick("/support")}
           >
             <AiOutlineQuestionCircle className="menu-icon" />
             Support
           </div>
           <div
             className="dropdown-item"
-            onClick={() => navigate('/myvideocall')}
+            onClick={() => navigate("/myvideocall")}
           >
             <AiOutlineQuestionCircle className="menu-icon" />
             My Schedule
