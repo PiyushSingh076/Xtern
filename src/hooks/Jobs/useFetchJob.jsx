@@ -24,7 +24,7 @@ export const useFetchJob = ({id}) => {
             throw new Error("Job not found");
         }
         const data = jobSnapshot.data();
-        data.applicantData = [];
+        delete data["applicants"];
         return data;
     }
 
