@@ -14,7 +14,11 @@ const useSaveEntrepreneurDetails = () => {
       if (!db) throw new Error("Firestore instance not initialized");
 
       // Save data in the "entrepreneurs" collection
+<<<<<<< Updated upstream
       const docRef = await addDoc(collection(db, "entrepreneur"),data);
+=======
+      const docRef = await addDoc(collection(db, "users"), {...data, type: "entrepreneur"});
+>>>>>>> Stashed changes
       return docRef.id; // Return document ID
       console.log(data)
     } catch (error) {

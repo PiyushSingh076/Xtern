@@ -71,6 +71,6 @@ export const ROUTES = {
   VIDEOCALL: '/videocall',
   MYVIDEOCALL: '/myvideocall',
   JOBSPOSTINGS: '/jobpostings/',
-  JOBSTATS: "/jobstats/:id",
-  VIEWJOB: "/viewjob/:id",
+  JOBSTATS: "/jobstats/:jobId",
+  VIEWJOB: "/viewjob/:jobId",
 };

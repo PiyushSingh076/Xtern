@@ -32,6 +32,8 @@ import {
 } from "react-bootstrap";
 
 import { Box, Tooltip } from "@mui/material";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 const SingleMentor = () => {
   
@@ -139,6 +141,20 @@ const SingleMentor = () => {
       setEditable(false);
     }
   }, [currentUser, uid]);
+
+  useEffect(() => {
+    async function test(){
+      // const doc = await getDocs(collection(db, "jobPosting"));
+      // doc.forEach((doc) => {
+      //   console.log(doc.data());
+      // });
+      const docref = await addDoc(collection(db, "jobPosting"), {
+        title: "test",
+        companyName: "test",});
+      console.log("Document written with ID: ", docref.id);
+    }
+    test();
+  }, [])
 
   //   const registrationStatus = useRegisterUser(
   //     profileData,

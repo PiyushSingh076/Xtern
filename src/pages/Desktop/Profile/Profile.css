@@ -75,6 +75,9 @@
 .profile-details-wrap {
   width: 100%;
 }
+.three-tab li{
+  width: 33.33% !important;
+}
 
 .profile-details-first-wrap {
   position: relative;

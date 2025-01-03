@@ -49,10 +49,10 @@ const useSaveJob = () => {
         console.error("No such document!");
       }
 
-      return true; // Success response
+      return docSnapshot.id; // Success response
     } catch (error) {
       console.error("Error adding job: ", error);
-      return false; // Failure response
+      return null; // Failure response
     }
   };
 

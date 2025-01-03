@@ -75,6 +75,8 @@ const Stepper = () => {
     );
   };
 
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -84,6 +86,7 @@ const Stepper = () => {
 
     setSubmitLoading(true);
     const imageURL = await uploadImage();
+    console.log(imageURL, imagePreviewUrl);
     if (!imageURL) {
       setSubmitLoading(false);
       return;
@@ -99,7 +102,7 @@ const Stepper = () => {
       }
 
       // Adding job to Firestore with userref
-      const isSaved = await saveJob({
+      const docID = await saveJob({
         currentUser,
         jobTitle,
         companyName,
@@ -110,13 +113,13 @@ const Stepper = () => {
         assessmentDetail,
         assessmentDuration,
         duration,
-        imageURL,
+        imageURL
       });
 
-      if (isSaved) {
+      if (docID) {
         alert("Job added successfully!");
         setSubmitLoading(false)
-        navigate("/homescreen"); // Redirect to home screen
+        navigate("/viewjob/" + docID); // Redirect to home screen
       } else {
         alert("Failed to add job.");
       }
@@ -609,7 +612,7 @@ const Stepper = () => {
               <button
                 type="submit"
                 className="btn btn-primary px-5 py-3 w-100"
-                onClick={() => navigate("/viewjob/123")}
+                // onClick={() => navigate("/viewjob/123")}
                 disabled={loading || submitLoading}
               >
                 {submitLoading ? "Submitting..." : "Post Job"}
