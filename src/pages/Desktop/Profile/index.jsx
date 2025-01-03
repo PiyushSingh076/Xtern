@@ -219,10 +219,9 @@ const SingleMentor = () => {
 
   // If user clicks "Service" item
   const handleService = (item) => {
-    const serializableItem = { ...item };
+    const serializableItem = JSON.parse(JSON.stringify(item));
     navigate("/project", { state: { item: serializableItem } });
   };
-
   // Show/hide calls
   const openScheduledCallsModal = () => setCallsModalOpen(true);
   const closeScheduledCallsModal = () => setCallsModalOpen(false);
@@ -257,10 +256,25 @@ const SingleMentor = () => {
                   onClick={handleEdit}
                   className="edit-btn"
                   title="Edit Profile"
+                  style={{
+                    backgroundColor: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "8px",
+                    borderRadius: "50%",
+                    transition: "background-color 0.3s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = "#f0f0f0"; // Light gray on hover
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "transparent"; // Reset on leave
+                  }}
                 >
-                  <MdEdit />
+                  <MdEdit size={24} color="#007bff" />
                 </button>
               )}
+
               <div className="profile-img-info-container">
                 <div
                   className="mentor-img-sec"
@@ -318,8 +332,7 @@ const SingleMentor = () => {
                     <Skeleton sx={{ fontSize: "1rem", width: "100px" }} />
                   ) : (
                     <span>
-                      Years of Experience:{" "}
-                      {formatExperience(profileData?.experience)}
+                      Experience: {formatExperience(profileData?.experience)} Yr
                     </span>
                   )}
 
@@ -455,6 +468,12 @@ const SingleMentor = () => {
                     onClick={() => handleService(item)}
                     className="service-item"
                     key={index}
+                    style={{
+                      cursor: "pointer",
+                      padding: "10px",
+                      border: "1px solid #ddd",
+                      transition: "box-shadow 0.3s, background-color 0.3s",
+                    }}
                   >
                     <span className="service-name">{item.serviceName}</span>
 
@@ -594,7 +613,7 @@ const SingleMentor = () => {
                             src="https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
                             className="educ-logo"
                             alt="Company Logo"
-                            style={{ width: "50px", height: "50px" }}
+                            style={{ width: "100px", height: "100px" }}
                           />
                         </div>
                         <div className="experience-info">
@@ -667,7 +686,7 @@ const SingleMentor = () => {
                             src="https://cdn.vectorstock.com/i/1000x1000/14/68/education-color-icon-vector-29051468.jpg"
                             className="educ-logo"
                             alt="Education Logo"
-                            style={{ width: "50px", height: "50px" }}
+                            style={{ width: "100px", height: "100px" }}
                           />
                         </div>
                         <div className="experience-info">
@@ -715,7 +734,7 @@ const SingleMentor = () => {
                             src="https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg"
                             className="educ-logo"
                             alt="Project Logo"
-                            style={{ width: "50px", height: "50px" }}
+                            style={{ width: "100px", height: "100px" }}
                           />
                         </div>
                         <div className="experience-info">
@@ -904,8 +923,8 @@ const SingleMentor = () => {
                               currentUser?.photo_url || "/default-profile.png"
                             }
                             roundedCircle
-                            width={50}
-                            height={50}
+                            width={100}
+                            height={100}
                             alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
                             className="me-3"
                           />
