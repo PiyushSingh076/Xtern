@@ -12,8 +12,7 @@ import {
   FaRegListAlt,
 } from "react-icons/fa";
 import { FiXCircle } from "react-icons/fi";
-import { db } from "../firebaseConfig.js";
-import { addDoc, collection } from "firebase/firestore";
+import useSaveJob from '../hooks/Jobs/useSaveJob.js'
 import useImageUpload from "../hooks/Auth/useImageUpload.js"; // Custom hook for image upload
 import { getAuth } from "firebase/auth";
 const Stepper = () => {
@@ -42,6 +41,7 @@ const Stepper = () => {
     clearImage,
     uploadImage,
   } = useImageUpload();
+  const {saveJob} = useSaveJob( )
   const [submitLoading, setSubmitLoading] = useState(false);
   const navigate = useNavigate();
   const onStepClick = (id) => {
@@ -99,8 +99,9 @@ const Stepper = () => {
       }
 
       // Adding job to Firestore with userref
-      await addDoc(collection(db, "jobPosting"), {
-        title: jobTitle,
+      const isSaved = await saveJob({
+        currentUser,
+        jobTitle,
         companyName,
         description,
         location,
@@ -109,13 +110,16 @@ const Stepper = () => {
         assessmentDetail,
         assessmentDuration,
         duration,
-        image: imageURL,
-        createdAt: new Date(),
-        userref: `/users/${currentUser.uid}`, // Storing the reference to the user who created the job
+        imageURL,
       });
 
-      setSubmitLoading(false);
-      navigate("/homescreen");
+      if (isSaved) {
+        alert("Job added successfully!");
+        setSubmitLoading(false)
+        navigate("/homescreen"); // Redirect to home screen
+      } else {
+        alert("Failed to add job.");
+      }
     } catch (err) {
       console.error("Error adding job: ", err);
       setSubmitLoading(false);
@@ -605,6 +609,7 @@ const Stepper = () => {
               <button
                 type="submit"
                 className="btn btn-primary px-5 py-3 w-100"
+                onClick={() => navigate("/viewjob/123")}
                 disabled={loading || submitLoading}
               >
                 {submitLoading ? "Submitting..." : "Post Job"}

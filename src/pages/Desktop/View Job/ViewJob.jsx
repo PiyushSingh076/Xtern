@@ -5,9 +5,11 @@ import {
   Chip,
   
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 
 const ViewJob = () => {
+    const navigate = useNavigate();
     const jobDetails = {
         title: "Software Engineer",
         company: "Google",
@@ -41,11 +43,11 @@ const ViewJob = () => {
             );
           })}
         </div>
-        <Button variant="contained" sx={{marginTop: "10px", borderRadius: "10px", padding: "10px"}}>View Assesment Details</Button>
+        <Button  variant="contained" sx={{marginTop: "10px", borderRadius: "10px", padding: "10px"}}>View Assesment Details</Button>
 
         <div id="job-stats-controls">
           <div>Applicants: {jobDetails.applicants}</div>
-          <Button variant="contained" sx={{ borderRadius: "10px", padding: "10px" }} >View Applicants</Button>
+          <Button onClick={() => navigate("/jobstats/123")} variant="contained" sx={{ borderRadius: "10px", padding: "10px" }} >View Applicants</Button>
         </div>
       </div>
     </div>

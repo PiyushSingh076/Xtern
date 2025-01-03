@@ -72,7 +72,7 @@ const JobPostings = () => {
 const Job = ({job}) => {
   const navigate  =  useNavigate();
   function handleRedirectJob() {
-    navigate(`/jobstats/${job.id}`);
+    navigate(`/viewjob/${job.id}`);
   }
   return (
     <div onClick={handleRedirectJob} className="jb-job-card">
