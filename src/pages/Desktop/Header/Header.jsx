@@ -15,14 +15,20 @@ import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 export default function Header() {
   const data = useSelector((state) => state.user);
   const isDetailEmpty = Object.keys(data.detail).length === 0;
-  const { userData, loading } = useFetchUserData();
+  const { userData } = useFetchUserData();
   const { handleLogout } = useOAuthLogout();
   const navigate = useNavigate();
-  console.log(userData, "ddddd");
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
+
+  // Decide if we have a valid userPhoto
+  const hasUserPhoto =
+    userData?.photo_url &&
+    typeof userData.photo_url === "string" &&
+    userData.photo_url.trim() !== "";
 
   const handleMenuToggle = () => {
     if (profileButtonRef.current) {
@@ -59,6 +65,7 @@ export default function Header() {
       </div>
 
       <div className="hire-btns">
+        {/* If no user, show Log in button */}
         {!userData && (
           <button
             onClick={() => navigate(ROUTES.SIGN_IN)}
@@ -67,20 +74,28 @@ export default function Header() {
             Log in
           </button>
         )}
+
+        {/* If user is logged in, show avatar or icon + name */}
         {userData && (
           <button
             ref={profileButtonRef}
             className="profile-container"
             onClick={handleMenuToggle}
           >
-            <img
-              src={userData?.photo_url || userData}
-              width="30px"
-              height="30px"
-              className="border"
-              style={{ borderRadius: "50%", cursor: "pointer" }}
-              alt={userData?.firstName || "User"}
-            />
+            {hasUserPhoto ? (
+              <img
+                src={userData.photo_url}
+                width="30px"
+                height="30px"
+                className="border"
+                style={{ borderRadius: "50%", cursor: "pointer" }}
+                alt={userData?.firstName || "User"}
+              />
+            ) : (
+              <AiOutlineUser
+                style={{ fontSize: "1.5rem", marginRight: "5px" }}
+              />
+            )}
             {userData?.firstName}
           </button>
         )}

@@ -26,33 +26,39 @@ import {
   Divider,
   CircularProgress,
   Chip,
+  Rating,
 } from "@mui/material";
-import Rating from "@mui/material/Rating";
-import { FiTrash } from "react-icons/fi";
-import LinkedInLogo from "../../../assets/svg/linkedin.png";
-import { State, City } from "country-state-city";
+import { FiTrash, FiEdit } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { setDetail } from "../../../Store/Slice/UserDetail";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ROUTES } from "../../../constants/routes";
+import { State, City } from "country-state-city";
 import LinkedInFetcher from "../../Teams/LinkedInFetcher";
 import CloseIcon from "@mui/icons-material/Close";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import XpertRole from "../Prefference/XpertRole";
+import LinkedInLogo from "../../../assets/svg/linkedin.png";
 import useSaveProfileData from "../../../hooks/Linkedin/useSaveProfileData";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
-import XpertRole from "../Prefference/XpertRole";
 
+/**
+ * Certain roles (astrologist, lawyer) have "consulting charges"
+ */
 const consultingChargesConfig = {
   astrologist: true,
   lawyer: true,
 };
 
+/**
+ * Calculate total years and months from LinkedIn experiences
+ */
 const calculateExperience = (experiences) => {
   if (!experiences || experiences.length === 0) return "";
   const currentDate = new Date();
   let totalMonths = 0;
+
   experiences.forEach((exp) => {
     const start = new Date(
       exp.starts_at.year,
@@ -62,18 +68,23 @@ const calculateExperience = (experiences) => {
     const end = exp.ends_at
       ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
       : currentDate;
+
     const months =
       (end.getFullYear() - start.getFullYear()) * 12 +
       (end.getMonth() - start.getMonth());
     totalMonths += months;
   });
+
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
-  return `${years} ${years > 1 ? "Years" : "Year"} ${
-    months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
+  return `${years} ${years > 1 ? "Years" : "Year"}${
+    months > 0 ? ` ${months} ${months > 1 ? "Months" : "Month"}` : ""
   }`;
 };
 
+/**
+ * Format a date object from LinkedIn's day/month/year into "MMM YYYY"
+ */
 const formatDate = (dateObj) => {
   if (!dateObj) return "";
   const { year, month, day } = dateObj;
@@ -85,61 +96,71 @@ const formatDate = (dateObj) => {
 };
 
 export default function StepperForm() {
+  // Basic personal data
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
   const [Xpert, setXpert] = useState("");
   const [Experience, setExperience] = useState("");
   const [profileImg, setProfileImg] = useState(null);
+
+  // Location
   const [selectedState, setSelectedState] = useState("");
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
+
+  // Arrays for user details
   const [Education, setEducation] = useState([]);
   const [Work, setWork] = useState([]);
   const [Skills, setSkills] = useState([]);
-  const [value, setValue] = useState(2);
   const [Projects, setProjects] = useState([]);
   const [Services, setServices] = useState([]);
+
+  // Consulting
   const [ConsultingPrice, setConsultingPrice] = useState("");
   const [UserconsultingPrice, setUserconsultingPrice] = useState("");
   const [comission] = useState(0.2);
   const [ConsultingDuration, setConsultingDuration] = useState("");
   const [ConsultingDurationType, setConsultingDurationType] = useState("");
-  const [serviceData, setServiceData] = useState({});
-  const [recommendations, setRecommendation] = useState([]);
-  const [activeStep, setActiveStep] = useState(0);
+
+  // Steps
   const steps = ["Xpert Type", "Profile", "Offering"];
+  const [activeStep, setActiveStep] = useState(0);
+
+  // For LinkedIn fetch
+  const [isLinkedInFetched, setIsLinkedInFetched] = useState(false);
+
+  // For editing items in modals
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
-  const [isLinkedInFetched, setIsLinkedInFetched] = useState(false);
-  const [expandedServiceIndex, setExpandedServiceIndex] = useState(null);
+  const [editIndex, setEditIndex] = useState(null);
 
+  /**
+   * Single object that holds the form data for the modal
+   * (Skills, Education, Work, Projects, Services).
+   */
+  const [modalFormData, setModalFormData] = useState({});
+
+  // Redux / Navigation
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { saveProfileData, loading } = useSaveProfileData();
   const { userData } = useFetchUserData();
 
+  // If user clicked "edit" with existing profile
   const location = useLocation();
   const { profileData } = location.state || {};
-  const handleServiceToggle = (index) => {
-    setExpandedServiceIndex((prevIndex) =>
-      prevIndex === index ? null : index
-    );
-  };
 
-  useEffect(() => {
-    if (profileData) {
-      setActiveStep(1);
-    }
-  }, [profileData]);
-
+  // Xpert from Redux
   const dataRole = useSelector((state) => state.user);
 
+  // If there's a global XpertType, use it
   useEffect(() => {
     if (dataRole && dataRole.XpertType) {
       setXpert(dataRole.XpertType);
     }
   }, [dataRole]);
 
+  // If user has a consulting price, compute net after commission
   useEffect(() => {
     if (ConsultingPrice) {
       const price = parseFloat(ConsultingPrice);
@@ -154,6 +175,27 @@ export default function StepperForm() {
     }
   }, [ConsultingPrice, comission]);
 
+  // Show next step if user came from an existing profile
+  useEffect(() => {
+    if (profileData) {
+      setActiveStep(1);
+    }
+  }, [profileData]);
+
+  // States in India
+  const indiaStates = State.getAllStates().filter(
+    (item) => item.countryCode === "IN"
+  );
+
+  // Changing the state -> load city list
+  const handleStateChange = (stateCode) => {
+    setSelectedState(stateCode);
+    const stateCities = City.getCitiesOfState("IN", stateCode);
+    setCities(stateCities);
+    setSelectedCity("");
+  };
+
+  // Profile image
   const handleProfileImage = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -162,295 +204,327 @@ export default function StepperForm() {
       reader.readAsDataURL(file);
     }
   };
-
   const clearProfileImage = () => {
     setProfileImg(null);
   };
 
-  const handleStateChange = (stateCode) => {
-    setSelectedState(stateCode);
-    const stateCities = City.getCitiesOfState("IN", stateCode);
-    setCities(stateCities);
-    setSelectedCity("");
+  // Step Navigation
+  const handleStepClick = (step) => {
+    setActiveStep(step);
   };
 
-  const openModal = (type) => {
+  // If we already had a user profile (editing), load it
+  useEffect(() => {
+    if (profileData) {
+      setFirstName(profileData?.firstName || "");
+      setLastName(profileData?.lastName || "");
+      setXpert(profileData?.Type || profileData?.type || "");
+      setExperience(userData?.experience || "0");
+      setProfileImg(profileData?.photo_url || "");
+      setIsLinkedInFetched(true);
+
+      if (profileData?.state) {
+        setSelectedState(profileData.state);
+        const stateCities = City.getCitiesOfState("IN", profileData.state);
+        setCities(stateCities);
+        if (profileData?.city) {
+          setSelectedCity(profileData.city);
+        }
+      }
+
+      setConsultingPrice(profileData?.consultingPrice || "");
+      setConsultingDurationType(profileData?.consultingDurationType || "");
+      setConsultingDuration(profileData?.consultingDuration || "");
+
+      // Education
+      if (
+        profileData?.educationDetails &&
+        Array.isArray(profileData?.educationDetails)
+      ) {
+        const eduData = profileData.educationDetails.map((edu) => ({
+          degree: edu.degree || "",
+          stream: edu.stream || "",
+          college: edu.college || "",
+          startDate: formatDate(edu.startDate),
+          endDate: edu.ends_at ? formatDate(edu.endDate) : "Present",
+          cgpa: edu.cgpa || "",
+        }));
+        setEducation(eduData);
+      }
+
+      // Work
+      if (
+        profileData?.workExperience &&
+        Array.isArray(profileData?.workExperience)
+      ) {
+        const workData = profileData.workExperience.map((exp) => ({
+          position: exp.role || "",
+          company: exp.companyName || "",
+          startDate: formatDate(exp.startDate),
+          endDate: exp.ends_at ? formatDate(exp.endDate) : "Present",
+          description: exp.description || "",
+        }));
+        setWork(workData);
+      }
+
+      // Skills
+      if (profileData?.skillSet && Array.isArray(profileData?.skillSet)) {
+        const skillData = profileData.skillSet.map((skill) => ({
+          skill: skill.skill || "",
+          skillRating: skill.skillRating || 0,
+        }));
+        setSkills(skillData);
+      }
+
+      // Projects
+      if (
+        profileData?.projectDetails &&
+        Array.isArray(profileData?.projectDetails)
+      ) {
+        const projectData = profileData.projectDetails.map((proj) => ({
+          projectName: proj.projectName || "",
+          duration: `${formatDate(proj.startDate)} - ${
+            proj.ends_at ? formatDate(proj.endDate) : "Present"
+          }`,
+          liveLink: proj.liveDemo || "",
+          description: proj.description || "",
+        }));
+        setProjects(projectData);
+      }
+
+      // Services
+      if (
+        profileData?.serviceDetails &&
+        Array.isArray(profileData?.serviceDetails)
+      ) {
+        const serviceData = profileData.serviceDetails.map((service) => ({
+          serviceName: service.serviceName || "",
+          serviceDescription: service.serviceDescription || "",
+          servicePrice: service.servicePrice || "",
+          duration: service.serviceDuration || "",
+          durationType: service.serviceDurationType || "",
+          startDate: service.startDate || "",
+          endDate: service.endDate || "",
+          availability: service.availability || "",
+          hoursPerDay: service.hoursPerDay || "",
+        }));
+        setServices(serviceData);
+      }
+    }
+  }, [profileData, userData]);
+
+  // LinkedIn data
+  const handleLinkedInData = (data) => {
+    if (data) {
+      setFirstName(data.first_name || "");
+      setLastName(data.last_name || "");
+      setExperience(calculateExperience(data.experiences) || "");
+      setProfileImg(data.profile_pic_url || "");
+      setIsLinkedInFetched(true);
+
+      if (data.state && data.city) {
+        const stateObj = State.getStatesOfCountry("IN").find(
+          (st) => st.name.toLowerCase() === data.state.toLowerCase()
+        );
+        if (stateObj) {
+          setSelectedState(stateObj.isoCode);
+          const stateCities = City.getCitiesOfState("IN", stateObj.isoCode);
+          setCities(stateCities);
+          const cityObj = stateCities.find(
+            (ct) => ct.name.toLowerCase() === data.city.toLowerCase()
+          );
+          if (cityObj) {
+            setSelectedCity(cityObj.name);
+          }
+        }
+      }
+
+      // Education
+      if (data.education && Array.isArray(data.education)) {
+        const eduData = data.education.map((edu) => ({
+          degree: edu.degree_name || "",
+          stream: edu.field_of_study || "",
+          college: edu.school || "",
+          startDate: formatDate(edu.starts_at),
+          endDate: edu.ends_at ? formatDate(edu.ends_at) : "Present",
+          cgpa: edu.grade || "",
+        }));
+        setEducation(eduData);
+      }
+
+      // Work
+      if (data.experiences && Array.isArray(data.experiences)) {
+        const workData = data.experiences.map((exp) => ({
+          position: exp.title || "",
+          company: exp.company || "",
+          startDate: formatDate(exp.starts_at),
+          endDate: exp.ends_at ? formatDate(exp.ends_at) : "Present",
+          description: exp.description || "",
+        }));
+        setWork(workData);
+      }
+
+      // Projects
+      if (
+        data.accomplishment_projects &&
+        Array.isArray(data.accomplishment_projects)
+      ) {
+        const projectData = data.accomplishment_projects.map((proj) => ({
+          projectName: proj.title || "",
+          duration: `${formatDate(proj.starts_at)} - ${
+            proj.ends_at ? formatDate(proj.ends_at) : "Present"
+          }`,
+          liveLink: proj.url || "",
+          description: proj.description || "",
+        }));
+        setProjects(projectData);
+      }
+
+      // Skills
+      if (data.skills && Array.isArray(data.skills)) {
+        const skillData = data.skills.map((skill) => ({
+          skill: skill.name || "",
+          skillRating: 0,
+        }));
+        setSkills(skillData);
+      }
+    }
+  };
+
+  // Check if consulting charges are enabled
+  const isConsultingChargesEnabled = () => {
+    if (!Xpert || typeof Xpert !== "string") return false;
+    const formatted = Xpert.toLowerCase().trim();
+    return consultingChargesConfig[formatted] || false;
+  };
+
+  /**
+   * Open the modal in either "Add" or "Edit" mode.
+   */
+  const openModal = (type, index = null, itemData = {}) => {
     setModalType(type);
     setIsModalOpen(true);
+    setEditIndex(index);
+
+    // If editing an existing item, populate modalFormData
+    if (index !== null && itemData) {
+      if (type.toLowerCase() === "skill") {
+        setModalFormData({
+          skill: itemData.skill || "",
+          skillRating: itemData.skillRating || 0,
+        });
+      } else if (type.toLowerCase() === "education") {
+        setModalFormData({
+          degree: itemData.degree || "",
+          stream: itemData.stream || "",
+          college: itemData.college || "",
+          startDate: itemData.startDate || "",
+          endDate: itemData.endDate || "",
+          cgpa: itemData.cgpa || "",
+        });
+      } else if (type.toLowerCase() === "work") {
+        setModalFormData({
+          position: itemData.position || "",
+          company: itemData.company || "",
+          startDate: itemData.startDate || "",
+          endDate: itemData.endDate || "",
+          description: itemData.description || "",
+        });
+      } else if (type.toLowerCase() === "project") {
+        setModalFormData({
+          projectName: itemData.projectName || "",
+          duration: itemData.duration || "",
+          liveLink: itemData.liveLink || "",
+          description: itemData.description || "",
+        });
+      } else if (type.toLowerCase() === "service") {
+        setModalFormData({
+          serviceName: itemData.serviceName || "",
+          serviceDescription: itemData.serviceDescription || "",
+          servicePrice: itemData.servicePrice || "",
+          duration: itemData.duration || "",
+          durationType: itemData.durationType || "",
+          startDate: itemData.startDate || "",
+          endDate: itemData.endDate || "",
+          availability: itemData.availability || "",
+          hoursPerDay: itemData.hoursPerDay || "",
+        });
+      }
+    } else {
+      // Adding brand new item
+      setModalFormData({});
+    }
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setModalType("");
-    setServiceData({});
+    setEditIndex(null);
+    setModalFormData({});
   };
 
-  useEffect(() => {
-    const recommendationsConfig = {
-      developer: [
-        {
-          title: "Web Development",
-          description: "Build responsive and robust websites.",
-        },
-        {
-          title: "App Development",
-          description: "Create high-performance mobile applications.",
-        },
-        {
-          title: "Backend Development",
-          description: "Develop server-side applications and APIs.",
-        },
-        {
-          title: "Database Management",
-          description: "Design and maintain scalable databases.",
-        },
-      ],
-      designer: [
-        {
-          title: "Graphic Design",
-          description: "Craft stunning visuals for branding.",
-        },
-        {
-          title: "UI/UX Design",
-          description: "Design user-friendly interfaces and experiences.",
-        },
-        {
-          title: "Branding",
-          description: "Develop brand identities and guidelines.",
-        },
-        {
-          title: "Packaging Design",
-          description: "Create attractive packaging designs for products.",
-        },
-      ],
-      "cloud devops": [
-        {
-          title: "Cloud Setup",
-          description: "Set up scalable cloud infrastructure.",
-        },
-        {
-          title: "DevOps Automation",
-          description: "Streamline CI/CD pipelines and processes.",
-        },
-        {
-          title: "Server Management",
-          description: "Manage and maintain cloud-based servers.",
-        },
-        {
-          title: "Cloud Security",
-          description: "Ensure secure and compliant cloud environments.",
-        },
-      ],
-      "content creator": [
-        {
-          title: "Blog Writing",
-          description: "Produce engaging and SEO-friendly articles.",
-        },
-        {
-          title: "Video Production",
-          description: "Create high-quality video content for platforms.",
-        },
-        {
-          title: "Podcasting",
-          description: "Create and produce engaging podcasts.",
-        },
-        {
-          title: "Social Media Content",
-          description: "Develop content for various social media platforms.",
-        },
-      ],
-      "digital marketing": [
-        {
-          title: "SEO Optimization",
-          description: "Improve website ranking on search engines.",
-        },
-        {
-          title: "Social Media Campaigns",
-          description: "Run targeted campaigns to grow audience.",
-        },
-        {
-          title: "Email Marketing",
-          description: "Create effective email campaigns to engage customers.",
-        },
-        {
-          title: "Pay-Per-Click (PPC)",
-          description: "Run paid search advertising campaigns for businesses.",
-        },
-      ],
-      lawyer: [
-        {
-          title: "Legal Advice",
-          description: "Provide expert legal consultations.",
-        },
-        {
-          title: "Contract Drafting",
-          description: "Draft comprehensive legal agreements.",
-        },
-        {
-          title: "Business Law",
-          description: "Assist with business-related legal matters.",
-        },
-        {
-          title: "Intellectual Property",
-          description: "Help protect intellectual property rights.",
-        },
-        {
-          title: "Family Law",
-          description: "Assist with legal issues related to family matters.",
-        },
-        {
-          title: "Criminal Defense",
-          description: "Provide defense for individuals accused of crimes.",
-        },
-        {
-          title: "Real Estate Law",
-          description: "Assist with property and real estate legal matters.",
-        },
-        {
-          title: "Employment Law",
-          description: "Help resolve employment-related legal disputes.",
-        },
-        {
-          title: "Immigration Law",
-          description:
-            "Provide legal services for immigration-related matters.",
-        },
-        {
-          title: "Mergers & Acquisitions",
-          description:
-            "Assist with mergers, acquisitions, and corporate restructuring.",
-        },
-      ],
-      hr: [
-        {
-          title: "Recruitment Services",
-          description: "Find the right talent for your team.",
-        },
-        {
-          title: "Employee Onboarding",
-          description: "Streamline the onboarding process.",
-        },
-        {
-          title: "Employee Training",
-          description: "Develop training programs for employees.",
-        },
-        {
-          title: "HR Consulting",
-          description: "Provide HR strategy and compliance consulting.",
-        },
-      ],
-      accountant: [
-        {
-          title: "Tax Filing",
-          description: "Ensure compliance with tax regulations.",
-        },
-        {
-          title: "Financial Planning",
-          description: "Help plan and manage your finances effectively.",
-        },
-        {
-          title: "Bookkeeping",
-          description: "Maintain accurate financial records.",
-        },
-        {
-          title: "Investment Advisory",
-          description: "Advise on personal and business investments.",
-        },
-      ],
-      astrologist: [
-        {
-          title: "Personal Astrology",
-          description: "Provide personalized astrological readings.",
-        },
-        {
-          title: "Business Astrology",
-          description: "Offer astrological insights for business decisions.",
-        },
-        {
-          title: "Horoscope Creation",
-          description: "Create detailed horoscopes for clients.",
-        },
-        {
-          title: "Astrological Counseling",
-          description: "Provide guidance based on astrological analysis.",
-        },
-      ],
-      default: [
-        {
-          title: "General Service",
-          description: "Offer a range of customizable services.",
-        },
-      ],
-      intern: [
-        {
-          title: "Internship",
-          description:
-            "A temporary position offering hands-on experience, typically for students or recent graduates, to gain industry skills.",
-        },
-        {
-          title: "Full-Time",
-          description:
-            "A long-term, permanent employment position with fixed working hours and responsibilities.",
-        },
-        {
-          title: "Project-Basis",
-          description:
-            "A short-term contract role focused on completing specific projects or tasks within a set timeframe.",
-        },
-      ],
-    };
-
-    if (Xpert && typeof Xpert === "string") {
-      setRecommendation(
-        recommendationsConfig[Xpert.toLowerCase()] ||
-          recommendationsConfig.default
-      );
+  /**
+   * Add or update (if editing) the relevant array in local state
+   */
+  const saveDetail = (type, dataObj, index) => {
+    const normalizedType = type.toLowerCase();
+    if (normalizedType === "education") {
+      if (index !== null) {
+        const updated = [...Education];
+        updated[index] = dataObj;
+        setEducation(updated);
+      } else {
+        setEducation([...Education, dataObj]);
+      }
+    } else if (normalizedType === "work") {
+      if (index !== null) {
+        const updated = [...Work];
+        updated[index] = dataObj;
+        setWork(updated);
+      } else {
+        setWork([...Work, dataObj]);
+      }
+    } else if (normalizedType === "skill") {
+      if (index !== null) {
+        const updated = [...Skills];
+        updated[index] = dataObj;
+        setSkills(updated);
+      } else {
+        setSkills([...Skills, dataObj]);
+      }
+    } else if (normalizedType === "project") {
+      if (index !== null) {
+        const updated = [...Projects];
+        updated[index] = dataObj;
+        setProjects(updated);
+      } else {
+        setProjects([...Projects, dataObj]);
+      }
+    } else if (normalizedType === "service") {
+      if (Xpert.toLowerCase() === "intern") {
+        // If user is intern, only keep 1 service
+        if (index !== null) {
+          const updated = [...Services];
+          updated[index] = dataObj;
+          setServices(updated);
+        } else {
+          setServices([dataObj]);
+        }
+      } else {
+        if (index !== null) {
+          const updated = [...Services];
+          updated[index] = dataObj;
+          setServices(updated);
+        } else {
+          setServices([...Services, dataObj]);
+        }
+      }
     } else {
-      setRecommendation(recommendationsConfig.default);
-    }
-  }, [Xpert]);
-
-  const handleRecommendationClick = (rec) => {
-    const serviceData = {
-      serviceName: rec.title,
-      serviceDescription: rec.description,
-      servicePrice: "",
-      duration: "",
-      durationType: "",
-      // Add intern-specific fields if Xpert is intern
-      ...(Xpert.toLowerCase() === "intern" && {
-        startDate: "",
-        endDate: "",
-        availability: "full time",
-        hoursPerDay: "",
-      }),
-    };
-    setServiceData(serviceData);
-    openModal("Service");
-  };
-
-  const saveDetail = (type, data) => {
-    switch (type.toLowerCase()) {
-      case "education":
-        setEducation([...Education, data]);
-        break;
-      case "work":
-        setWork([...Work, data]);
-        break;
-      case "skill":
-        setSkills([...Skills, data]);
-        break;
-      case "project":
-        setProjects([...Projects, data]);
-        break;
-      case "service":
-        setServices([...Services, data]);
-        break;
-      default:
-        console.error("Invalid type");
+      console.error("Invalid type");
     }
   };
 
+  // Remove item
   const deleteDetail = (type, index) => {
     switch (type.toLowerCase()) {
       case "education":
@@ -473,9 +547,11 @@ export default function StepperForm() {
     }
   };
 
+  // When user clicks "Submit" in the final step
   const handleSubmitInfo = async (e) => {
     e.preventDefault();
 
+    // Validate required fields
     const missingFields = [];
     if (!FirstName) missingFields.push("First Name");
     if (!LastName) missingFields.push("Last Name");
@@ -485,235 +561,163 @@ export default function StepperForm() {
     if (!profileImg) missingFields.push("Profile Image");
     if (!selectedCity) missingFields.push("City");
 
-    if (missingFields.length === 0) {
-      const data = {
-        profileImage: profileImg,
-        firstName: FirstName,
-        lastName: LastName,
-        experience: Experience,
-        type: Xpert,
-        state: selectedState,
-        city: selectedCity,
-        education: Education,
-        work: Work,
-        skills: Skills,
-        projects: Projects,
-        services: Services,
-        consultingPrice: ConsultingPrice,
-        consultingDuration: ConsultingDuration,
-        consultingDurationType: ConsultingDurationType,
-      };
-
-      dispatch(setDetail(data));
-
-      try {
-        await saveProfileData(data);
-        navigate(`/profile/${userData?.uid}`);
-      } catch (error) {
-        toast.error(`Error saving data: ${error.message || error}`);
-        console.log(error);
-      }
-    } else {
+    if (missingFields.length > 0) {
       missingFields.forEach((field) => toast.error(`${field} is required`));
+      return;
+    }
+
+    // Gather all data
+    const data = {
+      profileImage: profileImg,
+      firstName: FirstName,
+      lastName: LastName,
+      experience: Experience,
+      type: Xpert,
+      state: selectedState,
+      city: selectedCity,
+      education: Education,
+      work: Work,
+      skills: Skills,
+      projects: Projects,
+      services: Services,
+      consultingPrice: ConsultingPrice,
+      consultingDuration: ConsultingDuration,
+      consultingDurationType: ConsultingDurationType,
+    };
+
+    dispatch(setDetail(data));
+
+    try {
+      await saveProfileData(data);
+      navigate(`/profile/${userData?.uid}`);
+    } catch (error) {
+      toast.error(`Error saving data: ${error.message || error}`);
+      console.log(error);
     }
   };
 
-  const handleSubmit = (e) => {
+  // Submit the modal form (add or edit item)
+  const handleModalSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const imageFile = formData.get("projectImage");
-    const Fdata = Object.fromEntries(formData.entries());
-
-    if (imageFile && imageFile instanceof File) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        Fdata.projectImage = reader.result;
-        saveDetail(modalType, Fdata);
-      };
-      reader.readAsDataURL(imageFile);
-    } else {
-      saveDetail(modalType, Fdata);
-    }
-
+    saveDetail(modalType, modalFormData, editIndex);
     closeModal();
   };
 
-  const indiaStates = State.getAllStates().filter(
-    (item) => item.countryCode === "IN"
-  );
-
+  // Load recommended services based on role
+  const [recommendations, setRecommendation] = useState([]);
   useEffect(() => {
-    if (profileData) {
-      setFirstName(profileData?.firstName || "");
-      setLastName(profileData?.lastName || "");
-      // Note: Removing setXpert from LinkedIn data to avoid overwriting the chosen role.
-      setXpert(profileData?.Type || profileData?.type || "");
-      setExperience(userData?.experience || "0");
-      setProfileImg(profileData?.photo_url || "");
-      setIsLinkedInFetched(true);
-      setSelectedCity(profileData?.city);
-      setSelectedState(profileData?.state);
-      setConsultingPrice(profileData?.consultingPrice);
-      setConsultingDurationType(profileData?.consultingDurationType);
-      setConsultingDuration(profileData?.consultingDuration);
+    const recommendationsConfig = {
+      developer: [
+        { title: "Web Development", description: "Build websites." },
+        { title: "App Development", description: "Mobile applications." },
+        { title: "Backend Development", description: "Server-side apps." },
+        { title: "Database Management", description: "Scalable databases." },
+      ],
+      designer: [
+        { title: "Graphic Design", description: "Stunning visuals." },
+        { title: "UI/UX Design", description: "User-friendly interfaces." },
+        { title: "Branding", description: "Brand identities." },
+        { title: "Packaging Design", description: "Attractive packaging." },
+      ],
+      "cloud devops": [
+        { title: "Cloud Setup", description: "Scalable cloud infra." },
+        { title: "DevOps Automation", description: "Streamline CI/CD." },
+        { title: "Server Management", description: "Maintain servers." },
+        { title: "Cloud Security", description: "Secure environments." },
+      ],
+      "content creator": [
+        { title: "Blog Writing", description: "SEO-friendly articles." },
+        { title: "Video Production", description: "High-quality videos." },
+        { title: "Podcasting", description: "Engaging podcasts." },
+        { title: "Social Media Content", description: "Various platforms." },
+      ],
+      "digital marketing": [
+        { title: "SEO Optimization", description: "Improve rankings." },
+        { title: "Social Media Campaigns", description: "Targeted campaigns." },
+        { title: "Email Marketing", description: "Effective email blasts." },
+        { title: "PPC", description: "Paid search ads." },
+      ],
+      lawyer: [
+        { title: "Legal Advice", description: "Expert consultations." },
+        { title: "Contract Drafting", description: "Draft agreements." },
+        { title: "Business Law", description: "Business legal matters." },
+        { title: "Intellectual Property", description: "Protect IP rights." },
+        { title: "Family Law", description: "Family-related legal issues." },
+        { title: "Criminal Defense", description: "Defense for crimes." },
+        { title: "Real Estate Law", description: "Property matters." },
+        { title: "Employment Law", description: "Employment disputes." },
+        { title: "Immigration Law", description: "Immigration services." },
+        { title: "Mergers & Acquisitions", description: "Handle M&A deals." },
+      ],
+      hr: [
+        { title: "Recruitment Services", description: "Find right talent." },
+        { title: "Employee Onboarding", description: "Onboarding process." },
+        { title: "Employee Training", description: "Training programs." },
+        { title: "HR Consulting", description: "HR strategy & compliance." },
+      ],
+      accountant: [
+        { title: "Tax Filing", description: "Tax compliance." },
+        { title: "Financial Planning", description: "Plan finances." },
+        { title: "Bookkeeping", description: "Accurate records." },
+        { title: "Investment Advisory", description: "Business investments." },
+      ],
+      astrologist: [
+        { title: "Personal Astrology", description: "Personal readings." },
+        { title: "Business Astrology", description: "Insights for business." },
+        { title: "Horoscope Creation", description: "Detailed horoscopes." },
+        { title: "Astrological Counseling", description: "Guidance by stars." },
+      ],
+      intern: [
+        {
+          title: "Internship",
+          description: "Hands-on experience for students/graduates.",
+        },
+        {
+          title: "Full-Time",
+          description: "Permanent role with fixed hours & responsibilities.",
+        },
+        {
+          title: "Part-Time",
+          description: "Short-term contract with specific tasks/workload.",
+        },
+      ],
+      default: [
+        {
+          title: "General Service",
+          description: "A range of customizable services.",
+        },
+      ],
+    };
 
-      if (
-        profileData?.educationDetails &&
-        Array.isArray(profileData?.educationDetails)
-      ) {
-        const eduData = profileData.educationDetails.map((edu) => ({
-          degree: edu.degree || "",
-          stream: edu.stream || "",
-          college: edu.college || "",
-          startDate: formatDate(edu.startDate),
-          endDate: edu.ends_at ? formatDate(edu.endDate) : "Present",
-          cgpa: edu.cgpa || "",
-        }));
-        setEducation(eduData);
-      }
-
-      if (
-        profileData?.workExperience &&
-        Array.isArray(profileData?.workExperience)
-      ) {
-        const workData = profileData.workExperience.map((exp) => ({
-          position: exp.role || "",
-          company: exp.companyName || "",
-          startDate: formatDate(exp.startDate),
-          endDate: exp.ends_at ? formatDate(exp.endDate) : "Present",
-        }));
-        setWork(workData);
-      }
-
-      if (profileData?.skillSet && Array.isArray(profileData?.skillSet)) {
-        const skillData = profileData.skillSet.map((skill) => ({
-          skill: skill.skill || "",
-          skillRating: skill.skillRating || 0,
-        }));
-        setSkills(skillData);
-      }
-
-      if (
-        profileData?.projectDetails &&
-        Array.isArray(profileData?.projectDetails)
-      ) {
-        const projectData = profileData.projectDetails.map((proj) => ({
-          projectName: proj.projectName || "",
-          duration: `${formatDate(proj.startDate)} - ${
-            proj.ends_at ? formatDate(proj.endDate) : "Present"
-          }`,
-          liveLink: proj.liveDemo || "",
-          description: proj.description || "",
-        }));
-        setProjects(projectData);
-      }
-
-      if (
-        profileData?.serviceDetails &&
-        Array.isArray(profileData?.serviceDetails)
-      ) {
-        const serviceData = profileData.serviceDetails.map((service) => ({
-          serviceName: service.serviceName || "",
-          serviceDescription: service.serviceDescription || "",
-          servicePrice: service.servicePrice || "",
-          duration: service.serviceDuration || "",
-          durationType: service.serviceDurationType || "",
-        }));
-        setServices(serviceData);
-      }
+    if (Xpert && typeof Xpert === "string") {
+      setRecommendation(
+        recommendationsConfig[Xpert.toLowerCase()] ||
+          recommendationsConfig.default
+      );
+    } else {
+      setRecommendation(recommendationsConfig.default);
     }
-  }, [profileData, isLinkedInFetched, userData]);
+  }, [Xpert]);
 
-  const handleLinkedInData = (data) => {
-    if (data) {
-      setFirstName(data.first_name || "");
-      setLastName(data.last_name || "");
-      // Not setting Xpert from LinkedIn data to avoid overwriting chosen role.
-      setExperience(calculateExperience(data.experiences) || "");
-      setProfileImg(data.profile_pic_url || "");
-      setIsLinkedInFetched(true);
-
-      if (data.state && data.city) {
-        const stateObj = State.getStatesOfCountry("IN").find(
-          (state) => state.name.toLowerCase() === data.state.toLowerCase()
-        );
-        if (stateObj) {
-          setSelectedState(stateObj.isoCode);
-          const stateCities = City.getCitiesOfState("IN", stateObj.isoCode);
-          setCities(stateCities);
-          const cityObj = stateCities.find(
-            (city) => city.name.toLowerCase() === data.city.toLowerCase()
-          );
-          if (cityObj) {
-            setSelectedCity(cityObj.name);
-          }
-        }
-      }
-
-      if (data.education && Array.isArray(data.education)) {
-        const eduData = data.education.map((edu) => ({
-          degree: edu.degree_name || "",
-          stream: edu.field_of_study || "",
-          college: edu.school || "",
-          startDate: formatDate(edu.starts_at),
-          endDate: edu.ends_at ? formatDate(edu.ends_at) : "Present",
-          cgpa: edu.grade || "",
-        }));
-        setEducation(eduData);
-      }
-
-      if (data.experiences && Array.isArray(data.experiences)) {
-        const workData = data.experiences.map((exp) => ({
-          position: exp.title || "",
-          company: exp.company || "",
-          startDate: formatDate(exp.starts_at),
-          endDate: exp.ends_at ? formatDate(exp.ends_at) : "Present",
-        }));
-        setWork(workData);
-      }
-
-      if (
-        data.accomplishment_projects &&
-        Array.isArray(data.accomplishment_projects)
-      ) {
-        const projectData = data.accomplishment_projects.map((proj) => ({
-          projectName: proj.title || "",
-          duration: `${formatDate(proj.starts_at)} - ${
-            proj.ends_at ? formatDate(proj.ends_at) : "Present"
-          }`,
-          liveLink: proj.url || "",
-          description: proj.description || "",
-        }));
-        setProjects(projectData);
-      }
-
-      if (data.skills && Array.isArray(data.skills)) {
-        const skillData = data.skills.map((skill) => ({
-          skill: skill.name || "",
-          skillRating: 0,
-        }));
-        setSkills(skillData);
-      }
-    }
+  // If user clicks on a recommended service
+  const handleRecommendationClick = (rec) => {
+    const newServiceData = {
+      serviceName: rec.title,
+      serviceDescription: rec.description,
+      servicePrice: "",
+      duration: "",
+      durationType: "",
+      startDate: "",
+      endDate: "",
+      availability: "",
+      hoursPerDay: "",
+    };
+    openModal("Service", null, newServiceData);
   };
-
-  const isConsultingChargesEnabled = () => {
-    if (!Xpert || typeof Xpert !== "string") return false;
-    const formatted = Xpert.toLowerCase().trim();
-    return consultingChargesConfig[formatted] || false;
-  };
-
-  const handleStepClick = (step) => {
-    setActiveStep(step);
-  };
-  useEffect(() => {
-    if (profileData) {
-      setActiveStep(1);
-    }
-  }, [profileData]);
 
   return (
     <Box sx={{ width: "100%", padding: 4, overflow: "hidden" }}>
+      {/* Stepper */}
       <Stepper activeStep={activeStep} alternativeLabel nonLinear>
         {steps.map((label, index) => {
           const displayLabel =
@@ -737,6 +741,7 @@ export default function StepperForm() {
         })}
       </Stepper>
 
+      {/* If the user has chosen something on step 0, show a chip */}
       {activeStep === 0 && Xpert && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
           <Chip label={Xpert} color="primary" />
@@ -746,6 +751,7 @@ export default function StepperForm() {
       {activeStep === 0 && <XpertRole next={() => setActiveStep(1)} />}
 
       <Box sx={{ height: "80vh", overflow: "auto" }}>
+        {/* Step 1: Profile */}
         {activeStep === 1 && (
           <Grid container spacing={4} alignItems="flex-start">
             <Grid
@@ -759,6 +765,7 @@ export default function StepperForm() {
             >
               <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
                 <CardContent>
+                  {/* Profile Image */}
                   <Box
                     sx={{
                       display: "flex",
@@ -814,6 +821,7 @@ export default function StepperForm() {
                     </Typography>
                   </Box>
 
+                  {/* Basic Info */}
                   <TextField
                     label="First Name"
                     variant="outlined"
@@ -865,9 +873,9 @@ export default function StepperForm() {
                       label="State"
                       onChange={(e) => handleStateChange(e.target.value)}
                     >
-                      {indiaStates.map((state) => (
-                        <MenuItem key={state.isoCode} value={state.isoCode}>
-                          {state.name}
+                      {indiaStates.map((st) => (
+                        <MenuItem key={st.isoCode} value={st.isoCode}>
+                          {st.name}
                         </MenuItem>
                       ))}
                     </Select>
@@ -893,14 +901,9 @@ export default function StepperForm() {
               </Card>
             </Grid>
 
-            <Grid
-              sx={{
-                marginTop: "10px",
-              }}
-              item
-              xs={12}
-              md={8}
-            >
+            {/* Right side: LinkedIn, Skills, Education, etc. */}
+            <Grid item xs={12} md={8} sx={{ marginTop: "10px" }}>
+              {/* LinkedIn Import */}
               {!profileData && (
                 <Box
                   sx={{
@@ -938,7 +941,7 @@ export default function StepperForm() {
                 </Box>
               )}
 
-              {!isLinkedInFetched && (
+              {!isLinkedInFetched && !profileData && (
                 <Box sx={{ mb: 2 }}>
                   <LinkedInFetcher
                     close={setIsLinkedInFetched}
@@ -947,6 +950,7 @@ export default function StepperForm() {
                 </Box>
               )}
 
+              {/* Skills */}
               <Card sx={{ mb: 2, boxShadow: 2 }}>
                 <CardHeader
                   title="Skills"
@@ -978,6 +982,17 @@ export default function StepperForm() {
                         gap: "20px",
                       }}
                     >
+                      {/* Edit icon */}
+                      <IconButton
+                        aria-label="edit"
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 30 }}
+                        onClick={() => openModal("Skill", index, item)}
+                      >
+                        <FiEdit color="blue" size={16} />
+                      </IconButton>
+
+                      {/* Delete icon */}
                       <IconButton
                         aria-label="delete"
                         size="small"
@@ -986,6 +1001,7 @@ export default function StepperForm() {
                       >
                         <FiTrash color="red" size={16} />
                       </IconButton>
+
                       <Typography variant="body1">
                         {item.skill.charAt(0).toUpperCase() +
                           item.skill.slice(1)}
@@ -1002,6 +1018,7 @@ export default function StepperForm() {
                 </CardContent>
               </Card>
 
+              {/* Education */}
               <Card sx={{ mb: 2, boxShadow: 2 }}>
                 <CardHeader
                   title="Education"
@@ -1023,6 +1040,17 @@ export default function StepperForm() {
                 <CardContent sx={{ padding: 2 }}>
                   {Education.map((item, index) => (
                     <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                      {/* Edit icon */}
+                      <IconButton
+                        aria-label="edit"
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 30 }}
+                        onClick={() => openModal("Education", index, item)}
+                      >
+                        <FiEdit color="blue" size={16} />
+                      </IconButton>
+
+                      {/* Delete icon */}
                       <IconButton
                         aria-label="delete"
                         size="small"
@@ -1031,34 +1059,26 @@ export default function StepperForm() {
                       >
                         <FiTrash color="red" size={16} />
                       </IconButton>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          gap: "20px",
-                        }}
-                      >
-                        <Box></Box>
-                        <Box>
-                          <Typography variant="subtitle1">
-                            <strong>{item.degree}</strong> in {item.stream}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {item.college}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {item.startDate} - {item.endDate}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            CGPA: {item.cgpa}
-                          </Typography>
-                        </Box>
+                      <Box>
+                        <Typography variant="subtitle1">
+                          <strong>{item.degree}</strong> in {item.stream}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {item.college}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {item.startDate} - {item.endDate}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          CGPA: {item.cgpa}
+                        </Typography>
                       </Box>
                     </Box>
                   ))}
                 </CardContent>
               </Card>
 
+              {/* Work */}
               <Card sx={{ mb: 2, boxShadow: 2 }}>
                 <CardHeader
                   title="Work Experience"
@@ -1080,6 +1100,16 @@ export default function StepperForm() {
                 <CardContent sx={{ padding: 2 }}>
                   {Work.map((item, index) => (
                     <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                      {/* Edit icon */}
+                      <IconButton
+                        aria-label="edit"
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 30 }}
+                        onClick={() => openModal("Work", index, item)}
+                      >
+                        <FiEdit color="blue" size={16} />
+                      </IconButton>
+                      {/* Delete icon */}
                       <IconButton
                         aria-label="delete"
                         size="small"
@@ -1088,28 +1118,29 @@ export default function StepperForm() {
                       >
                         <FiTrash color="red" size={16} />
                       </IconButton>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          gap: "20px",
-                        }}
-                      >
-                        <Box></Box>
-                        <Box>
-                          <Typography variant="subtitle1">
-                            <strong>{item.position}</strong> at {item.company}
+                      <Box>
+                        <Typography variant="subtitle1">
+                          <strong>{item.position}</strong> at {item.company}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {item.startDate} - {item.endDate}
+                        </Typography>
+                        {item.description && (
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            sx={{ mt: 1 }}
+                          >
+                            {item.description}
                           </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {item.startDate} - {item.endDate}
-                          </Typography>
-                        </Box>
+                        )}
                       </Box>
                     </Box>
                   ))}
                 </CardContent>
               </Card>
 
+              {/* Projects */}
               <Card sx={{ mb: 2, boxShadow: 2 }}>
                 <CardHeader
                   title="Projects/Assignments"
@@ -1131,6 +1162,16 @@ export default function StepperForm() {
                 <CardContent sx={{ padding: 2 }}>
                   {Projects.map((item, index) => (
                     <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                      {/* Edit icon */}
+                      <IconButton
+                        aria-label="edit"
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 30 }}
+                        onClick={() => openModal("Project", index, item)}
+                      >
+                        <FiEdit color="blue" size={16} />
+                      </IconButton>
+                      {/* Delete icon */}
                       <IconButton
                         aria-label="delete"
                         size="small"
@@ -1140,38 +1181,27 @@ export default function StepperForm() {
                         <FiTrash color="red" size={16} />
                       </IconButton>
                       <Box>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            gap: "20px",
-                          }}
-                        >
-                          <Box></Box>
-                          <Box>
-                            <Typography variant="subtitle1">
-                              <strong>{item.projectName}</strong>
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {item.duration}
-                            </Typography>
-                            {item.liveLink && (
-                              <Typography variant="body2" color="primary">
-                                <a
-                                  href={item.liveLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  style={{ textDecoration: "none" }}
-                                >
-                                  Live Link
-                                </a>
-                              </Typography>
-                            )}
-                            <Typography variant="body2" color="textSecondary">
-                              {item.description}
-                            </Typography>
-                          </Box>
-                        </Box>
+                        <Typography variant="subtitle1">
+                          <strong>{item.projectName}</strong>
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {item.duration}
+                        </Typography>
+                        {item.liveLink && (
+                          <Typography variant="body2" color="primary">
+                            <a
+                              href={item.liveLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ textDecoration: "none" }}
+                            >
+                              Live Link
+                            </a>
+                          </Typography>
+                        )}
+                        <Typography variant="body2" color="textSecondary">
+                          {item.description}
+                        </Typography>
                       </Box>
                     </Box>
                   ))}
@@ -1179,6 +1209,7 @@ export default function StepperForm() {
               </Card>
             </Grid>
 
+            {/* Step Navigation Buttons */}
             <Grid item xs={12}>
               <Box
                 sx={{
@@ -1214,8 +1245,10 @@ export default function StepperForm() {
           </Grid>
         )}
 
+        {/* Step 2: Offering */}
         {activeStep === 2 && (
           <Grid container spacing={4}>
+            {/* Profile summary on left */}
             <Grid item xs={12} md={4}>
               <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
                 <CardContent>
@@ -1264,7 +1297,9 @@ export default function StepperForm() {
               </Card>
             </Grid>
 
+            {/* Right side: Consulting Price & Services */}
             <Grid item xs={12} md={8}>
+              {/* Consulting Price (if role is astrologist/lawyer) */}
               {isConsultingChargesEnabled() && (
                 <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
                   <CardHeader
@@ -1291,9 +1326,9 @@ export default function StepperForm() {
                           }}
                           required
                           size="small"
+                          value={ConsultingPrice || ""}
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={4}>
                         <Typography>Per Minute</Typography>
                       </Grid>
@@ -1319,6 +1354,7 @@ export default function StepperForm() {
                 </Card>
               )}
 
+              {/* Recommendations (Services) */}
               <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
                 <CardHeader
                   title={
@@ -1347,10 +1383,6 @@ export default function StepperForm() {
                           <Typography variant="subtitle1" gutterBottom>
                             <strong>{rec.title}</strong>
                           </Typography>
-                          {/* Uncomment the description if needed */}
-                          {/* <Typography variant="body2" color="textSecondary">
-                            {rec.description}
-                          </Typography> */}
                         </Card>
                       </Grid>
                     ))}
@@ -1358,6 +1390,7 @@ export default function StepperForm() {
                 </CardContent>
               </Card>
 
+              {/* Services list */}
               <Card sx={{ mb: 4, boxShadow: 2, width: "100%" }}>
                 <CardHeader
                   title="Services"
@@ -1379,6 +1412,16 @@ export default function StepperForm() {
                 <CardContent sx={{ padding: 2 }}>
                   {Services.map((item, index) => (
                     <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                      {/* Edit icon */}
+                      <IconButton
+                        aria-label="edit"
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 30 }}
+                        onClick={() => openModal("Service", index, item)}
+                      >
+                        <FiEdit color="blue" size={16} />
+                      </IconButton>
+                      {/* Delete icon */}
                       <IconButton
                         aria-label="delete"
                         size="small"
@@ -1391,7 +1434,6 @@ export default function StepperForm() {
                       <Typography variant="subtitle1">
                         <strong>{item.serviceName}</strong>
                       </Typography>
-
                       <Typography variant="body2" color="textSecondary">
                         {item.serviceDescription}
                       </Typography>
@@ -1399,22 +1441,10 @@ export default function StepperForm() {
                       {Xpert.toLowerCase() === "intern" ? (
                         <>
                           <Typography variant="body2" color="textSecondary">
-                            Internship Start Date:{" "}
-                            {item.startDate
-                              ? new Date(item.startDate).toLocaleDateString(
-                                  "default",
-                                  { month: "short", year: "numeric" }
-                                )
-                              : "N/A"}
+                            Internship Start Date: {item.startDate || "N/A"}
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
-                            Internship End Date:{" "}
-                            {item.endDate
-                              ? new Date(item.endDate).toLocaleDateString(
-                                  "default",
-                                  { month: "short", year: "numeric" }
-                                )
-                              : "N/A"}
+                            Internship End Date: {item.endDate || "N/A"}
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
                             Availability:{" "}
@@ -1447,6 +1477,7 @@ export default function StepperForm() {
                 </CardContent>
               </Card>
 
+              {/* Final Submit */}
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button
                   variant="outlined"
@@ -1474,25 +1505,23 @@ export default function StepperForm() {
           </Grid>
         )}
 
+        {/* Step 3: Confirmation */}
         {activeStep === 3 && (
           <Typography variant="h6" align="center" sx={{ mt: 4 }}>
             Profile successfully submitted!
           </Typography>
         )}
 
+        {/* Modal for adding/editing Skills, Education, Work, Projects, Services */}
         <Dialog
           open={isModalOpen}
           onClose={closeModal}
           fullWidth
           maxWidth="sm"
-          PaperProps={{
-            sx: {
-              borderRadius: 3,
-            },
-          }}
+          PaperProps={{ sx: { borderRadius: 3 } }}
         >
           <DialogTitle sx={{ m: 0, p: 2 }}>
-            Add {modalType}
+            {editIndex !== null ? `Edit ${modalType}` : `Add ${modalType}`}
             <IconButton
               aria-label="close"
               onClick={closeModal}
@@ -1507,40 +1536,13 @@ export default function StepperForm() {
               <CloseIcon />
             </IconButton>
           </DialogTitle>
-          <form onSubmit={handleSubmit}>
+
+          <form onSubmit={handleModalSubmit}>
             <DialogContent dividers>
+              {/* Education Form */}
               {modalType === "Education" && (
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
-                    <Box
-                      onClick={() =>
-                        document.getElementById(`add-logo-${modalType}`).click()
-                      }
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "2px dotted #ccc",
-                        padding: 2,
-                        height: "100px",
-                        borderRadius: "20px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Typography variant="h6" sx={{ color: "#ccc" }}>
-                        Add logo
-                      </Typography>
-                    </Box>
-                    <input
-                      id={`add-logo-${modalType}`}
-                      type="file"
-                      accept="image/*"
-                      name="projectImage"
-                      style={{ marginBottom: 20, display: "none" }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
                     <TextField
                       label="Degree"
                       name="degree"
@@ -1548,6 +1550,13 @@ export default function StepperForm() {
                       fullWidth
                       required
                       size="small"
+                      value={modalFormData.degree || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          degree: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -1558,9 +1567,16 @@ export default function StepperForm() {
                       fullWidth
                       required
                       size="small"
+                      value={modalFormData.stream || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          stream: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} sm={6}>
                     <TextField
                       label="College"
                       name="college"
@@ -1568,34 +1584,49 @@ export default function StepperForm() {
                       fullWidth
                       required
                       size="small"
+                      value={modalFormData.college || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          college: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
                       label="Start Date"
                       name="startDate"
-                      type="date"
+                      type="text"
                       variant="outlined"
                       fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
                       required
                       size="small"
+                      value={modalFormData.startDate || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          startDate: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
                       label="End Date"
                       name="endDate"
-                      type="date"
+                      type="text"
                       variant="outlined"
                       fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
                       required
                       size="small"
+                      value={modalFormData.endDate || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          endDate: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -1605,39 +1636,42 @@ export default function StepperForm() {
                       type="number"
                       variant="outlined"
                       fullWidth
-                      inputProps={{
-                        step: 0.1,
-                      }}
+                      inputProps={{ step: 0.1 }}
                       required
                       size="small"
+                      value={modalFormData.cgpa || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          cgpa: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                 </Grid>
               )}
 
+              {/* Skill Form */}
               {modalType === "Skill" && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
-                >
-                  <TextField
-                    sx={{ width: "60%" }}
-                    label="Skill Name"
-                    name="skill"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    size="small"
-                  />
-                  <Box
-                    sx={{
-                      height: "42px",
-                    }}
-                  >
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Skill Name"
+                      name="skill"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      size="small"
+                      value={modalFormData.skill || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          skill: e.target.value,
+                        }))
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
                     <Typography
                       sx={{
                         marginLeft: "2px",
@@ -1650,56 +1684,28 @@ export default function StepperForm() {
                     </Typography>
                     <Rating
                       size="large"
-                      name="skill-rating"
-                      value={value}
-                      onChange={(event, newValue) => {
-                        setValue(newValue);
-                      }}
+                      name="skillRating"
+                      value={modalFormData.skillRating || 0}
+                      onChange={(event, newValue) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          skillRating: newValue,
+                        }))
+                      }
                       sx={{
                         fontSize: "3rem",
                         color: "#3498db",
-                        "& .MuiRating-iconFilled": {
-                          color: "#3498db",
-                        },
-                        "& .MuiRating-iconHover": {
-                          color: "#2e6da4",
-                        },
+                        "& .MuiRating-iconFilled": { color: "#3498db" },
+                        "& .MuiRating-iconHover": { color: "#2e6da4" },
                       }}
-                    />
-                  </Box>
-                </Box>
-              )}
-
-              {modalType === "Work" && (
-                <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <Box
-                      onClick={() =>
-                        document.getElementById(`add-logo-${modalType}`).click()
-                      }
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "2px dotted #ccc",
-                        padding: 2,
-                        height: "100px",
-                        borderRadius: "20px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Typography variant="h6" sx={{ color: "#ccc" }}>
-                        Add logo
-                      </Typography>
-                    </Box>
-                    <input
-                      id={`add-logo-${modalType}`}
-                      type="file"
-                      accept="image/*"
-                      name="projectImage"
-                      style={{ marginBottom: 20, display: "none" }}
                     />
                   </Grid>
+                </Grid>
+              )}
+
+              {/* Work Form */}
+              {modalType === "Work" && (
+                <Grid container spacing={3}>
                   <Grid item xs={12}>
                     <TextField
                       label="Position"
@@ -1708,6 +1714,13 @@ export default function StepperForm() {
                       fullWidth
                       required
                       size="small"
+                      value={modalFormData.position || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          position: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -1718,70 +1731,75 @@ export default function StepperForm() {
                       fullWidth
                       required
                       size="small"
+                      value={modalFormData.company || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          company: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
-                      label="Start Date"
+                      label="Start Date (e.g. Jan 2023)"
                       name="startDate"
-                      type="date"
+                      type="text"
                       variant="outlined"
                       fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
                       required
                       size="small"
+                      value={modalFormData.startDate || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          startDate: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
-                      label="End Date"
+                      label="End Date (e.g. Present)"
                       name="endDate"
-                      type="date"
+                      type="text"
                       variant="outlined"
                       fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
                       required
                       size="small"
+                      value={modalFormData.endDate || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          endDate: e.target.value,
+                        }))
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Description"
+                      name="description"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                      rows={3}
+                      size="small"
+                      value={modalFormData.description || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                 </Grid>
               )}
 
+              {/* Project Form */}
               {modalType === "Project" && (
                 <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <Box
-                      onClick={() =>
-                        document.getElementById(`add-logo-${modalType}`).click()
-                      }
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "2px dotted #ccc",
-                        padding: 2,
-                        height: "100px",
-                        borderRadius: "20px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Typography variant="h6" sx={{ color: "#ccc" }}>
-                        Select Image
-                      </Typography>
-                    </Box>
-                    <input
-                      id={`add-logo-${modalType}`}
-                      type="file"
-                      accept="image/*"
-                      name="projectImage"
-                      style={{ marginBottom: 20, display: "none" }}
-                    />
-                  </Grid>
-
                   <Grid item xs={12}>
                     <TextField
                       label="Project Name"
@@ -1790,16 +1808,30 @@ export default function StepperForm() {
                       fullWidth
                       required
                       size="small"
+                      value={modalFormData.projectName || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          projectName: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
-                      label="Duration"
+                      label="Duration (e.g. Jan 2023 - Present)"
                       name="duration"
                       variant="outlined"
                       fullWidth
                       required
                       size="small"
+                      value={modalFormData.duration || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          duration: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -1809,6 +1841,13 @@ export default function StepperForm() {
                       variant="outlined"
                       fullWidth
                       size="small"
+                      value={modalFormData.liveLink || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          liveLink: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -1821,11 +1860,19 @@ export default function StepperForm() {
                       rows={3}
                       required
                       size="small"
+                      value={modalFormData.description || ""}
+                      onChange={(e) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
                     />
                   </Grid>
                 </Grid>
               )}
 
+              {/* Service Form */}
               {modalType === "Service" && (
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
@@ -1836,12 +1883,12 @@ export default function StepperForm() {
                       fullWidth
                       required
                       size="small"
-                      value={serviceData.serviceName}
+                      value={modalFormData.serviceName || ""}
                       onChange={(e) =>
-                        setServiceData({
-                          ...serviceData,
+                        setModalFormData((prev) => ({
+                          ...prev,
                           serviceName: e.target.value,
-                        })
+                        }))
                       }
                     />
                   </Grid>
@@ -1855,12 +1902,12 @@ export default function StepperForm() {
                       rows={3}
                       required
                       size="small"
-                      value={serviceData.serviceDescription}
+                      value={modalFormData.serviceDescription || ""}
                       onChange={(e) =>
-                        setServiceData({
-                          ...serviceData,
+                        setModalFormData((prev) => ({
+                          ...prev,
                           serviceDescription: e.target.value,
-                        })
+                        }))
                       }
                     />
                   </Grid>
@@ -1871,20 +1918,17 @@ export default function StepperForm() {
                         <TextField
                           label="Internship Start Date"
                           name="startDate"
-                          type="date"
+                          type="text"
                           variant="outlined"
                           fullWidth
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
                           required
                           size="small"
-                          value={serviceData.startDate || ""}
+                          value={modalFormData.startDate || ""}
                           onChange={(e) =>
-                            setServiceData({
-                              ...serviceData,
+                            setModalFormData((prev) => ({
+                              ...prev,
                               startDate: e.target.value,
-                            })
+                            }))
                           }
                         />
                       </Grid>
@@ -1892,45 +1936,43 @@ export default function StepperForm() {
                         <TextField
                           label="Internship End Date"
                           name="endDate"
-                          type="date"
+                          type="text"
                           variant="outlined"
                           fullWidth
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
                           required
                           size="small"
-                          value={serviceData.endDate || ""}
+                          value={modalFormData.endDate || ""}
                           onChange={(e) =>
-                            setServiceData({
-                              ...serviceData,
+                            setModalFormData((prev) => ({
+                              ...prev,
                               endDate: e.target.value,
-                            })
+                            }))
                           }
                         />
                       </Grid>
                       <Grid item xs={6}>
-                        <TextField
-                          label="Availability"
-                          name="availability"
-                          select
-                          variant="outlined"
-                          fullWidth
-                          required
-                          size="small"
-                          value={serviceData.availability || "full time"}
-                          onChange={(e) =>
-                            setServiceData({
-                              ...serviceData,
-                              availability: e.target.value,
-                            })
-                          }
-                        >
-                          <MenuItem value="full time">Full Time</MenuItem>
-                          <MenuItem value="part time">Part Time</MenuItem>
-                        </TextField>
+                        <FormControl fullWidth required size="small">
+                          <InputLabel id="availability-label">
+                            Availability
+                          </InputLabel>
+                          <Select
+                            labelId="availability-label"
+                            name="availability"
+                            label="Availability"
+                            value={modalFormData.availability || ""}
+                            onChange={(e) =>
+                              setModalFormData((prev) => ({
+                                ...prev,
+                                availability: e.target.value,
+                              }))
+                            }
+                          >
+                            <MenuItem value="full time">Full Time</MenuItem>
+                            <MenuItem value="part time">Part Time</MenuItem>
+                          </Select>
+                        </FormControl>
                       </Grid>
-                      {serviceData.availability === "part time" && (
+                      {modalFormData.availability === "part time" && (
                         <Grid item xs={6}>
                           <TextField
                             label="Hours Per Day"
@@ -1940,12 +1982,12 @@ export default function StepperForm() {
                             fullWidth
                             required
                             size="small"
-                            value={serviceData.hoursPerDay || ""}
+                            value={modalFormData.hoursPerDay || ""}
                             onChange={(e) =>
-                              setServiceData({
-                                ...serviceData,
+                              setModalFormData((prev) => ({
+                                ...prev,
                                 hoursPerDay: e.target.value,
-                              })
+                              }))
                             }
                           />
                         </Grid>
@@ -1962,12 +2004,12 @@ export default function StepperForm() {
                           fullWidth
                           required
                           size="small"
-                          value={serviceData.servicePrice}
+                          value={modalFormData.servicePrice || ""}
                           onChange={(e) =>
-                            setServiceData({
-                              ...serviceData,
+                            setModalFormData((prev) => ({
+                              ...prev,
                               servicePrice: e.target.value,
-                            })
+                            }))
                           }
                         />
                       </Grid>
@@ -1980,42 +2022,44 @@ export default function StepperForm() {
                           fullWidth
                           required
                           size="small"
-                          value={serviceData.duration}
+                          value={modalFormData.duration || ""}
                           onChange={(e) =>
-                            setServiceData({
-                              ...serviceData,
+                            setModalFormData((prev) => ({
+                              ...prev,
                               duration: e.target.value,
-                            })
+                            }))
                           }
                         />
                       </Grid>
                       <Grid item xs={4}>
-                        <TextField
-                          label="Timeline Type"
-                          name="durationType"
-                          select
-                          variant="outlined"
-                          fullWidth
-                          required
-                          size="small"
-                          value={serviceData.durationType || "day"}
-                          onChange={(e) =>
-                            setServiceData({
-                              ...serviceData,
-                              durationType: e.target.value,
-                            })
-                          }
-                        >
-                          <MenuItem value="day">Day</MenuItem>
-                          <MenuItem value="week">Week</MenuItem>
-                          <MenuItem value="month">Month</MenuItem>
-                        </TextField>
+                        <FormControl fullWidth required size="small">
+                          <InputLabel id="duration-type-label">
+                            Timeline Type
+                          </InputLabel>
+                          <Select
+                            labelId="duration-type-label"
+                            name="durationType"
+                            label="Timeline Type"
+                            value={modalFormData.durationType || ""}
+                            onChange={(e) =>
+                              setModalFormData((prev) => ({
+                                ...prev,
+                                durationType: e.target.value,
+                              }))
+                            }
+                          >
+                            <MenuItem value="day">Day</MenuItem>
+                            <MenuItem value="week">Week</MenuItem>
+                            <MenuItem value="month">Month</MenuItem>
+                          </Select>
+                        </FormControl>
                       </Grid>
                     </>
                   )}
                 </Grid>
               )}
             </DialogContent>
+
             <DialogActions>
               <Button
                 onClick={closeModal}
@@ -2036,7 +2080,7 @@ export default function StepperForm() {
                   loading && <CircularProgress size={20} color="inherit" />
                 }
               >
-                {loading ? "Submitting..." : "Submit"}
+                {loading ? "Submitting..." : "Save"}
               </Button>
             </DialogActions>
           </form>
