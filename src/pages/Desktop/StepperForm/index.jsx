@@ -43,6 +43,7 @@ import useSaveProfileData from "../../../hooks/Linkedin/useSaveProfileData";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
 import XpertRole from "../Prefference/XpertRole";
+import SummaryStep from "./SummaryStep";
 
 const consultingChargesConfig = {
   astrologist: true,
@@ -69,9 +70,8 @@ const calculateExperience = (experiences) => {
   });
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
-  return `${years} ${years > 1 ? "Years" : "Year"} ${
-    months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
-  }`;
+  return `${years} ${years > 1 ? "Years" : "Year"} ${months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
+    }`;
 };
 
 const formatDate = (dateObj) => {
@@ -107,7 +107,7 @@ export default function StepperForm() {
   const [serviceData, setServiceData] = useState({});
   const [recommendations, setRecommendation] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
-  const steps = ["Xpert Type", "Profile", "Offering"];
+  const steps = ["Xpert Type", "Profile", "Offering", "Summary"];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [isLinkedInFetched, setIsLinkedInFetched] = useState(false);
@@ -178,6 +178,11 @@ export default function StepperForm() {
     setModalType("");
     setServiceData({});
   };
+  const Badges = [
+    {name: 'Top Rated', color: 'success' },
+    { name: 'Certified Expert', color: 'warning'},
+  ];
+  
 
   useEffect(() => {
     const recommendationsConfig = {
@@ -397,7 +402,7 @@ export default function StepperForm() {
     if (Xpert && typeof Xpert === "string") {
       setRecommendation(
         recommendationsConfig[Xpert.toLowerCase()] ||
-          recommendationsConfig.default
+        recommendationsConfig.default
       );
     } else {
       setRecommendation(recommendationsConfig.default);
@@ -593,9 +598,8 @@ export default function StepperForm() {
       ) {
         const projectData = profileData.projectDetails.map((proj) => ({
           projectName: proj.projectName || "",
-          duration: `${formatDate(proj.startDate)} - ${
-            proj.ends_at ? formatDate(proj.endDate) : "Present"
-          }`,
+          duration: `${formatDate(proj.startDate)} - ${proj.ends_at ? formatDate(proj.endDate) : "Present"
+            }`,
           liveLink: proj.liveDemo || "",
           description: proj.description || "",
         }));
@@ -672,9 +676,8 @@ export default function StepperForm() {
       ) {
         const projectData = data.accomplishment_projects.map((proj) => ({
           projectName: proj.title || "",
-          duration: `${formatDate(proj.starts_at)} - ${
-            proj.ends_at ? formatDate(proj.ends_at) : "Present"
-          }`,
+          duration: `${formatDate(proj.starts_at)} - ${proj.ends_at ? formatDate(proj.ends_at) : "Present"
+            }`,
           liveLink: proj.url || "",
           description: proj.description || "",
         }));
@@ -734,7 +737,7 @@ export default function StepperForm() {
 
       {activeStep === 0 && <XpertRole next={() => setActiveStep(1)} />}
 
-      <Box sx={{ height: "80vh", overflow: "auto" }}>
+      <Box sx={{ height: "90vh", overflow: "auto", padding: 3 }}>
         {activeStep === 1 && (
           <Grid container spacing={4} alignItems="flex-start">
             <Grid
@@ -1171,32 +1174,30 @@ export default function StepperForm() {
             <Grid item xs={12}>
               <Box
                 sx={{
-                  display: "flex",
-                  justifyContent:
-                    activeStep === 1 ? "space-between" : "flex-end",
-                  mt: 2,
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: 2,
+                  mt: 3,
+                  mb: 3
                 }}
               >
                 {activeStep === 1 && (
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => setActiveStep(0)}
-                    size="large"
-                    sx={{ mr: 2 }}
-                  >
-                    Back
-                  </Button>
-                )}
-                {activeStep === 1 && (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setActiveStep(2)}
-                    size="large"
-                  >
-                    Next Step
-                  </Button>
+                  <>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setActiveStep(0)}
+                      size="large"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => setActiveStep(2)}
+                      size="large"
+                    >
+                      Next Step
+                    </Button>
+                  </>
                 )}
               </Box>
             </Grid>
@@ -1391,26 +1392,26 @@ export default function StepperForm() {
                             Internship Start Date:{" "}
                             {item.startDate
                               ? new Date(item.startDate).toLocaleDateString(
-                                  "default",
-                                  { month: "short", year: "numeric" }
-                                )
+                                "default",
+                                { month: "short", year: "numeric" }
+                              )
                               : "N/A"}
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
                             Internship End Date:{" "}
                             {item.endDate
                               ? new Date(item.endDate).toLocaleDateString(
-                                  "default",
-                                  { month: "short", year: "numeric" }
-                                )
+                                "default",
+                                { month: "short", year: "numeric" }
+                              )
                               : "N/A"}
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
                             Availability:{" "}
                             {item.availability
                               ? item.availability.replace(/^\w/, (c) =>
-                                  c.toUpperCase()
-                                )
+                                c.toUpperCase()
+                              )
                               : "N/A"}
                           </Typography>
                           {item.availability === "part time" && (
@@ -1449,14 +1450,10 @@ export default function StepperForm() {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={handleSubmitInfo}
+                  onClick={() => setActiveStep(3)}
                   size="large"
-                  disabled={loading}
-                  startIcon={
-                    loading && <CircularProgress size={20} color="inherit" />
-                  }
                 >
-                  {loading ? "Submitting..." : "Submit"}
+                  Next
                 </Button>
               </Box>
             </Grid>
@@ -1464,10 +1461,56 @@ export default function StepperForm() {
         )}
 
         {activeStep === 3 && (
-          <Typography variant="h6" align="center" sx={{ mt: 4 }}>
-            Profile successfully submitted!
-          </Typography>
+          <>
+            <SummaryStep
+              FirstName={FirstName}
+              LastName={LastName}
+              Xpert={Xpert}
+              Experience={Experience}
+              profileImg={profileImg}
+              selectedCity={selectedCity}
+              selectedState={selectedState}
+              Education={Education}
+              Work={Work}
+              Skills={Skills}
+              Projects={Projects}
+              Services={Services}
+              ConsultingPrice={ConsultingPrice}
+              Badges={Badges} // Add badges as a prop
+            />
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent:
+                  activeStep === 2 ? "space-between" : "flex-end",
+                mt: 2,
+              }}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => setActiveStep(2)}
+                size="large"
+                sx={{ mr: 2 }}
+              >
+                Back
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmitInfo}
+                size="large"
+                disabled={loading}
+                startIcon={loading && <CircularProgress size={20} color="inherit" />}
+              >
+                {loading ? "Submitting..." : "Submit"}
+              </Button>
+            </Box>
+          </>
+
         )}
+
+
 
         <Dialog
           open={isModalOpen}
