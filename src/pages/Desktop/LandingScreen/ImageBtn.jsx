@@ -10,7 +10,7 @@ export default function ImageBtn() {
         <div className="image1-container">
           <img src={image1} />
           <div className="become-inside-xpert-container">
-            <h2>Become an Xpert</h2>
+            <h2>Become an Xpert</h2>--
             <span>
               Seasoned Professional looking to help Organization across the
               globe
