@@ -7,13 +7,20 @@ import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 // Handle Payment Function
 const handlePayment = async (amount, userId) => {
   try {
-    const response = await fetch('https://us-central1-startup-a54cf.cloudfunctions.net/createPaymentOrder', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ amount: parseFloat(amount), currency: 'INR', userId }),
-    });
+    const response = await fetch(
+      "https://us-central1-startup-a54cf.cloudfunctions.net/createPaymentOrder",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: parseFloat(amount),
+          currency: "INR",
+          userId,
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -23,50 +30,53 @@ const handlePayment = async (amount, userId) => {
 
     if (data.success) {
       const options = {
-        key: '2W2tU9jVcJGNvQKXYdUr7pUQ',
+        key: "2W2tU9jVcJGNvQKXYdUr7pUQ",
         amount: amount * 100, // Amount in paise
-        currency: 'INR',
-        name: 'Your Company',
-        description: 'Add funds to your wallet',
+        currency: "INR",
+        name: "Your Company",
+        description: "Add funds to your wallet",
         order_id: data.orderId,
         handler: async function (response) {
           try {
-            const verifyResponse = await fetch('https://us-central1-startup-a54cf.cloudfunctions.net/verifyPayment', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                payment_id: response.razorpay_payment_id,
-                order_id: response.razorpay_order_id,
-                signature: response.razorpay_signature,
-              }),
-            });
+            const verifyResponse = await fetch(
+              "https://us-central1-startup-a54cf.cloudfunctions.net/verifyPayment",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  payment_id: response.razorpay_payment_id,
+                  order_id: response.razorpay_order_id,
+                  signature: response.razorpay_signature,
+                }),
+              }
+            );
 
             const verifyData = await verifyResponse.json();
             if (verifyData.success) {
-              alert('Payment successful and wallet updated!');
+              alert("Payment successful and wallet updated!");
             } else {
-              alert('Payment verification failed');
+              alert("Payment verification failed");
             }
           } catch (error) {
-            alert('Payment verification failed');
+            alert("Payment verification failed");
           }
         },
         prefill: {
-          name: 'User Name',
-          email: 'user@example.com',
-          contact: '9999999999',
+          name: "User Name",
+          email: "user@example.com",
+          contact: "9999999999",
         },
         theme: {
-          color: '#3399cc',
+          color: "#3399cc",
         },
       };
 
       const rzp1 = new window.Razorpay(options);
       rzp1.open();
     } else {
-      alert('Payment order creation failed');
+      alert("Payment order creation failed");
     }
   } catch (error) {
     alert(`Error: ${error.message}`);
@@ -130,7 +140,8 @@ const WalletBalance = ({ balance, setBalance, userId }) => {
           <AiOutlinePlus size={18} style={{ marginRight: "8px" }} /> Add
         </button>
         <button className="withdraw-btn" onClick={handleWithdrawBalance}>
-          <FiArrowDownCircle size={18} style={{ marginRight: "8px" }} /> Withdraw
+          <FiArrowDownCircle size={18} style={{ marginRight: "8px" }} />{" "}
+          Withdraw
         </button>
       </div>
     </div>
@@ -221,13 +232,48 @@ const WalletAndContactsPage = () => {
   const [balance, setBalance] = useState(3000);
   const [activeTab, setActiveTab] = useState("Received");
   const [transactions, setTransactions] = useState([
-    { name: "Elizabeth Lopez", service: "elizabethlopez@example.com", amount: 1000, type: "Admin" },
-    { name: "Matthew Martinez", service: "mmartinez1997@example.com", amount: 2000, type: "Owner" },
-    { name: "Elizabeth Hall", service: "elizabeth_hall_1998@example.com", amount: 500, type: "Owner" },
-    { name: "Maria White", service: "maria.white@example.com", amount: 800, type: "Admin" },
-    { name: "Elizabeth Watson", service: "ewatson@example.com", amount: 1200, type: "Admin" },
-    { name: "Elizabeth Allen", service: "eallen@example.com", amount: 900, type: "Owner" },
-    { name: "Caleb Jones", service: "calebiones@example.com", amount: 750, type: "Member" },
+    {
+      name: "Elizabeth Lopez",
+      service: "elizabethlopez@example.com",
+      amount: 1000,
+      type: "Admin",
+    },
+    {
+      name: "Matthew Martinez",
+      service: "mmartinez1997@example.com",
+      amount: 2000,
+      type: "Owner",
+    },
+    {
+      name: "Elizabeth Hall",
+      service: "elizabeth_hall_1998@example.com",
+      amount: 500,
+      type: "Owner",
+    },
+    {
+      name: "Maria White",
+      service: "maria.white@example.com",
+      amount: 800,
+      type: "Admin",
+    },
+    {
+      name: "Elizabeth Watson",
+      service: "ewatson@example.com",
+      amount: 1200,
+      type: "Admin",
+    },
+    {
+      name: "Elizabeth Allen",
+      service: "eallen@example.com",
+      amount: 900,
+      type: "Owner",
+    },
+    {
+      name: "Caleb Jones",
+      service: "calebiones@example.com",
+      amount: 750,
+      type: "Member",
+    },
   ]);
 
   const { userData } = useFetchUserData();
@@ -239,11 +285,19 @@ const WalletAndContactsPage = () => {
     <div className="wallet-container">
       <div className="main-content">
         <div className="left-section">
-          <WalletBalance balance={balance} setBalance={setBalance} userId={userId} />
+          <WalletBalance
+            balance={balance}
+            setBalance={setBalance}
+            userId={userId}
+          />
           <BankAccountDetails />
         </div>
         <div className="right-section">
-          <TransactionTable transactions={transactions} activeTab={activeTab} setActiveTab={setActiveTab} />
+          <TransactionTable
+            transactions={transactions}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
         </div>
       </div>
     </div>

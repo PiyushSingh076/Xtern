@@ -53,9 +53,14 @@ function formatDateGeneric(value) {
  * Format experience if it's numeric or zero
  */
 function formatExperience(expValue) {
-  const parsed = parseInt(expValue || "0", 10);
-  if (parsed <= 0) return "Less than 1";
-  return parsed.toString();
+  // Attempt to parse the experience value
+  const parsed = parseInt(expValue, 10);
+
+  // Check if the parsed value is a valid number and greater than 0
+  if (isNaN(parsed) || parsed <= 0) return "Less than 1 Year";
+
+  // Return the parsed experience with the "Yr" suffix
+  return `${parsed} Yr`;
 }
 
 const SingleMentor = () => {
@@ -332,7 +337,7 @@ const SingleMentor = () => {
                     <Skeleton sx={{ fontSize: "1rem", width: "100px" }} />
                   ) : (
                     <span>
-                      Experience: {formatExperience(profileData?.experience)} Yr
+                      Experience: {formatExperience(profileData?.experience)}
                     </span>
                   )}
 
@@ -443,11 +448,10 @@ const SingleMentor = () => {
               <Tooltip title="View Previous Calls" arrow>
                 <Button
                   onClick={openScheduledCallsModal}
-                  variant="contained"
-                  startIcon={<FaRegClock size={20} />}
-                  sx={{ textTransform: "none" }}
+                  variant="outline-primary"
+                  size="small"
                 >
-                  Calls
+                  <FaRegClock size={16} /> Upcoming Meets
                 </Button>
               </Tooltip>
             </Box>
@@ -465,7 +469,7 @@ const SingleMentor = () => {
               <div className="service-list">
                 {profileData.serviceDetails.map((item, index) => (
                   <div
-                    onClick={() => handleService(item)}
+                    // onClick={() => handleService(item)}
                     className="service-item"
                     key={index}
                     style={{
@@ -923,11 +927,11 @@ const SingleMentor = () => {
                               currentUser?.photo_url || "/default-profile.png"
                             }
                             roundedCircle
-                            width={100}
-                            height={100}
                             alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
-                            className="me-3"
+                            className="me-3 img-fluid d-block"
+                            style={{ width: "100px", height: "100px" }} // Optional for fixed square size
                           />
+
                           <div>
                             <strong>
                               {currentUser?.firstName} {currentUser?.lastName}
