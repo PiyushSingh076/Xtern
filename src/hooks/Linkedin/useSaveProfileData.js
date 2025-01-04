@@ -71,7 +71,7 @@ const useSaveProfileData = () => {
   const saveProfileData = async (data) => {
     setLoading(true);
     setError(null);
-    console.log(data, "datadatadata");
+    //console.log(data, "datadatadata");
     try {
       const user = auth.currentUser;
       if (!user) throw new Error("User not authenticated.");

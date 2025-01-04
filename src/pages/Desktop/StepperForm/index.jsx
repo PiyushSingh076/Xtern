@@ -622,7 +622,6 @@ export default function StepperForm() {
         { title: "Branding", description: "Brand identities." },
         { title: "Packaging Design", description: "Attractive packaging." },
       ],
-      // More roles ...
       intern: [
         {
           title: "Internship",
@@ -635,6 +634,45 @@ export default function StepperForm() {
         {
           title: "Part-Time",
           description: "Short-term contract with specific tasks.",
+        },
+      ],
+      yoga: [
+        {
+          title: "Personalized Yoga Sessions",
+          description:
+            "Tailored yoga practices for physical and mental well-being.",
+        },
+        {
+          title: "Group Yoga Classes",
+          description: "Interactive yoga sessions with groups for motivation.",
+        },
+        {
+          title: "Corporate Wellness Programs",
+          description:
+            "Yoga sessions designed for workplace stress management.",
+        },
+        {
+          title: "Meditation & Mindfulness",
+          description: "Guided practices for relaxation and mental clarity.",
+        },
+      ],
+      dietician: [
+        {
+          title: "Nutritional Counseling",
+          description: "Personalized diet plans to meet your health goals.",
+        },
+        {
+          title: "Weight Management",
+          description: "Diet plans tailored for healthy weight gain or loss.",
+        },
+        {
+          title: "Meal Planning",
+          description:
+            "Weekly meal preparation strategies for busy lifestyles.",
+        },
+        {
+          title: "Clinical Nutrition",
+          description: "Specialized diets for medical conditions and recovery.",
         },
       ],
       default: [

@@ -1,200 +1,171 @@
+// src/Components/Profile/Acadamic.js
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { FaRegFolderOpen } from "react-icons/fa";
+import { Tooltip, Button } from "@mui/material";
+import Skeleton from "@mui/material/Skeleton";
+import dayjs from "dayjs";
 
 export default function Acadamic({ profileData }) {
   const [loading, setLoading] = useState(true);
+  const [workOpen, setWorkOpen] = useState({});
+  const [projectOpen, setProjectOpen] = useState({});
+  const [educationOpen, setEducationOpen] = useState({});
 
   useEffect(() => {
-    // Simulate a data fetching scenario
     if (profileData) {
       setLoading(false);
     }
   }, [profileData]);
+
+  const toggleWorkDesc = (index) =>
+    setWorkOpen((prev) => ({ ...prev, [index]: !prev[index] }));
+  const toggleProjectDesc = (index) =>
+    setProjectOpen((prev) => ({ ...prev, [index]: !prev[index] }));
+  const toggleEducationDesc = (index) =>
+    setEducationOpen((prev) => ({ ...prev, [index]: !prev[index] }));
 
   return (
     <div>
       <div className="single-mentor-third-sec">
         <div className="fifth-decs-sec mt-32">
           <div className="fifth-decs-sec-wrap">
-            <ul className="nav nav-pills single-mentor-tab" id="mentor-tab" role="tablist">
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link active"
-                  id="mentor-course-tab-btn"
-                  data-bs-toggle="pill"
-                  data-bs-target="#course-content"
-                  type="button"
-                  role="tab"
-                  aria-selected="true"
-                >
+            <ul className="nav nav-pills single-mentor-tab" style={styles.navPills}>
+              <li className="nav-item">
+                <button className="nav-link active" data-bs-toggle="pill" data-bs-target="#work-content">
                   Work Experience
                 </button>
               </li>
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link"
-                  id="student-tab-btn"
-                  data-bs-toggle="pill"
-                  data-bs-target="#student-content"
-                  type="button"
-                  role="tab"
-                  aria-selected="false"
-                  tabIndex="-1"
-                >
+              <li className="nav-item">
+                <button className="nav-link" data-bs-toggle="pill" data-bs-target="#education-content">
                   Education
                 </button>
               </li>
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link"
-                  id="reviews-tab-btn"
-                  data-bs-toggle="pill"
-                  data-bs-target="#reviews-content"
-                  type="button"
-                  role="tab"
-                  aria-selected="false"
-                  tabIndex="-1"
-                >
+              <li className="nav-item">
+                <button className="nav-link" data-bs-toggle="pill" data-bs-target="#projects-content">
                   Projects
                 </button>
               </li>
             </ul>
 
-            <div className="tab-content" id="course-tab-btn">
+            <div className="tab-content">
               {/* Work Experience Tab */}
-              <div className="tab-pane fade show active mt-16" id="course-content" role="tabpanel" tabIndex="0">
-                {profileData?.linkedInProfile?.experiences?.map((work , index) => {
-                 const months = [
-                  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                ];
-                const startDate = work
-                  ? `${work?.starts_at?.day || ""} ${months[work?.starts_at?.month - 1] || ""} ${work?.starts_at?.year || ""}`.trim()
-                  : "Date not available";
-                 
-                  return (
-                    <div
-      className="experience-sec"
-      key={work?.title + work?.company}
-    >
-      <div className="work-logo-container">
-        <img src={'https://cdn-icons-png.flaticon.com/512/10655/10655913.png'} className="educ-logo" alt="Company Logo" />
-      </div>
-      <div className="experience-info">
-        <h4>{work?.title}</h4>
-        <p>
-          {work?.company} | {startDate}
-        </p>
-
-        <button
-          className="desc-btn"
-          data-bs-toggle="collapse"
-          data-bs-target={`#collapse-${index}`}
-          aria-expanded="false"
-          aria-controls={`collapse-${index}`}
-        >
-          View Description
-        </button>
-
-        <div
-          id={`collapse-${index}`}
-          className="collapse"
-          aria-labelledby={`collapse-${index}`}
-          style={{
-            marginTop: "10px",
-            width: "100%",
-          }}
-        >
-          <div
-            className="card card-body"
-            style={{
-              width: "100%",
-            }}
-          >
-            {work?.description || "No description available"}
-          </div>
-        </div>
-      </div>
-    </div>
-                  );
-                })}
+              <div className="tab-pane fade show active" id="work-content">
+                {loading ? (
+                  <Skeleton variant="rounded" width="100%" height="200px" style={{ marginTop: "20px" }} />
+                ) : profileData?.workExperience?.length ? (
+                  profileData.workExperience.map((work, index) => (
+                    <div key={index} style={styles.experienceSec}>
+                      <div style={styles.logoContainer}>
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
+                          alt="Company Logo"
+                          style={styles.logo}
+                          onError={(e) => (e.target.src = "/default-work-logo.png")}
+                        />
+                      </div>
+                      <div style={styles.infoContainer}>
+                        <h4>{work?.role || "Role Not Available"}</h4>
+                        <p>
+                          {work?.companyName || "Company Not Available"} | {formatDate(work?.startDate)} -{" "}
+                          {formatDate(work?.endDate)}
+                        </p>
+                        <Tooltip title={work.description || "No description available"} arrow>
+                          <Button onClick={() => toggleWorkDesc(index)} style={styles.descButton}>
+                            {workOpen[index] ? "Hide Description" : "View Description"}
+                          </Button>
+                        </Tooltip>
+                        {workOpen[index] && <div style={styles.description}>{work?.description || "No description available"}</div>}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={styles.noDataContainer}>
+                    <FaRegFolderOpen size={50} color="#ccc" />
+                    <p>No work experience found</p>
+                  </div>
+                )}
               </div>
 
               {/* Education Tab */}
-              <div className="tab-pane fade" id="student-content" role="tabpanel" tabIndex="0">
-                {profileData?.linkedInProfile?.education?.map((educ , index) => (
-                      <div className="experience-sec" key={index}>
-                      <div className="work-logo-container">
-                        <img src={'https://cdn.vectorstock.com/i/1000v/14/68/education-color-icon-vector-29051468.jpg'} className="educ-logo" />
+              <div className="tab-pane fade" id="education-content">
+                {loading ? (
+                  <Skeleton variant="rounded" width="100%" height="200px" style={{ marginTop: "20px" }} />
+                ) : profileData?.educationDetails?.length ? (
+                  profileData.educationDetails.map((educ, index) => (
+                    <div key={index} style={styles.experienceSec}>
+                      <div style={styles.logoContainer}>
+                        <img
+                          src="https://cdn.vectorstock.com/i/1000x1000/14/68/education-color-icon-vector-29051468.jpg"
+                          alt="Education Logo"
+                          style={styles.logo}
+                          onError={(e) => (e.target.src = "/default-education-logo.png")}
+                        />
                       </div>
-                      <div className="experience-info">
-                        <h4>{educ.degree_name}</h4>
-                        <h6>Stream: ({educ.field_of_study})</h6>
-                        <p>{educ.school}</p>
+                      <div style={styles.infoContainer}>
+                        <h4>{educ?.degree || "Degree Not Available"}</h4>
+                        <h6>Stream: {educ?.stream || "Stream Not Available"}</h6>
+                        <p>{educ?.collegename || "College Not Available"}</p>
                         <p>
-                          Batch: {educ.starts_at?.year} - {educ.ends_at?.year}
+                          {formatDate(educ?.startyear)} - {formatDate(educ?.endyear)}
                         </p>
                       </div>
                     </div>
-                ))}
+                  ))
+                ) : (
+                  <div style={styles.noDataContainer}>
+                    <FaRegFolderOpen size={50} color="#ccc" />
+                    <p>No education details found</p>
+                  </div>
+                )}
               </div>
 
               {/* Projects Tab */}
-              <div className="tab-pane fade" id="reviews-content" role="tabpanel" tabIndex="0">
-                {profileData?.linkedInProfile?.accomplishment_projects?.map((project,index) => (
-                 <div className="experience-sec" key={index}>
-                 <div className="work-logo-container">
-                   <img src={'https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg'} className="educ-logo" />
-                 </div>
-                 <div className="experience-info">
-                   <h4>{project.title}</h4>
-
-                   <div style={{ marginTop: "5px" }}>
-                     <span>
-                       <b>Tech Stack:</b>{" "}
-                       {project.techstack?.map((item) => (
-                         <span key={item}> {item} |</span>
-                       ))}
-                     </span>
-                   </div>
-
-                   <div className="desc-view-btn-container">
-
-
-                   <Link to={project.link} className="link-btn">
-                       Live Link
-                     </Link>
-
-                     <button
-                       className="desc-btn"
-                       data-bs-toggle="collapse"
-                       data-bs-target={`#collapse-${index}`}
-                       aria-expanded="false"
-                       aria-controls={`collapse-${index}`}
-                     >
-                       View Description
-                     </button>
-
-                   
-                   </div>
-
-                   <div
-                     style={{ marginTop: "10px",
-                      }}
-                     id={`collapse-${index}`}
-                     className="collapse"
-                     aria-labelledby={`collapse-${index}`}
-                   >
-                     <div 
-                     style={{width: '100%'}}
-                     className="card card-body">
-                       {project.description}
-                     </div>
-                   </div>
-                 </div>
-               </div>
-                ))}
+              <div className="tab-pane fade" id="projects-content">
+                {loading ? (
+                  <Skeleton variant="rounded" width="100%" height="200px" style={{ marginTop: "20px" }} />
+                ) : profileData?.projectDetails?.length ? (
+                  profileData.projectDetails.map((project, index) => (
+                    <div key={index} style={styles.experienceSec}>
+                      <div style={styles.logoContainer}>
+                        <img
+                          src="https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg"
+                          alt="Project Logo"
+                          style={styles.logo}
+                          onError={(e) => (e.target.src = "/default-project-logo.png")}
+                        />
+                      </div>
+                      <div style={styles.infoContainer}>
+                        <h4>{project?.projectName || "Project Not Available"}</h4>
+                        {project?.duration && <h6>{project?.duration}</h6>}
+                        {project?.techstack && (
+                          <div>
+                            <b>Tech Stack:</b>{" "}
+                            {project.techstack.map((tech, idx) => (
+                              <span key={idx}>
+                                {tech}
+                                {idx !== project.techstack.length - 1 && ", "}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <Tooltip title={project.description || "No description available"} arrow>
+                          <Button onClick={() => toggleProjectDesc(index)} style={styles.descButton}>
+                            {projectOpen[index] ? "Hide Description" : "View Description"}
+                          </Button>
+                        </Tooltip>
+                        {projectOpen[index] && (
+                          <div style={styles.description}>{project?.description || "No description available"}</div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={styles.noDataContainer}>
+                    <FaRegFolderOpen size={50} color="#ccc" />
+                    <p>No projects found</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -203,3 +174,22 @@ export default function Acadamic({ profileData }) {
     </div>
   );
 }
+
+// Utility function for date formatting
+function formatDate(value) {
+  if (!value) return "N/A";
+  const parsed = dayjs(value);
+  return parsed.isValid() ? parsed.format("D MMM YYYY") : "Invalid Date";
+}
+
+// Inline styles
+const styles = {
+  navPills: { justifyContent: "space-around", marginBottom: "20px" },
+  experienceSec: { display: "flex", flexDirection: "column", gap: "10px", marginBottom: "15px" },
+  logoContainer: { alignSelf: "center" },
+  logo: { width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px" },
+  infoContainer: { width: "100%" },
+  descButton: { color: "#007bff", textTransform: "none", fontSize: "0.9rem" },
+  description: { marginTop: "10px", padding: "15px", backgroundColor: "#f9f9f9", borderRadius: "8px" },
+  noDataContainer: { textAlign: "center", marginTop: "20px" },
+};
