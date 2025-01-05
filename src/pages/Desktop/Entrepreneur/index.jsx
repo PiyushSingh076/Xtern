@@ -5,7 +5,13 @@ import "./Profile.css";
 import useSaveEntrepreneurDetails from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
 import "react-circular-progressbar/dist/styles.css";
 import Skeleton from "@mui/material/Skeleton";
-import { Button as ButtonM, Chip } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button as ButtonM,
+  Chip,
+} from "@mui/material";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -33,7 +39,7 @@ import {
 
 import { Box, Tooltip } from "@mui/material";
 import { addDoc, collection, getDocs } from "firebase/firestore";
-import { db } from "../../../firebaseConfig";
+import { auth, db } from "../../../firebaseConfig";
 import { useEntrepreneurDetails } from "../../../hooks/Entrepreneur/useEntrepreneurDetails";
 
 const SingleMentor = () => {
@@ -48,20 +54,13 @@ const SingleMentor = () => {
   const [callsModalOpen, setCallsModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  //TODO: Implement functions back
-  //   const {
-  //     userData: profileData,
-  //     loading: profileLoading,
-  //     error: profileError,
-  //   } = useUserProfileData(uid);
-
+  const currentUser = auth.currentUser;
   const { uid } = useParams();
   const { loading: profileLoading, userData: profileData } =
     useEntrepreneurDetails(uid);
 
   useEffect(() => {
     console.log(profileData);
-    
   }, [profileLoading]);
 
   // const profileData = {
@@ -109,7 +108,7 @@ const SingleMentor = () => {
   // };
 
   //   const { userData: currentUser } = useFetchUserData();
-  const currentUser = {};
+
   const {
     signIn,
     createEvent,
@@ -282,9 +281,7 @@ const SingleMentor = () => {
                   ) : (
                     <div className="size-[150px] relative">
                       <img
-                        src={
-                          profileData?.photo_url || "/default-profile.png"
-                        }
+                        src={profileData?.photo_url || "/default-profile.png"}
                         alt={`${profileData?.firstName} ${profileData?.lastName}`}
                         className="size-full absolute left-0 top-0 object-cover"
                         onError={(e) => (e.target.src = "/default-profile.png")}
@@ -329,13 +326,15 @@ const SingleMentor = () => {
                       sx={{ fontSize: "1rem", width: "200px", height: "20px" }}
                     />
                   ) : (
-                    <div className="flex flex-col" >
-                      <div>
-                      Years of Experience: {profileData?.experience}
+                    <div className="flex flex-col">
+                      <div>Years of Experience: {profileData?.experience}</div>
+                      <a
+                        className="text-sm"
+                        href={profileData.linkedinProfileUrl}
+                      >
+                        {profileData.linkedinProfileUrl}
+                      </a>
                     </div>
-                    <a className="text-sm" href={profileData.linkedinProfileUrl}>{profileData.linkedinProfileUrl}</a>
-                    </div>
-
                   )}
 
                   {profileLoading ? (
@@ -369,7 +368,9 @@ const SingleMentor = () => {
                     return <Chip label={item.name}></Chip>;
                   })}
                 </div>
-                {!profileData?.skillsRequired && <span>No skill set available</span>}
+                {!profileData?.skillsRequired && (
+                  <span>No skill set available</span>
+                )}
               </div>
             )}
           </div>
@@ -404,18 +405,12 @@ const SingleMentor = () => {
 
               <div className="consulting-btn !w-full !mb-0">
                 <button
-                  
                   className="chat-btn"
                   onClick={() => navigate("/createjob")}
                 >
                   Create job
                 </button>
-                <button
-                  
-                  className="chat-btn"
-                >
-                  View jobs
-                </button>
+                <button className="chat-btn">View jobs</button>
                 {/* <button
                   onClick={() => navigate("/mychat")}
                   className="chat-btn"
@@ -527,45 +522,65 @@ const SingleMentor = () => {
                 {/* Projects Tab */}
                 <div className="tab-pane fade" id="job-content" role="tabpanel">
                   {/* <Link to="/jobpostings">Your job postings</Link> */}
-                  {profileData?.jobDetails?.map((job, index) => (
-                    <div className="experience-sec" key={`project-${index}`}>
-                      <div className="experience-info">
-                        <h4>{job?.role}</h4>
-                        <b>{job.company}</b>
-                        <div>
-                          <b>Tech Stack:</b>
-                          {job?.techstack?.map((item, idx) => (
-                            <span key={idx}>
-                              {item}
-                              {idx !== job.techstack.length - 1 && ", "}
-                            </span>
-                          )) || "No tech stack available"}
-                        </div>
-                        <b>Salary: {job.salary}</b>
-                        <b>
-                          Last Date:{" "}
-                          {dayjs.unix(job?.lastDate).format("D MMM YYYY")}
-                        </b>
-
-                        <div className="desc-view-job-btn-container">
-                          <button
-                            className="desc-btn"
-                            data-bs-toggle="collapse"
-                            data-bs-target={`#project-collapse-${index}`}
-                            aria-expanded="false"
-                            aria-controls={`project-collapse-${index}`}
+                  {profileData?.jobPostings?.map((job, index) => (
+                    <div className="experience-sec flex !items-start" key={`project-${index}`}>
+                      <div className="size-[100px] shrink-0 relative overflow-hidden flex items-center justify-center" >
+                        <img src={job.image} className="absolute size-[80px] object-cover" alt="" />
+                      </div>
+                      <div className="w-full h-full">
+                        <div className="experience-info">
+                          <h4>{job?.title}</h4>
+                          <b>{job.companyName}</b>
+                          <div>
+                            <b>Skills:</b>
+                            {job?.skills?.map((item, idx) => (
+                              <span key={idx}>
+                                {item}
+                                {idx !== job.skills.length - 1 && ", "}
+                              </span>
+                            )) || "No tech stack available"}
+                          </div>
+                          <Accordion
+                            sx={{
+                              width: "100%",
+                              borderRadius: "10px",
+                              boxShadow: "none",
+                            }}
                           >
-                            View Description
-                          </button>
-                          <button className="desc-btn">Apply</button>
-                        </div>
-                        <div
-                          id={`project-collapse-${index}`}
-                          className="collapse"
-                          aria-labelledby={`project-collapse-${index}`}
-                        >
-                          <div className="card card-body">
-                            {job?.description || "No description available"}
+                            <AccordionSummary>Description</AccordionSummary>
+                            <AccordionDetails>
+                              {job.description}
+                            </AccordionDetails>
+                          </Accordion>
+
+                          <div className="desc-view-job-btn-container ml-auto">
+                            {currentUser.uid != profileData.uid ? (
+                              <>
+                                <button className="desc-btn ml-auto">
+                                  Apply
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() =>
+                                    navigate(`/viewjob/${job.jobId}`)
+                                  }
+                                  className="desc-btn ml-auto"
+                                >
+                                  View Job
+                                </button>
+                              </>
+                            )}
+                          </div>
+                          <div
+                            id={`project-collapse-${job.jobId}`}
+                            className="collapse"
+                            aria-labelledby={`project-collapse-${index}`}
+                          >
+                            <div className="card card-body">
+                              {job?.description || "No description available"}
+                            </div>
                           </div>
                         </div>
                       </div>

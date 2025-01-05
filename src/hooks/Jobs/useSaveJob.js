@@ -39,6 +39,7 @@ const useSaveJob = () => {
             description: description,
             image: imageURL,
             jobId: jobId,
+            skills: skills
           }),
         });
 

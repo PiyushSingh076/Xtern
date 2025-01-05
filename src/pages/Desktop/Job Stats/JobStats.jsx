@@ -19,15 +19,18 @@ import { useFetchJob } from "../../../hooks/Jobs/useFetchJob";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Timestamp } from "firebase/firestore";
+import { Spinner } from "react-bootstrap";
 
 const JobStats = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const { jobId } = useParams();
   const { jobData, loading, fetchApplicantDetails } = useFetchJob(jobId);
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const openModal = async (applicant) => {
-    
-    const user = await fetchApplicantDetails(applicant.userId);
+    setLoadingDetails(true)
+    const user = await fetchApplicantDetails(applicant.uid);
+    setLoadingDetails(false)
     console.log("User", user);  
     console.log("Applicant", applicant);
     setSelectedUser({...applicant, user: user});
@@ -54,7 +57,7 @@ const JobStats = () => {
             </div>
             <h4>{jobData.title}</h4>
             <h5>
-              {jobData.companyName}, {jobData.city}
+              {jobData.companyName}, {jobData.location}
             </h5>
             <div id="job-stats-description">{jobData.description}</div>
             <h5>Skills:</h5>
@@ -126,12 +129,13 @@ const JobStats = () => {
                           sx={{
                             borderRadius: "10px",
                             width: "100%",
+                            height: "5vh",
                             padding: "5px",
                             color: "#FF6D6DFF",
                           }}
                           onClick={() => openModal(applicant)}
                         >
-                          View
+                          {loadingDetails  ? <div><Spinner size="sm"></Spinner></div> : "View"}
                         </Button>
                       </TableCell>
                     </TableRow>
