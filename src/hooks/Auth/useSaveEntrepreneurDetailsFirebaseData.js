@@ -3,12 +3,9 @@ import { db } from "../../../src/firebaseConfig";
 
 const useSaveEntrepreneurDetails = () => {
   const saveEntrepreneurDetails = async (data) => {
-<<<<<<< Updated upstream
-=======
     if (data){
       console.log(data)
     }
->>>>>>> Stashed changes
     try {
       // Validate that the data exists
     

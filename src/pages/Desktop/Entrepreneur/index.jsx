@@ -60,7 +60,8 @@ const SingleMentor = () => {
     useEntrepreneurDetails(uid);
 
   useEffect(() => {
-    console.log(profileLoading);
+    console.log(profileData);
+    console.log( profileData?.profileImage.url)
   }, [profileLoading]);
 
   // const profileData = {
@@ -282,7 +283,7 @@ const SingleMentor = () => {
                     <div className="size-[150px] relative">
                       <img
                         src={
-                          profileData?.profilePhoto || "/default-profile.png"
+                          profileData?.profileImage.url || "/default-profile.png"
                         }
                         alt={`${profileData?.firstName} ${profileData?.lastName}`}
                         className="size-full absolute left-0 top-0 object-cover"
@@ -360,11 +361,11 @@ const SingleMentor = () => {
               <div className="skills-section">
                 <div className="skills-header">Skills</div>
                 <div className="flex flex-wrap gap-2 justify-center items-center">
-                  {profileData?.skills?.map((item) => {
-                    return <Chip label={item}></Chip>;
+                  {profileData?.skillsRequired?.map((item) => {
+                    return <Chip label={item.name}></Chip>;
                   })}
                 </div>
-                {!profileData?.skills && <span>No skill set available</span>}
+                {!profileData?.skillsRequired && <span>No skill set available</span>}
               </div>
             )}
           </div>
@@ -672,7 +673,7 @@ const SingleMentor = () => {
                         >
                           <Image
                             src={
-                              currentUser?.photo_url || "/default-profile.png"
+                              currentUser?.profileImage.url || "/default-profile.png"
                             }
                             roundedCircle
                             width={50}
@@ -697,7 +698,7 @@ const SingleMentor = () => {
                         >
                           <Image
                             src={
-                              profileData?.photo_url || "/default-profile.png"
+                              profileData?.profileImage.url || "/default-profile.png"
                             }
                             roundedCircle
                             width={50}
