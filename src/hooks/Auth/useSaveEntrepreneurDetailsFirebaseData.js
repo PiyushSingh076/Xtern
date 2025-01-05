@@ -16,7 +16,7 @@ const useSaveEntrepreneurDetails = () => {
 
       // Save data in the "entrepreneurs" collection
       console.log("uhh")
-      const docRef = await addDoc(collection(db, "entrepreneurs"),data);
+      const docRef = await addDoc(collection(db, "users"),{...data, type: "entrepreneur"});
       console.log(docRef)
       return docRef.id; // Return document ID
       
