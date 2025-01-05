@@ -19,6 +19,8 @@ export default function Header() {
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
 
+  
+
   const handleMenuToggle = () => {
     if (profileButtonRef.current) {
       const rect = profileButtonRef.current.getBoundingClientRect();
@@ -28,9 +30,23 @@ export default function Header() {
   };
 
   const handleMenuOptionClick = (route) => {
-    setMenuOpen(false);
-    navigate(route);
+    navigate(route)
+    
   };
+
+  const handleNavigateProfile = () => {
+    const toProfile = `profile/${userData?.uid}`
+    const toEntrepreneur = `entrepreneur/${userData?.uid}`
+    console.log(userData)
+    setMenuOpen(false);
+    if(userData?.type === "entrepreneur"){
+      console.log("is entrepreneur")
+      navigate(toEntrepreneur);
+    }
+    else if(userData.type == undefined || userData.type == "user"){
+      navigate(toProfile);
+    }
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -68,6 +84,8 @@ export default function Header() {
             <img
               src={userData?.photo_url}
               width="30px"
+              height="30px"
+              className='size-[30px] object-cover'
               style={{ borderRadius: '50%', cursor: 'pointer' }}
               alt="Profile"
             />
@@ -95,7 +113,7 @@ export default function Header() {
         >
           <div
             className="dropdown-item"
-            onClick={() => handleMenuOptionClick(`profile/${userData?.uid}`)}
+            onClick={() => handleNavigateProfile()}
           >
             <AiOutlineUser className="menu-icon" />
             Profile
