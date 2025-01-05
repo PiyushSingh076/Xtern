@@ -15,6 +15,7 @@ import { FiXCircle } from "react-icons/fi";
 import useSaveJob from '../hooks/Jobs/useSaveJob.js'
 import useImageUpload from "../hooks/Auth/useImageUpload.js"; // Custom hook for image upload
 import { getAuth } from "firebase/auth";
+import toast from "react-hot-toast";
 const Stepper = () => {
   const steps = [
     { id: 1, name: "Job" },
@@ -117,11 +118,11 @@ const Stepper = () => {
       });
 
       if (docID) {
-        alert("Job added successfully!");
+        toast.success("Job added successfully!");
         setSubmitLoading(false)
         navigate("/viewjob/" + docID); // Redirect to home screen
       } else {
-        alert("Failed to add job.");
+        toast.error("Failed to add job.");
       }
     } catch (err) {
       console.error("Error adding job: ", err);
