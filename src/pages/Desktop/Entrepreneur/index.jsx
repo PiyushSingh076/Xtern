@@ -61,7 +61,7 @@ const SingleMentor = () => {
 
   useEffect(() => {
     console.log(profileData);
-    console.log( profileData?.profileImage.url)
+    
   }, [profileLoading]);
 
   // const profileData = {
@@ -283,7 +283,7 @@ const SingleMentor = () => {
                     <div className="size-[150px] relative">
                       <img
                         src={
-                          profileData?.profileImage.url || "/default-profile.png"
+                          profileData?.photo_url || "/default-profile.png"
                         }
                         alt={`${profileData?.firstName} ${profileData?.lastName}`}
                         className="size-full absolute left-0 top-0 object-cover"
@@ -329,9 +329,13 @@ const SingleMentor = () => {
                       sx={{ fontSize: "1rem", width: "200px", height: "20px" }}
                     />
                   ) : (
-                    <span>
-                      Year of Experience: {profileData?.yearsInOperation}
-                    </span>
+                    <div className="flex flex-col" >
+                      <div>
+                      Years of Experience: {profileData?.experience}
+                    </div>
+                    <a className="text-sm" href={profileData.linkedinProfileUrl}>{profileData.linkedinProfileUrl}</a>
+                    </div>
+
                   )}
 
                   {profileLoading ? (
@@ -341,7 +345,7 @@ const SingleMentor = () => {
                       sx={{ fontSize: "1rem", width: "100px", height: "20px" }}
                     />
                   ) : (
-                    <p className="badge-type">Entrepreneur</p>
+                    <p className="badge-type">{profileData.industry}</p>
                   )}
                 </div>
               </div>
@@ -361,7 +365,7 @@ const SingleMentor = () => {
               <div className="skills-section">
                 <div className="skills-header">Skills</div>
                 <div className="flex flex-wrap gap-2 justify-center items-center">
-                  {profileData?.skillsRequired?.map((item) => {
+                  {profileData?.skills?.map((item) => {
                     return <Chip label={item.name}></Chip>;
                   })}
                 </div>
@@ -673,7 +677,7 @@ const SingleMentor = () => {
                         >
                           <Image
                             src={
-                              currentUser?.profileImage.url || "/default-profile.png"
+                              currentUser?.photo_url || "/default-profile.png"
                             }
                             roundedCircle
                             width={50}
@@ -698,7 +702,7 @@ const SingleMentor = () => {
                         >
                           <Image
                             src={
-                              profileData?.profileImage.url || "/default-profile.png"
+                              profileData?.photo_url || "/default-profile.png"
                             }
                             roundedCircle
                             width={50}

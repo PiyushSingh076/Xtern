@@ -9,7 +9,7 @@ export const useEntrepreneurDetails =  (uid) => {
     useEffect(() => {
         const fetchUserData = async () => {
             setLoading(true)
-            const data = (await getDoc(doc(db, "profile",uid ))).data();
+            const data = (await getDoc(doc(db, "users",uid ))).data();
             console.log(data);
             setUserData(data);
             setLoading(false);

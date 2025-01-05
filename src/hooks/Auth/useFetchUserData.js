@@ -17,6 +17,8 @@ const useFetchUserData = () => {
           const userDocRef = doc(db, "users", user.uid);
           const userDoc = await getDoc(userDocRef);
 
+          console.log(userDoc.data());
+
           if (userDoc.exists()) {
             setUserData(userDoc.data()); // Update userData state with Firestore data
           } else {
