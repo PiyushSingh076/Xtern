@@ -52,17 +52,24 @@ export default function EntrepreneurProfileForm() {
   const [lastName, setLastName] = useState("");
   const [profileImg, setProfileImg] = useState(null);
   const [profileImgURL, setProfileImgURL] = useState("");
+    const [errors, setErrors] = useState({});
+    const [companyDetails, setCompanyDetails] = useState({
+      name: "",
+      logo:{ url: "", fileName: "" },
+      startDate: "",
+      description: "",
+    });
+  const [uploadingLogo, setUploadingLogo] = useState(false); // Track logo upload progress
   const[uploading,setUploading]=useState(false)
-
  const [experience, setExperience] = useState("");
   const [industry, setIndustry] = useState("");
   const [state, setState] = useState("");
-  
   const [city, setCity] = useState("");
   const [cities, setCities] = useState([]);
   const [isModalOpen,setIsModalOpen]=useState(false)
  const [linkedinProfile, setLinkedinProfile] = useState("");
   const [isLinkedInFetched,setIsLinkedInFetched]=useState(false)
+
  
  
 
@@ -136,25 +143,71 @@ const{saveEntrepreneurDetails}=useSaveEntrepreneurDetails();
     modalType,
     openModal,
     closeModal,
-    companyDetails,
-    setCompanyDetails,
+   
     skillsRequired,
     setSkillsRequired,
     currentSkill,
     setCurrentSkill,
-    saveCompanyDetails,
     saveSkill,
-    errors,
-    uploadingLogo,
   } = useModalForm(
-    {
-      name: "",
-      logo: null,
-      startDate: "",
-      description: "",
-    },
+    
     { name: "", rating: 0 }
   );
+
+const handleLogoUpload = async (file) => {
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    toast.error("Please upload a valid image file.");
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    toast.error("File size should not exceed 2MB.");
+    return;
+  }
+
+  try {
+    setUploadingLogo(true);
+    const storageRef = ref(storage, `companyLogos/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      null,
+      (error) => {
+        setUploadingLogo(false);
+        toast.error(`Upload failed: ${error.message}`);
+      },
+      async () => {
+        const fileURL = await getDownloadURL(uploadTask.snapshot.ref);
+        setCompanyDetails((prev) => ({
+          ...prev,
+          logo: { url: fileURL, fileName: file.name },
+        }));
+        setUploadingLogo(false);
+        toast.success("Logo uploaded successfully!");
+      }
+    );
+  } catch (error) {
+    setUploadingLogo(false);
+    toast.error("Failed to upload logo.");
+  }
+};
+
+const handleCompanyDialogSave = () => {
+  if (
+    companyDetails.name &&
+    companyDetails.logo.url &&
+    companyDetails.startDate &&
+    companyDetails.description
+  ) {
+    toast.success("Company details saved!");
+    closeModal();
+  } else {
+    toast.error("Please fill out all fields!");
+  }
+};
 
   const handleProfileImage = async(file) => {
   
@@ -217,6 +270,7 @@ const{saveEntrepreneurDetails}=useSaveEntrepreneurDetails();
     if (!industry) missingFields.push("Industry");
 
     if (missingFields.length === 0) {
+      
       const entrepreneurData = {
         profileImage: {
           url: profileImgURL,
@@ -225,14 +279,13 @@ const{saveEntrepreneurDetails}=useSaveEntrepreneurDetails();
         lastName,
         state,
         city,
+        companyDetails,
       experience,
-companyDetails,
-        industry,
+      industry,
        skillsRequired,
        linkedinProfile,
       };
 
-  
     dispatch(setEntrepreneurDetails(entrepreneurData));
     try {
       //TODO: firebase fix
@@ -289,7 +342,7 @@ companyDetails,
                 <label htmlFor="profile-image-upload">
                   <IconButton component="span">
                     <Avatar
-                      src={profileImgURL || "https://via.placeholder.com/120"}
+                      src={profileImgURL || "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"}
                       sx={{ width: 120, height: 120 }}
                     />
                   </IconButton>
@@ -430,7 +483,7 @@ companyDetails,
                 </Box>
               )}
      
-        <Card sx={{ mb: 2, boxShadow: 2 }}>
+          <Card sx={{ mb: 2, boxShadow: 2 }}>
         <CardHeader
           title="Company Details"
           titleTypographyProps={{ variant: "h6" }}
@@ -448,6 +501,7 @@ companyDetails,
           sx={{ padding: 2 }}
         />
         <Divider />
+
         <CardContent sx={{ padding: 2 }}>
           {companyDetails.name ? (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -463,7 +517,10 @@ companyDetails,
             </Box>
           ) :""}
         </CardContent>
-      </Card>
+
+          </Card>
+        
+     
       <Card sx={{ mb: 2, boxShadow: 2 }}>
         <CardHeader
           title="Skills Required"
@@ -577,8 +634,9 @@ companyDetails,
       </Dialog>
     {/* Dialog for Company Details */}
     <Dialog open={modalType === "Company"} onClose={closeModal} fullWidth>
-        <DialogTitle>Edit Company</DialogTitle>
+        <DialogTitle>Add Company Details</DialogTitle>
         <DialogContent>
+<<<<<<< Updated upstream
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Box
@@ -676,18 +734,67 @@ companyDetails,
               <CircularProgress />
               <Typography sx={{ ml: 2 }}>Uploading logo...</Typography>
             </Box>
+=======
+          <TextField
+            label="Company Name"
+            fullWidth
+            value={companyDetails.name}
+            onChange={(e) =>
+              setCompanyDetails({ ...companyDetails, name: e.target.value })
+            }
+            sx={{ mb: 2 }}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            id="logo-upload"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) handleLogoUpload(file);
+            }}
+          />
+          <label htmlFor="logo-upload">
+            <Button
+              variant="contained"
+              component="span"
+              disabled={uploadingLogo}
+              sx={{ mb: 2 }}
+            >
+              Upload Logo
+            </Button>
+          </label>
+          {companyDetails.logo.fileName && (
+            <Typography>{`Uploaded Logo: ${companyDetails.logo.fileName}`}</Typography>
+>>>>>>> Stashed changes
           )}
+          <TextField
+            label="Start Date"
+            type="date"
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            value={companyDetails.startDate}
+            onChange={(e) =>
+              setCompanyDetails({ ...companyDetails, startDate: e.target.value })
+            }
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Description"
+            fullWidth
+            multiline
+            rows={4}
+            value={companyDetails.description}
+            onChange={(e) =>
+              setCompanyDetails({ ...companyDetails, description: e.target.value })
+            }
+          />
         </DialogContent>
         <DialogActions>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={saveCompanyDetails}
-            disabled={uploading} // Disable while uploading
-          >
+          <Button onClick={handleCompanyDialogSave} variant="contained">
             Save
           </Button>
-          <Button variant="outlined" color="secondary" onClick={closeModal}>
+          <Button onClick={() => setIsModalOpen(false)} variant="outlined">
             Cancel
           </Button>
         </DialogActions>
