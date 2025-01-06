@@ -1828,7 +1828,7 @@ export default function StepperForm() {
             </IconButton>
 
           </DialogTitle >
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleModalSubmit}>
 
             <DialogContent dividers>
               {/* Education Form */}
