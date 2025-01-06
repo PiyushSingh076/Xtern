@@ -20,7 +20,7 @@ import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Timestamp } from "firebase/firestore";
 import { Spinner } from "react-bootstrap";
-import { Book, Bookmark, Save } from "lucide-react";
+import { Book, Bookmark, Building, MapPin, Save, User } from "lucide-react";
 import { useSubscriptions } from "../../../hooks/Profile/useSubscriptions";
 import { BookmarkAdded } from "@mui/icons-material";
 
@@ -49,64 +49,76 @@ const JobStats = () => {
   };
 
   const handleSubscribe = async () => {
-    setSelectedUser((prev) => ({ ...selectedUser, subscribed: !prev.subscribed }));
+    setSelectedUser((prev) => ({
+      ...selectedUser,
+      subscribed: !prev.subscribed,
+    }));
     const s = await toggleSubscribeToXpert(selectedUser.uid);
     console.log("Subscribed", s);
     setSelectedUser({ ...selectedUser, subscribed: s });
   };
 
   return (
-    <div id="job-stats-container">
+    <div id="job-stats-container" className="!px-[80px] !py-[20px]">
       {loading == false && (
         <>
-          <div id="job-stats-details" className="job-stats-card">
-            <div id="job-stats-logo">
-              {/* <img src={jobData.logo} alt="" /> */}
-              <img id="job-stats-banner" src={jobData.image} alt="" />
+          <div
+            id="job-stats-details"
+            className="flex flex-col border border-[#e5e5e5] rounded-xl relative"
+          >
+            <div className="h-[80px] w-full relative flex items-center justify-center bg-blue-400 rounded-lg shadow-md shadow-black/20 mb-2">
+              <img
+                src={jobData.image}
+                className="absolute top-0 left-0 size-full object-cover"
+                alt=""
+              />
             </div>
-            <h4>{jobData.title}</h4>
-            <h5>
-              {jobData.companyName}, {jobData.location}
-            </h5>
-            <div id="job-stats-description">{jobData.description}</div>
-            <h5>Skills:</h5>
-            <div id="job-stats-skills">
-              {jobData.skills.map((skill, index) => {
-                return (
-                  <Chip
-                    label={skill}
-                    key={index + skill + "job-stat-skill"}
-                  ></Chip>
-                );
-              })}
-            </div>
-
-            <div id="job-stats-controls">
-              <Button
-                variant="contained"
-                sx={{
-                  borderRadius: "10px",
-                  padding: "10px",
-                  backgroundColor: "#FF6D6DFF",
-                }}
-              >
-                Delete Posting
-              </Button>
-              <Button
-                variant="contained"
-                sx={{ borderRadius: "10px", padding: "10px" }}
-              >
-                Edit Posting
-              </Button>
-              <div id="job-stats-applicants">
-                Applicants: {jobData.applicants.length}
+            <div className="h-fit w-full flex gap-2 items-stretch shrink-0">
+              <div className="flex flex-col">
+                <div className="text-lg font-normal flex gap-1 text-zinc-800 items-center">
+                  <User opacity={0.8} size="20"></User> {jobData.title}
+                </div>
+                <div className="text-lg font-normal flex gap-1 text-zinc-800 items-center">
+                  <Building size="20" opacity={0.8}></Building>
+                  {jobData.companyName}
+                </div>
+                <div className=" text-lg flex gap-1 text-zinc-800 items-center">
+                  <MapPin size="20" opacity={0.8}></MapPin>
+                  {jobData.location}
+                </div>
               </div>
             </div>
+
+            <div className="mt-2 shrink-0 min-h-0 text-left border border-[#e5e5e5] max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50 ">
+              {jobData.description}
+            </div>
+            <div className="shrink-0 h-fit my-2">
+              <div id="job-stats-skills">
+                {jobData.skills.map((skill, index) => {
+                  return (
+                    <Chip
+                      label={skill}
+                      sx={{
+                        borderRadius: "10px",
+                      }}
+                      key={index + skill + "job-stat-skill"}
+                    ></Chip>
+                  );
+                })}
+              </div>
+            </div>
+              <div className="mt-auto flex justify-end">
+                <Button variant="contained" >Edit Job</Button>
+              </div>
           </div>
-          <div className="job-stats-card">
+          <div className="flex flex-col border border-[#e5e5e5] rounded-xl size-full relative overflow-hidden">
             <TableContainer sx={{ height: "100%" }} component={Box}>
               <Table hover="true" stickyHeader>
-                <TableHead>
+                <TableHead
+                  id="jobstats-table-head"
+                  
+                  
+                >
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Date Applied</TableCell>
@@ -243,14 +255,17 @@ const JobStats = () => {
                       variant="contained"
                       className=" !flex  gap-2"
                     >
-                      
-                        <>
-                          {selectedUser.subscribed
-                            ? "Unsubscribe"
-                            : "Subscribe"}
-                        </>
-                      
-                      {subLoading ? <Spinner size="sm"></Spinner> : selectedUser.subscribed == false ? <Bookmark></Bookmark> : <BookmarkAdded></BookmarkAdded>}
+                      <>
+                        {selectedUser.subscribed ? "Unsubscribe" : "Subscribe"}
+                      </>
+
+                      {subLoading ? (
+                        <Spinner size="sm"></Spinner>
+                      ) : selectedUser.subscribed == false ? (
+                        <Bookmark></Bookmark>
+                      ) : (
+                        <BookmarkAdded></BookmarkAdded>
+                      )}
                     </Button>
                     <Button
                       variant="contained"
