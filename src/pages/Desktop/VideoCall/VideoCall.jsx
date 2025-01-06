@@ -80,9 +80,10 @@ const VideoCall = () => {
       const newCall = newClient.call("default", callData.callId);
       await newCall.join({ create: true });
       
+      newCall.startRecording();
+
       setCall(newCall);
       setIsJoined(true);
-
     } catch (error) {
       alert("Failed to join the call. Please try again later.");
     } finally {
@@ -96,11 +97,14 @@ const VideoCall = () => {
 
   useEffect(() => {
     if (call) {
-      const handleCallStateChange = (event) => {
-        if (event?.state === CallingState.ENDED || 
-            event?.state === CallingState.LEFT || 
-            event === CallingState.ENDED || 
-            event === CallingState.LEFT) {
+      const handleCallStateChange = async (event) => {
+        if (
+          event?.state === CallingState.ENDED ||
+          event?.state === CallingState.LEFT ||
+          event === CallingState.ENDED ||
+          event === CallingState.LEFT
+        ) {
+          await call.stopRecording();
           handleCallEnd();
         }
       };

@@ -510,7 +510,7 @@
 .service-container {
   width: 100%;
   padding: 20px 0px;
-  height: 250px;
+  /* height: 280px; */
 
   margin-top: 5px;
   display: flex;

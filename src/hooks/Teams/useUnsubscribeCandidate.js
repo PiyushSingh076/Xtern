@@ -19,10 +19,8 @@ const useUnsubscribeCandidate = () => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser({ uid: currentUser.uid });
-        console.log("Authenticated user:", currentUser.uid);
       } else {
         setUser(null);
-        console.log("No authenticated user found.");
       }
     });
 
@@ -44,12 +42,6 @@ const useUnsubscribeCandidate = () => {
     setError(null);
 
     try {
-      console.log(
-        "Attempting to unsubscribe candidate:",
-        internRef.path,
-        userRef.path
-      );
-
       // Step 1: Query and delete from `stripeSubscription` collection using reference types
       const stripeQuery = query(
         collection(db, "stripeSubscription"),
@@ -72,7 +64,6 @@ const useUnsubscribeCandidate = () => {
         entreRef: userRef, // Store as reference type
         internRef: internRef, // Store as reference type
       });
-      console.log("Added to shortlistedInterns with ID:", newDocRef.id);
     } catch (err) {
       console.error("Error during unsubscription:", err);
       setError("Failed to unsubscribe candidate. Please try again.");

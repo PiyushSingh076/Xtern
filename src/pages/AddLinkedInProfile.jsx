@@ -5,7 +5,14 @@ import toast from "react-hot-toast";
 import { db, functions } from "../firebaseConfig";
 import { httpsCallable } from "firebase/functions";
 import { getAuth } from "firebase/auth";
-import { collection, doc, getDocs, query, where, writeBatch } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  where,
+  writeBatch,
+} from "firebase/firestore";
 import axios from "axios";
 
 const AddLinkedInProfile = () => {
@@ -36,16 +43,16 @@ const AddLinkedInProfile = () => {
       }
 
       const profileId = profileIdMatch[1];
-      
+
       const fetchLinkedInProfileAndSaveExperience = httpsCallable(
         functions,
         "fetchLinkedInProfileAndSaveExperiences"
       );
       const response = await fetchLinkedInProfileAndSaveExperience({
         profileId,
-        userUid
+        userUid,
       });
-      console.log("response---", response)
+      console.log("response---", response);
       if (response.data.success) {
         toast.success(
           "LinkedIn profile fetched and saved:",
@@ -55,13 +62,11 @@ const AddLinkedInProfile = () => {
       } else {
         toast.error("Failed to fetch LinkedIn profile. Please try again.");
       }
-
     } catch (error) {
       toast.error("An error occurred. Please try again later.");
       console.error("Error fetching LinkedIn profile:", error);
     }
   };
-
 
   const handleBackClick = () => {
     navigate(-1);

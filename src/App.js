@@ -116,7 +116,6 @@ function App() {
   const selectedRole = useSelector((state) => state.role.selectedRole);
 
   const isVideoCallRoute = location.pathname === ROUTES.VIDEOCALL;
-  // console.log("selectedRole:", selectedRole);
 
   const [isMobileView, setIsMobileView] = useState(false);
 
