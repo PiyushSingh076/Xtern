@@ -608,7 +608,7 @@ companyDetails,
                 onChange={(e) =>
                   setCompanyDetails({
                     ...companyDetails,
-                    logo: e.target.files[0],
+                    logo: /* e.target.files[0] */ "test",
                   })
                 }
               />

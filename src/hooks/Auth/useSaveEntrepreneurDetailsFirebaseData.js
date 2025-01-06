@@ -29,7 +29,10 @@ const useSaveEntrepreneurDetails = () => {
           state: data.state
         },
         photo_url: data.profileImage.url,
-        companyDetails : data.companyDetails,
+        companyDetails : {
+          name: data.companyDetails.name,
+          description: data.companyDetails.description
+        },
         skills: data.skillsRequired,
         jobPostings: [],
         uid: userId,
@@ -39,8 +42,10 @@ const useSaveEntrepreneurDetails = () => {
       // console.log(normalizedData)
       const testuser = await getDoc(userRef);
       console.log(testuser.data())
+      console.log(normalizedData, data)
       try {
-        await updateDoc(userRef, normalizedData, { merge: true });
+        console.log("Overwrite")
+        await setDoc(userRef, normalizedData);
         
       } catch (error) {
         console.log(error)

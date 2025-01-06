@@ -368,7 +368,7 @@ const SingleMentor = () => {
                     return <Chip label={item.name}></Chip>;
                   })}
                 </div>
-                {!profileData?.skillsRequired && (
+                {!profileData?.skills && (
                   <span>No skill set available</span>
                 )}
               </div>

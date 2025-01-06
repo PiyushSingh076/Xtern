@@ -20,6 +20,9 @@ import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Timestamp } from "firebase/firestore";
 import { Spinner } from "react-bootstrap";
+import { Book, Bookmark, Save } from "lucide-react";
+import { useSubscriptions } from "../../../hooks/Profile/useSubscriptions";
+import { BookmarkAdded } from "@mui/icons-material";
 
 const JobStats = () => {
   const [showModal, setShowModal] = useState(false);
@@ -27,13 +30,16 @@ const JobStats = () => {
   const { jobId } = useParams();
   const { jobData, loading, fetchApplicantDetails } = useFetchJob(jobId);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const { toggleSubscribeToXpert, isSubscribed, subLoading } =
+    useSubscriptions();
   const openModal = async (applicant) => {
-    setLoadingDetails(true)
+    setLoadingDetails(true);
     const user = await fetchApplicantDetails(applicant.uid);
-    setLoadingDetails(false)
-    console.log("User", user);  
+    setLoadingDetails(false);
+    console.log("User", user);
     console.log("Applicant", applicant);
-    setSelectedUser({...applicant, user: user});
+    const subscribed = await isSubscribed(applicant.uid);
+    setSelectedUser({ ...applicant, user: user, subscribed: subscribed });
     setShowModal(true);
   };
 
@@ -42,8 +48,11 @@ const JobStats = () => {
     setSelectedUser(null);
   };
 
-  const handleSubscribe = () => {
-    toast.success("Subscribed to  this Applicant!");
+  const handleSubscribe = async () => {
+    setSelectedUser((prev) => ({ ...selectedUser, subscribed: !prev.subscribed }));
+    const s = await toggleSubscribeToXpert(selectedUser.uid);
+    console.log("Subscribed", s);
+    setSelectedUser({ ...selectedUser, subscribed: s });
   };
 
   return (
@@ -96,7 +105,7 @@ const JobStats = () => {
           </div>
           <div className="job-stats-card">
             <TableContainer sx={{ height: "100%" }} component={Box}>
-              <Table hover='true' stickyHeader>
+              <Table hover="true" stickyHeader>
                 <TableHead>
                   <TableRow>
                     <TableCell>Name</TableCell>
@@ -118,7 +127,12 @@ const JobStats = () => {
                     >
                       <TableCell>{applicant.name}</TableCell>
                       <TableCell>
-                        {dayjs(new Timestamp(applicant.appliedOn.seconds, applicant.appliedOn.nanoseconds).toDate()).format("MM/DD/YYYY")}
+                        {dayjs(
+                          new Timestamp(
+                            applicant.appliedOn.seconds,
+                            applicant.appliedOn.nanoseconds
+                          ).toDate()
+                        ).format("MM/DD/YYYY")}
                       </TableCell>
 
                       <TableCell>
@@ -135,7 +149,13 @@ const JobStats = () => {
                           }}
                           onClick={() => openModal(applicant)}
                         >
-                          {loadingDetails  ? <div><Spinner size="sm"></Spinner></div> : "View"}
+                          {loadingDetails ? (
+                            <div>
+                              <Spinner size="sm"></Spinner>
+                            </div>
+                          ) : (
+                            "View"
+                          )}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -153,10 +173,35 @@ const JobStats = () => {
               <div className="modal-dialog m-7" role="document">
                 <div className="modal-content">
                   <div className="modal-header">
-                    <h5 className="modal-title">{selectedUser.name}</h5>
-                    
+                    <h5 className="modal-title">
+                      {selectedUser.user.firstName} {selectedUser.user.lastName}
+                    </h5>
                   </div>
                   <div className="modal-body">
+                    <div className="w-full h-[150px] flex items-center justify-center">
+                      <img
+                        src={selectedUser.user.photo_url}
+                        className="size-[150px] rounded-full shadow-xl shadow-black/20 border-2 border-black/10"
+                        alt=""
+                      />
+                    </div>
+                    <div>
+                      <b>Name:</b> {selectedUser.user.firstName}{" "}
+                      {selectedUser.user.lastName}
+                    </div>
+                    <div>
+                      <b>Skills:</b>
+                      <div className="h-fit w-full flex flex-wrap gap-2">
+                        <>
+                          {selectedUser.user.skillSet.map((skill, index) => (
+                            <Chip
+                              label={skill.skill}
+                              key={index + skill + "job-stat-skill"}
+                            ></Chip>
+                          ))}
+                        </>
+                      </div>
+                    </div>
                     <p>
                       <strong>Location:</strong> {selectedUser.user.city}
                     </p>
@@ -180,17 +225,41 @@ const JobStats = () => {
                         {selectedUser.repoLink}
                       </a>
                     </p>
+                    <p>
+                      <strong>Submitted On: </strong>{" "}
+                      {dayjs(
+                        new Timestamp(
+                          selectedUser.submittedOn.seconds,
+                          selectedUser.submittedOn.nanoseconds
+                        ).toDate()
+                      ).format("MM/DD/YYYY")}
+                    </p>
                   </div>
-                  <div className="modal-footer">
-                    <button
+                  <div className="modal-footer gap-2">
+                    <Button variant="contained">Approve</Button>
+                    <Button
+                      disabled={subLoading}
                       onClick={handleSubscribe}
-                      className="btn btn-primary"
+                      variant="contained"
+                      className=" !flex  gap-2"
                     >
-                      Subscribe
-                    </button>
-                    <button className="btn btn-secondary" onClick={closeModal}>
+                      
+                        <>
+                          {selectedUser.subscribed
+                            ? "Unsubscribe"
+                            : "Subscribe"}
+                        </>
+                      
+                      {subLoading ? <Spinner size="sm"></Spinner> : selectedUser.subscribed == false ? <Bookmark></Bookmark> : <BookmarkAdded></BookmarkAdded>}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      className=""
+                      sx={{ bgcolor: "#FF6D6DFF" }}
+                      onClick={closeModal}
+                    >
                       Close
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

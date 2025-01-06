@@ -26,7 +26,7 @@ export const useModalForm = (initialCompanyDetails, initialSkill) => {
   const closeModal = () => {
     setModalType(null);
     setErrors({});
-    setCompanyDetails(initialCompanyDetails);
+    // setCompanyDetails(initialCompanyDetails);
     setCurrentSkill(initialSkill);
   };
 
