@@ -17,7 +17,7 @@ const useSaveEntrepreneurDetails = () => {
       if (!db) throw new Error("Firestore instance not initialized");
 
       // Save data in the "entrepreneurs" collection
-      console.log("uhh")
+      console.log(data)
       let normalizedData= {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -31,7 +31,9 @@ const useSaveEntrepreneurDetails = () => {
         photo_url: data.profileImage.url,
         companyDetails : {
           name: data.companyDetails.name,
-          description: data.companyDetails.description
+          description: data.companyDetails.description,
+          logo: data.companyDetails.logo.url,
+          startDate: data.companyDetails.startDate
         },
         skills: data.skillsRequired,
         jobPostings: [],

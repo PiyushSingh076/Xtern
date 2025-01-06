@@ -38,7 +38,7 @@ import {
 } from "react-bootstrap";
 
 import { Box, Tooltip } from "@mui/material";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs, Timestamp } from "firebase/firestore";
 import { auth, db } from "../../../firebaseConfig";
 import { useEntrepreneurDetails } from "../../../hooks/Entrepreneur/useEntrepreneurDetails";
 
@@ -493,16 +493,16 @@ const SingleMentor = () => {
                     <>
                       <div
                         className="experience-sec"
-                        key={`${profileData.companyName}`}
+                        key={`${profileData.companyDetails.name}`}
                       >
                         <div className="size-[60px] rounded-full shrink-0 overflow-hidden mr-4 relative">
                           <img
-                            src={profileData.companyLogo}
+                            src={profileData.companyDetails.logo}
                             className="absolute"
                           />
                         </div>
                         <div className="experience-info">
-                          <h4>{profileData.companyName}</h4>
+                          <h4>{profileData.companyDetails.name}</h4>
                           {/* <p>
                           {dayjs.unix(company?.startDate).format("D MMM YYYY")}{" "}
                           -{" "}
@@ -511,8 +511,9 @@ const SingleMentor = () => {
                             : dayjs.unix(company.endDate).format("D MMM YYYY")}
                         </p> */}
                           <h4 className="text-black/60">
-                            {profileData.aboutCompany}
+                            {profileData.companyDetails.description}
                           </h4>
+                          {/* <h4>{dayjs(new Timestamp(profileData.companyDetails.startDate.seconds, profileData.companyDetails.startDate.nanoseconds).toDate()).format("D MMM YYYY")}</h4> */}
                         </div>
                       </div>
                     </>

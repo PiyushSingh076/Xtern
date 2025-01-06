@@ -24,13 +24,8 @@ const[skillsErrors,setSkillsErrors]=useState([{}])
   // Close modal
   const closeModal = () => {
     setModalType(null);
-<<<<<<< Updated upstream
-    setErrors({});
-    // setCompanyDetails(initialCompanyDetails);
-=======
     setSkillsErrors({});
    
->>>>>>> Stashed changes
     setCurrentSkill(initialSkill);
   };
 

@@ -636,105 +636,6 @@ const handleCompanyDialogSave = () => {
     <Dialog open={modalType === "Company"} onClose={closeModal} fullWidth>
         <DialogTitle>Add Company Details</DialogTitle>
         <DialogContent>
-<<<<<<< Updated upstream
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Box
-                onClick={() => document.getElementById("add-logo-input").click()}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: "2px dotted #ccc",
-                  padding: 2,
-                  height: "100px",
-                  borderRadius: "20px",
-                  cursor: "pointer",
-                }}
-              >
-                <Typography variant="h6" sx={{ color: "#ccc" }}>
-                  {companyDetails.logo instanceof File
-                    ? companyDetails.logo.name
-                    : companyDetails.logo || "Add Logo"}
-                </Typography>
-              </Box>
-              <input
-                id="add-logo-input"
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={(e) =>
-                  setCompanyDetails({
-                    ...companyDetails,
-                    logo: /* e.target.files[0] */ "test",
-                  })
-                }
-              />
-              {errors.logo && (
-                <Typography variant="body2" color="error">
-                  {errors.logo}
-                </Typography>
-              )}
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Company Name"
-                variant="outlined"
-                fullWidth
-                required
-                value={companyDetails.name}
-                onChange={(e) =>
-                  setCompanyDetails({ ...companyDetails, name: e.target.value })
-                }
-                error={!!errors.name}
-                helperText={errors.name}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Start Date"
-                type="date"
-                variant="outlined"
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                required
-                value={companyDetails.startDate}
-                onChange={(e) =>
-                  setCompanyDetails({
-                    ...companyDetails,
-                    startDate: e.target.value,
-                  })
-                }
-                error={!!errors.startDate}
-                helperText={errors.startDate}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Description"
-                variant="outlined"
-                fullWidth
-                multiline
-                rows={4}
-                required
-                value={companyDetails.description}
-                onChange={(e) =>
-                  setCompanyDetails({
-                    ...companyDetails,
-                    description: e.target.value,
-                  })
-                }
-                error={!!errors.description}
-                helperText={errors.description}
-              />
-            </Grid>
-          </Grid>
-          {uploading && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-              <CircularProgress />
-              <Typography sx={{ ml: 2 }}>Uploading logo...</Typography>
-            </Box>
-=======
           <TextField
             label="Company Name"
             fullWidth
@@ -766,7 +667,6 @@ const handleCompanyDialogSave = () => {
           </label>
           {companyDetails.logo.fileName && (
             <Typography>{`Uploaded Logo: ${companyDetails.logo.fileName}`}</Typography>
->>>>>>> Stashed changes
           )}
           <TextField
             label="Start Date"
