@@ -29,7 +29,6 @@ const useFetchUsersByType = (type) => {
         });
 
         setUsers(userList);
-        console.log(userList, "sdfsdfsdfsdf");
       } catch (err) {
         console.error("Error fetching users:", err);
         setError(err.message);

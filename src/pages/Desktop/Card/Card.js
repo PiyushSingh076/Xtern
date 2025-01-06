@@ -1,9 +1,7 @@
-// src/Components/Admin/Profile/Card.jsx
-
 import React from "react";
-import "./Card.css"; // Import related styles
+import "./Card.css";
 import { useNavigate } from "react-router-dom";
-import { Chip, Stack, Tooltip } from "@mui/material"; // Import Material-UI components
+import { Chip, Stack, Tooltip } from "@mui/material";
 
 const consultingChargesConfig = {
   astrologist: true,
@@ -14,7 +12,7 @@ const Card = ({ data }) => {
   const navigate = useNavigate();
 
   const handleChatClick = (event) => {
-    event.stopPropagation(); // Prevent card click from triggering
+    event.stopPropagation();
     navigate(
       `/chat?firstName=${encodeURIComponent(
         data.firstName
@@ -23,21 +21,18 @@ const Card = ({ data }) => {
   };
 
   const handleCallClick = (event) => {
-    event.stopPropagation(); // Prevent card click from triggering
+    event.stopPropagation();
     navigate(
       `/videocall?firstName=${encodeURIComponent(
         data.firstName
       )}&uid=${encodeURIComponent(data.uid)}`
     );
-    // If you prefer using an alert instead of navigation, uncomment the line below:
-    // alert(`Calling ${data.phone_number}`);
   };
 
   const handleCardClick = () => {
     navigate(`/profile/${data.uid}`);
   };
 
-  // Destructure necessary data
   const {
     photo_url,
     firstName,
@@ -49,15 +44,72 @@ const Card = ({ data }) => {
     skillSet,
     city,
     state,
+    uid,
   } = data;
+
+  const MAX_VISIBLE_SKILLS = 3;
+
+  const renderSkills = (skills) => {
+    if (!skills || skills.length === 0) {
+      return (
+        <Chip
+          label="No Skills Added"
+          color="default"
+          variant="outlined"
+          size="small"
+        />
+      );
+    }
+
+    const visibleSkills = skills.slice(0, MAX_VISIBLE_SKILLS);
+    const extraSkills =
+      skills.length > MAX_VISIBLE_SKILLS
+        ? skills.slice(MAX_VISIBLE_SKILLS)
+        : [];
+
+    return (
+      <Stack direction="row" spacing={1}>
+        {visibleSkills.map((skillObj) => (
+          <Tooltip
+            title={`Rating: ${skillObj.skillRating}/5`}
+            key={skillObj.skill}
+          >
+            <Chip
+              label={skillObj.skill}
+              color="primary"
+              variant="outlined"
+              size="small"
+            />
+          </Tooltip>
+        ))}
+
+        {extraSkills.length > 0 && (
+          <Tooltip
+            title={extraSkills
+              .map(
+                (skillObj) =>
+                  `${skillObj.skill} (Rating: ${skillObj.skillRating}/5)`
+              )
+              .join(", ")}
+          >
+            <Chip
+              label={`+${extraSkills.length}`}
+              color="primary"
+              variant="outlined"
+              size="small"
+            />
+          </Tooltip>
+        )}
+      </Stack>
+    );
+  };
 
   return (
     <div
       className="card"
       onClick={handleCardClick}
-      style={{ cursor: "pointer" }} // Add pointer cursor to indicate clickability
+      style={{ cursor: "pointer" }}
     >
-      {/* User Image */}
       <div
         className="profile-image"
         style={{
@@ -86,68 +138,36 @@ const Card = ({ data }) => {
         />
       </div>
 
-      {/* User Information */}
       <span className="filter-card-name">
         {firstName} {lastName}
       </span>
-      <span>Year of experience: {experience}</span>
+      <span>experience: {experience}</span>
 
-      {/* Display consulting price based on type */}
       {consultingChargesConfig[type?.toLowerCase()] && consultingPrice && (
         <span>
           <span style={{ color: "#009DED" }}>&#8377;{consultingPrice}/min</span>
         </span>
       )}
 
-      {/* Skill Badges */}
-      {(type === "Developer" || type === "Intern") && skillSet && (
-        <div style={{ marginTop: "10px" }}>
-          <Stack direction="row" spacing={1}>
-            {skillSet.map((skillObj) => (
-              <Tooltip
-                title={`Rating: ${skillObj.skillRating}/5`}
-                key={skillObj.skill}
-              >
-                <Chip
-                  label={skillObj.skill}
-                  color="primary"
-                  variant="outlined"
-                />
-              </Tooltip>
-            ))}
-          </Stack>
-        </div>
+      {(type === "Developer" || type === "Intern") && (
+        <div style={{ marginTop: "10px" }}>{renderSkills(skillSet)}</div>
       )}
 
-      {/* Location */}
       <div
         className="location-details"
         style={{ marginTop: "10px", color: "#777" }}
       >
         {state && <span>📍 {state}</span>}
-
         {city && <span style={{ marginRight: "10px" }}>, {city}</span>}
       </div>
 
-      {/* Action Buttons */}
       <div className="card-footer" style={{ marginTop: "15px" }}>
-        {/* Call Button */}
-        <button
-          onClick={(event) => {
-            handleCallClick(event);
-          }}
-        >
-          Call
-        </button>
-
-        {/* Chat Button */}
+        <button onClick={handleCallClick}>Call</button>
         <button onClick={handleChatClick}>Chat</button>
-
-        {/* Details Button */}
         <button
           onClick={(event) => {
-            event.stopPropagation(); // Prevent card click from triggering
-            navigate(`/profile/${data.uid}`);
+            event.stopPropagation();
+            navigate(`/profile/${uid}`);
           }}
         >
           Details

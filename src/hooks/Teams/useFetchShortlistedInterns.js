@@ -16,8 +16,6 @@ const useFetchShortlistedInterns = () => {
 
   useEffect(() => {
     const fetchShortlistedInterns = async (userId) => {
-      console.log("Fetching shortlisted interns for entrepreneur UID:", userId);
-
       try {
         // Use `doc(db, "collection", "documentID")` to create a reference path in the modular SDK
         const q = query(
@@ -26,15 +24,10 @@ const useFetchShortlistedInterns = () => {
         );
 
         const querySnapshot = await getDocs(q);
-        console.log(
-          "Documents fetched from shortlistedInterns collection:",
-          querySnapshot.size
-        );
 
         const internsData = await Promise.all(
           querySnapshot.docs.map(async (docSnapshot) => {
             const internRef = docSnapshot.data().internRef;
-            console.log("Found internRef:", internRef);
 
             if (!internRef) {
               console.warn(
