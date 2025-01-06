@@ -16,7 +16,6 @@ const useUserProfileData = (uid) => {
 
   useEffect(() => {
     if (!uid) {
-      console.log("UID is missing:", uid);
       return;
     }
 

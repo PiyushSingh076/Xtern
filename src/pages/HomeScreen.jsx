@@ -706,7 +706,7 @@ const HomeScreen = () => {
           </div>
           <div className="home-mentor-bottom mt-16">
             <Link to="/single-mentor">
-            <Slider {...CompanySettings}>
+              <Slider {...CompanySettings}>
                 <div className="Mob-home-mentor-sec-wrap">
                   <div className="Mob-home-mentor-sec">
                     <div>
@@ -718,9 +718,7 @@ const HomeScreen = () => {
                       />
                     </div>
                   </div>
-                  <div className="home-mentor-name">
-               
-                  </div>
+                  <div className="home-mentor-name"></div>
                 </div>
                 <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
@@ -733,9 +731,7 @@ const HomeScreen = () => {
                       />
                     </div>
                   </div>
-                  <div className="home-mentor-name">
-                
-                  </div>
+                  <div className="home-mentor-name"></div>
                 </div>
                 <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
@@ -748,9 +744,7 @@ const HomeScreen = () => {
                       />
                     </div>
                   </div>
-                  <div className="home-mentor-name">
-      
-                  </div>
+                  <div className="home-mentor-name"></div>
                 </div>
                 <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
@@ -763,9 +757,7 @@ const HomeScreen = () => {
                       />
                     </div>
                   </div>
-                  <div className="home-mentor-name">
-               
-                  </div>
+                  <div className="home-mentor-name"></div>
                 </div>
                 <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
@@ -778,9 +770,7 @@ const HomeScreen = () => {
                       />
                     </div>
                   </div>
-                  <div className="home-mentor-name">
-                   
-                  </div>
+                  <div className="home-mentor-name"></div>
                 </div>
                 <div className="Mob-home-mentor-sec-wrap redirect-mentor">
                   <div className="home-mentor-sec">
@@ -793,9 +783,7 @@ const HomeScreen = () => {
                       />
                     </div>
                   </div>
-                  <div className="home-mentor-name">
-              
-                  </div>
+                  <div className="home-mentor-name"></div>
                 </div>
 
                 <div className="Mob-home-mentor-sec-wrap redirect-mentor">
@@ -809,12 +797,8 @@ const HomeScreen = () => {
                       />
                     </div>
                   </div>
-                  <div className="home-mentor-name">
-           
-                  </div>
+                  <div className="home-mentor-name"></div>
                 </div>
-
-                
               </Slider>
             </Link>
           </div>

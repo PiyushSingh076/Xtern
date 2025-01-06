@@ -16,8 +16,6 @@ const useFetchSubscribedCandidates = () => {
 
   useEffect(() => {
     const fetchSubscribedCandidates = async (userId) => {
-      console.log("Fetching subscribed candidates for user UID:", userId);
-
       try {
         // Query to get documents in `stripeSubscription` where `userRef` matches the user's UID
         const q = query(
@@ -26,7 +24,6 @@ const useFetchSubscribedCandidates = () => {
         );
 
         const querySnapshot = await getDocs(q);
-        console.log("Documents fetched from stripeSubscription collection:", querySnapshot.size);
 
         const candidatesData = await Promise.all(
           querySnapshot.docs.map(async (docSnapshot) => {
@@ -55,18 +52,29 @@ const useFetchSubscribedCandidates = () => {
                   stripeCustomerId: docSnapshot.data().stripeCustomerId,
                 };
               } else {
-                console.warn("No intern document found for internRef:", internRef.id);
+                console.warn(
+                  "No intern document found for internRef:",
+                  internRef.id
+                );
                 return null;
               }
             } catch (error) {
-              console.error("Error fetching intern document:", error, "internRef:", internRef.id);
+              console.error(
+                "Error fetching intern document:",
+                error,
+                "internRef:",
+                internRef.id
+              );
               return null;
             }
           })
         );
 
         setSubscribedCandidates(candidatesData.filter(Boolean));
-        console.log("Subscribed candidates data:", candidatesData.filter(Boolean));
+        console.log(
+          "Subscribed candidates data:",
+          candidatesData.filter(Boolean)
+        );
       } catch (error) {
         console.error("Error fetching subscribed candidates:", error);
       } finally {
@@ -90,4 +98,3 @@ const useFetchSubscribedCandidates = () => {
 };
 
 export default useFetchSubscribedCandidates;
-
