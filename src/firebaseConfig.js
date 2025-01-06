@@ -11,6 +11,7 @@ import { getFunctions } from "firebase/functions";
 import { getStorage } from "firebase/storage";
 // Firebase configuration
 const firebaseConfig = {
+
   apiKey: "AIzaSyBdxeEzOz9LFz9hg2ZzfuC5n_Y5wEtb0-w",
   authDomain: "startup-dev-f53e8.firebaseapp.com",
   projectId: "startup-dev-f53e8",
@@ -18,7 +19,9 @@ const firebaseConfig = {
   messagingSenderId: "4190684230",
   appId: "1:4190684230:web:5ea85779844fa72b81b647",
   measurementId: "G-RJ1DC1JZK5"
+
 };
+
 // Initialize Firebase app
 const app = initializeApp(firebaseConfig);
 

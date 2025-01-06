@@ -15,7 +15,7 @@ const useOAuthLogin = () => {
       // Sign in with the selected provider
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
+      
       // Reference to the user's document in Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);

@@ -24,11 +24,13 @@ export default function Header() {
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
 
+
   // Decide if we have a valid userPhoto
   const hasUserPhoto =
     userData?.photo_url &&
     typeof userData.photo_url === "string" &&
     userData.photo_url.trim() !== "";
+
 
   const handleMenuToggle = () => {
     if (profileButtonRef.current) {
@@ -39,9 +41,23 @@ export default function Header() {
   };
 
   const handleMenuOptionClick = (route) => {
-    setMenuOpen(false);
-    navigate(route);
+    navigate(route)
+    
   };
+
+  const handleNavigateProfile = () => {
+    const toProfile = `profile/${userData?.uid}`
+    const toEntrepreneur = `entrepreneur/${userData?.uid}`
+    console.log(userData)
+    setMenuOpen(false);
+    if(userData?.type === "entrepreneur"){
+      console.log("is entrepreneur")
+      navigate(toEntrepreneur);
+    }
+    else if(userData.type == undefined || userData.type == "user"){
+      navigate(toProfile);
+    }
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -82,6 +98,7 @@ export default function Header() {
             className="profile-container"
             onClick={handleMenuToggle}
           >
+
             {hasUserPhoto ? (
               <img
                 src={userData.photo_url}
@@ -96,6 +113,7 @@ export default function Header() {
                 style={{ fontSize: "1.5rem", marginRight: "5px" }}
               />
             )}
+
             {userData?.firstName}
           </button>
         )}
@@ -120,7 +138,7 @@ export default function Header() {
         >
           <div
             className="dropdown-item"
-            onClick={() => handleMenuOptionClick(`profile/${userData?.uid}`)}
+            onClick={() => handleNavigateProfile()}
           >
             <AiOutlineUser className="menu-icon" />
             Profile

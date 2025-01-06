@@ -1,5 +1,4 @@
-// hooks/useSendOtp.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
 import toast from "react-hot-toast";
 import { auth } from "../../firebaseConfig";
@@ -7,58 +6,54 @@ import { auth } from "../../firebaseConfig";
 const useSendOtp = () => {
   const [loading, setLoading] = useState(false);
 
-  /**
-   * Initializes the reCAPTCHA verifier if it's not already initialized.
-   */
-  const initializeRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        "recaptcha-container",
-        {
-          size: "invisible", // Can be 'normal' if you want the widget to be visible
-          callback: (response) => {
-            // reCAPTCHA solved, allow OTP sending
-            // You can optionally handle the response here
+  const initializeRecaptcha = useCallback(() => {
+    try {
+      // Only initialize if it doesn't exist
+      console.log(window.recaptchaVerifier)
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+        window.recaptchaVerifier = new RecaptchaVerifier(
+          'recaptcha-container',
+          {
+            size: "invisible",
+            callback: (response) => {
+              console.log("reCAPTCHA solved:", response);
+            },
+            'expired-callback': () => {
+              console.log("reCAPTCHA expired");
+              // Reset instead of creating new instance
+              if (window.recaptchaVerifier) {
+                window.recaptchaVerifier.reset();
+              }
+            }
           },
-          "expired-callback": () => {
-            // Reset reCAPTCHA if it expires
-            window.recaptchaVerifier.reset();
-          },
-        },
-        auth
-      );
-    }
-  };
+          auth
+        );
+      
 
-  /**
-   * Sends an OTP to the provided phone number.
-   *
-   * @param {string} phoneNumber - The user's phone number in international format (e.g., +1234567890).
-   * @returns {Promise<void>}
-   */
+      // No need to render - it will be rendered automatically when needed
+      return Promise.resolve(window.recaptchaVerifier);
+    } catch (error) {
+      console.error("reCAPTCHA initialization error:", error);
+      throw error;
+    }
+  }, []);
+
   const sendOtp = async (phoneNumber, setShowOTP, setError, navigate) => {
     setLoading(true);
     setError("");
 
     try {
-      // Initialize reCAPTCHA
-      initializeRecaptcha();
-      const user = auth.currentUser;
+      const formattedPhone = phoneNumber.startsWith("+") 
+        ? phoneNumber 
+        : `+${phoneNumber}`;
 
-      if (!user) {
-        toast.error(
-          "No authenticated user found. Please sign in with your account first."
-        );
-        navigate("/");
-        throw new Error(
-          "No authenticated user found. Please sign in with your account first."
-        );
-      }
-      const formattedPhone = phoneNumber.startsWith("+")
-        ? phoneNumber
-        : `+${phoneNumber}`; // Ensure phone number is in international format
-
-      // Send OTP
+      console.log("Initializing reCAPTCHA...");
+      // const verifier = await initializeRecaptcha();
+      
+     
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         formattedPhone,
@@ -67,51 +62,45 @@ const useSendOtp = () => {
 
       window.confirmationResult = confirmationResult;
       setShowOTP(true);
-
       toast.success("OTP sent successfully!");
     } catch (err) {
-      console.error("Error sending OTP:", err);
-
-      // Handle specific Firebase Auth errors
-      if (err.code) {
-        switch (err.code) {
-          case "auth/invalid-phone-number":
-            setError("The phone number entered is invalid.");
-            toast.error("The phone number entered is invalid.");
-            break;
-          case "auth/missing-phone-number":
-            setError("Please enter a phone number.");
-            toast.error("Please enter a phone number.");
-            break;
-          case "auth/quota-exceeded":
-            setError(
-              "You have exceeded the OTP request limit. Please try again later."
-            );
-            toast.error(
-              "You have exceeded the OTP request limit. Please try again later."
-            );
-            break;
-          default:
-            setError("Failed to send OTP. Please try again.");
-            toast.error("Failed to send OTP. Please try again.");
+      console.error("Detailed error:", err);
+      
+      // Only clear on specific errors
+      if (err.code === 'auth/captcha-check-failed' && window.recaptchaVerifier) {
+        try {
+          window.recaptchaVerifier.clear();
+          window.recaptchaVerifier = null;
+        } catch (clearError) {
+          console.error("Error clearing reCAPTCHA:", clearError);
         }
-      } else {
-        setError("Failed to send OTP. Please try again.");
-        toast.error("Failed to send OTP. Please try again.");
       }
+
+      const errorMessages = {
+        'auth/invalid-app-credential': 'Authentication setup error. Please try again.',
+        'auth/invalid-phone-number': 'Please enter a valid phone number.',
+        'auth/too-many-requests': 'Too many attempts. Please try again later.',
+        'auth/captcha-check-failed': 'reCAPTCHA verification failed. Please try again.'
+      };
+
+      const message = errorMessages[err.code] || 'Failed to send OTP. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Cleans up the reCAPTCHA verifier when the component using this hook unmounts.
-   */
+  // Clear reCAPTCHA on unmount
   useEffect(() => {
     return () => {
       if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-        window.recaptchaVerifier = null;
+        try {
+          window.recaptchaVerifier.clear();
+          window.recaptchaVerifier = null;
+        } catch (error) {
+          console.error("Cleanup error:", error);
+        }
       }
     };
   }, []);
