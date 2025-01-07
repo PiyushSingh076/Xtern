@@ -70,7 +70,13 @@ const Card = ({ data }) => {
       );
     }
 
-    const visibleSkills = skills.slice(0, MAX_VISIBLE_SKILLS);
+    // Check if screen width is less than 480px
+    const isSmallScreen = window.innerWidth < 480;
+
+    // Display only the first skill on small screens
+    const visibleSkills = isSmallScreen
+      ? [skills[0]]
+      : skills.slice(0, MAX_VISIBLE_SKILLS);
     const extraSkills =
       skills.length > MAX_VISIBLE_SKILLS
         ? skills.slice(MAX_VISIBLE_SKILLS)
@@ -122,8 +128,8 @@ const Card = ({ data }) => {
       <div
         className="profile-image"
         style={{
-          width: "100px",
-          height: "100px",
+          width: "85px",
+          height: "85px",
           borderRadius: "50%",
           overflow: "hidden",
           display: "flex",
