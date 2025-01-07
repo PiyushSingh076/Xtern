@@ -26,7 +26,6 @@ import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../../hooks/Profile/useScheduledCallsForUser";
 import toast from "react-hot-toast";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { addDoc, collection, doc, getDoc } from "firebase/firestore";
 import {
   Modal,
   Button,
