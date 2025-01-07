@@ -28,7 +28,8 @@ import {
   CardHeader,
   
 } from "@mui/material";
-import { FiTrash} from "react-icons/fi";
+import {FiEdit, FiTrash} from "react-icons/fi";
+import EditIcon from "@mui/icons-material/Edit"
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import ClearIcon from "@mui/icons-material/Clear";
 import LinkedInLogo from "../../../assets/svg/linkedin.png";
@@ -37,22 +38,25 @@ import { State, City } from "country-state-city";
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
-import { useModalForm } from "../../../hooks/Auth/useModalForm";
 import { setEntrepreneurDetails } from "../../../Store/Slice/EntrepreneurDetails";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useSaveEntrepreneurDetails from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "../../../firebaseConfig";
 import { storage } from "../../../firebaseConfig";
-import { FlashOnOutlined } from "@mui/icons-material";
+import { Update } from "@mui/icons-material";
+
+
 
 
 export default function EntrepreneurProfileForm() {
+  const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [profileImg, setProfileImg] = useState(null);
   const [profileImgURL, setProfileImgURL] = useState("");
     const [errors, setErrors] = useState({});
+    const[skillsRequired,setSkillsRequired]=useState([])
     const [companyDetails, setCompanyDetails] = useState({
       name: "",
       logo:{ url: "", fileName: "" },
@@ -68,13 +72,15 @@ export default function EntrepreneurProfileForm() {
   const [cities, setCities] = useState([]);
   const [isModalOpen,setIsModalOpen]=useState(false)
  const [linkedinProfile, setLinkedinProfile] = useState("");
-  const [isLinkedInFetched,setIsLinkedInFetched]=useState(false)
+  const [isLinkedInFetched,setIsLinkedInFetched]=useState(false);
+  const [editIndex, setEditIndex] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const[currentSkill,setCurrentSkill]=useState({companyName:"",rating:0})
+  const [isEditingCompany, setIsEditingCompany] = useState(false);
+
 
  
- 
-
-
-  const navigate = useNavigate();
+const navigate = useNavigate();
   const dispatch = useDispatch();
 const location=useLocation()
 
@@ -139,24 +145,51 @@ const [error, setError] = useState({
 
 const{saveEntrepreneurDetails}=useSaveEntrepreneurDetails();
 
-  const {
-    modalType,
-    openModal,
-    closeModal,
-   
-    skillsRequired,
-    setSkillsRequired,
-    currentSkill,
-    setCurrentSkill,
-    saveSkill,
-  } = useModalForm(
-    
-    { name: "", rating: 0 }
-  );
+const mainContentRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (mainContentRef.current) {
+        mainContentRef.current.removeAttribute("inert");
+      }
+    };
+  }, [mainContentRef]);
+
+const openCompanyModal = () => {
+  setIsCompanyModalOpen(true);
+  setIsEditingCompany(companyDetails.name.trim() !== "")};
+
+const closeCompanyModal = () => {
+  setIsCompanyModalOpen(false);
+  setIsEditingCompany(false);
+  setErrors({});
+};
+
+const openSkillModal = (data = null, index = null) => {
+  setIsSkillModalOpen(true);
+  if (data) {
+    setCurrentSkill(data);
+    setEditIndex(index);
+  } else {
+    setCurrentSkill({ name: "", rating: 0 });
+    setEditIndex(null);
+  }
+};
+
+const closeSkillModal = () => {
+  setIsSkillModalOpen(false);
+  setErrors({});
+  setCurrentSkill({ name: "", rating: 1 });
+  setEditIndex(null);
+};
+
 
 const handleLogoUpload = async (file) => {
-  if (!file) return;
-
+const validExtensions = ["image/jpeg", "image/png", "image/jpg"];
+    if (!validExtensions.includes(file.type)) {
+      toast.error("Please upload a valid image file (JPEG, PNG).");
+      return;
+    }
   if (!file.type.startsWith("image/")) {
     toast.error("Please upload a valid image file.");
     return;
@@ -202,16 +235,57 @@ const handleCompanyDialogSave = () => {
     companyDetails.startDate &&
     companyDetails.description
   ) {
-    toast.success("Company details saved!");
-    closeModal();
+    toast.success(isEditing ? "Company details updated!" :"Company details saved!");
+    closeCompanyModal();
+   ;
   } else {
     toast.error("Please fill out all fields!");
   }
 };
 
+
+const validateSkill = () => {
+  const newErrors = {};
+  if (!currentSkill.name.trim()) newErrors.skillName = "Skill name is required.";
+  if (currentSkill.rating < 1 || currentSkill.rating > 10) newErrors.skillRating = "Rating must be between 1 and 10.";
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
+const saveSkill = () => {
+  if (validateSkill()) {
+    const updatedSkills = [...skillsRequired];
+    if (editIndex !== null) {
+      updatedSkills[editIndex] = currentSkill;
+    } else {
+      updatedSkills.push(currentSkill);
+    }
+    setSkillsRequired(updatedSkills);
+    closeSkillModal();
+  }
+};
+
+const deleteSkill = (index) => {
+  const updatedSkills = [...skillsRequired];
+  updatedSkills.splice(index, 1);
+  setSkillsRequired(updatedSkills);
+};
+
+
+const handleDeleteConfirmation = () => {
+  if (window.confirm("Are you sure you want to delete this company?")) {
+    setCompanyDetails({ name: "", logo: { url: "", fileName: "" }, startDate: "", description: "" });
+    toast.success("Company details deleted successfully.");
+  }
+};
+
   const handleProfileImage = async(file) => {
   
-    if (!file) return;
+    const validExtensions = ["image/jpeg", "image/png", "image/jpg"];
+    if (!validExtensions.includes(file.type)) {
+      toast.error("Please upload a valid image file (JPEG, PNG).");
+      return;
+    }
 
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload a valid image file.");
@@ -364,6 +438,7 @@ const handleCompanyDialogSave = () => {
                 label="First Name"
                 variant="outlined"
                 fullWidth
+                required
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 error={!!errors.firstName}
@@ -373,6 +448,7 @@ const handleCompanyDialogSave = () => {
               <TextField
                 label="Last Name"
                 variant="outlined"
+                required
                 fullWidth
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -491,7 +567,7 @@ const handleCompanyDialogSave = () => {
             <Button
               variant="contained"
               startIcon={<AddCircleOutlineIcon />}
-              onClick={() => openModal("Company")} // Opens the modal for company details
+              onClick={openCompanyModal} // Opens the modal for company details
               size="small"
               sx={{ textTransform: "none" }}
             >
@@ -503,7 +579,15 @@ const handleCompanyDialogSave = () => {
         <Divider />
 
         <CardContent sx={{ padding: 2 }}>
-          {companyDetails.name ? (
+          {companyDetails.name ? (<>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, m: 2 }}>
+              <IconButton onClick={openCompanyModal}>
+                <EditIcon />
+              </IconButton>
+              <IconButton onClick={handleDeleteConfirmation} color="error">
+                <FiTrash />
+              </IconButton>
+            </Box>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               <Typography variant="subtitle1">
                 <strong>{companyDetails.name}</strong>
@@ -515,6 +599,7 @@ const handleCompanyDialogSave = () => {
                 {companyDetails.description}
               </Typography>
             </Box>
+            </>
           ) :""}
         </CardContent>
 
@@ -529,7 +614,7 @@ const handleCompanyDialogSave = () => {
             <Button
               variant="contained"
               startIcon={<AddCircleOutlineIcon />}
-              onClick={() => openModal("Skill")} // Opens the modal for adding a skill
+              onClick={() => openSkillModal()} // Opens the modal for adding a skill
               size="small"
               sx={{ textTransform: "none" }}
             >
@@ -540,29 +625,23 @@ const handleCompanyDialogSave = () => {
         />
         <Divider />
         <CardContent sx={{ padding: 2 }}>
-          {skillsRequired.map((item, index) => (
-            <Box key={index} sx={{ mb: 3, position: "relative" }}>
-              <IconButton
-                aria-label="delete"
-                size="small"
-                sx={{ position: "absolute", top: 0, right: 0 }}
-                onClick={() => {
-                  const updatedSkills = [...skillsRequired];
-                  updatedSkills.splice(index, 1);
-                  setSkillsRequired(updatedSkills);
-                }}
-              >
-                <FiTrash color="red" size={16} />
-              </IconButton>
+          {skillsRequired?.map((skill, index) => (<>
+            <Box key={index} sx={{  mb: 3, position: "relative"}}>
+              <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, m: 2 }}>
+              <IconButton onClick={() => openSkillModal(skill, index)}><EditIcon /></IconButton>
+              <IconButton onClick={() => deleteSkill(index)}><FiTrash color="red" /></IconButton>
+           </Box>
+              
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                 <Typography variant="subtitle1">
-                  <strong>{item.name}</strong>
+                  <strong>{skill.name}</strong>
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Rating: {item.rating}
+                  Rating: {skill.rating}
                 </Typography>
               </Box>
             </Box>
+            </>
           ))}
         </CardContent>
       </Card>
@@ -588,12 +667,12 @@ const handleCompanyDialogSave = () => {
           />
 
 {/* Dialog for Adding Skills */}
-<Dialog open={modalType === "Skill"} onClose={closeModal} fullWidth>
-        <DialogTitle>Add Skill</DialogTitle>
-        <DialogContent>
+<Dialog sx={{mt:8}} open={isSkillModalOpen} onClose={closeSkillModal} fullWidth>
+        <DialogTitle >{editIndex?.index !== null ? "Edit Skill" : "Add Skill"}</DialogTitle>
+        <DialogContent >
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <TextField
+              <TextField sx={{mt:3}}
                 label="Skill Name"
                 variant="outlined"
                 fullWidth
@@ -615,8 +694,8 @@ const handleCompanyDialogSave = () => {
                 required
                 value={currentSkill.rating}
                 onChange={(e) =>
-                  setCurrentSkill({ ...currentSkill, rating: e.target.value })
-                }
+                  setCurrentSkill({ ...currentSkill,rating: Math.max( Math.min(10, Number(e.target.value))) 
+    })}
                 error={!!errors.skillRating}
                 helperText={errors.skillRating}
               />
@@ -625,17 +704,17 @@ const handleCompanyDialogSave = () => {
         </DialogContent>
         <DialogActions>
           <Button variant="contained" color="primary" onClick={saveSkill}>
-            Save
+          {editIndex !== null ? "Update" : "Save"}
           </Button>
-          <Button variant="outlined" color="secondary" onClick={closeModal}>
+          <Button variant="outlined" color="secondary" onClick={closeSkillModal}>
             Cancel
           </Button>
         </DialogActions>
       </Dialog>
     {/* Dialog for Company Details */}
-    <Dialog open={modalType === "Company"} onClose={closeModal} fullWidth>
-        <DialogTitle>Add Company Details</DialogTitle>
-        <DialogContent>
+    <Dialog sx={{mt:8}} open={isCompanyModalOpen} onClose={closeCompanyModal} fullWidth>
+        <DialogTitle>{isEditingCompany? "Edit Company Details": "Add Company Details"}</DialogTitle>
+        <DialogContent >
           <TextField
             label="Company Name"
             fullWidth
@@ -643,7 +722,9 @@ const handleCompanyDialogSave = () => {
             onChange={(e) =>
               setCompanyDetails({ ...companyDetails, name: e.target.value })
             }
-            sx={{ mb: 2 }}
+            sx={{ mb: 2,mt:3 }}
+            error={!!errors.companyName}
+            helperText={errors.companyName}
           />
           <input
             type="file"
@@ -653,6 +734,7 @@ const handleCompanyDialogSave = () => {
             onChange={(e) => {
               const file = e.target.files[0];
               if (file) handleLogoUpload(file);
+             
             }}
           />
           <label htmlFor="logo-upload">
@@ -665,8 +747,8 @@ const handleCompanyDialogSave = () => {
               Upload Logo
             </Button>
           </label>
-          {companyDetails.logo.fileName && (
-            <Typography>{`Uploaded Logo: ${companyDetails.logo.fileName}`}</Typography>
+          {companyDetails?.logo?.fileName && (
+            <Typography>{`Uploaded Logo: ${companyDetails?.logo?.fileName}`}</Typography>
           )}
           <TextField
             label="Start Date"
@@ -678,6 +760,8 @@ const handleCompanyDialogSave = () => {
               setCompanyDetails({ ...companyDetails, startDate: e.target.value })
             }
             sx={{ mb: 2 }}
+            error={!!errors.companyName}
+            helperText={errors.companyName}
           />
           <TextField
             label="Description"
@@ -688,13 +772,15 @@ const handleCompanyDialogSave = () => {
             onChange={(e) =>
               setCompanyDetails({ ...companyDetails, description: e.target.value })
             }
+            error={!!errors.companyName}
+            helperText={errors.companyName}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCompanyDialogSave} variant="contained">
-            Save
+            {isEditingCompany? "Update": "Save"}
           </Button>
-          <Button onClick={() => setIsModalOpen(false)} variant="outlined">
+          <Button variant="outlined" color="secondary" onClick={closeCompanyModal}>
             Cancel
           </Button>
         </DialogActions>
