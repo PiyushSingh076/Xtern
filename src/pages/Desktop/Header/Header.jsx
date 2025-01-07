@@ -33,14 +33,6 @@ export default function Header() {
 
 
 
-  const handleMenuToggle = () => {
-    if (profileButtonRef.current) {
-      const rect = profileButtonRef.current.getBoundingClientRect();
-      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
-    }
-    setMenuOpen(!menuOpen);
-  };
-
 
   const handleMenuOptionClick = (route) => {
     navigate(route)
