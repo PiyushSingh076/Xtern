@@ -39,13 +39,9 @@ import {
 } from "react-bootstrap";
 
 import { Box, Tooltip } from "@mui/material";
-<<<<<<< HEAD
-import { db } from "../../../firebaseConfig";
-=======
 import { addDoc, collection, getDocs, Timestamp } from "firebase/firestore";
 import { auth, db } from "../../../firebaseConfig";
 import { useEntrepreneurDetails } from "../../../hooks/Entrepreneur/useEntrepreneurDetails";
->>>>>>> 2d91c9c623d78b906e52c7729cf4b9d85da0c065
 
 const SingleMentor = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -61,79 +57,6 @@ const SingleMentor = () => {
 
   const currentUser = auth.currentUser;
   const { uid } = useParams();
-<<<<<<< HEAD
-  //TODO: Implement functions back
-  //   const {
-  //     userData: profileData,
-  //     loading: profileLoading,
-  //     error: profileError,
-  //   } = useUserProfileData(uid);
-  // useEffect(()=>{
-  //   const addData = async ()=>{
-  //     const docref = await addDoc(collection(db,"entrepreneurs",{
-  //       name:"Devansh",
-  //       Skills:"Reactjs"
-  //     }))
-  //     const data = await getDoc(doc(db,"entrepreneurs",docref.id))
-  //     if (data.exists) {
-        
-  //       console.log("Data",{id:data.id,...data.data()});
-  //     }
-  //     else{
-  //       console.log("No Document")
-  //     }
-  //   }
-  //   addData();
-  // },[])
-  const profileData = {
-    photo_url:
-      "https://static.vecteezy.com/system/resources/thumbnails/049/174/246/small_2x/a-smiling-young-indian-man-with-formal-shirts-outdoors-photo.jpg",
-    firstName: "John",
-    lastName: "Doe",
-    city: "Mumbai",
-    experience: 5,
-    state: "Maharashtra",
-    type: "entrepreneur",
-    skillSet: [
-      {
-        skill: "React",
-        skillRating: 4,
-      },
-    ],
-    companyDetails: [
-      {
-        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png",
-        name: "Google",
-        description:
-          "Google is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.",
-        startDate: Date.now() / 1000,
-        endDate: "present",
-      },
-    ],
-    jobDetails: [
-      {
-        role: "Fronten Intern",
-        techstack: ["React", "Redux", "HTML", "CSS"],
-        description:
-          "Frontend Intern at Google working on building web applications using React and Redux",
-        lastDate: Date.now() / 1000,
-        company: "Optacloud",
-        salary: "9lpa",
-      },
-      {
-        role: "Fullstack Developer",
-        techstack: ["React", "Redux", "Express", "Firebase"],
-        description:
-          "Fullstack Developer at Google working on building web applications using React and Redux",
-        lastDate: Date.now() / 1000,
-        company: "Google",
-        salary: "20lpa",
-      },
-    ],
-  };
-  const profileLoading = false;
-  const profileError = false;
-=======
   const { loading: profileLoading, userData: profileData } =
     useEntrepreneurDetails(uid);
 
@@ -184,7 +107,6 @@ const SingleMentor = () => {
   //     },
   //   ],
   // };
->>>>>>> 2d91c9c623d78b906e52c7729cf4b9d85da0c065
 
   //   const { userData: currentUser } = useFetchUserData();
 
