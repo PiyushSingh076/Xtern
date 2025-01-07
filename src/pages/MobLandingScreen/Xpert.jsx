@@ -1,8 +1,11 @@
 import React from "react";
 import "./MobHomeScreen.css";
 import men from "../../assets/images/xtern-images/men-01.png";
+import { useNavigate } from "react-router-dom";
 
 export default function Xpert() {
+  const navigate = useNavigate();
+
   const quality = [
     {
       id: 1,
@@ -45,8 +48,11 @@ export default function Xpert() {
 
       <div className="mob-Xpert-img-section">
         <img className="mob-xpert-img" src={men} />
-        <button className="hire-xperts-btn">
-          <h4 className="hire-xpert-title">Hire Xpert</h4>{" "}
+        <button
+          className="hire-xperts-btn"
+          onClick={() => navigate("/filterscreen/Intern")}
+        >
+          <h4 className="hire-xpert-title">Hire Xpert</h4>
           <span className="hire-xpert-subtitle">
             Industry Expert Consultants
           </span>
