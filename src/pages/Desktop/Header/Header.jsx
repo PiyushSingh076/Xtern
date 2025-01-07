@@ -5,6 +5,7 @@ import {
   AiOutlineQuestionCircle,
   AiOutlineLogout,
 } from "react-icons/ai";
+import { FaBriefcase } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./Header.css";
@@ -20,7 +21,6 @@ export default function Header() {
   const navigate = useNavigate();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
 
@@ -32,36 +32,28 @@ export default function Header() {
     userData.photo_url.trim() !== "";
 
 
-  const handleMenuToggle = () => {
-    if (profileButtonRef.current) {
-      const rect = profileButtonRef.current.getBoundingClientRect();
-      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
-    }
-    setMenuOpen(!menuOpen);
-  };
+
 
   const handleMenuOptionClick = (route) => {
     navigate(route)
     
   };
 
-  const handleNavigateProfile = () => {
-    const toProfile = `profile/${userData?.uid}`
-    const toEntrepreneur = `entrepreneur/${userData?.uid}`
-    console.log(userData)
-    setMenuOpen(false);
-    if(userData?.type === "entrepreneur"){
-      console.log("is entrepreneur")
-      navigate(toEntrepreneur);
-    }
-    else if(userData.type == undefined || userData.type == "user"){
-      navigate(toProfile);
-    }
-  }
+
+  const handleMenuToggle = (event) => {
+    event.stopPropagation();
+    setMenuOpen(!menuOpen);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      // Check if click is outside both menu AND profile button
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        profileButtonRef.current &&
+        !profileButtonRef.current.contains(event.target)
+      ) {
         setMenuOpen(false);
       }
     };
@@ -81,7 +73,6 @@ export default function Header() {
       </div>
 
       <div className="hire-btns">
-        {/* If no user, show Log in button */}
         {!userData && (
           <button
             onClick={() => navigate(ROUTES.SIGN_IN)}
@@ -91,91 +82,84 @@ export default function Header() {
           </button>
         )}
 
-        {/* If user is logged in, show avatar or icon + name */}
         {userData && (
-          <button
-            ref={profileButtonRef}
-            className="profile-container"
-            onClick={handleMenuToggle}
-          >
 
-            {hasUserPhoto ? (
-              <img
-                src={userData.photo_url}
-                width="30px"
-                height="30px"
-                className="border"
-                style={{ borderRadius: "50%", cursor: "pointer" }}
-                alt={userData?.firstName || "User"}
-              />
-            ) : (
-              <AiOutlineUser
-                style={{ fontSize: "1.5rem", marginRight: "5px" }}
-              />
+          <div className="profile-menu-container">
+            <button
+              ref={profileButtonRef}
+              className="profile-container"
+              onClick={handleMenuToggle}
+            >
+              {hasUserPhoto ? (
+                <img
+                  src={userData.photo_url}
+                  width="30px"
+                  height="30px"
+                  className="border"
+                  style={{ borderRadius: "50%", cursor: "pointer" }}
+                  alt={userData?.firstName || "User"}
+                />
+              ) : (
+                <AiOutlineUser
+                  style={{ fontSize: "1.5rem", marginRight: "5px" }}
+                />
+              )}
+              <span className="profile-name">{userData?.firstName}</span>
+            </button>
+
+            {menuOpen && (
+              <div className="dropdown-menu" ref={menuRef}>
+                <div
+                  className="dropdown-item"
+                  onClick={() => handleMenuOptionClick(`profile/${userData?.uid}`)}
+                >
+                  <AiOutlineUser className="menu-icon" />
+                  Profile
+                </div>
+                <div
+                  className="dropdown-item"
+                  onClick={() => handleMenuOptionClick("/jobs")}
+                >
+                  <FaBriefcase className="menu-icon" />
+                  Jobs
+                </div>
+                {/* <div
+                  className="dropdown-item"
+                  onClick={() => handleMenuOptionClick("/wallet")}
+                >
+                  <AiOutlineWallet className="menu-icon" />
+                  Wallet
+                </div>
+                <div
+                  className="dropdown-item"
+                  onClick={() => handleMenuOptionClick("/support")}
+                >
+                  <AiOutlineQuestionCircle className="menu-icon" />
+                  Support
+                </div> */}
+                <div
+                  className="dropdown-item"
+                  onClick={() => navigate("/myvideocall")}
+                >
+                  <AiOutlineQuestionCircle className="menu-icon" />
+                  My Schedule
+                </div>
+                <div
+                  className="dropdown-item logout"
+                  onClick={() => {
+                    handleLogout();
+                    setMenuOpen(false);
+                  }}
+                >
+                  <AiOutlineLogout className="menu-icon" />
+                  Log Out
+                </div>
+              </div>
             )}
-
-            {userData?.firstName}
-          </button>
+          </div>
         )}
       </div>
 
-      {menuOpen && (
-        <div
-          className="dropdown-menu"
-          ref={menuRef}
-          style={{
-            position: "absolute",
-            top: `${menuPosition.top}px`,
-            left: `${menuPosition.left}px`,
-            backgroundColor: "#fff",
-            width: "200px",
-            height: "auto",
-            border: "1px solid #ddd",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div
-            className="dropdown-item"
-            onClick={() => handleNavigateProfile()}
-          >
-            <AiOutlineUser className="menu-icon" />
-            Profile
-          </div>
-          <div
-            className="dropdown-item"
-            onClick={() => handleMenuOptionClick("/wallet")}
-          >
-            <AiOutlineWallet className="menu-icon" />
-            Wallet
-          </div>
-          <div
-            className="dropdown-item"
-            onClick={() => handleMenuOptionClick("/support")}
-          >
-            <AiOutlineQuestionCircle className="menu-icon" />
-            Support
-          </div>
-          <div
-            className="dropdown-item"
-            onClick={() => navigate("/myvideocall")}
-          >
-            <AiOutlineQuestionCircle className="menu-icon" />
-            My Schedule
-          </div>
-          <div
-            className="dropdown-item logout"
-            onClick={() => {
-              handleLogout();
-              setMenuOpen(false);
-            }}
-          >
-            <AiOutlineLogout className="menu-icon" />
-            Log Out
-          </div>
-        </div>
-      )}
     </div>
   );
 }

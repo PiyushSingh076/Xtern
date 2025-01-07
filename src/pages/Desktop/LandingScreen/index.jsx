@@ -83,7 +83,7 @@ export default function Homepage() {
               <Xterns />
               <TrustedComoany />
               <ImageBtn />
-              <BlogSection />
+              {/* <BlogSection /> */}
             </div>
           )}
           <Footer />
