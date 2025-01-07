@@ -1826,8 +1826,10 @@ export default function StepperForm() {
             >
               <CloseIcon />
             </IconButton>
-          </DialogTitle>
+
+          </DialogTitle >
           <form onSubmit={handleModalSubmit}>
+
             <DialogContent dividers>
               {/* Education Form */}
               {modalType === "Education" && (

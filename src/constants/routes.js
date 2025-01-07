@@ -40,6 +40,7 @@ export const ROUTES = {
   CHAT_SCREEN: "/chat-screen",
   SINGLE_CHAT_SCREEN: "/single-chat-screen",
   PROFILE: "/profile/:uid",
+  ENTREPRENEUR: "/entrepreneur/:uid",
   PROFILE_EDIT: "/profile-edit",
   WALLET_SCREEN: "/wallet-screen",
   SINGLE_MENTOR: "/single-mentor",
@@ -62,10 +63,14 @@ export const ROUTES = {
   // PROFESSIONAL_PROFILE: "/professionalProfile/:profession",
   CARD_DESIGN: "/cardDesign",
   STEPPER_FORM: '/userdetail',
+  ENTREPRENEURS_FORM:"/entrepreneurdetails",
   //chats
   CHAT: "/chat",
   MYCHAT: '/mychat',
   //video call
   VIDEOCALL: '/videocall',
-  MYVIDEOCALL: '/myvideocall'
+  MYVIDEOCALL: '/myvideocall',
+  JOBSPOSTINGS: '/jobpostings/',
+  JOBSTATS: "/jobstats/:jobId",
+  VIEWJOB: "/viewjob/:jobId",
 };
