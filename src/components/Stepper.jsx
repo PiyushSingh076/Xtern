@@ -108,8 +108,6 @@ const Stepper = () => {
     );
   };
 
-  
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -484,16 +482,33 @@ const Stepper = () => {
               </div>
               <div className="flex items-center justify-center">
                 {skills.length > 0 && (
-                  <div className="d-flex gap-2 item-center text mt-1  mb-2  w-[40vw]">
+                  <div className="d-flex gap-2 items-center text mt-1 mb-2 w-[40vw] flex-wrap">
                     {skills.map((skill, index) => (
                       <span
                         key={index}
-                        className="badge badge-primary p-2 text-capitalize"
-                        style={{ backgroundColor: "#007bff", color: "#fff" }}
+                        className="relative flex items-center justify-between badge badge-primary text-capitalize"
+                        style={{
+                          backgroundColor: "#007bff",
+                          color: "#fff",
+                          padding: "10px 16px", // Added more padding horizontally
+                          width: "auto", // Adjust width to fit content dynamically
+                          borderRadius: "12px",
+                          display: "inline-flex", // Flexbox for better alignment
+                          alignItems: "center",
+                        }}
                       >
                         {skill}
                         <FaTimes
-                          style={{ marginLeft: "8px", cursor: "pointer" }}
+                          className="absolute cursor-pointer"
+                          style={{
+                            fontSize: "14px", // Increased size of icon
+                            top: "-6px", // Moved upwards
+                            right: "-6px", // Moved rightwards
+                            background: "#ff0000", // Added red background for visibility
+                            color: "#fff",
+                            borderRadius: "50%", // Circular shape
+                            padding: "2px", // Small padding for clickable area
+                          }}
                           onClick={() => removeSkill(index)}
                         />
                       </span>
@@ -501,6 +516,7 @@ const Stepper = () => {
                   </div>
                 )}
               </div>
+
               <div
                 className="form-details-sign-in mb-2 flex items-center gap-2" // Align items horizontally (icon + input)
                 style={{
@@ -742,7 +758,7 @@ const Stepper = () => {
                 style={{
                   width: "45vw",
                   margin: "0 auto",
-                  padding:"10px",
+                  padding: "10px",
                   background: "white",
                   boxShadow: "0 -4px 4px 0 rgb(0 0 0 / 4%)",
                 }}
