@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import "./PopupDetails.css";
+import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
 
 const PopupDetails = ({ data }) => {
-  // console.log(data);
+  // const {
+  //   userData: profileData,
+  //   loading: profileLoading,
+  //   error: profileError,
+  // } = useUserProfileData(data.uid);
   return (
     <Box
       sx={{
@@ -26,17 +31,47 @@ const PopupDetails = ({ data }) => {
       }}
     >
       <Typography variant="body1">
+        <span className="popup-title">Email</span>: {`${data.email}`}
+      </Typography>
+      {data.phone_number && (
+        <Typography variant="body1">
+          <span className="popup-title">Phone No</span>:{" "}
+          {`${data.phone_number}`}
+        </Typography>
+      )}
+      {data.skillSet && data.skillSet.length > 0 && (
+        <Typography variant="body1">
+          <span className="popup-title">Skill Set</span>:
+          <ul>
+            {data.skillSet.map((skillItem, index) => (
+              <li key={index}>
+                {skillItem.skill} - Rating: {skillItem.skillRating}
+              </li>
+            ))}
+          </ul>
+        </Typography>
+      )}
+      <Typography variant="body1">
         <span className="popup-title">Price</span>:{" "}
         {data.consultingPrice ? `$${data.consultingPrice}` : "Value for money"}
       </Typography>
       <Typography variant="body1">
-        <span className="popup-title">Consulting Duration</span>:{" "}
-        {data.consultingDuration || "N/A"}
+        <span className="popup-title">Type</span>: {`${data.type}`}
       </Typography>
-      <Typography variant="body1">
-        <span className="popup-title"> Duration Type</span>:{" "}
-        {data.consultingDurationType || "N/A"}
-      </Typography>
+
+      {data.consultingDuration && (
+        <Typography variant="body1">
+          <span className="popup-title">Consulting Duration</span>:{" "}
+          {data.consultingDuration}
+        </Typography>
+      )}
+      {data.consultingDurationType && (
+        <Typography variant="body1">
+          <span className="popup-title"> Duration Type</span>:{" "}
+          {data.consultingDurationType || "N/A"}
+        </Typography>
+      )}
+
       <Typography variant="body1">
         <span className="popup-title">Verified</span>:{" "}
         {data.isPhoneVerified ? (

@@ -11,12 +11,10 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 0.5rem;
-  /* margin-bottom: 1rem; */
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  overflow-x: auto;
-  /* padding: 0.5rem 0; */
+  overflow-x: hidden;
   padding: 0.5rem 0 0 0;
   scroll-behavior: smooth;
 }
@@ -48,7 +46,17 @@
   color: white;
 }
 
+.profession-cards .card:hover .icon {
+  color: white; /* Change icon color on hover */
+  transition: background-color 0.3s, color 0.3s;
+}
+
 .profession-cards .card.selected {
+  background-color: #0a65fc;
+  color: white;
+}
+
+.profession-cards .card.selected .icon {
   background-color: #0a65fc;
   color: white;
 }
@@ -56,6 +64,7 @@
 .profession-cards .card .icon {
   font-size: 1rem; /* Smaller icon size */
   margin-right: 0.5rem; /* Space between text and icon */
+  color: #0a65fc;
 }
 
 @media (max-width: 480px) {

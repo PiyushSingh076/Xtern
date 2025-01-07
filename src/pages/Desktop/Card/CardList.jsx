@@ -253,9 +253,8 @@ const CardList = ({ profession }) => {
 
 export default CardList;
 
-// git clone
-// create branch amanpreet
-// dev pull
-// changes
-// then pushes amanpreet
-// merge
+// task for 07-01-2025
+// add intern in filter screen -- done
+// take care of tags should not overflow -- done
+// remove NA -- done
+// icon color in filter screen -- done
