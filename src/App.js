@@ -97,6 +97,10 @@ import ApplyInternship from "./pages/ApplyInternship";
 import CreateProject from "./pages/CreateProject";
 import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
+import Jobs from "./pages/jobs.jsx"
+import SingleJob from "./pages/SingleJob.jsx";
+import ApplyJob from "./pages/Applyjob.jsx";
+
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
 
@@ -272,6 +276,32 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path={ROUTES.JOBS}
+          element={
+            <ProtectedRoute>
+              <Jobs />
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path={ROUTES.JOBS + "/:jobId"}
+          element={
+            <ProtectedRoute>
+              <SingleJob />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.APPLYJOB + "/:jobId"}
+          element={
+            <ProtectedRoute>
+              <ApplyJob />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path={ROUTES.SPEND_LEARNING}
           element={
