@@ -14,79 +14,102 @@ import digital_marketing from "../../../assets/svg/digital-marketing.png";
 import hr from "../../../assets/svg/hr.png";
 import lawyer from "../../../assets/svg/lawyer.png";
 import accountant from "../../../assets/svg/accountant.png";
+import financial from "../../../assets/images/homescreen/financial.png"
+import astrologist from "../../../assets/images/homescreen/star.png"
+import dietician from "../../../assets/images/homescreen/diet.png"
+import phonics_english from "../../../assets/images/homescreen/book.png"
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 
 export default function HomeScreen() {
   const { userData } = useFetchUserData();
 
-  const categories = [
-    {
-      title: "Yoga",
-      icon: "https://cdn-icons-png.flaticon.com/512/3773/3773928.png", // Replace this with the correct path to your Yoga icon SVG/image
-      description:
-        "Certified yoga instructors offering personalized sessions for physical fitness, mental well-being, and stress management.",
-    },
+ const categories = [
+  {
+    title: "Yoga",
+    icon: "https://cdn-icons-png.flaticon.com/512/3773/3773928.png",
+    description:
+      "Certified yoga instructors offering personalized sessions for physical fitness, mental well-being, and stress management.",
+  },
+  {
+    title: "Developer",
+    icon: dev,
+    description:
+      "Seasoned software engineers, coders, and architects with expertise across hundreds of technologies.",
+  },
+  {
+    title: "DevOps",
+    icon: devops,
+    description:
+      "Expert cloud architects to help you scale & optimize costs & performance.",
+  },
+  {
+    title: "Product Manager",
+    icon: product_manager,
+    description:
+      "Digital product managers, scrum product owners with expertise in numerous industries like banking, healthcare, ecommerce, and more.",
+  },
+  {
+    title: "Intern",
+    icon: intern,
+    description:
+      "Grab top coders from Tier 1 Universities helping you with the best of code quality & least technologies.",
+  },
+  {
+    title: "Content Creator",
+    icon: content_creator,
+    description:
+      "Talented content creators specializing in blogs, social media, video production, and compelling storytelling across multiple platforms.",
+  },
+  {
+    title: "Digital Marketing",
+    icon: digital_marketing,
+    description:
+      "Expert digital marketers skilled in SEO, social media marketing, PPC, content strategy, and data-driven marketing techniques.",
+  },
+  {
+    title: "HR",
+    icon: hr,
+    description:
+      "Experienced HR professionals adept at talent acquisition, employee relations, performance management, and organizational development.",
+  },
+  {
+    title: "Lawyer",
+    icon: lawyer,
+    description:
+      "Specialized legal professionals with expertise in various domains including corporate law, intellectual property, and contract management.",
+  },
+  {
+    title: "Accountant",
+    icon: accountant,
+    description:
+      "Skilled accountants proficient in financial reporting, tax planning, auditing, and providing strategic financial guidance.",
+  },
+  {
+    title: "Phonics English",
+    icon: phonics_english, // Replace this with the correct icon path
+    description:
+      "Dedicated phonics instructors helping learners improve reading, writing, and pronunciation skills through fun and interactive sessions.",
+  },
+  {
+    title: "Dietician",
+    icon: dietician, // Replace this with the correct icon path
+    description:
+      "Certified dieticians offering personalized meal plans and expert advice for achieving health and wellness goals.",
+  },
+  {
+    title: "Financial Analyst",
+    icon: financial, // Replace this with the correct icon path
+    description:
+      "Financial analysts providing insights, forecasting, and data-driven strategies for informed financial decision-making.",
+  },
+  {
+    title: "Astrologist",
+    icon: astrologist, // Replace this with the correct icon path
+    description:
+      "Professional astrologists offering insights and guidance based on astrological charts and cosmic alignment.",
+  },
+];
 
-    {
-      title: "Developer",
-      icon: dev,
-      description:
-        "Seasoned software engineers, coders, and architects with expertise across hundreds of technologies.",
-    },
-    {
-      title: "DevOps",
-      icon: devops,
-      description:
-        "Expert cloud architects to help you scale & an optimised cost & high performance.",
-    },
-    // {
-    //     title: 'UI/UX Developer',
-    //     icon: ui_dev,
-    //     description: 'Expert UI, UX, Visual, and Interaction designers as well as a wide range of illustrators, animators, and more.'
-    // },
-    {
-      title: "Product Manager",
-      icon: product_manager,
-      description:
-        "Digital product managers, scrum product owners with expertise in numerous industries like banking, healthcare, ecommerce, and more.",
-    },
-    {
-      title: "Intern",
-      icon: intern,
-      description:
-        "Grab top coders from Tier 1 Universities helping you with the best of code quality & least technologies.",
-    },
-    {
-      title: "Content Creator",
-      icon: content_creator,
-      description:
-        "Talented content creators specializing in blogs, social media, video production, and compelling storytelling across multiple platforms.",
-    },
-    {
-      title: "Digital Marketing",
-      icon: digital_marketing,
-      description:
-        "Expert digital marketers skilled in SEO, social media marketing, PPC, content strategy, and data-driven marketing techniques.",
-    },
-    {
-      title: "HR",
-      icon: hr,
-      description:
-        "Experienced HR professionals adept at talent acquisition, employee relations, performance management, and organizational development.",
-    },
-    {
-      title: "Lawyer",
-      icon: lawyer,
-      description:
-        "Specialized legal professionals with expertise in various domains including corporate law, intellectual property, and contract management.",
-    },
-    {
-      title: "Accountant",
-      icon: accountant,
-      description:
-        "Skilled accountants proficient in financial reporting, tax planning, auditing, and providing strategic financial guidance.",
-    },
-  ];
 
   const navigate = useNavigate();
   return (
