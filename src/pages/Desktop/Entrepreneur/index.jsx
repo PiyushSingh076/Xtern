@@ -20,6 +20,7 @@ import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../../hooks/Profile/useScheduledCallsForUser";
 import toast from "react-hot-toast";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { addDoc, collection, doc, getDoc } from "firebase/firestore";
 import {
   Modal,
   Button,
@@ -32,6 +33,7 @@ import {
 } from "react-bootstrap";
 
 import { Box, Tooltip } from "@mui/material";
+import { db } from "../../../firebaseConfig";
 
 const SingleMentor = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -51,7 +53,23 @@ const SingleMentor = () => {
   //     loading: profileLoading,
   //     error: profileError,
   //   } = useUserProfileData(uid);
-
+  // useEffect(()=>{
+  //   const addData = async ()=>{
+  //     const docref = await addDoc(collection(db,"entrepreneurs",{
+  //       name:"Devansh",
+  //       Skills:"Reactjs"
+  //     }))
+  //     const data = await getDoc(doc(db,"entrepreneurs",docref.id))
+  //     if (data.exists) {
+        
+  //       console.log("Data",{id:data.id,...data.data()});
+  //     }
+  //     else{
+  //       console.log("No Document")
+  //     }
+  //   }
+  //   addData();
+  // },[])
   const profileData = {
     photo_url:
       "https://static.vecteezy.com/system/resources/thumbnails/049/174/246/small_2x/a-smiling-young-indian-man-with-formal-shirts-outdoors-photo.jpg",

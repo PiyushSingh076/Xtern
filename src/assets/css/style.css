@@ -705,7 +705,7 @@ textarea {
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
-  line-height: 24px;
+  line-height: 22px;
 }
 
 .intl-tel-input.allow-dropdown input {
@@ -2116,19 +2116,19 @@ ul.desc-learn-sec {
   width: 80%;
 }
 
-.buy-now-description {
-  background: var(--background-color);
-  box-shadow: 0 -4px 4px 0 rgb(0 0 0 / 4%);
-  padding: 16px;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  left: 0;
-  z-index: 2;
-  max-width: 600px;
-  right: 0;
-  margin: 0 auto;
-}
+  .buy-now-description {
+    background: var(--background-color);
+    box-shadow: 0 -4px 4px 0 rgb(0 0 0 / 4%);
+    padding: 16px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    z-index: 2;
+    max-width: 600px;
+    right: 0;
+    margin: 0 auto;
+  }
 
 #single-description-screen {
   margin-bottom: 112px;

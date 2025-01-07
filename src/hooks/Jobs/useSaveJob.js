@@ -1,10 +1,16 @@
-import { addDoc, collection, getDoc, doc } from "firebase/firestore";
-import { db } from "../../firebaseConfig.js"; // Adjust the path if necessary
+import {
+  addDoc,
+  collection,
+  getDoc,
+  doc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import { auth, db } from "../../firebaseConfig.js"; // Adjust the path if necessary
 
 const useSaveJob = () => {
   // Function to save job data
   const saveJob = async ({
-    currentUser,
     jobTitle,
     companyName,
     description,
@@ -17,12 +23,30 @@ const useSaveJob = () => {
     imageURL,
   }) => {
     try {
-      // Validate if user is authenticated
-      if (!currentUser || !currentUser.uid) {
-        throw new Error("User not authenticated");
+      // Validate if user is authenticate
+      // Add job data to Firestore and get the reference
+
+      const currentUser = await auth.currentUser;
+      if (!currentUser) {
+        throw new Error("User is not authenticated.");
       }
 
-      // Add job data to Firestore and get the reference
+      async function addJobToEntrepreneur(jobId) {
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          jobPostings: arrayUnion({
+            title: jobTitle,
+            companyName: companyName,
+            description: description,
+            image: imageURL,
+            jobId: jobId,
+            skills: skills
+          }),
+        });
+
+        const test = await getDoc(doc(db, "users", currentUser.uid));
+        console.log(test.data());
+      }
+
       const docRef = await addDoc(collection(db, "jobPosting"), {
         title: jobTitle,
         companyName,
@@ -35,7 +59,7 @@ const useSaveJob = () => {
         duration,
         image: imageURL,
         createdAt: new Date(),
-        userref: `/users/${currentUser.uid}`, // User reference
+        createdBy: currentUser.uid, // User reference
         applicants: [], // Empty applicants array initially
       });
 
@@ -44,15 +68,19 @@ const useSaveJob = () => {
 
       if (docSnapshot.exists()) {
         console.log("Job added successfully!");
-        console.log("Created Job:", { id: docSnapshot.id, ...docSnapshot.data() });
+        console.log("Created Job:", {
+          id: docSnapshot.id,
+          ...docSnapshot.data(),
+        });
+        addJobToEntrepreneur(docRef.id);
       } else {
         console.error("No such document!");
       }
 
-      return true; // Success response
+      return docSnapshot.id; // Success response
     } catch (error) {
       console.error("Error adding job: ", error);
-      return false; // Failure response
+      return null; // Failure response
     }
   };
 

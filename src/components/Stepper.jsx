@@ -5,24 +5,40 @@ import {
   FaClipboardList,
   FaGlobe,
   FaBriefcase,
-  FaImage,
   FaTasks,
   FaUsers,
   FaTimes,
   FaRegListAlt,
+  FaCloudUploadAlt,
+  FaArrowRight,
+  FaEye,
+  FaFileImage,
+  FaFilePdf,
+  FaFileAlt,
+  FaFileWord,
+  FaFileExcel,
 } from "react-icons/fa";
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { FiXCircle } from "react-icons/fi";
-import useSaveJob from '../hooks/Jobs/useSaveJob.js'
+import useSaveJob from "../hooks/Jobs/useSaveJob.js";
 import useImageUpload from "../hooks/Auth/useImageUpload.js"; // Custom hook for image upload
 import { getAuth } from "firebase/auth";
+import { storage } from "../firebaseConfig.js";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 const Stepper = () => {
   const steps = [
     { id: 1, name: "Job" },
-    { id: 2, name: "Skills" },
+    { id: 2, name: "Assessment" },
   ];
   const [Id, setId] = useState(1);
   const [jobTitle, setJobTitle] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [file, setFile] = useState([]);
+  const [filePreview, setFilePreview] = useState(null);
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [skills, setSkills] = useState([]);
@@ -41,13 +57,29 @@ const Stepper = () => {
     clearImage,
     uploadImage,
   } = useImageUpload();
-  const {saveJob} = useSaveJob( )
+  const { saveJob } = useSaveJob();
   const [submitLoading, setSubmitLoading] = useState(false);
   const navigate = useNavigate();
   const onStepClick = (id) => {
     setId(id);
   };
-
+  const fileIcons = {
+    "image/png": <FaFileImage size={20} className="text-blue-500" />,
+    "image/jpeg": <FaFileImage size={20} className="text-yellow-500" />,
+    "image/jpg": <FaFileImage size={20} className="text-yellow-500" />,
+    "application/pdf": <FaFilePdf size={20} className="text-red-500" />,
+    "text/plain": <FaFileAlt size={20} className="text-gray-500" />,
+    "application/msword": <FaFileWord size={20} className="text-blue-700" />,
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": (
+      <FaFileWord size={20} className="text-blue-700" />
+    ),
+    "application/vnd.ms-excel": (
+      <FaFileExcel size={20} className="text-green-500" />
+    ),
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": (
+      <FaFileExcel size={20} className="text-green-500" />
+    ),
+  };
   const handleSkillKeyPress = (e) => {
     if (e.key === "Enter" && skillInput.trim()) {
       e.preventDefault();
@@ -71,6 +103,7 @@ const Stepper = () => {
       assessmentDetail &&
       assessmentDuration &&
       duration &&
+      fileName &&
       projectImage
     );
   };
@@ -97,8 +130,17 @@ const Stepper = () => {
       if (!currentUser) {
         throw new Error("User not authenticated");
       }
+      const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
 
+      // Upload the file
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
       // Adding job to Firestore with userref
+      const data = {
+        fileName: file.name,
+        filePath: downloadURL, // Store the file URL
+        uploadedAt: new Date(),
+      };
       const isSaved = await saveJob({
         currentUser,
         jobTitle,
@@ -111,12 +153,12 @@ const Stepper = () => {
         assessmentDuration,
         duration,
         imageURL,
+        data,
       });
-
       if (isSaved) {
         alert("Job added successfully!");
-        setSubmitLoading(false)
-        navigate("/homescreen"); // Redirect to home screen
+        setSubmitLoading(false);
+        navigate("/viewjob/" + isSaved); // Redirect to home screen
       } else {
         alert("Failed to add job.");
       }
@@ -124,6 +166,33 @@ const Stepper = () => {
       console.error("Error adding job: ", err);
       setSubmitLoading(false);
     }
+  };
+  const handleFileUpload = (event) => {
+    const uploadedFile = event.target.files[0];
+
+    // Check if file exists
+    if (!uploadedFile) {
+      toast.error("No file selected");
+      return;
+    }
+
+    // Check file size (10MB = 10 * 1024 * 1024 bytes)
+    const maxSize = 10 * 1024 * 1024;
+    if (uploadedFile.size > maxSize) {
+      toast.error("File exceeds the 10MB size limit!");
+    } else {
+      setFile(uploadedFile);
+      setFileName(uploadedFile.name);
+      setFilePreview(URL.createObjectURL(uploadedFile));
+      toast.success("File uploaded successfully!");
+    }
+  };
+
+  const clearFile = () => {
+    setFile(null);
+    setFileName("");
+    setFilePreview(null);
+    toast.info("File cleared successfully!");
   };
   return (
     <div className="flex flex-col">
@@ -181,15 +250,15 @@ const Stepper = () => {
             <div className="flex flex-col w-[50vw] h-auto gap-2">
               <div
                 className={`mb-4 ${error ? "is-invalid" : ""}`}
-                style={{ width: "45vw", margin: "0 auto" }}
+                style={{ width: "36vw", margin: "0 auto" }}
               >
                 <label
                   htmlFor="projectImage"
                   className="drag-drop-label"
                   style={{
                     border: "2px dashed black",
-                    height: "45vh",
-                    width: "45vw",
+                    height: "36vh",
+                    width: "36vw",
                     borderRadius: "8px",
                     display: "flex",
                     alignItems: "center",
@@ -204,8 +273,8 @@ const Stepper = () => {
                         src={imagePreviewUrl}
                         alt="Project Preview"
                         style={{
-                          width: "45vw",
-                          height: "45vh",
+                          width: "36vw",
+                          height: "36vh",
                           borderRadius: "10px",
                         }}
                       />
@@ -294,6 +363,7 @@ const Stepper = () => {
                   onChange={handleImageUpload}
                 />
               </div>
+
               <div
                 className="form-details-sign-in mb-2 flex items-center gap-2" // Align items horizontally (icon + input)
                 style={{
@@ -307,10 +377,10 @@ const Stepper = () => {
                   display: "flex",
                   flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
                   justifyContent: "flex-start", // Align items to the left
-                  alignItems: "flex-start", // Align both the icon and the input at the top
+                  alignItems: "center", // Align both the icon and the input at the top
                 }}
               >
-                <span className="text-primary">
+                <span className="text-primary flex items-center">
                   <FaUsers size={20} color="#7f7f7f" />
                 </span>
                 <input
@@ -333,7 +403,7 @@ const Stepper = () => {
               </div>
             </div>
             {/* Second Column */}
-            <div className="flex flex-col w-[50vw] gap-4">
+            <div className="flex flex-col w-[50vw] gap-2">
               <div
                 className="form-details-sign-in mb-2 flex items-center gap-2" // Align items horizontally (icon + input)
                 style={{
@@ -347,10 +417,10 @@ const Stepper = () => {
                   display: "flex",
                   flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
                   justifyContent: "flex-start", // Align items to the left
-                  alignItems: "flex-start", // Align both the icon and the input at the top
+                  alignItems: "center", // Align both the icon and the input at the top
                 }}
               >
-                <span className="text-primary">
+                <span className="text-primary flex items-center">
                   <FaBriefcase size={20} color="#7f7f7f" />
                 </span>
                 <input
@@ -384,10 +454,10 @@ const Stepper = () => {
                   display: "flex",
                   flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
                   justifyContent: "flex-start", // Align items to the left
-                  alignItems: "flex-start", // Align both the icon and the input at the top
+                  alignItems: "center", // Align both the icon and the input at the top
                 }}
               >
-                <span className="text-primary">
+                <span className="text-primary flex items-center">
                   <FaTasks size={20} color="#7f7f7f" />
                 </span>
                 <input
@@ -410,7 +480,7 @@ const Stepper = () => {
                 />
               </div>
               <div className="flex items-center justify-center">
-                {skills.length>0 && (
+                {skills.length > 0 && (
                   <div className="d-flex gap-2 item-center text mt-1  mb-2  w-[40vw]">
                     {skills.map((skill, index) => (
                       <span
@@ -441,10 +511,10 @@ const Stepper = () => {
                   display: "flex",
                   flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
                   justifyContent: "flex-start", // Align items to the left
-                  alignItems: "flex-start", // Align both the icon and the input at the top
+                  alignItems: "center", // Align both the icon and the input at the top
                 }}
               >
-                <span className="text-primary">
+                <span className="text-primary flex items-center">
                   <FaTasks size={20} color="#7f7f7f" />
                 </span>
                 <input
@@ -481,7 +551,7 @@ const Stepper = () => {
                   alignItems: "flex-start", // Align both the icon and the input at the top
                 }}
               >
-                <span className="text-primary">
+                <span className="text-primary flex items-center">
                   <FaClipboardList size={20} color="#7f7f7f" />
                 </span>
                 <input
@@ -515,10 +585,10 @@ const Stepper = () => {
                   display: "flex",
                   flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
                   justifyContent: "flex-start", // Align items to the left
-                  alignItems: "flex-start", // Align both the icon and the input at the top
+                  alignItems: "center", // Align both the icon and the input at the top
                 }}
               >
-                <span className="text-primary">
+                <span className="text-primary flex items-center">
                   <FaGlobe size={20} color="#7f7f7f" />
                 </span>
                 <input
@@ -539,6 +609,31 @@ const Stepper = () => {
                   }}
                 />
               </div>
+              <button
+                style={{
+                  border: "none",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  outline: "none",
+                  height: "5vh",
+                  margin: "0 auto",
+                  marginBottom: "2px",
+                  fontSize: "16px",
+                  width: "25vw",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease-in-out",
+                }}
+                className="bg-blue-500 text-white hover:bg-blue-600 hover:shadow-md active:scale-95"
+                onClick={() => setId(2)}
+              >
+                Next
+                <span className="ml-2 flex items-center">
+                  <FaArrowRight size={16} color="white" />
+                </span>
+              </button>
             </div>
           </div>
         )}
@@ -547,33 +642,33 @@ const Stepper = () => {
             {/* Assessment Detail */}
             <div className="w-[50vw]">
               <div
-                className="form-details-sign-in mb-2"
+                className="form-details-sign-in mb-2 bg-gray-100 rounded-lg px-4 py-2"
                 style={{ width: "45vw", margin: "0 auto", height: "40vh" }}
               >
-                <span className="text-primary">
+                <span className="text-primary mr-2 mt-[3px]">
                   <FaClipboardList />
                 </span>
                 <textarea
                   value={assessmentDetail}
                   onChange={(e) => setAssessmentDetail(e.target.value)}
                   placeholder="Assessment Detail"
-                  className="sign-in-custom-input"
+                  className="flex-1 bg-transparent outline-none resize-none text-gray-500"
                   rows="4"
                   required
                 />
               </div>
             </div>
-            <div className="w-[50vw] flex flex-col gap-5">
+            <div className="w-[50vw] flex flex-col items-center gap-3">
               {/* Assessment Duration */}
               <div
-                className="form-details-sign-in mb-2"
+                className="form-details-sign-in mb-2 flex items-center"
                 style={{ width: "45vw", margin: "0 auto", height: "10vh" }}
               >
-                <span className="text-primary">
+                <span className="text-primary flex items-center">
                   <FaCalendarAlt />
                 </span>
                 <input
-                  type="text"
+                  type="number"
                   value={assessmentDuration}
                   onChange={(e) => setAssessmentDuration(e.target.value)}
                   placeholder="Assessment Duration (e.g., 2 days)"
@@ -581,17 +676,16 @@ const Stepper = () => {
                   required
                 />
               </div>
-
               {/* Job Duration */}
               <div
-                className="form-details-sign-in mb-2"
+                className="form-details-sign-in mb-2 flex items-center"
                 style={{ width: "45vw", margin: "0 auto", height: "10vh" }}
               >
-                <span className="text-primary">
+                <span className="text-primary flex items-center">
                   <FaRegListAlt />
                 </span>
                 <input
-                  type="text"
+                  type="number"
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   placeholder="Job Duration (e.g., 6 months)"
@@ -599,21 +693,65 @@ const Stepper = () => {
                   required
                 />
               </div>
-            </div>
-
-            {/* Submit Button */}
-            <div
-              className="buy-now-description mt-4"
-              style={{ width: "80vw", margin: "0 auto" }}
-            >
-              <button
-                type="submit"
-                className="btn btn-primary px-5 py-3 w-100"
-                onClick={() => navigate("/viewjob/123")}
-                disabled={loading || submitLoading}
+              <div
+                className="flex flex-col items-center justify-center h-auto w-[45vw] bg-gray-100 p-4 rounded-md"
+                style={{ margin: "0 auto" }}
               >
-                {submitLoading ? "Submitting..." : "Post Job"}
-              </button>
+                <ToastContainer />
+                <label
+                  htmlFor="file-upload"
+                  className="flex items-center px-6 py-3 text-white bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 transition duration-300 shadow-lg"
+                >
+                  <FaCloudUploadAlt size={24} className="mr-2" />
+                  Upload File
+                </label>
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+
+                {fileName && (
+                  <div className="mt-4 flex items-center text-gray-700 bg-white p-2 rounded-md shadow-md gap-2">
+                    {fileIcons[file?.type] || (
+                      <FaFileAlt size={20} className="text-gray-500" />
+                    )}
+                    <p className="mr-2">{fileName}</p>
+                    <button
+                      className="text-blue-500 hover:text-blue-700 mr-2"
+                      onClick={() => window.open(filePreview, "_blank")}
+                    >
+                      <FaEye size={20} />
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={clearFile}
+                    >
+                      <FaTimes size={20} />
+                    </button>
+                  </div>
+                )}
+              </div>
+              {/* Submit Button */}
+              <div
+                className=" mt-4"
+                style={{
+                  width: "45vw",
+                  margin: "0 auto",
+                  padding:"10px",
+                  background: "white",
+                  boxShadow: "0 -4px 4px 0 rgb(0 0 0 / 4%)",
+                }}
+              >
+                <button
+                  type="submit"
+                  className="btn btn-primary px-5 py-3 w-100"
+                  disabled={loading || submitLoading}
+                >
+                  {submitLoading ? "Submitting..." : "Post Job"}
+                </button>
+              </div>
             </div>
           </div>
         )}
