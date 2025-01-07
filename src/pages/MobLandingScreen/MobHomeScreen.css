@@ -111,6 +111,11 @@ border: 1px solid rgba( 255, 255, 255, 0.6 );
     gap: 20px;
 }
 
+@media (max-width: 1000px) {
+    .categories-card {
+      width: 80%; /* Full width for smaller screens */
+    }
+  }
 
 
 .mob-xpert-container , .mob-xtern-container ,.mob-trusted-comp-container , .mob-image-btn-container , .mob-blog-container{
@@ -132,6 +137,12 @@ border: 1px solid rgba( 255, 255, 255, 0.6 );
     align-items: center;
     gap: 20px;
 }
+
+@media (max-width: 768px) {
+    .xpert-quality-card {
+      width: 80%; /* Full width for smaller screens */
+    }
+  }
 
 .mob-Xpert-img-section , .mob-Xtren-img-section{
     margin-top: 40px;
@@ -162,6 +173,8 @@ border: 1px solid rgba( 255, 255, 255, 0.6 );
     width: 70%;
     height: 100px;
 }
+
+
 
 .mob-company-slider{
     margin-top: 30px;

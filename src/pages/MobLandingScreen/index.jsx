@@ -10,6 +10,7 @@ import Blog from "./Blog";
 import useFetchUserData from "../../hooks/Auth/useFetchUserData";
 import Dashboard from "./Dashboard";
 import { useNavigate } from "react-router-dom";
+import Footer from "../Desktop/Footer/Footer";
 
 export default function MobHomeScreen() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function MobHomeScreen() {
       {!userData && <Xtern />}
       {!userData && <TrustedComp />}
       {!userData && <ImageBtn />}
-      {!userData && <Blog />}
+      {!userData && <Footer />}
     </div>
   );
 }

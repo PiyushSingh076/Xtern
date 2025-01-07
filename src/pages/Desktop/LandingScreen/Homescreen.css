@@ -379,6 +379,10 @@ justify-content: center;
   background-color: transparent;
   color: #0A4EFB;
 }
+.hire-xterns-btn:hover {
+  color: #fff; /* Change text color to white on hover */
+  background-color: #0056b3; /* Optional: change background color on hover */
+}
 
   /* Trusted Companies */
 
@@ -448,6 +452,7 @@ justify-content: center;
   width: 100%;
   height: 60vh;
   gap: 2%;
+  margin-bottom: 30px;
 
 }
 
