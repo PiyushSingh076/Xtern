@@ -14,6 +14,10 @@ import digital_marketing from "../../../assets/svg/digital-marketing.png";
 import hr from "../../../assets/svg/hr.png";
 import lawyer from "../../../assets/svg/lawyer.png";
 import accountant from "../../../assets/svg/accountant.png";
+import financial from "../../../assets/images/homescreen/financial.png";
+import astrologist from "../../../assets/images/homescreen/star.png";
+import dietician from "../../../assets/images/homescreen/diet.png";
+import phonics_english from "../../../assets/images/homescreen/book.png";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 
 export default function HomeScreen() {
@@ -22,11 +26,10 @@ export default function HomeScreen() {
   const categories = [
     {
       title: "Yoga",
-      icon: "https://cdn-icons-png.flaticon.com/512/3773/3773928.png", // Replace this with the correct path to your Yoga icon SVG/image
+      icon: "https://cdn-icons-png.flaticon.com/512/3773/3773928.png",
       description:
         "Certified yoga instructors offering personalized sessions for physical fitness, mental well-being, and stress management.",
     },
-
     {
       title: "Developer",
       icon: dev,
@@ -37,13 +40,8 @@ export default function HomeScreen() {
       title: "DevOps",
       icon: devops,
       description:
-        "Expert cloud architects to help you scale & an optimised cost & high performance.",
+        "Expert cloud architects to help you scale & optimize costs & performance.",
     },
-    // {
-    //     title: 'UI/UX Developer',
-    //     icon: ui_dev,
-    //     description: 'Expert UI, UX, Visual, and Interaction designers as well as a wide range of illustrators, animators, and more.'
-    // },
     {
       title: "Product Manager",
       icon: product_manager,
@@ -86,23 +84,60 @@ export default function HomeScreen() {
       description:
         "Skilled accountants proficient in financial reporting, tax planning, auditing, and providing strategic financial guidance.",
     },
+    {
+      title: "Phonics English",
+      icon: phonics_english, // Replace this with the correct icon path
+      description:
+        "Dedicated phonics instructors helping learners improve reading, writing, and pronunciation skills through fun and interactive sessions.",
+    },
+    {
+      title: "Dietician",
+      icon: dietician, // Replace this with the correct icon path
+      description:
+        "Certified dieticians offering personalized meal plans and expert advice for achieving health and wellness goals.",
+    },
+    {
+      title: "Financial Analyst",
+      icon: financial, // Replace this with the correct icon path
+      description:
+        "Financial analysts providing insights, forecasting, and data-driven strategies for informed financial decision-making.",
+    },
+    {
+      title: "Astrologist",
+      icon: astrologist, // Replace this with the correct icon path
+      description:
+        "Professional astrologists offering insights and guidance based on astrological charts and cosmic alignment.",
+    },
   ];
 
   const navigate = useNavigate();
   return (
     <div className="main-Home-Screen-container">
       {!userData?.linkedInProfile && (
-        <div
-          onClick={() => navigate("/userdetail")}
+        <>
+          <div
+            onClick={() => navigate("/userdetail")}
+            className="become-xpert-banner"
+          >
+            <h1 className="title">
+              Become <span className="domains-title">Xpert</span>
+            </h1>
+            <p className="subtitle">
+              Join a community of world-class professionals
+            </p>
+          </div>
+          {/* <div
+          onClick={() => navigate("/entrepreneurdetails")}
           className="become-xpert-banner"
         >
           <h1 className="title">
-            Become <span className="domains-title">Xpert</span>
+            Hire <span className="domains-title">Xpert</span>
           </h1>
           <p className="subtitle">
-            Join a community of world-class professionals
+            Hire a world-class professional
           </p>
-        </div>
+        </div> */}
+        </>
       )}
 
       <div className="categories-container">
