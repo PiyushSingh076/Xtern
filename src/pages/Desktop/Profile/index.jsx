@@ -79,7 +79,7 @@ const SingleMentor = () => {
       !profileLoading &&
       (!profileData?.type || profileData?.type.trim() === "")
     ) {
-      navigate("/userdetail");
+      // navigate("/userdetail");
     }
   }, [profileLoading, profileData, navigate]);
 
@@ -117,10 +117,10 @@ const SingleMentor = () => {
 
   const handleEdit = () => {
     if (profileData?.type) {
-      const sanitizedData = sanitizeProfileData(profileData);
-      navigate("/userdetail", { state: { profileData: sanitizedData } });
+      // const sanitizedData = sanitizeProfileData(profileData);
+      // navigate("/userdetail", { state: { profileData: sanitizedData } });
     } else {
-      navigate("/userdetail");
+      // navigate("/userdetail");
     }
   };
 

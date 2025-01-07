@@ -1,142 +1,100 @@
-import React from "react";
+import React, { useEffect } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import useUserProfileData from "../../hooks/Profile/useUserProfileData";
-import { useParams } from "react-router-dom";
-import Skeleton from '@mui/material/Skeleton';
-import code from '../../assets/svg/code.svg';
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Code } from 'lucide-react';
 
-export default function SkillSet({ profileData , skillloading }) {
+const SkillSet = ({ profileData, skillloading }) => {
+  useEffect(() => {
+    console.log('SkillSet Component - Full profileData:', profileData);
+    console.log('SkillSet Component - skillSet:', profileData?.skillSet);
+  }, [profileData]);
 
+  if (skillloading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-4">
+        {Array(4).fill(0).map((_, index) => (
+          <div key={index} className="flex flex-col items-center p-4 bg-gray-100 rounded-lg animate-pulse">
+            <div className="w-20 h-20 bg-gray-300 rounded-full mb-4"></div>
+            <div className="h-4 bg-gray-300 w-3/4 rounded mb-2"></div>
+            <div className="h-3 bg-gray-300 w-1/2 rounded"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
-  const navigate = useNavigate();
+  // Check if skillSet exists and has items
+  const hasSkills = Array.isArray(profileData?.skillSet) && profileData.skillSet.length > 0;
+  
+  // Check if serviceDetails exists and has items
+  const hasServices = Array.isArray(profileData?.serviceDetails) && profileData.serviceDetails.length > 0;
 
-
-    const handleService = (item) => {
-  const serializableItem = {
-    serviceName: item.serviceName,
-    serviceDescription: item.serviceDescription,
-    serviceDuration: item.serviceDuration,
-    serviceDurationType: item.serviceDurationType,
-    servicePrice: item.servicePrice,
+  const getBackgroundColor = (index) => {
+    const colors = ['bg-purple-100', 'bg-green-100', 'bg-pink-100', 'bg-orange-100'];
+    return colors[index % colors.length];
   };
 
-  navigate('/project', { state: { item: serializableItem } });
-};
-    
-
-
-console.log('skill',profileData)
-
-    const settings = {
-        dots: false,
-        infinite: false,
-        speed: 500,
-        slidesToShow: 4,
-        slidesToScroll: 4
-    };
-
-    if (skillloading) {
-        return (
-            <div className="skillset-container">
-                {Array(4).fill(0).map((_, index) => (
-                    <div className="profile-details-second-wrap-sec" key={index}>
-                        <Skeleton variant={'circular'} width={80} height={80} />
-                        <Skeleton width={"80%"} height={20} style={{ marginTop: 10 }} />
-                        <Skeleton width={"60%"} height={15} />
-                    </div>
-                ))}
-            </div>
-        );
-    }
-
-    return (
-        <div>
-            <div className="profile-details-skill-sec">
-                <h3>Skills</h3>
-            </div>
-
-            {/* Skills slider */}
-            <div className="skillset-container">
-            {profileData?.skillSet?.map((skillItem, index) => {
-  // Mapping the rating (1-5) to a percentage value (20-100)
-  const ratingPercentage = (skillItem?.skillRating / 5) * 100;
-
   return (
-    <div className="profile-details-second-wrap-sec" key={index}>
-      <div
-        className={`mentor-icon ${
-          ["purple-bg", "green-bg", "pink-bg", "orange-bg"][
-            index % 4
-          ]
-        }`}
-        style={{
-          position: "relative",
-          width: "80px",
-          height: "80px",
-        }}
-      >
-        <CircularProgressbar
-          value={ratingPercentage} // Set progress based on the rating
-          styles={buildStyles({
-            pathColor:
-              ratingPercentage >= 80
-                ? "green"
-                : ratingPercentage >= 60
-                ? "orange"
-                : "red", // Change color based on rating
-            trailColor: "#f0f0f0",
+    <div className="w-full">
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold mb-4">Skills</h3>
+      </div>
+
+      {hasSkills ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {profileData.skillSet.map((skillItem, index) => {
+            const ratingPercentage = (skillItem?.skillRating / 5) * 100;
+            
+            return (
+              <div key={index} className="flex flex-col items-center p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                <div className={`relative w-20 h-20 ${getBackgroundColor(index)} rounded-full flex items-center justify-center`}>
+                  <CircularProgressbar
+                    value={ratingPercentage}
+                    styles={buildStyles({
+                      pathColor: ratingPercentage >= 80 ? '#22c55e' : ratingPercentage >= 60 ? '#f97316' : '#ef4444',
+                      trailColor: '#f3f4f6'
+                    })}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Code className="w-8 h-8 text-gray-600" />
+                  </div>
+                </div>
+                
+                <div className="mt-4 text-center">
+                  <p className="font-medium text-gray-800">{skillItem?.skill}</p>
+                  <p className="text-sm text-gray-600">{skillItem?.skillRating} Star</p>
+                </div>
+              </div>
+            );
           })}
-        />
-        <img
-          src={code}
-          alt={`${skillItem?.skill}-icon`}
-          style={{
-            padding: "5px",
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "40px",
-          }}
-        />
-      </div>
-      <div className="mentor-content-single mt-12">
-        <p>{skillItem?.skill}</p>
-        <p>{skillItem?.skillRating} Star</p>
-      </div>
+        </div>
+      ) : (
+        <div className="text-center py-8">
+          <p className="text-red-500">No skill set available</p>
+        </div>
+      )}
+
+      {hasServices && (
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold mb-4">Services</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {profileData.serviceDetails.map((service, index) => (
+              <div 
+                key={index}
+                className="p-4 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              >
+                <h4 className="font-medium text-gray-800 mb-2">{service.serviceName}</h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  {(service.serviceDescription || '').slice(0, 50)}...
+                </p>
+                <p className="text-lg font-semibold text-blue-600">₹{service.servicePrice}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
-})}
+};
 
-{
-  !profileData?.skillSet && (<span style={{color: 'red', marginBottom: '20px'}}>No skill set available</span>)
-}
-
-
-            </div>
-
-            <div 
-            style={{width: '100%'}}
-            className="service-container">
-                <h3>Services</h3>
-                <div className="service-list">
-                
-                  {profileData?.serviceDetails?.map((serviceItem, index) => (
-                 <div
-                 onClick={()=>{handleService(serviceItem)}}
-                  key={index} className="service-item">
-                  <span className="service-name" style={{fontSize: '0.8rem'}}>{serviceItem?.serviceName}</span>
-                  <span className="service-description" style={{fontSize: '0.6rem'}}>
-                    {(serviceItem?.serviceDescription).slice(0,50) + '..'}
-                  </span>
-                  <span className="service-price" style={{fontSize: '0.7rem'}}>₹{serviceItem?.servicePrice}</span>
-                </div>
-                  ))}
-                  </div>
-              </div>
-        </div>
-    );
-}
+export default SkillSet;
