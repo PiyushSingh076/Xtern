@@ -18,6 +18,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import PopupDetails from "./PopupDetails";
 
 const CardList = ({ profession }) => {
   const { users, loading, error } = useFetchUsersByType(profession);
@@ -27,6 +28,8 @@ const CardList = ({ profession }) => {
   const [experience, setExperience] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+
+  const [hoveredCardId, setHoveredCardId] = useState(null); // New state to track hovered card ID
 
   useEffect(() => {
     const filtered = users?.filter((user) => {
@@ -50,6 +53,7 @@ const CardList = ({ profession }) => {
     });
 
     setFilteredUsers(filtered);
+    // console.log("what is there in filtered user ", filtered);
   }, [users, searchSkill, experience, selectedCity, selectedState]);
 
   const handleStateChange = (stateCode) => {
@@ -92,7 +96,7 @@ const CardList = ({ profession }) => {
             ),
           }}
           sx={{
-            width: "250px",
+            width: { xs: "150px", sm: "250px" },
             "& .MuiOutlinedInput-root": {
               borderRadius: "15px",
             },
@@ -103,13 +107,13 @@ const CardList = ({ profession }) => {
         <FormControl
           size="small"
           sx={{
-            width: "200px",
+            width: { xs: "150px", sm: "200px" },
             "& .MuiOutlinedInput-root": {
               borderRadius: "15px",
             },
           }}
         >
-          <InputLabel>Filter by experience</InputLabel>
+          <InputLabel>Experience</InputLabel>
           <Select
             value={experience}
             onChange={(e) => setExperience(e.target.value)}
@@ -126,7 +130,7 @@ const CardList = ({ profession }) => {
         <FormControl
           size="small"
           sx={{
-            width: "200px",
+            width: { xs: "150px", sm: "200px" },
             "& .MuiOutlinedInput-root": {
               borderRadius: "15px",
             },
@@ -151,7 +155,7 @@ const CardList = ({ profession }) => {
           <FormControl
             size="small"
             sx={{
-              width: "200px",
+              width: { xs: "150px", sm: "200px" },
               "& .MuiOutlinedInput-root": {
                 borderRadius: "15px",
               },
@@ -205,12 +209,25 @@ const CardList = ({ profession }) => {
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+              gridTemplateColumns: {
+                xs: "repeat(auto-fill, minmax(150px, 1fr))", // Smaller cards for mobile
+                sm: "repeat(auto-fill, minmax(300px, 1fr))",
+              },
               gap: 3,
             }}
           >
             {filteredUsers.map((data, index) => (
-              <Card key={index} data={data} />
+              <Box
+                key={index}
+                onMouseEnter={() => setHoveredCardId(data.uid)}
+                onMouseLeave={() => setHoveredCardId(null)}
+                sx={{ position: "relative", display: "inline-block" }}
+              >
+                <Card data={data} />
+
+                {/* Show PopupDetails when a card is hovered */}
+                {hoveredCardId === data.uid && <PopupDetails data={data} />}
+              </Box>
             ))}
           </Box>
         ) : (
@@ -235,3 +252,10 @@ const CardList = ({ profession }) => {
 };
 
 export default CardList;
+
+// git clone
+// create branch amanpreet
+// dev pull
+// changes
+// then pushes amanpreet
+// merge

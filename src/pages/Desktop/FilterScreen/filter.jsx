@@ -1,24 +1,44 @@
-// src/Components/Filter/FilterScreen.jsx
-
 import React, { useEffect, useState } from "react";
+import CardList from "../Card/CardList";
+
+import {
+  FaLaptopCode,
+  FaBrush,
+  FaCloud,
+  FaPen,
+  FaChartLine,
+  FaGavel,
+  FaUserTie,
+  FaCalculator,
+  FaSpa,
+} from "react-icons/fa";
+import "./filter.css";
+
 import { useParams, useNavigate } from "react-router-dom";
 
-// Import from the config
-import { professionalsFilterConfig } from "../../../constants/Roles/professionals";
-
-import CardList from "../Card/CarList";
-import "./filter.css";
+const professionals = [
+  { id: 9, name: "Yoga", icon: <FaSpa /> },
+  { id: 1, name: "Developer", icon: <FaLaptopCode /> },
+  { id: 2, name: "Designer", icon: <FaBrush /> },
+  { id: 3, name: "Cloud DevOps", icon: <FaCloud /> },
+  { id: 4, name: "Content Creator", icon: <FaPen /> },
+  { id: 5, name: "Digital Marketing", icon: <FaChartLine /> },
+  { id: 6, name: "Lawyer", icon: <FaGavel /> },
+  { id: 7, name: "HR", icon: <FaUserTie /> },
+  { id: 8, name: "Accountant", icon: <FaCalculator /> },
+];
 
 const FilterScreen = () => {
   const navigate = useNavigate();
   const type = useParams();
-  const [selectedProfession, setSelectedProfession] = useState(null);
 
   useEffect(() => {
-    if (type?.type) {
+    if (type) {
       setSelectedProfession(type.type);
     }
-  }, [type]);
+  });
+
+  const [selectedProfession, setSelectedProfession] = useState(null);
 
   const handleClick = (name) => {
     navigate(`/filterscreen/${name}`);
@@ -27,7 +47,7 @@ const FilterScreen = () => {
   return (
     <div className="filter-container">
       <div className="profession-cards">
-        {professionalsFilterConfig.map((profession) => (
+        {professionals.map((profession) => (
           <div
             key={profession.id}
             className={`card ${
@@ -35,21 +55,7 @@ const FilterScreen = () => {
             }`}
             onClick={() => handleClick(profession.name)}
           >
-            <div
-              className={`${
-                selectedProfession === profession.name
-                  ? "text-white"
-                  : "text-primary"
-              }`}
-              style={{
-                fontSize:
-                  selectedProfession === profession.name ? "2rem" : "1.5rem", // Adjust sizes as needed
-                transition: "font-size 0.3s ease", // Smooth size transition
-              }}
-            >
-              {profession.icon}
-            </div>
-
+            <div className="icon">{profession.icon}</div>
             <h3>{profession.name}</h3>
           </div>
         ))}

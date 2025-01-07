@@ -3,9 +3,18 @@ import "./Card.css";
 import { useNavigate } from "react-router-dom";
 import { Chip, Stack, Tooltip } from "@mui/material";
 
+import CallIcon from "@mui/icons-material/Call";
+import ChatIcon from "@mui/icons-material/Chat";
+import InfoIcon from "@mui/icons-material/Info";
+
 const consultingChargesConfig = {
   astrologist: true,
   lawyer: true,
+};
+
+const formatName = (name) => {
+  if (!name) return ""; // Handle cases where the name is empty
+  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 };
 
 const Card = ({ data }) => {
@@ -138,10 +147,16 @@ const Card = ({ data }) => {
         />
       </div>
 
+      {/* format the name if it is entered in all caps or the length of 
+      the name in the card overflow then display the first name only */}
       <span className="filter-card-name">
-        {firstName} {lastName}
+        {`${formatName(firstName)}${
+          `${firstName} ${lastName}`.length > 12
+            ? ""
+            : ` ${formatName(lastName)}`
+        }`}
       </span>
-      <span>experience: {experience}</span>
+      <span>Experience: {experience}</span>
 
       {consultingChargesConfig[type?.toLowerCase()] && consultingPrice && (
         <span>
@@ -162,15 +177,22 @@ const Card = ({ data }) => {
       </div>
 
       <div className="card-footer" style={{ marginTop: "15px" }}>
-        <button onClick={handleCallClick}>Call</button>
-        <button onClick={handleChatClick}>Chat</button>
+        <button onClick={handleCallClick}>
+          <span className="footer-text">Call</span>
+          <CallIcon className="footer-icon" />
+        </button>
+        <button onClick={handleChatClick}>
+          <span className="footer-text">Chat</span>
+          <ChatIcon className="footer-icon" />
+        </button>
         <button
           onClick={(event) => {
             event.stopPropagation();
             navigate(`/profile/${uid}`);
           }}
         >
-          Details
+          <span className="footer-text">Details</span>
+          <InfoIcon className="footer-icon" />
         </button>
       </div>
     </div>
