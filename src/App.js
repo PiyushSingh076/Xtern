@@ -213,6 +213,7 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
               <VerifyScreen />
+              
             </ProtectedRoute>
           }
         />
