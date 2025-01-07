@@ -10,10 +10,18 @@ import {
 import { db } from "../../firebaseConfig"; // Ensure the path is correct
 import toast from "react-hot-toast";
 import { Email } from "@mui/icons-material";
+// const CLIENT_ID =
+//   "944126676030-asroeqpq79h6amvfbi6kasd45bi6j84v.apps.googleusercontent.com";
+// const API_KEY = "AIzaSyAUxFdxBmlbsrph7bfQuePPooC2s2nVGOE";
+// const SCOPES = "https://www.googleapis.com/auth/calendar.events";
+
 const CLIENT_ID =
-  "944126676030-asroeqpq79h6amvfbi6kasd45bi6j84v.apps.googleusercontent.com";
-const API_KEY = "AIzaSyAUxFdxBmlbsrph7bfQuePPooC2s2nVGOE";
+  "876440760888-esjd63mvff2km3duo1p9gmg0mbu681tu.apps.googleusercontent.com";
+const API_KEY = "AIzaSyD1yJGRAttSxdMuQiGmkZ4kvSAn0nSZJFc";
 const SCOPES = "https://www.googleapis.com/auth/calendar.events";
+
+
+
 
 const useGoogleCalendar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
