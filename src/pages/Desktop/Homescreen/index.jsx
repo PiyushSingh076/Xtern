@@ -92,17 +92,30 @@ export default function HomeScreen() {
   return (
     <div className="main-Home-Screen-container">
       {!userData?.linkedInProfile && (
-        <div
-          onClick={() => navigate("/userdetail")}
+        <>
+          <div
+            onClick={() => navigate("/userdetail")}
+            className="become-xpert-banner"
+          >
+            <h1 className="title">
+              Become <span className="domains-title">Xpert</span>
+            </h1>
+            <p className="subtitle">
+              Join a community of world-class professionals
+            </p>
+          </div>
+          <div
+          onClick={() => navigate("/entrepreneurdetails")}
           className="become-xpert-banner"
         >
           <h1 className="title">
-            Become <span className="domains-title">Xpert</span>
+            Hire <span className="domains-title">Xpert</span>
           </h1>
           <p className="subtitle">
-            Join a community of world-class professionals
+            Hire a world-class professional
           </p>
         </div>
+        </>
       )}
 
       <div className="categories-container">

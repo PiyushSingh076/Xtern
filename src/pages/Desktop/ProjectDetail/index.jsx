@@ -15,7 +15,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Loading from "../../../components/Loading";
 import useFetchProjectData from "../../../hooks/Auth/useFetchProjectData";
-import './projectDetail.css'
+import "./projectDetail.css";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import { useSelector } from "react-redux";
 import { ImTab } from "react-icons/im";
@@ -25,22 +25,18 @@ const ProjectDetails = () => {
   // State variables
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
-  
+
   // Hooks
   const navigate = useNavigate();
   const { projectId } = useParams();
 
-  
   // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
 
   const location = useLocation();
-  const { item } = location.state || {}; 
+  const { item } = location.state || {};
 
-  console.log(item , 'service')
-
-
-
+  console.log(item, "service");
 
   // Navigation function
   const handleBackClick = () => {
@@ -70,7 +66,6 @@ const ProjectDetails = () => {
   };
 
   // Show loading component while data is being fetched
-  
 
   // Render the component
   return (
@@ -146,9 +141,7 @@ const ProjectDetails = () => {
             </div>
           </div>
           {/* Project details */}
-          <div
-          
-           className="desc-container">
+          <div className="desc-container">
             <div className="des-clearsingle-courses-description">
               {/* Skills and price */}
               <div className="first-decs-sec mt-16">
@@ -167,8 +160,7 @@ const ProjectDetails = () => {
 
                   <div className="first-right-sec">
                     <div>
-                     
-                    <span className="firs-txt2">₹{item.servicePrice}</span>
+                      <span className="firs-txt2">₹{item.servicePrice}</span>
                     </div>
                   </div>
                 </div>
@@ -177,10 +169,7 @@ const ProjectDetails = () => {
               <div className="second-decs-sec mt-16">
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
-                    <h1 className="second-txt1">
-                      {
-                       item.serviceName}
-                    </h1>
+                    <h1 className="second-txt1">{item.serviceName}</h1>
                   </div>
                   <div className="second-decs-sec-bottom">
                     <div className="second-decs-sec-bottom-wrap">
@@ -200,9 +189,10 @@ const ProjectDetails = () => {
                         <span className="student-img mr-8">
                           <img src={TimeIcon} alt="student-icon" />
                         </span>
-                        <span className="second-txt2">{item.serviceDuration} {item.serviceDurationType}s</span>
+                        <span className="second-txt2">
+                          {item.serviceDuration} {item.serviceDurationType}s
+                        </span>
                       </div>
-                      
                     </div>
                   </div>
                 </div>
@@ -241,8 +231,7 @@ const ProjectDetails = () => {
                         Assessment
                       </button> */}
                     </li>
-                    <li className="nav-item" role="presentation">
-                    </li>
+                    <li className="nav-item" role="presentation"></li>
                   </ul>
                   {/* Description content */}
                   <div className="tab-content" id="description-tabContent">
@@ -255,25 +244,32 @@ const ProjectDetails = () => {
                       <div className="description-content-wrap mt-24">
                         <div className="description-first-content">
                           <h3 className="des-con-txt1">Details</h3>
-                          <div style={{marginTop: '10px' , marginBottom: '10px'}}>
-                            { item.serviceDescription }
+                          <div
+                            style={{ marginTop: "10px", marginBottom: "10px" }}
+                          >
+                            {item.serviceDescription}
                           </div>
                           {/* Apply Now button */}
                           <div className="des-buy-now-description">
-                            { auth  ?     
-                              <Link className="buy-now" to={`/applyproject/${projectId}`}>Apply Now</Link> 
-                              : 
-                              <Link className="buy-now" to={`/signin`}>Buy Now </Link>
-                            }
+                            {auth ? (
+                              <Link
+                                className="buy-now"
+                                to={`/applyproject/${projectId}`}
+                              >
+                                Apply Now
+                              </Link>
+                            ) : (
+                              <Link className="buy-now" to={`/signin`}>
+                                Buy Now{" "}
+                              </Link>
+                            )}
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                   {/* Assessment content */}
-                  <div 
-                  
-                  className="tab-content" id="lessons-tabContent">
+                  <div className="tab-content" id="lessons-tabContent">
                     <div
                       className="tab-pane fade show"
                       id="lesson-content"

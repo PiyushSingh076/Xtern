@@ -1,7 +1,7 @@
 import React from "react";
 import "./Homescreen.css";
-import image1 from "../../../assets/images/homescreen/Rectangle-3392.webp";
-import image2 from "../../../assets/images/homescreen/Rectangle-3392-1.webp";
+import image1 from "../../../assets/images/homescreen/Aman1.png";
+import image2 from "../../../assets/images/homescreen/Aman2.png";
 
 export default function ImageBtn() {
   return (
@@ -10,7 +10,7 @@ export default function ImageBtn() {
         <div className="image1-container">
           <img src={image1} />
           <div className="become-inside-xpert-container">
-            <h2>Become an Xpert</h2>
+            <h2>Become an Xpert</h2>--
             <span>
               Seasoned Professional looking to help Organization across the
               globe

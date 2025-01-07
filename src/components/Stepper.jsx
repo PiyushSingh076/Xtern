@@ -25,9 +25,13 @@ import { FiXCircle } from "react-icons/fi";
 import useSaveJob from "../hooks/Jobs/useSaveJob.js";
 import useImageUpload from "../hooks/Auth/useImageUpload.js"; // Custom hook for image upload
 import { getAuth } from "firebase/auth";
+<<<<<<< HEAD
 import { storage } from "../firebaseConfig.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
+=======
+import toast from "react-hot-toast";
+>>>>>>> 2d91c9c623d78b906e52c7729cf4b9d85da0c065
 const Stepper = () => {
   const steps = [
     { id: 1, name: "Job" },
@@ -108,6 +112,8 @@ const Stepper = () => {
     );
   };
 
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -117,6 +123,7 @@ const Stepper = () => {
 
     setSubmitLoading(true);
     const imageURL = await uploadImage();
+    console.log(imageURL, imagePreviewUrl);
     if (!imageURL) {
       setSubmitLoading(false);
       return;
@@ -136,12 +143,16 @@ const Stepper = () => {
       const snapshot = await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(snapshot.ref);
       // Adding job to Firestore with userref
+<<<<<<< HEAD
       const data = {
         fileName: file.name,
         filePath: downloadURL, // Store the file URL
         uploadedAt: new Date(),
       };
       const isSaved = await saveJob({
+=======
+      const docID = await saveJob({
+>>>>>>> 2d91c9c623d78b906e52c7729cf4b9d85da0c065
         currentUser,
         jobTitle,
         companyName,
@@ -152,6 +163,7 @@ const Stepper = () => {
         assessmentDetail,
         assessmentDuration,
         duration,
+<<<<<<< HEAD
         imageURL,
         data,
       });
@@ -159,8 +171,17 @@ const Stepper = () => {
         alert("Job added successfully!");
         setSubmitLoading(false);
         navigate("/viewjob/" + isSaved); // Redirect to home screen
+=======
+        imageURL
+      });
+
+      if (docID) {
+        toast.success("Job added successfully!");
+        setSubmitLoading(false)
+        navigate("/viewjob/" + docID); // Redirect to home screen
+>>>>>>> 2d91c9c623d78b906e52c7729cf4b9d85da0c065
       } else {
-        alert("Failed to add job.");
+        toast.error("Failed to add job.");
       }
     } catch (err) {
       console.error("Error adding job: ", err);
@@ -693,9 +714,24 @@ const Stepper = () => {
                   required
                 />
               </div>
+<<<<<<< HEAD
               <div
                 className="flex flex-col items-center justify-center h-auto w-[45vw] bg-gray-100 p-4 rounded-md"
                 style={{ margin: "0 auto" }}
+=======
+            </div>
+
+            {/* Submit Button */}
+            <div
+              className="buy-now-description mt-4"
+              style={{ width: "80vw", margin: "0 auto" }}
+            >
+              <button
+                type="submit"
+                className="btn btn-primary px-5 py-3 w-100"
+                // onClick={() => navigate("/viewjob/123")}
+                disabled={loading || submitLoading}
+>>>>>>> 2d91c9c623d78b906e52c7729cf4b9d85da0c065
               >
                 <ToastContainer />
                 <label

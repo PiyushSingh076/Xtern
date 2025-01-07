@@ -4,13 +4,18 @@ import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 
 export const useFetchJob = (id) => {
-  const [jobDetails, setJobDetails] = useState(null);
+  const [jobData, setJobDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const fetchApplicantDetails = async (userId) => {
+    const user = (await getDoc(doc(db, "users", userId))).data();
+    return user;
+  }
 
   useEffect(() => {
     if (!id) {
       toast.error("Invalid job ID");
-      setLoading(false);
+      setLoading(true);
       return;
     }
 
@@ -31,8 +36,8 @@ export const useFetchJob = (id) => {
   }, [id]);
 
   async function fetchJob() {
-    const jobSnapshot = await getDoc(doc(db, "jobs", id));
-    console.log("jobSnapshot", jobSnapshot);
+    const jobSnapshot = await getDoc(doc(db, "jobPosting", id));
+    console.log("Job", jobSnapshot.data());
     if (!jobSnapshot.exists()) {
       toast.error("Job not found");
       throw new Error("Job not found");
@@ -43,23 +48,6 @@ export const useFetchJob = (id) => {
     return data;
   }
 
-  async function fetchApplicantDetails() {
-    try {
-      const jobSnapshot = await getDoc(doc(db, "jobs", id));
 
-      if (!jobSnapshot.exists()) {
-        throw new Error("Job not found");
-      }
-
-      const job = jobSnapshot.data();
-      const applicants = job.applicants || [];
-      return applicants;
-    } catch (error) {
-      console.error("Error fetching applicants:", error.message);
-      toast.error("Error fetching applicants");
-      throw error;
-    }
-  }
-
-  return { jobDetails, loading, fetchApplicantDetails };
+  return { jobData, loading, fetchApplicantDetails };
 };

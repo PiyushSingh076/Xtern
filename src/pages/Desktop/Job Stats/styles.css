@@ -20,6 +20,11 @@
   overflow: hidden;
 }
 
+#jobstats-table-head .MuiTableCell-sizeMedium{
+  background-color: #176cc7 !important;
+  color: white !important;
+}
+
 #job-stats-details {
   padding: 12px;
   display: flex;
@@ -48,11 +53,6 @@ z-index: 100;
 border-radius: 10px;
 }
 
-#job-stats-skills{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-}
 
 #job-stats-details h4 {
     margin-top: 8px !important;
@@ -99,3 +99,12 @@ border-radius: 10px;
     background-color: var(--background-label);
 }
 
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+}

@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { db } from "../firebaseConfig";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 
 import Stepper from "../components/Stepper.jsx";
 import useImageUpload from "../hooks/Auth/useImageUpload"; // Custom hook for image upload
 import { getAuth } from "firebase/auth";
 
 const CreateJob = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   async function test(){
+  //     const docs = await getDocs(collection(db, "jobPosting"));
+  //     docs.forEach((doc) => {
+  //       console.log(doc.data());
+  //     });
+  //   }
+
+  //   test();
+  // }, [])
+  
   return (
     <div className="flex flex-col">
       {/* Header */}

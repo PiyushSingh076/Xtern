@@ -5,7 +5,13 @@ import "./Profile.css";
 import useSaveEntrepreneurDetails from "../../../hooks/Auth/useSaveEntrepreneurDetailsFirebaseData";
 import "react-circular-progressbar/dist/styles.css";
 import Skeleton from "@mui/material/Skeleton";
-import { Button as ButtonM } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button as ButtonM,
+  Chip,
+} from "@mui/material";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -33,7 +39,13 @@ import {
 } from "react-bootstrap";
 
 import { Box, Tooltip } from "@mui/material";
+<<<<<<< HEAD
 import { db } from "../../../firebaseConfig";
+=======
+import { addDoc, collection, getDocs, Timestamp } from "firebase/firestore";
+import { auth, db } from "../../../firebaseConfig";
+import { useEntrepreneurDetails } from "../../../hooks/Entrepreneur/useEntrepreneurDetails";
+>>>>>>> 2d91c9c623d78b906e52c7729cf4b9d85da0c065
 
 const SingleMentor = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -46,7 +58,10 @@ const SingleMentor = () => {
   const [editable, setEditable] = useState(false);
   const [callsModalOpen, setCallsModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const currentUser = auth.currentUser;
   const { uid } = useParams();
+<<<<<<< HEAD
   //TODO: Implement functions back
   //   const {
   //     userData: profileData,
@@ -118,14 +133,61 @@ const SingleMentor = () => {
   };
   const profileLoading = false;
   const profileError = false;
+=======
+  const { loading: profileLoading, userData: profileData } =
+    useEntrepreneurDetails(uid);
 
-  const {
-    error: usersError,
-    loading: usersLoading,
-    users,
-  } = useFetchUsersByType("Developer");
+  useEffect(() => {
+    console.log(profileData);
+  }, [profileLoading]);
+
+  // const profileData = {
+  //   photo_url: "https://static.vecteezy.com/system/resources/thumbnails/049/174/246/small_2x/a-smiling-young-indian-man-with-formal-shirts-outdoors-photo.jpg",
+  //   firstName: "John",
+  //   lastName: "Doe",
+  //   city: "Mumbai",
+  //   experience: 5,
+  //   state: "Maharashtra",
+  //   type: "entrepreneur",
+  //   skillSet: [{
+  //     skill: "React",
+  //     skillRating: 4,
+  //   }],
+  //   companyDetails: [
+  //     {
+  //       logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png",
+  //       name: "Google",
+  //       description:
+  //         "Google is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.",
+  //       startDate: Date.now() / 1000,
+  //       endDate: "present",
+  //     },
+  //   ],
+  //   jobDetails: [
+  //     {
+  //       role: "Fronten Intern",
+  //       techstack: ["React", "Redux", "HTML", "CSS"],
+  //       description:
+  //         "Frontend Intern at Google working on building web applications using React and Redux",
+  //       lastDate: Date.now() / 1000,
+  //       company: "Optacloud",
+  //       salary: "9lpa",
+  //     },
+  //     {
+  //       role: "Fullstack Developer",
+  //       techstack: ["React", "Redux", "Express", "Firebase"],
+  //       description:
+  //         "Fullstack Developer at Google working on building web applications using React and Redux",
+  //       lastDate: Date.now() / 1000,
+  //       company: "Google",
+  //       salary: "20lpa",
+  //     },
+  //   ],
+  // };
+>>>>>>> 2d91c9c623d78b906e52c7729cf4b9d85da0c065
+
   //   const { userData: currentUser } = useFetchUserData();
-  const currentUser = {};
+
   const {
     signIn,
     createEvent,
@@ -139,52 +201,11 @@ const SingleMentor = () => {
     error: callsError,
   } = useScheduledCallsForUser(currentUser?.uid);
 
-  useEffect(() => {
-    if (
-      !profileLoading &&
-      (!profileData?.type || profileData?.type.trim() === "")
-    ) {
-      navigate("/userdetail");
-    }
-    if (profileData && profileData.type != "entrepreneur") {
-      toast("Profile not found");
-      navigate("/homescreen");
-    }
-  }, [profileLoading, profileData, navigate]);
-
-  useEffect(() => {
-    if (currentUser && currentUser.uid === uid) {
-      setEditable(true);
-    } else {
-      setEditable(false);
-    }
-  }, [currentUser, uid]);
-
   //   const registrationStatus = useRegisterUser(
   //     profileData,
   //     profileLoading,
   //     profileError
   //   );
-
-  const sanitizeProfileData = (data) => {
-    return JSON.parse(JSON.stringify(data));
-  };
-
-  const handleEdit = () => {
-    if (profileData?.type) {
-      const sanitizedData = sanitizeProfileData(profileData);
-      navigate("/userdetail", { state: { profileData: sanitizedData } });
-    } else {
-      navigate("/userdetail");
-    }
-  };
-
-  const internInfo = useSelector((state) => state.internInfo);
-
-  const entrepreneurDetails = useSelector(
-    (state) => state.entrepreneur.entrepreneurDetails
-  );
-  const { saveEntrepreneurDetails } = useSaveEntrepreneurDetails();
 
   const handleDateChange = (date) => {
     setInterviewDate(date);
@@ -327,12 +348,6 @@ const SingleMentor = () => {
         <div className="profile-details">
           <div className="profile-details-wrap">
             <div className="profile-details-first-wrap">
-              {editable && (
-                <button onClick={handleEdit} className="edit-btn">
-                  <MdEdit />
-                </button>
-              )}
-
               <div className="profile-img-info-container">
                 <div className="mentor-img-sec">
                   {profileLoading ? (
@@ -343,13 +358,14 @@ const SingleMentor = () => {
                       animation="wave"
                     />
                   ) : (
-                    <img
-                      src={profileData?.photo_url || "/default-profile.png"}
-                      alt={`${profileData?.firstName} ${profileData?.lastName}`}
-                      width={150}
-                      height={150}
-                      onError={(e) => (e.target.src = "/default-profile.png")}
-                    />
+                    <div className="size-[150px] relative">
+                      <img
+                        src={profileData?.photo_url || "/default-profile.png"}
+                        alt={`${profileData?.firstName} ${profileData?.lastName}`}
+                        className="size-full absolute left-0 top-0 object-cover"
+                        onError={(e) => (e.target.src = "/default-profile.png")}
+                      />
+                    </div>
                   )}
                 </div>
 
@@ -389,7 +405,15 @@ const SingleMentor = () => {
                       sx={{ fontSize: "1rem", width: "200px", height: "20px" }}
                     />
                   ) : (
-                    <span>Year of Experience: {profileData?.experience}</span>
+                    <div className="flex flex-col">
+                      <div>Years of Experience: {profileData?.experience}</div>
+                      <a
+                        className="text-sm"
+                        href={profileData.linkedinProfileUrl}
+                      >
+                        {profileData.linkedinProfileUrl}
+                      </a>
+                    </div>
                   )}
 
                   {profileLoading ? (
@@ -399,7 +423,7 @@ const SingleMentor = () => {
                       sx={{ fontSize: "1rem", width: "100px", height: "20px" }}
                     />
                   ) : (
-                    <p className="badge-type">Entrepreneur</p>
+                    <p className="badge-type">{profileData.industry}</p>
                   )}
                 </div>
               </div>
@@ -418,45 +442,14 @@ const SingleMentor = () => {
             ) : (
               <div className="skills-section">
                 <div className="skills-header">Skills</div>
-                {profileData?.skillSet?.map((item) => {
-                  const ratingPercentage =
-                    (parseInt(item.skillRating) / 5) * 100;
-                  return (
-                    <div className="skill-bar-card" key={item.skill}>
-                      <span>{item.skill}</span>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          width: "100%",
-                          alignItems: "center",
-                        }}
-                      >
-                        <div
-                          className="skill-rating"
-                          style={{
-                            marginBottom: "5px",
-                            fontSize: "12px",
-                            color: "#007bff",
-                          }}
-                        >
-                          {ratingPercentage}%
-                        </div>
-                        <div className="skill-bar">
-                          <div
-                            className="skill-bar-fill"
-                            style={{
-                              width: `${ratingPercentage}%`,
-                              backgroundColor: "#007bff",
-                              height: "5px",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-                {!profileData?.skillSet && <span>No skill set available</span>}
+                <div className="flex flex-wrap gap-2 justify-center items-center">
+                  {profileData?.skills?.map((item) => {
+                    return <Chip label={item.name}></Chip>;
+                  })}
+                </div>
+                {!profileData?.skills && (
+                  <span>No skill set available</span>
+                )}
               </div>
             )}
           </div>
@@ -477,22 +470,27 @@ const SingleMentor = () => {
             style={{ marginBottom: "20px" }}
           >
             <div className="consulting-btn-container">
-              
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                {profileData?.consultingPrice && (
+                  <span className="service-name">Consulting Now</span>
+                )}
+              </div>
 
-              <div className="consulting-btn-entrepreneur">
-              <button
+              <div className="consulting-btn !w-full !mb-0">
+                <button
+                  className="chat-btn"
                   onClick={() => navigate("/createjob")}
-                  className="chat-btn"
                 >
-                  Create Job
+                  Create job
                 </button>
-                <button
-                  onClick={() => navigate("/jobpostings")}
-                  className="chat-btn"
-                >
-                  View Jobs
-                </button>
-                <button
+                <button className="chat-btn">View jobs</button>
+                {/* <button
                   onClick={() => navigate("/mychat")}
                   className="chat-btn"
                 >
@@ -504,18 +502,8 @@ const SingleMentor = () => {
                   disabled={!isInitialized}
                 >
                   <MdCalendarToday /> Meet
-                </button>
+                </button> */}
               </div>
-              {/* {!isInitialized && (
-                <span className="text-muted">
-                  Initializing Google Calendar...
-                </span>
-              )} */}
-              {profileData?.consultingPrice && (
-                <span className="consultant-price">
-                  ₹{profileData.consultingPrice}/minute
-                </span>
-              )}
             </div>
 
             {/* Modified "View Previous Calls" button as a badge-like style */}
@@ -574,96 +562,105 @@ const SingleMentor = () => {
               <div className="tab-content" id="mentor-tab-content">
                 {/* Company Details tab */}
                 <div
-                  className="tab-pane fade show active mt-16"
+                  className="tab-pane fade show active mt-0"
                   id="company-content"
                   role="tabpanel"
                 >
-                  {profileData?.companyDetails?.map((company, index) => (
-                    <div
-                      className="experience-sec"
-                      key={`${company.name}-${index}`}
-                    >
-                      <div className="work-logo-container">
-                        <img
-                          src={company.logo}
-                          className="educ-logo"
-                          alt="Company Logo"
-                        />
-                      </div>
-                      <div className="experience-info">
-                        <h4>{company?.name}</h4>
-                        <p>
+                  {profileLoading ? (
+                    <></>
+                  ) : (
+                    <>
+                      <div
+                        className="experience-sec"
+                        key={`${profileData.companyDetails.name}`}
+                      >
+                        <div className="size-[60px] rounded-full shrink-0 overflow-hidden mr-4 relative">
+                          <img
+                            src={profileData.companyDetails.logo}
+                            className="absolute"
+                          />
+                        </div>
+                        <div className="experience-info">
+                          <h4>{profileData.companyDetails.name}</h4>
+                          {/* <p>
                           {dayjs.unix(company?.startDate).format("D MMM YYYY")}{" "}
                           -{" "}
                           {company.endDate === "present"
                             ? "Now"
                             : dayjs.unix(company.endDate).format("D MMM YYYY")}
-                        </p>
-                        <button
-                          className="desc-btn"
-                          data-bs-toggle="collapse"
-                          data-bs-target={`#work-collapse-${index}`}
-                          aria-expanded="false"
-                          aria-controls={`work-collapse-${index}`}
-                        >
-                          View Description
-                        </button>
-                        <div
-                          id={`work-collapse-${index}`}
-                          className="collapse"
-                          aria-labelledby={`work-collapse-${index}`}
-                        >
-                          <div className="card card-body">
-                            {company?.description || "No description available"}
-                          </div>
+                        </p> */}
+                          <h4 className="text-black/60">
+                            {profileData.companyDetails.description}
+                          </h4>
+                          {/* <h4>{dayjs(new Timestamp(profileData.companyDetails.startDate.seconds, profileData.companyDetails.startDate.nanoseconds).toDate()).format("D MMM YYYY")}</h4> */}
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    </>
+                  )}
                 </div>
 
                 {/* Projects Tab */}
                 <div className="tab-pane fade" id="job-content" role="tabpanel">
                   {/* <Link to="/jobpostings">Your job postings</Link> */}
-                  {profileData?.jobDetails?.map((job, index) => (
-                    <div className="experience-sec" key={`project-${index}`}>
-                      <div className="experience-info">
-                        <h4>{job?.role}</h4>
-                        <b>{job.company}</b>
-                        <div>
-                          <b>Tech Stack:</b>
-                          {job?.techstack?.map((item, idx) => (
-                            <span key={idx}>
-                              {item}
-                              {idx !== job.techstack.length - 1 && ", "}
-                            </span>
-                          )) || "No tech stack available"}
-                        </div>
-                        <b>Salary: {job.salary}</b>
-                        <b>
-                          Last Date:{" "}
-                          {dayjs.unix(job?.lastDate).format("D MMM YYYY")}
-                        </b>
-
-                        <div className="desc-view-job-btn-container">
-                          <button
-                            className="desc-btn"
-                            data-bs-toggle="collapse"
-                            data-bs-target={`#project-collapse-${index}`}
-                            aria-expanded="false"
-                            aria-controls={`project-collapse-${index}`}
+                  {profileData?.jobPostings?.map((job, index) => (
+                    <div className="experience-sec flex !items-start" key={`project-${index}`}>
+                      <div className="size-[100px] shrink-0 relative overflow-hidden flex items-center justify-center" >
+                        <img src={job.image} className="absolute size-[80px] object-cover" alt="" />
+                      </div>
+                      <div className="w-full h-full">
+                        <div className="experience-info">
+                          <h4>{job?.title}</h4>
+                          <b>{job.companyName}</b>
+                          <div>
+                            <b>Skills:</b>
+                            {job?.skills?.map((item, idx) => (
+                              <span key={idx}>
+                                {item}
+                                {idx !== job.skills.length - 1 && ", "}
+                              </span>
+                            )) || "No tech stack available"}
+                          </div>
+                          <Accordion
+                            sx={{
+                              width: "100%",
+                              borderRadius: "10px",
+                              boxShadow: "none",
+                            }}
                           >
-                            View Description
-                          </button>
-                          <button className="desc-btn">Apply</button>
-                        </div>
-                        <div
-                          id={`project-collapse-${index}`}
-                          className="collapse"
-                          aria-labelledby={`project-collapse-${index}`}
-                        >
-                          <div className="card card-body">
-                            {job?.description || "No description available"}
+                            <AccordionSummary>Description</AccordionSummary>
+                            <AccordionDetails>
+                              {job.description}
+                            </AccordionDetails>
+                          </Accordion>
+
+                          <div className="desc-view-job-btn-container ml-auto">
+                            {currentUser.uid != profileData.uid ? (
+                              <>
+                                <button className="desc-btn ml-auto">
+                                  Apply
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() =>
+                                    navigate(`/viewjob/${job.jobId}`)
+                                  }
+                                  className="desc-btn ml-auto"
+                                >
+                                  View Job
+                                </button>
+                              </>
+                            )}
+                          </div>
+                          <div
+                            id={`project-collapse-${job.jobId}`}
+                            className="collapse"
+                            aria-labelledby={`project-collapse-${index}`}
+                          >
+                            <div className="card card-body">
+                              {job?.description || "No description available"}
+                            </div>
                           </div>
                         </div>
                       </div>
