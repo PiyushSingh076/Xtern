@@ -24,6 +24,7 @@ export default function Header() {
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
 
+
   // Decide if we have a valid userPhoto
   const hasUserPhoto =
     userData?.photo_url &&
@@ -31,10 +32,21 @@ export default function Header() {
     userData.photo_url.trim() !== "";
 
 
-  const handleMenuOptionClick = (route) => {
-    setMenuOpen(false);
-    navigate(route);
+
+  const handleMenuToggle = () => {
+    if (profileButtonRef.current) {
+      const rect = profileButtonRef.current.getBoundingClientRect();
+      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
+    }
+    setMenuOpen(!menuOpen);
   };
+
+
+  const handleMenuOptionClick = (route) => {
+    navigate(route)
+    
+  };
+
 
   const handleMenuToggle = (event) => {
     event.stopPropagation();
@@ -79,6 +91,7 @@ export default function Header() {
         )}
 
         {userData && (
+
           <div className="profile-menu-container">
             <button
               ref={profileButtonRef}
@@ -154,6 +167,7 @@ export default function Header() {
           </div>
         )}
       </div>
+
     </div>
   );
 }

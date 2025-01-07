@@ -550,7 +550,7 @@ const SingleMentor = () => {
                 />
               ) : (
                 <ul
-                  className="nav nav-pills single-mentor-tab"
+                  className="nav nav-pills single-mentor-tab three-tab"
                   id="mentor-tab"
                   role="tablist"
                 >

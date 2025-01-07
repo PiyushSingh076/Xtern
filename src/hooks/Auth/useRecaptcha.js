@@ -15,7 +15,7 @@ const useRecaptcha = () => {
           size: "invisible",
           callback: (response) => {
             // reCAPTCHA solved, allow sending OTP
-            console.log("reCAPTCHA solved", response);
+            // console.log("reCAPTCHA solved", response);
           },
           "expired-callback": () => {
             // Reset reCAPTCHA if it expires

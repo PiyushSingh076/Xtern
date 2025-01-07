@@ -8,7 +8,7 @@ import "./assets/css/media-query.css";
 import { ROUTES } from "./constants/routes"; // Import the route constants
 
 //  Desktop View
-
+import Entrepreneur from "./pages/Desktop/Entrepreneur/index.jsx";
 import DesktopHomeScreen from "./pages/Desktop/Homescreen/index.jsx";
 import DesktopLandingPage from "./pages/Desktop/LandingScreen/index";
 import Header from "./pages/Desktop/Header/Header";
@@ -24,8 +24,10 @@ import DesktopPrefferServiceMentor from "./pages/Desktop/Prefference/PrefferServ
 import DesktopAllProjects from "./pages/Desktop/ProjectDetail/AllProjects.jsx";
 import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iffat
 // import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
-import DesktopCard from "./pages/Desktop/Card/CarList.jsx";
+import DesktopCard from "./pages/Desktop/Card/CardList.jsx";
 import DesktopStepperForm from "./pages/Desktop/StepperForm/index.jsx";
+import EntrepreneurDetailsForm from "./pages/Desktop/StepperForm/EntrepreneurDetailsForm.js";
+
 // chat
 import Chat from "./pages/Desktop/Chat/Chat.jsx";
 import MyChat from "./pages/Desktop/MyChats/Mychats.jsx";
@@ -109,6 +111,9 @@ import { RouteRounded } from "@mui/icons-material";
 import LandingBanner from "./pages/Desktop/LandingScreen/LandingBanner.jsx";
 import LandingPage from "./pages/MobLandingScreen/LandingPage.jsx";
 import InstaPull from "./pages/Desktop/InstaPull/MainSection.js";
+import JobPostings from "./pages/Desktop/Job Postings/JobPostings";
+import JobStats from "./pages/Desktop/Job Stats/JobStats.jsx";
+import ViewJob from "./pages/Desktop/View Job/ViewJob.jsx";
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -268,6 +273,10 @@ function App() {
 
         <Route path={ROUTES.STEPPER_FORM} element={<DesktopStepperForm />} />
 
+        <Route
+          path={ROUTES.ENTREPRENEURS_FORM}
+          element={<EntrepreneurDetailsForm />}
+        />
         <Route
           path={ROUTES.CREATE_JOB}
           element={
@@ -528,6 +537,23 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path={ROUTES.ENTREPRENEUR} element={<Entrepreneur />} />
+        <Route
+          path={ROUTES.JOBSPOSTINGS}
+          element={
+            <ProtectedRoute allowedRoles={["entrepreneur"]}>
+              <JobPostings></JobPostings>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path={ROUTES.JOBSTATS}
+          element={
+            <ProtectedRoute>
+              <JobStats></JobStats>
+            </ProtectedRoute>
+          }
+        ></Route>
         <Route
           path={ROUTES.PROFILE_EDIT}
           element={
@@ -576,6 +602,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path={ROUTES.VIEWJOB} element={<ViewJob></ViewJob>}></Route>
         <Route
           path={ROUTES.CURRENCY}
           element={

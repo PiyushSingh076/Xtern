@@ -696,6 +696,7 @@ textarea {
 
 .sign-in-custom-input {
   border: none;
+  border-radius: 0;
   background: transparent;
   width: 100%;
   padding-left: 12px;
