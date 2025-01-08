@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   getFirestore,
   collection,
@@ -12,9 +12,12 @@ import { useNavigate } from "react-router-dom";
 import "./my_video_call.css";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 
-const VideoCallSelection = () => {
+const MyVideoCall = () => {
   const { userData } = useFetchUserData();
-  const [availableUsers, setAvailableUsers] = useState([]);
+  const [pastCalls, setPastCalls] = useState([]);
+  const [todayCalls, setTodayCalls] = useState([]);
+  const [futureCalls, setFutureCalls] = useState([]);
+  const [activeTab, setActiveTab] = useState("today");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -35,44 +38,63 @@ const VideoCallSelection = () => {
       try {
         setLoading(true);
 
-        // Query scheduledCalls for the current user
         const q = query(
           scheduledCallsRef,
           where("hostUserId", "==", currentUserId)
         );
 
         const querySnapshot = await getDocs(q);
-        const associatedUsersData = [];
+        const pastCallsData = [];
+        const todayCallsData = [];
+        const futureCallsData = [];
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
         for (const docSnapshot of querySnapshot.docs) {
           const data = docSnapshot.data();
-
-          // Determine the other user and meeting time
           const otherUserId =
             data.hostUserId === currentUserId
               ? data.recipientUserId
               : data.hostUserId;
 
-          const meetingTime = data.scheduledDateTime || "No time specified";
+          const meetingTime = data.scheduledDateTime
+            ? new Date(data.scheduledDateTime)
+            : null;
 
-          // Format the meeting time to a more readable format
-          const formattedMeetingTime = meetingTime !== "No time specified" ? 
-            new Date(meetingTime).toLocaleString() : meetingTime;
-
-          // Fetch user details
           const userDoc = doc(usersCollectionRef, otherUserId);
           const userSnapshot = await getDoc(userDoc);
 
           if (userSnapshot.exists()) {
-            associatedUsersData.push({
+            const callData = {
               id: otherUserId,
               ...userSnapshot.data(),
-              meetingTime: formattedMeetingTime,
-            });
+              meetingTime: meetingTime
+                ? meetingTime.toLocaleString()
+                : "No time specified",
+            };
+
+            if (meetingTime) {
+              if (meetingTime < today) {
+                pastCallsData.push(callData);
+              } else if (
+                meetingTime.getDate() === today.getDate() &&
+                meetingTime.getMonth() === today.getMonth() &&
+                meetingTime.getFullYear() === today.getFullYear()
+              ) {
+                todayCallsData.push(callData);
+              } else {
+                futureCallsData.push(callData);
+              }
+            } else {
+              futureCallsData.push(callData);
+            }
           }
         }
 
-        setAvailableUsers(associatedUsersData);
+        setPastCalls(pastCallsData);
+        setTodayCalls(todayCallsData);
+        setFutureCalls(futureCallsData);
       } catch (err) {
         console.error("Error fetching associated users:", err);
         setError(err.message);
@@ -90,6 +112,38 @@ const VideoCallSelection = () => {
         user.display_name
       )}`
     );
+  };
+
+  const renderUserCards = (users) => {
+    return users.map((user) => (
+      <div key={user.id} className="user-card">
+        <div className="user-info">
+          {user.photo_url ? (
+            <img
+              src={user.photo_url}
+              alt={user.display_name}
+              className="user-avatar"
+            />
+          ) : (
+            <div className="user-avatar-placeholder">
+              <i className="user-icon"></i>
+            </div>
+          )}
+          <div className="user-details">
+            <h3>{user.display_name}</h3>
+            <p>{user.role || "Available"}</p>
+            <p>Meeting Time: {user.meetingTime}</p>
+          </div>
+        </div>
+        <button
+          onClick={() => handleVideoCallInvite(user)}
+          className="video-call-button"
+        >
+          <i className="video-icon"></i>
+          Start Video Call
+        </button>
+      </div>
+    ));
   };
 
   if (!userData) {
@@ -121,47 +175,67 @@ const VideoCallSelection = () => {
 
   return (
     <div className="video-call-selection">
-      <h2>Start a Video Call</h2>
-      {availableUsers.length === 0 ? (
-        <div className="no-users-message">
-          <i className="video-icon"></i>
-          <p>No users available for video call</p>
-        </div>
-      ) : (
-        <div className="user-grid">
-          {availableUsers.map((user) => (
-            <div key={user.id} className="user-card">
-              <div className="user-info">
-                {user.photo_url ? (
-                  <img
-                    src={user.photo_url}
-                    alt={user.display_name}
-                    className="user-avatar"
-                  />
-                ) : (
-                  <div className="user-avatar-placeholder">
-                    <i className="user-icon"></i>
-                  </div>
-                )}
-                <div className="user-details">
-                  <h3>{user.display_name}</h3>
-                  <p>{user.role || "Available"}</p>
-                  <p>Meeting Time: {user.meetingTime}</p>
-                </div>
-              </div>
-              <button
-                onClick={() => handleVideoCallInvite(user)}
-                className="video-call-button"
-              >
-                <i className="video-icon"></i>
-                Start Video Call
-              </button>
+      <h2>My Video Calls</h2>
+      <div className="tab-bar">
+        <button
+          className={`tab-button ${activeTab === "past" ? "active" : ""}`}
+          onClick={() => setActiveTab("past")}
+        >
+          Past
+        </button>
+        <button
+          className={`tab-button ${activeTab === "today" ? "active" : ""}`}
+          onClick={() => setActiveTab("today")}
+        >
+          Today
+        </button>
+        <button
+          className={`tab-button ${activeTab === "future" ? "active" : ""}`}
+          onClick={() => setActiveTab("future")}
+        >
+          Upcomming
+        </button>
+      </div>
+      <div className="call-section">
+        {activeTab === "past" && (
+          <>
+            <h3>Past Calls</h3>
+            <div className="user-grid">
+              {pastCalls.length === 0 ? (
+                <p>No past calls</p>
+              ) : (
+                renderUserCards(pastCalls)
+              )}
             </div>
-          ))}
-        </div>
-      )}
+          </>
+        )}
+        {activeTab === "today" && (
+          <>
+            <h3>Today's Calls</h3>
+            <div className="user-grid">
+              {todayCalls.length === 0 ? (
+                <p>No calls scheduled for today</p>
+              ) : (
+                renderUserCards(todayCalls)
+              )}
+            </div>
+          </>
+        )}
+        {activeTab === "future" && (
+          <>
+            <h3>Upcomming Calls</h3>
+            <div className="user-grid">
+              {futureCalls.length === 0 ? (
+                <p>No Upcomming calls scheduled</p>
+              ) : (
+                renderUserCards(futureCalls)
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
-export default VideoCallSelection;
+export default MyVideoCall;

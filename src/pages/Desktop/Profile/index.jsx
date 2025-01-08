@@ -188,7 +188,7 @@ const SingleMentor = () => {
           Date: ${interviewDate.format("D MMM YYYY")}
           Time: ${interviewTime.format("h:mm A")}
           Description: ${description || "N/A"}
-          Meet Link: ${meetLink}
+          Meet Link: <a href="http://localhost:3000/myvideocall">Join Meeting</a>
         `,
         startDateTime,
         endDateTime,
