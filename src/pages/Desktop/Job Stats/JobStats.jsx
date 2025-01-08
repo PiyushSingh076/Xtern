@@ -22,7 +22,12 @@ import { Timestamp } from "firebase/firestore";
 import { Spinner } from "react-bootstrap";
 import { Book, Bookmark, Building, MapPin, Save, User } from "lucide-react";
 import { useSubscriptions } from "../../../hooks/Profile/useSubscriptions";
-import { BookmarkAdded, LocationOn } from "@mui/icons-material";
+import {
+  AccessTimeRounded,
+  BookmarkAdded,
+  LocationOn,
+  WorkspacePremiumRounded,
+} from "@mui/icons-material";
 
 const JobStats = () => {
   const [showModal, setShowModal] = useState(false);
@@ -34,14 +39,16 @@ const JobStats = () => {
   const { toggleSubscribeToXpert, isSubscribed, subLoading } =
     useSubscriptions();
   const openModal = async (applicant) => {
+    setSelectedUser(applicant);
+    setShowModal(true);
+
     setLoadingDetails(true);
     const user = await fetchApplicantDetails(applicant.uid);
-    setLoadingDetails(false);
     console.log("User", user);
     console.log("Applicant", applicant);
     const subscribed = await isSubscribed(applicant.uid);
     setSelectedUser({ ...applicant, user: user, subscribed: subscribed });
-    setShowModal(true);
+    setLoadingDetails(false);
   };
 
   const closeModal = () => {
@@ -67,14 +74,14 @@ const JobStats = () => {
             id="job-stats-details"
             className="flex flex-col border border-[#e5e5e5] rounded-xl relative"
           >
-            <div className="h-[80px] w-full relative flex items-center justify-center bg-blue-400 rounded-lg shadow-md shadow-black/20 mb-2">
-              <img
-                src={jobData.image}
-                className="absolute top-0 left-0 size-full object-cover"
-                alt=""
-              />
-            </div>
-            <div className="h-fit w-full flex gap-2 items-stretch shrink-0">
+            <div className="h-[80px] gap-2 w-full flex">
+              <div className="size-[80px] relative flex items-center justify-center  rounded-lg  mb-2">
+                <img
+                  src={jobData.image}
+                  className="absolute top-0 left-0 size-[80px] object-cover"
+                  alt=""
+                />
+              </div>
               <div className="flex flex-col">
                 <div className="text-lg font-normal flex gap-1 text-zinc-800 items-center">
                   <User opacity={0.8} size="20"></User> {jobData.title}
@@ -90,7 +97,13 @@ const JobStats = () => {
               </div>
             </div>
 
-            <div className="mt-2 shrink-0 min-h-0 text-left border border-[#e5e5e5] max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50 ">
+            <div className="h-fit w-full flex gap-2 items-stretch shrink-0"></div>
+            <div className="font-medium text-black/70 mt-2">Details</div>
+            <div className="flex gap-1 mb-2">
+              <WorkspacePremiumRounded></WorkspacePremiumRounded>{" "}
+              {jobData.experienceLevel}
+            </div>
+            <div className=" shrink-0 min-h-0 text-left border border-[#e5e5e5] max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50 ">
               {jobData.description}
             </div>
             <div className="shrink-0 h-fit my-2">
@@ -108,6 +121,16 @@ const JobStats = () => {
                 })}
               </div>
             </div>
+            <div className="flex flex-col">
+              <div className="font-medium text-black/70">Assesment Details</div>
+              <div className="border border-[#e5e5e5] max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50 ">
+                {jobData.assessmentDetail}
+              </div>
+              <div className="flex gap-1 mt-2">
+                <AccessTimeRounded></AccessTimeRounded>
+                <span>{jobData.assessmentDuration}</span>
+              </div>
+            </div>
             <div className="mt-auto flex justify-end">
               <Button variant="contained">Edit Job</Button>
             </div>
@@ -119,7 +142,7 @@ const JobStats = () => {
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Date Applied</TableCell>
-                  <TableCell>Status</TableCell>
+                    <TableCell>Status</TableCell>
                     <TableCell align="center">Assesment Link</TableCell>
                   </TableRow>
                 </TableHead>
@@ -131,7 +154,7 @@ const JobStats = () => {
                         "&:hover": {
                           backgroundColor: "primary.main",
                         },
-                        padding: "10px"
+                        padding: "10px",
                       }}
                       key={index}
                     >
@@ -144,7 +167,7 @@ const JobStats = () => {
                           ).toDate()
                         ).format("MM/DD/YYYY")}
                       </TableCell>
-                        <TableCell>{applicant.status.toUpperCase()}</TableCell>
+                      <TableCell>{applicant.status.toUpperCase()}</TableCell>
                       <TableCell align="center">
                         <Button
                           variant="outlined"
@@ -159,13 +182,7 @@ const JobStats = () => {
                           }}
                           onClick={() => openModal(applicant)}
                         >
-                          {loadingDetails ? (
-                            <div>
-                              <Spinner size="sm"></Spinner>
-                            </div>
-                          ) : (
-                            "View"
-                          )}
+                          View
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -184,55 +201,97 @@ const JobStats = () => {
                 <div className="modal-content">
                   <div className="modal-header">
                     <h5 className="modal-title">
-                      {selectedUser.user.firstName} {selectedUser.user.lastName}
+                      {selectedUser?.user?.firstName}{" "}
+                      {selectedUser?.user?.lastName}
                     </h5>
                   </div>
                   <div className="modal-body">
                     <div className="flex size-full gap-4 items-stretch h-[250px]">
-                      <div className="flex flex-col w-fit shrink-0">
-                        <div className="w-full h-[150px] mb-2 flex items-center justify-center">
-                          <img
-                            src={selectedUser.user.photo_url}
-                            className="size-[150px] rounded-full  border-2 border-black/10"
-                            alt=""
-                          />
-                        </div>
-                        <div className="w-full text-center  text-lg">
-                          {selectedUser.user.firstName}{" "}
-                          {selectedUser.user.lastName}
-                        </div>
-                        <div className="text-black/70 w-full text-center font-medium flex justify-center items-center mb-1">
-                          <LocationOn></LocationOn>
-                          {selectedUser.user.city}
-                        </div>
-                        <div className="w-full flex justify-center items-center">
-                          <div className="h-fit w-full flex flex-wrap gap-2 justify-center items-center">
-                            <>
-                              {selectedUser.user.skillSet.map(
-                                (skill, index) => (
-                                  <Chip
-                                    label={skill.skill}
-                                    key={index + skill + "job-stat-skill"}
-                                  ></Chip>
-                                )
-                              )}
-                            </>
+                      {loadingDetails ? (
+                        <></>
+                      ) : (
+                        <>
+                          <div className="flex flex-col w-fit shrink-0">
+                            <div className="w-full h-[150px] mb-2 flex items-center justify-center">
+                              <img
+                                src={selectedUser?.user?.photo_url}
+                                className="size-[150px] rounded-full  border-2 border-black/10"
+                                alt=""
+                              />
+                            </div>
+                            <div className="w-full text-center  text-lg">
+                              {selectedUser?.user?.firstName}{" "}
+                              {selectedUser?.user?.lastName}
+                            </div>
+                            <div className="text-black/70 w-full text-center font-medium flex justify-center items-center mb-1">
+                              <LocationOn></LocationOn>
+                              {selectedUser?.user?.city}
+                            </div>
+                            <div className="w-full flex justify-center items-center">
+                              <div className="h-fit w-full flex flex-wrap gap-2 justify-center items-center">
+                                <>
+                                  {selectedUser?.user?.skillSet.map(
+                                    (skill, index) => (
+                                      <Chip
+                                        label={skill.skill}
+                                        key={index + skill + "job-stat-skill"}
+                                      ></Chip>
+                                    )
+                                  )}
+                                </>
+                              </div>
+                            </div>
                           </div>
+                        </>
+                      )}
+
+                      <div className="w-fit h-full flex items-stretch  flex-col shrink-0">
+                        <div className="h-fit w-full flex gap-2">
+                          <Button
+                            disableElevation
+                            onClick={() =>
+                              window.open(selectedUser.deploymentUrl, "_blank")
+                            }
+                            variant="contained"
+                            sx={{ borderRadius: "100px" }}
+                          >
+                            Live Link
+                          </Button>
+                          <Button
+                            disableElevation
+                            onClick={() =>
+                              window.open(selectedUser.githubUrl, "_blank")
+                            }
+                            variant="contained"
+                            sx={{ borderRadius: "100px" }}
+                          >
+                            Repository
+                          </Button>
+                          <Button
+                            disableElevation
+                            onClick={() =>
+                              window.open(selectedUser.videoDemoUrl, "_blank")
+                            }
+                            variant="contained"
+                            sx={{ borderRadius: "100px" }}
+                          >
+                            Demo Video
+                          </Button>
+                        </div>
+                        <div className="mt-2 font-medium text-black/70">
+                          Description
+                        </div>
+                        <div className="h-full border border-gray-200 rounded-xl overflow-y-auto p-2 bg-gray-50">
+                          {selectedUser.description}
                         </div>
                       </div>
-                    <div className="w-fit h-full flex items-stretch  flex-col shrink-0" >
-                      <div className="h-fit w-full flex gap-2" >
-                        <Button disableElevation onClick={() => window.open(selectedUser.deploymentUrl, "_blank")} variant="contained" sx={{borderRadius: "100px"}}>Live Link</Button>
-                        <Button disableElevation onClick={() => window.open(selectedUser.githubUrl, "_blank")} variant="contained" sx={{borderRadius: "100px"}}>Repository</Button>
-                        <Button disableElevation onClick={() => window.open(selectedUser.videoDemoUrl, "_blank")} variant="contained" sx={{borderRadius: "100px"}}>Demo Video</Button>
-                      </div>
-                      <div className="mt-2 font-medium text-black/70">Description</div>
-                      <div className="h-full border border-gray-200 rounded-xl overflow-y-auto p-2 bg-gray-50">{selectedUser.description}</div>
-                    </div>
                     </div>
                   </div>
                   <div className="modal-footer gap-2">
-                    <Chip className="!mr-auto"  label={selectedUser.status.toUpperCase()} ></Chip>
+                    <Chip
+                      className="!mr-auto"
+                      label={selectedUser.status.toUpperCase()}
+                    ></Chip>
                     <Button variant="contained">Approve</Button>
                     <Button
                       disabled={subLoading}
@@ -241,7 +300,7 @@ const JobStats = () => {
                       className=" !flex  gap-2"
                     >
                       <>
-                        {selectedUser.subscribed ? "Unsubscribe" : "Subscribe"}
+                        {selectedUser?.subscribed ? "Unsubscribe" : "Subscribe"}
                       </>
 
                       {subLoading ? (

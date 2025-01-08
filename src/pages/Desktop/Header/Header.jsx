@@ -64,6 +64,16 @@ export default function Header() {
     };
   }, []);
 
+  function handleRedirectProfile(){
+    
+    if(userData.type === "entrepreneur"){
+      navigate("/entrepreneur/" + userData.id);
+    }
+    else{
+      navigate("/profile/" + userData.id);
+    }
+  }
+
   return (
     <div className="nav-bar-container">
       <div className="logo-search-container">
@@ -111,7 +121,7 @@ export default function Header() {
               <div className="dropdown-menu" ref={menuRef}>
                 <div
                   className="dropdown-item"
-                  onClick={() => handleMenuOptionClick(`profile/${userData?.uid}`)}
+                  onClick={() => handleRedirectProfile()}
                 >
                   <AiOutlineUser className="menu-icon" />
                   Profile
