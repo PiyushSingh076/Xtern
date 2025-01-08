@@ -20,7 +20,7 @@ import {
 } from "react-icons/fa";
 
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 import { FiXCircle } from "react-icons/fi";
 import useSaveJob from "../hooks/Jobs/useSaveJob.js";
 import useImageUpload from "../hooks/Auth/useImageUpload.js"; // Custom hook for image upload
