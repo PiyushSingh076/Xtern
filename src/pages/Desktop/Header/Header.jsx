@@ -4,6 +4,8 @@ import {
   AiOutlineWallet,
   AiOutlineQuestionCircle,
   AiOutlineLogout,
+  AiOutlineCalendar,
+  AiOutlineMessage
 } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -136,8 +138,15 @@ export default function Header() {
                   className="dropdown-item"
                   onClick={() => navigate("/myvideocall")}
                 >
-                  <AiOutlineQuestionCircle className="menu-icon" />
+                  <AiOutlineCalendar className="menu-icon" />
                   My Schedule
+                </div>
+                <div
+                  className="dropdown-item"
+                  onClick={() => handleMenuOptionClick("/mychat")}
+                >
+                  <AiOutlineMessage className="menu-icon" />
+                  My Chats
                 </div>
                 <div
                   className="dropdown-item logout"

@@ -1,46 +1,106 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import "./my_video_call.css";
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 
 const VideoCallSelection = () => {
   const { userData } = useFetchUserData();
   const [availableUsers, setAvailableUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const currentUserId = userData?.uid || localStorage.getItem("currentUserId");
+
   useEffect(() => {
-    const fetchAvailableUsers = async () => {
+    if (!currentUserId) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchAssociatedUsers = async () => {
+      const db = getFirestore();
+      const scheduledCallsRef = collection(db, "scheduledCalls");
+      const usersCollectionRef = collection(db, "users");
+
       try {
-        const response = await axios.get(
-          "http://localhost:5000/getCallableUsers",
-          {
-            params: {
-              currentUserId: userData.id,
-            },
-          }
+        setLoading(true);
+
+        // Query scheduledCalls for the current user
+        const q = query(
+          scheduledCallsRef,
+          where("hostUserId", "==", currentUserId)
         );
-        console.log(response.data.users);
-        setAvailableUsers(response.data.users);
-      } catch (error) {
-        console.error("Error fetching available users:", error);
+
+        const querySnapshot = await getDocs(q);
+        const associatedUsersData = [];
+
+        for (const docSnapshot of querySnapshot.docs) {
+          const data = docSnapshot.data();
+
+          // Determine the other user and meeting time
+          const otherUserId =
+            data.hostUserId === currentUserId
+              ? data.recipientUserId
+              : data.hostUserId;
+
+          const meetingTime = data.scheduledDateTime || "No time specified";
+
+          // Format the meeting time to a more readable format
+          const formattedMeetingTime = meetingTime !== "No time specified" ? 
+            new Date(meetingTime).toLocaleString() : meetingTime;
+
+          // Fetch user details
+          const userDoc = doc(usersCollectionRef, otherUserId);
+          const userSnapshot = await getDoc(userDoc);
+
+          if (userSnapshot.exists()) {
+            associatedUsersData.push({
+              id: otherUserId,
+              ...userSnapshot.data(),
+              meetingTime: formattedMeetingTime,
+            });
+          }
+        }
+
+        setAvailableUsers(associatedUsersData);
+      } catch (err) {
+        console.error("Error fetching associated users:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (userData) {
-      fetchAvailableUsers();
-    }
-  }, [userData]);
+    fetchAssociatedUsers();
+  }, [currentUserId]);
 
   const handleVideoCallInvite = (user) => {
-    setSelectedUser(user);
     navigate(
-      `/videocall?uid=${user.id}&firstName=${encodeURIComponent(user.name)}`
+      `/videocall?uid=${user.id}&firstName=${encodeURIComponent(
+        user.display_name
+      )}`
     );
   };
 
   if (!userData) {
+    return (
+      <div className="loading-message">
+        <p>Loading user data...</p>
+      </div>
+    );
+  }
+
+  if (!currentUserId) {
     return (
       <div className="login-required">
         <div className="login-message">
@@ -49,6 +109,14 @@ const VideoCallSelection = () => {
         </div>
       </div>
     );
+  }
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
   }
 
   return (
@@ -64,10 +132,10 @@ const VideoCallSelection = () => {
           {availableUsers.map((user) => (
             <div key={user.id} className="user-card">
               <div className="user-info">
-                {user.image ? (
+                {user.photo_url ? (
                   <img
-                    src={user.image}
-                    alt={user.name}
+                    src={user.photo_url}
+                    alt={user.display_name}
                     className="user-avatar"
                   />
                 ) : (
@@ -76,8 +144,9 @@ const VideoCallSelection = () => {
                   </div>
                 )}
                 <div className="user-details">
-                  <h3>{user.name}</h3>
-                  <p>{user.status || "Available"}</p>
+                  <h3>{user.display_name}</h3>
+                  <p>{user.role || "Available"}</p>
+                  <p>Meeting Time: {user.meetingTime}</p>
                 </div>
               </div>
               <button
