@@ -12,6 +12,7 @@ import {
   TextField,
   Typography,
   Table,
+  Skeleton,
 } from "@mui/material";
 
 import dayjs from "dayjs";
@@ -200,15 +201,29 @@ const JobStats = () => {
               <div className="modal-dialog m-7 !max-w-fit" role="document">
                 <div className="modal-content">
                   <div className="modal-header">
-                    <h5 className="modal-title">
-                      {selectedUser?.user?.firstName}{" "}
-                      {selectedUser?.user?.lastName}
+                    <h5 className="modal-title !h-[1.5em]">
+                      {loadingDetails ? (
+                        <div className="h-[1.5em] w-[200px] rounded-lg overflow-hidden">
+                          <Skeleton variant="rectangular" width="100%" height="100%" ></Skeleton>
+                        </div>
+                      ) : (
+                        <>
+                          {selectedUser?.user?.firstName}{" "}
+                          {selectedUser?.user?.lastName}
+                        </>
+                      )}
                     </h5>
                   </div>
                   <div className="modal-body">
                     <div className="flex size-full gap-4 items-stretch h-[250px]">
                       {loadingDetails ? (
-                        <></>
+                        <div className="w-[150px] h-full rounded-lg overflow-hidden">
+                          <Skeleton
+                            variant="rectangular"
+                            width="100%"
+                            height="100%"
+                          ></Skeleton>
+                        </div>
                       ) : (
                         <>
                           <div className="flex flex-col w-fit shrink-0">

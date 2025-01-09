@@ -67,10 +67,10 @@ export default function Header() {
   function handleRedirectProfile(){
     
     if(userData.type === "entrepreneur"){
-      navigate("/entrepreneur/" + userData.id);
+      navigate("/entrepreneur/" + userData.uid);
     }
     else{
-      navigate("/profile/" + userData.id);
+      navigate("/profile/" + userData.uid);
     }
   }
 
