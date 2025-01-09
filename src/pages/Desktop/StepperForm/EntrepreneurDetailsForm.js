@@ -332,53 +332,101 @@ const handleDeleteConfirmation = () => {
 
   const handleEntreneurSubmitInfo = async (e) => {
     e.preventDefault();
-   
+  
+    const newErrors = {};
+    // Validate profile image
+    if(!profileImg) newErrors.profileImg="Profile Image is required"
 
-    const missingFields = [];
-    if (!firstName) missingFields.push("First Name");
-    if (!lastName) missingFields.push("Last Name");
-    if (!state) missingFields.push("State");
-    if (!city) missingFields.push("City");
-    if (!companyDetails) missingFields.push("Company Details");
-    if (!experience) missingFields.push("Years in Experience");
-    if (!industry) missingFields.push("Industry");
-
-    if (missingFields.length === 0) {
-      
-      const entrepreneurData = {
-        profileImage: {
-          url: profileImgURL,
-          fileName: profileImg?.name || "",},
-        firstName,
-        lastName,
-        state,
-        city,
-        companyDetails,
-      experience,
-      industry,
-       skillsRequired,
-       linkedinProfile,
-      };
-
-    dispatch(setEntrepreneurDetails(entrepreneurData));
-    try {
-      //TODO: firebase fix
-      // const test = await addDoc(collection(db, "entrepreneurs"), {
-      //   test: "test21",
-      // });
-      // console.log(test);
-      const userId = await saveEntrepreneurDetails(entrepreneurData);
-    toast.success("Profile saved successfully!");
-    navigate(`/entrepreneur/${userId}`);
-    } // Adjust route as needed
-    catch (error) {
-      toast.error(`Error saving profile: ${error.message || error}`);
-      console.error(error);
+    // Validate First Name
+    if (!firstName.trim()) {
+      newErrors.firstName = "First Name is required.";
     }
-  } else {
-    missingFields.forEach((field) => toast.error(`${field} is required`));
-  }
-};
+  
+    // Validate Last Name
+    if (!lastName.trim()) {
+      newErrors.lastName = "Last Name is required.";
+    }
+  
+    // Validate State
+    if (!state.trim()) {
+      newErrors.state = "State is required.";
+    }
+  
+    // Validate City
+    if (!city.trim()) {
+      newErrors.city = "City is required.";
+    }
+  
+    // Validate Company Details
+    if (!companyDetails.name.trim()) {
+      newErrors.companyDetailsName = "Company Name is required.";
+    }
+    if (!companyDetails.logo.url) {
+      newErrors.companyDetailsLogo = "Company Logo is required.";
+    }
+    if (!companyDetails.startDate.trim()) {
+      newErrors.companyDetailsStartDate = "Company Start Date is required.";
+    }
+    if (!companyDetails.description.trim()) {
+      newErrors.companyDetailsDescription = "Company Description is required.";
+    }
+  
+    // Validate Experience
+    if (!experience || isNaN(experience) || experience <= 0) {
+      newErrors.experience = "Experience is required.";
+    }
+  
+    // Validate Industry
+    if (!industry.trim()) {
+      newErrors.industry = "Industry is required.";
+    }
+  
+    // Validate Skills Required
+    if (!skillsRequired || skillsRequired.length === 0) {
+      newErrors.skillsRequired = "At least one skill is required.";
+    }
+  
+    // Validate LinkedIn Profile
+    if (!linkedinProfile.trim()) {
+      newErrors.linkedinProfile = "LinkedIn Profile is required.";
+    } else if (!/^https?:\/\/[^\s]+$/.test(linkedinProfile)) {
+      newErrors.linkedinProfile = "Enter a valid LinkedIn URL.";
+    }
+  
+    // Set errors and check if the form is valid
+    setErrors(newErrors);
+  
+    if (Object.keys(newErrors).length === 0) {
+      try {
+        const entrepreneurData = {
+          profileImage: {
+            url: profileImgURL,
+            fileName: profileImg?.name || "",
+          },
+          firstName,
+          lastName,
+          state,
+          city,
+          companyDetails,
+          experience,
+          industry,
+          skillsRequired,
+          linkedinProfile,
+        };
+  
+        dispatch(setEntrepreneurDetails(entrepreneurData));
+        const userId = await saveEntrepreneurDetails(entrepreneurData);
+        toast.success("Profile saved successfully!");
+        navigate(`/entrepreneur/${userId}`); // Adjust route as needed
+      } catch (error) {
+        toast.error(`Error saving profile: ${error.message || error}`);
+        console.error(error);
+      }
+    } else {
+      toast.error("Please fix the errors and try again.");
+    }
+  };
+  
 
 
   return (
@@ -432,6 +480,11 @@ const handleDeleteConfirmation = () => {
                 <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
                   Click to upload
                 </Typography>
+                {errors.profileImg && (
+    <Typography variant="caption" color="error">
+      {errors.profileImg}
+    </Typography>
+  )}
               </Box>
 
               <TextField
@@ -460,6 +513,11 @@ const handleDeleteConfirmation = () => {
                                   <InputLabel id="experience-label">
                                     Years of Experience
                                   </InputLabel>
+                                  {errors.experience && (
+            <Typography variant="caption" color="error">
+              {errors.experience}
+            </Typography>
+          )}
                                   <Select
                                     labelId="experience-label"
                                     value={experience}
@@ -478,6 +536,11 @@ const handleDeleteConfirmation = () => {
                                 </FormControl>
               <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
                     <InputLabel id="state-label">State</InputLabel>
+                    {errors.state && (
+            <Typography variant="caption" color="error">
+              {errors.state}
+            </Typography>
+          )}
                     <Select
                       labelId="state-label"
                       value={state}
@@ -494,6 +557,11 @@ const handleDeleteConfirmation = () => {
 
                   <FormControl fullWidth required size="small">
                     <InputLabel id="city-label">City</InputLabel>
+                    {errors.city && (
+            <Typography variant="caption" color="error">
+              {errors.city}
+            </Typography>
+          )}
                     <Select
                       labelId="city-label"
                       value={city}
@@ -501,13 +569,16 @@ const handleDeleteConfirmation = () => {
                       onChange={(e) => setCity(e.target.value)}
                       disabled={!state}
                     >
-                      {cities.map((city) => (
+               {cities.map((city) => (
                         <MenuItem key={city.id} value={city.name}>
                           {city.name}
                         </MenuItem>
                       ))}
                     </Select>
+             
+                  
                   </FormControl>
+               
             </CardContent>
           </Card>
         </Grid>
@@ -597,15 +668,23 @@ const handleDeleteConfirmation = () => {
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 {companyDetails.description}
-              </Typography>
+              </Typography> 
+           
+
             </Box>
             </>
-          ) :""}
+          ) :  (
+           ""
+          )
+}
+{errors.companyDetails && (
+    <Typography variant="caption" color="error">
+      {errors.companyDetails}
+    </Typography>
+  )}
         </CardContent>
 
           </Card>
-        
-     
       <Card sx={{ mb: 2, boxShadow: 2 }}>
         <CardHeader
           title="Skills Required"
@@ -640,9 +719,16 @@ const handleDeleteConfirmation = () => {
                   Rating: {skill.rating}
                 </Typography>
               </Box>
+
             </Box>
+     
             </>
           ))}
+           {errors.skillsRequired && (
+    <Typography variant="caption" color="error">
+      {errors.skillsRequired}
+    </Typography>
+  )}
         </CardContent>
       </Card>
           <TextField
@@ -664,6 +750,8 @@ const handleDeleteConfirmation = () => {
             value={linkedinProfile}
             onChange={(e) => setLinkedinProfile(e.target.value)}
             sx={{ mb: 3 }}
+            error={!!errors.industry}
+            helperText={errors.industry}
           />
 
 {/* Dialog for Adding Skills */}
