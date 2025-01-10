@@ -31,6 +31,7 @@ import {
 import ScheduledCallsModal from "./ScheduledCallsModal";
 import { Box, Tooltip, IconButton, Chip } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
 
 /**
  * Utility to safely format Firestore Timestamp or "Present"/string.
@@ -66,6 +67,7 @@ function formatExperience(expValue) {
 const SingleMentor = () => {
   const navigate = useNavigate();
   const { uid } = useParams();
+  const { user, loading } = useAuthState();
 
   // For scheduling calls
   const [interviewScheduled, setInterviewScheduled] = useState(false);
@@ -94,6 +96,22 @@ const SingleMentor = () => {
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(uid);
+
+  const handleChatClick = () => {
+    if (user) {
+      navigate("/mychat"); // Redirect to chat page if logged in
+    } else {
+      navigate("/signin"); // Redirect to sign-in page if not logged in
+    }
+  };
+
+  const handleMeetClick = () => {
+    if (user) {
+      navigate("/meet"); // Redirect to meet page if logged in
+    } else {
+      navigate("/signin"); // Redirect to sign-in page if not logged in
+    }
+  };
 
   // Example: fetching other users by type
   const {
@@ -423,14 +441,11 @@ const SingleMentor = () => {
               </div>
               {!editable && (
                 <div className="consulting-btn">
-                  <button
-                    onClick={() => navigate("/mychat")}
-                    className="chat-btn"
-                  >
+                  <button onClick={handleChatClick} className="chat-btn">
                     <MdChat /> Chat
                   </button>
                   <button
-                    onClick={() => setInterviewScheduled(true)}
+                    onClick={handleMeetClick}
                     className="chat-btn"
                     disabled={!isInitialized}
                   >
