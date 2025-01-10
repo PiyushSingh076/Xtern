@@ -1,23 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FaCalendarAlt,
-  FaClipboardList,
-  FaGlobe,
-  FaBriefcase,
-  FaTasks,
-  FaUsers,
-  FaTimes,
-  FaRegListAlt,
-  FaCloudUploadAlt,
-  FaArrowRight,
-  FaEye,
-  FaFileImage,
-  FaFilePdf,
-  FaFileAlt,
-  FaFileWord,
-  FaFileExcel,
-} from "react-icons/fa";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth"; // Equivalent to FaCalendarAlt
+import ListAltIcon from "@mui/icons-material/ListAlt"; // Equivalent to FaClipboardList
+import LanguageIcon from "@mui/icons-material/Language"; // Equivalent to FaGlobe
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter"; // Equivalent to FaBriefcase
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn"; // Equivalent to FaTasks
+import GroupsIcon from "@mui/icons-material/Groups"; // Equivalent to FaUsers
+import CloseIcon from "@mui/icons-material/Close"; // Equivalent to FaTimes
+import ListIcon from "@mui/icons-material/List"; // Equivalent to FaRegListAlt
+import CloudUploadIcon from "@mui/icons-material/CloudUpload"; // Equivalent to FaCloudUploadAlt
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward"; // Equivalent to FaArrowRight
+import VisibilityIcon from "@mui/icons-material/Visibility"; // Equivalent to FaEye
+import ImageIcon from "@mui/icons-material/Image"; // Equivalent to ImageIcon
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf"; // Equivalent to FaFilePdf
+import DescriptionIcon from "@mui/icons-material/Description"; // Equivalent to FaFileAlt
+import ArticleIcon from "@mui/icons-material/Article"; // Equivalent to FaFileWord
+import TableChartIcon from "@mui/icons-material/TableChart"; // Equivalent to FaFileExcel
 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -27,7 +25,7 @@ import useImageUpload from "../hooks/Auth/useImageUpload.js"; // Custom hook for
 import { getAuth } from "firebase/auth";
 import { storage } from "../firebaseConfig.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
+import { TextField, InputAdornment } from "@mui/material";
 const Stepper = () => {
   const steps = [
     { id: 1, name: "Job" },
@@ -64,20 +62,20 @@ const Stepper = () => {
     setId(id);
   };
   const fileIcons = {
-    "image/png": <FaFileImage size={20} className="text-blue-500" />,
-    "image/jpeg": <FaFileImage size={20} className="text-yellow-500" />,
-    "image/jpg": <FaFileImage size={20} className="text-yellow-500" />,
-    "application/pdf": <FaFilePdf size={20} className="text-red-500" />,
-    "text/plain": <FaFileAlt size={20} className="text-gray-500" />,
-    "application/msword": <FaFileWord size={20} className="text-blue-700" />,
+    "image/png": <ImageIcon size={20} className="text-blue-500" />,
+    "image/jpeg": <ImageIcon size={20} className="text-yellow-500" />,
+    "image/jpg": <ImageIcon size={20} className="text-yellow-500" />,
+    "application/pdf": <PictureAsPdfIcon size={20} className="text-red-500" />,
+    "text/plain": <DescriptionIcon size={20} className="text-gray-500" />,
+    "application/msword": <ArticleIcon size={20} className="text-blue-700" />,
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": (
-      <FaFileWord size={20} className="text-blue-700" />
+      <ArticleIcon size={20} className="text-blue-700" />
     ),
     "application/vnd.ms-excel": (
-      <FaFileExcel size={20} className="text-green-500" />
+      <TableChartIcon size={20} className="text-green-500" />
     ),
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": (
-      <FaFileExcel size={20} className="text-green-500" />
+      <TableChartIcon size={20} className="text-green-500" />
     ),
   };
   const handleSkillKeyPress = (e) => {
@@ -365,121 +363,61 @@ const Stepper = () => {
                 />
               </div>
 
-              <div
-                className="form-details-sign-in mb-2 flex items-center gap-2" // Align items horizontally (icon + input)
-                style={{
-                  width: "45vw",
-                  margin: "0 auto",
-                  height: "10vh",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  backgroundColor: "#f8f9fa",
-                  display: "flex",
-                  flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
-                  justifyContent: "flex-start", // Align items to the left
-                  alignItems: "center", // Align both the icon and the input at the top
+              <TextField
+                className="w-[40vw]"
+                style={{ margin: "0 auto" }}
+                label="Company Name"
+                required
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <GroupsIcon color="#7f7f7f" />
+                    </InputAdornment>
+                  ),
                 }}
-              >
-                <span className="text-primary flex items-center">
-                  <FaUsers size={20} color="#7f7f7f" />
-                </span>
-                <input
-                  type="text"
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  placeholder="Company Name"
-                  className="sign-in-custom-input"
-                  required
-                  style={{
-                    border: "none",
-                    outline: "none",
-                    fontSize: "16px",
-                    color: "#7f7f7f",
-                    background: "transparent",
-                    width: "100%", // Ensure the input takes up the remaining space
-                    paddingLeft: "5px", // Add space between the icon and input text
-                  }}
-                />
-              </div>
+                variant="outlined"
+              />
             </div>
             {/* Second Column */}
             <div className="flex flex-col w-[50vw] gap-2">
-              <div
-                className="form-details-sign-in mb-2 flex items-center gap-2" // Align items horizontally (icon + input)
-                style={{
-                  width: "40vw",
-                  margin: "0 auto",
-                  height: "8vh",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  backgroundColor: "#f8f9fa",
-                  display: "flex",
-                  flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
-                  justifyContent: "flex-start", // Align items to the left
-                  alignItems: "center", // Align both the icon and the input at the top
+              <TextField
+                className="w-[40vw]"
+                style={{ margin: "0 auto" }}
+                label="Job Title"
+                required
+                value={jobTitle}
+                onChange={(e) => setJobTitle(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <BusinessCenterIcon color="#7f7f7f" />
+                    </InputAdornment>
+                  ),
                 }}
-              >
-                <span className="text-primary flex items-center">
-                  <FaBriefcase size={20} color="#7f7f7f" />
-                </span>
-                <input
-                  type="text"
-                  value={jobTitle}
-                  onChange={(e) => setJobTitle(e.target.value)}
-                  placeholder="Job Title"
-                  className="sign-in-custom-input"
-                  required
-                  style={{
-                    border: "none",
-                    outline: "none",
-                    fontSize: "16px",
-                    color: "#7f7f7f",
-                    background: "transparent",
-                    width: "100%", // Ensure the input takes up the remaining space
-                    paddingLeft: "5px", // Add space between the icon and input text
-                  }}
-                />
-              </div>
-              <div
-                className="form-details-sign-in mb-2 flex items-center gap-2" // Align items horizontally (icon + input)
-                style={{
-                  width: "40vw",
-                  margin: "0 auto",
-                  height: "8vh",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  backgroundColor: "#f8f9fa",
-                  display: "flex",
-                  flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
-                  justifyContent: "flex-start", // Align items to the left
-                  alignItems: "center", // Align both the icon and the input at the top
+                variant="outlined"
+              />
+
+              {/* Skills Input */}
+              <TextField
+                label="Skills (e.g., PHP, Laravel, MySQL)"
+                required
+                className="w-[40vw]"
+                style={{ margin: "0 auto" }}
+                value={skillInput}
+                onChange={(e) => setSkillInput(e.target.value)}
+                onKeyPress={handleSkillKeyPress}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AssignmentTurnedInIcon color="#7f7f7f" />
+                    </InputAdornment>
+                  ),
                 }}
-              >
-                <span className="text-primary flex items-center">
-                  <FaTasks size={20} color="#7f7f7f" />
-                </span>
-                <input
-                  type="text"
-                  value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
-                  onKeyPress={handleSkillKeyPress}
-                  placeholder="Skills(e.g., PHP,Laravel,MySQL)"
-                  className="sign-in-custom-input"
-                  required
-                  style={{
-                    border: "none",
-                    outline: "none",
-                    fontSize: "16px",
-                    color: "#7f7f7f",
-                    background: "transparent",
-                    width: "100%", // Ensure the input takes up the remaining space
-                    paddingLeft: "5px", // Add space between the icon and input text
-                  }}
-                />
-              </div>
+                variant="outlined"
+              />
+
               <div className="flex items-center justify-center">
                 {skills.length > 0 && (
                   <div className="d-flex gap-2 items-center text mt-1 mb-2 w-[40vw] flex-wrap">
@@ -498,7 +436,7 @@ const Stepper = () => {
                         }}
                       >
                         {skill}
-                        <FaTimes
+                        <CloseIcon
                           className="absolute cursor-pointer"
                           style={{
                             fontSize: "14px", // Increased size of icon
@@ -516,118 +454,80 @@ const Stepper = () => {
                   </div>
                 )}
               </div>
+              {/* Experience Level Input */}
+              <TextField
+                label="Experience Level (e.g., Beginner, Intermediate, Advanced)"
+                required
+                className="w-[40vw]"
+                style={{ margin: "0 auto" }}
+                value={experienceLevel}
+                onChange={(e) => setExperienceLevel(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AssignmentTurnedInIcon color="#7f7f7f" />
+                    </InputAdornment>
+                  ),
+                }}
+                variant="outlined"
+              />
 
-              <div
-                className="form-details-sign-in mb-2 flex items-center gap-2" // Align items horizontally (icon + input)
-                style={{
-                  width: "40vw",
-                  margin: "0 auto",
-                  height: "8vh",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  backgroundColor: "#f8f9fa",
-                  display: "flex",
-                  flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
-                  justifyContent: "flex-start", // Align items to the left
-                  alignItems: "center", // Align both the icon and the input at the top
+              <TextField
+                placeholder="Job Description *"
+                required
+                className="w-[40vw]"
+                style={{ margin: "0 auto" }}
+                multiline
+                rows={4} // Adjust rows for multiline input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <ListAltIcon color="#7f7f7f" />
+                    </InputAdornment>
+                  ),
                 }}
-              >
-                <span className="text-primary flex items-center">
-                  <FaTasks size={20} color="#7f7f7f" />
-                </span>
-                <input
-                  type="text"
-                  value={experienceLevel}
-                  onChange={(e) => setExperienceLevel(e.target.value)}
-                  placeholder="Experience Level(e.g., Beginner,Intermediate,Advance)"
-                  className="sign-in-custom-input"
-                  required
-                  style={{
-                    border: "none",
-                    outline: "none",
-                    fontSize: "16px",
-                    color: "#7f7f7f",
-                    background: "transparent",
-                    width: "100%", // Ensure the input takes up the remaining space
-                    paddingLeft: "5px", // Add space between the icon and input text
-                  }}
-                />
-              </div>
-              <div
-                className="form-details-sign-in mb-2 flex items-center gap-2" // Align items horizontally (icon + input)
-                style={{
-                  width: "40vw",
-                  margin: "0 auto",
-                  height: "20vh",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  backgroundColor: "#f8f9fa",
-                  display: "flex",
-                  flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
-                  justifyContent: "flex-start", // Align items to the left
-                  alignItems: "flex-start", // Align both the icon and the input at the top
+                variant="outlined"
+                sx={{
+                  ".MuiOutlinedInput-root": {
+                    paddingLeft: "40px", // Adds space for the icon inside the input field
+                    paddingTop: "10px", // Adjust the padding to align the icon at the top
+                    "& fieldset": {
+                      borderColor: "#ccc", // Dark border outline color by default
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#333", // Light black border color on hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#0077b5", // Blue border color when focused (LinkedIn blue)
+                    },
+                  },
+                  ".MuiInputAdornment-root": {
+                    position: "absolute", // Make sure the icon stays inside the field
+                    top: "9px", // Align the icon at the top of the input field
+                    left: "10px", // Position the icon to the left inside the input
+                  },
                 }}
-              >
-                <span className="text-primary flex items-center">
-                  <FaClipboardList size={20} color="#7f7f7f" />
-                </span>
-                <input
-                  type="text"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Job Description"
-                  className="sign-in-custom-input"
-                  required
-                  style={{
-                    border: "none",
-                    outline: "none",
-                    fontSize: "16px",
-                    color: "#7f7f7f",
-                    background: "transparent",
-                    width: "100%", // Ensure the input takes up the remaining space
-                    paddingLeft: "5px", // Add space between the icon and input text
-                  }}
-                />
-              </div>
-              <div
-                className="form-details-sign-in mb-2 flex items-center gap-2" // Align items horizontally (icon + input)
-                style={{
-                  width: "40vw",
-                  margin: "0 auto",
-                  height: "8vh",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  backgroundColor: "#f8f9fa",
-                  display: "flex",
-                  flexDirection: "row", // Keep the flex direction as row for icon and input to be aligned horizontally
-                  justifyContent: "flex-start", // Align items to the left
-                  alignItems: "center", // Align both the icon and the input at the top
+              />
+
+              <TextField
+                label="Job Location"
+                required
+                className="w-[40vw]"
+                style={{ margin: "0 auto" }}
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LanguageIcon color="#7f7f7f" />
+                    </InputAdornment>
+                  ),
                 }}
-              >
-                <span className="text-primary flex items-center">
-                  <FaGlobe size={20} color="#7f7f7f" />
-                </span>
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Job Location"
-                  className="sign-in-custom-input"
-                  required
-                  style={{
-                    border: "none",
-                    outline: "none",
-                    fontSize: "16px",
-                    color: "#7f7f7f",
-                    background: "transparent",
-                    width: "100%", // Ensure the input takes up the remaining space
-                    paddingLeft: "5px", // Add space between the icon and input text
-                  }}
-                />
-              </div>
+                variant="outlined"
+              />
+
               <button
                 style={{
                   border: "none",
@@ -650,7 +550,7 @@ const Stepper = () => {
               >
                 Next
                 <span className="ml-2 flex items-center">
-                  <FaArrowRight size={16} color="white" />
+                  <ArrowForwardIcon size={16} color="white" />
                 </span>
               </button>
             </div>
@@ -660,68 +560,92 @@ const Stepper = () => {
           <div className="flex  gap-4">
             {/* Assessment Detail */}
             <div className="w-[50vw]">
-              <div
-                className="form-details-sign-in mb-2 bg-gray-100 rounded-lg px-4 py-2"
-                style={{ width: "45vw", margin: "0 auto", height: "40vh" }}
-              >
-                <span className="text-primary mr-2 mt-[3px]">
-                  <FaClipboardList />
-                </span>
-                <textarea
-                  value={assessmentDetail}
-                  onChange={(e) => setAssessmentDetail(e.target.value)}
-                  placeholder="Assessment Detail"
-                  className="flex-1 bg-transparent outline-none resize-none text-gray-500"
-                  rows="4"
-                  required
-                />
-              </div>
+              <TextField
+                placeholder="Assessment Detail *"
+                required
+                className="w-[45vw]"
+                style={{ margin: "0 20px" }}
+                multiline
+                rows={10} // Adjust rows for multiline input
+                value={assessmentDetail}
+                onChange={(e) => setAssessmentDetail(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CalendarMonthIcon color="#7f7f7f" />
+                    </InputAdornment>
+                  ),
+                }}
+                variant="outlined"
+                sx={{
+                  ".MuiOutlinedInput-root": {
+                    paddingLeft: "40px", // Adds space for the icon inside the input field
+                    paddingTop: "10px", // Adjust the padding to align the icon at the top
+                    "& fieldset": {
+                      borderColor: "#ccc", // Dark border outline color by default
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#333", // Light black border color on hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#0077b5", // Blue border color when focused (LinkedIn blue)
+                    },
+                  },
+                  ".MuiInputAdornment-root": {
+                    position: "absolute", // Make sure the icon stays inside the field
+                    top: "9px", // Align the icon at the top of the input field
+                    left: "10px", // Position the icon to the left inside the input
+                  },
+                }}
+              />
             </div>
             <div className="w-[50vw] flex flex-col items-center gap-3">
               {/* Assessment Duration */}
-              <div
-                className="form-details-sign-in mb-2 flex items-center"
-                style={{ width: "45vw", margin: "0 auto", height: "10vh" }}
-              >
-                <span className="text-primary flex items-center">
-                  <FaCalendarAlt />
-                </span>
-                <input
-                  type="number"
-                  value={assessmentDuration}
-                  onChange={(e) => setAssessmentDuration(e.target.value)}
-                  placeholder="Assessment Duration (e.g., 2 days)"
-                  className="sign-in-custom-input"
-                  required
-                />
-              </div>
-              {/* Job Duration */}
-              <div
-                className="form-details-sign-in mb-2 flex items-center"
-                style={{ width: "45vw", margin: "0 auto", height: "10vh" }}
-              >
-                <span className="text-primary flex items-center">
-                  <FaRegListAlt />
-                </span>
-                <input
-                  type="number"
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  placeholder="Job Duration (e.g., 6 months)"
-                  className="sign-in-custom-input"
-                  required
-                />
-              </div>
-              <div
-                className="flex flex-col items-center justify-center h-auto w-[45vw] bg-gray-100 p-4 rounded-md"
+              <TextField
+                type="number"
+                className="w-[45vw]"
                 style={{ margin: "0 auto" }}
+                label="Assessment Duration (e.g., 2 days)"
+                required
+                value={assessmentDuration}
+                onChange={(e) => setAssessmentDuration(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CalendarMonthIcon color="#7f7f7f" />
+                    </InputAdornment>
+                  ),
+                }}
+                variant="outlined"
+              />
+              {/* Job Duration */}
+              <TextField
+                className="w-[45vw]"
+                type="number"
+                style={{ margin: "0 auto" }}
+                label="Job Duration (e.g., 6 Months)"
+                required
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CalendarMonthIcon color="#7f7f7f" />
+                    </InputAdornment>
+                  ),
+                }}
+                variant="outlined"
+              />
+              <div
+                className="flex flex-col items-center justify-center h-auto w-[45vw] bg-gray p-4 rounded-md cursor-pointer"
+                style={{ margin: "0 auto", border: "1px solid #ccc" }}
               >
                 <ToastContainer />
                 <label
                   htmlFor="file-upload"
                   className="flex items-center px-6 py-3 text-white bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 transition duration-300 shadow-lg"
                 >
-                  <FaCloudUploadAlt size={24} className="mr-2" />
+                  <CloudUploadIcon size={24} className="mr-2" />
                   Upload File
                 </label>
                 <input
@@ -734,20 +658,20 @@ const Stepper = () => {
                 {fileName && (
                   <div className="mt-4 flex items-center text-gray-700 bg-white p-2 rounded-md shadow-md gap-2">
                     {fileIcons[file?.type] || (
-                      <FaFileAlt size={20} className="text-gray-500" />
+                      <DescriptionIcon size={20} className="text-gray-500" />
                     )}
                     <p className="mr-2">{fileName}</p>
                     <button
                       className="text-blue-500 hover:text-blue-700 mr-2"
                       onClick={() => window.open(filePreview, "_blank")}
                     >
-                      <FaEye size={20} />
+                      <VisibilityIcon size={20} />
                     </button>
                     <button
                       className="text-red-500 hover:text-red-700"
                       onClick={clearFile}
                     >
-                      <FaTimes size={20} />
+                      <CloseIcon size={20} />
                     </button>
                   </div>
                 )}
