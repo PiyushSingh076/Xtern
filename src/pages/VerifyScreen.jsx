@@ -32,24 +32,26 @@ const VerifyScreen = () => {
     }
   }, [seconds, showOTP]);
 
-  const handlePhoneNumberSubmit = async (e) => {
-    e.preventDefault();
-    if (!ph || ph.length < 10) {
-      setError("Please enter a valid phone number");
-      toast.error("Please enter a valid phone number");
-      return;
-    }
+  // Change this part in VerifyScreen.js
+const handlePhoneNumberSubmit = async (e) => {
+  e.preventDefault();
+  if (!ph || ph.length < 10) {
+    setError("Please enter a valid phone number");
+    toast.error("Please enter a valid phone number");
+    return;
+  }
 
-    try {
-      await initRecaptchaVerifier(); // Initialize Recaptcha
-      console.log("reCAPTCHA initialized successfully");
-      await sendOtp(ph, setShowOTP, setError); // Send OTP
-    } catch (err) {
-      console.error("Error during OTP sending:", err);
-      setError("Failed to send OTP. Please try again.");
-      toast.error("Failed to send OTP. Please try again.");
-    }
-  };
+  try {
+    // Remove this line since reCAPTCHA is already initialized in useRecaptcha hook
+    await initRecaptchaVerifier(); 
+    
+    await sendOtp(ph, setShowOTP, setError);
+  } catch (err) {
+    console.error("Error during OTP sending:", err);
+    setError("Failed to send OTP. Please try again.");
+    toast.error("Failed to send OTP. Please try again.");
+  }
+};
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();

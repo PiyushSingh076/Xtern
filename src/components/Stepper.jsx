@@ -18,7 +18,7 @@ import ArticleIcon from "@mui/icons-material/Article"; // Equivalent to FaFileWo
 import TableChartIcon from "@mui/icons-material/TableChart"; // Equivalent to FaFileExcel
 
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 import { FiXCircle } from "react-icons/fi";
 import useSaveJob from "../hooks/Jobs/useSaveJob.js";
 import useImageUpload from "../hooks/Auth/useImageUpload.js"; // Custom hook for image upload

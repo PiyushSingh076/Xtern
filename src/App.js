@@ -7,6 +7,7 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./assets/css/media-query.css";
 import { ROUTES } from "./constants/routes"; // Import the route constants
 
+
 //  Desktop View
 import Entrepreneur from "./pages/Desktop/Entrepreneur/index.jsx";
 import DesktopHomeScreen from "./pages/Desktop/Homescreen/index.jsx";
@@ -24,7 +25,7 @@ import DesktopPrefferServiceMentor from "./pages/Desktop/Prefference/PrefferServ
 import DesktopAllProjects from "./pages/Desktop/ProjectDetail/AllProjects.jsx";
 import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iffat
 // import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
-import DesktopCard from "./pages/Desktop/Card/CarList.jsx";
+import DesktopCard from "./pages/Desktop/Card/CardList.jsx";
 import DesktopStepperForm from "./pages/Desktop/StepperForm/index.jsx";
 import EntrepreneurDetailsForm from "./pages/Desktop/StepperForm/EntrepreneurDetailsForm.js";
 
@@ -99,6 +100,10 @@ import ApplyInternship from "./pages/ApplyInternship";
 import CreateProject from "./pages/CreateProject";
 import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
+import Jobs from "./pages/jobs.jsx"
+import SingleJob from "./pages/SingleJob.jsx";
+import ApplyJob from "./pages/Applyjob.jsx";
+
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
 
@@ -209,6 +214,7 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
               <VerifyScreen />
+              
             </ProtectedRoute>
           }
         />
@@ -269,7 +275,10 @@ function App() {
 
         <Route path={ROUTES.STEPPER_FORM} element={<DesktopStepperForm />} />
 
-<Route path={ROUTES.ENTREPRENEURS_FORM} element={<EntrepreneurDetailsForm/>} />
+        <Route
+          path={ROUTES.ENTREPRENEURS_FORM}
+          element={<EntrepreneurDetailsForm />}
+        />
         <Route
           path={ROUTES.CREATE_JOB}
           element={
@@ -278,6 +287,32 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path={ROUTES.JOBS}
+          element={
+            <ProtectedRoute>
+              <Jobs />
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path={ROUTES.JOBS + "/:jobId"}
+          element={
+            <ProtectedRoute>
+              <SingleJob />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.APPLYJOB + "/:jobId"}
+          element={
+            <ProtectedRoute>
+              <ApplyJob />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path={ROUTES.SPEND_LEARNING}
           element={
@@ -504,23 +539,23 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path={ROUTES.ENTREPRENEUR} element={
-        
-            <Entrepreneur/>
-          
-        } />
-        <Route path={ROUTES.JOBSPOSTINGS} element={
-          <ProtectedRoute allowedRoles={['entrepreneur']}>
-            <JobPostings></JobPostings>
-          </ProtectedRoute>
-        } ></Route>
-        <Route path={ROUTES.JOBSTATS} element={
-          <ProtectedRoute>
-            <JobStats></JobStats>
-          </ProtectedRoute>
-        }>
-
-        </Route>
+        <Route path={ROUTES.ENTREPRENEUR} element={<Entrepreneur />} />
+        <Route
+          path={ROUTES.JOBSPOSTINGS}
+          element={
+            <ProtectedRoute allowedRoles={["entrepreneur"]}>
+              <JobPostings></JobPostings>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path={ROUTES.JOBSTATS}
+          element={
+            <ProtectedRoute>
+              <JobStats></JobStats>
+            </ProtectedRoute>
+          }
+        ></Route>
         <Route
           path={ROUTES.PROFILE_EDIT}
           element={
@@ -569,7 +604,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path={ROUTES.VIEWJOB} element={<ViewJob></ViewJob>} ></Route>
+        <Route path={ROUTES.VIEWJOB} element={<ViewJob></ViewJob>}></Route>
         <Route
           path={ROUTES.CURRENCY}
           element={

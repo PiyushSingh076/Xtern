@@ -34,9 +34,15 @@
   gap: 10px;
   justify-content: space-between;
   margin-right: 10px;
-
+  color: black;
 }
 
+.profile-container:hover {
+  color: white;
+}
+.profile-name {
+  color: inherit;
+}
 
 .logo-search-container{
   display: flex;
@@ -192,7 +198,7 @@
   }
 
   .hire-xtern-btn , .hire-xpert-btn{
-    width: 200px;
+    width: 150px;
     height: 32px;
     padding: 6px 0;
     border-radius: 20px;
@@ -219,8 +225,8 @@
 
   .dropdown-menu {
     position: absolute;
-    top: 90px;
-    right: 150px;
+    top: 100%;
+    right: 0;
     background-color: #fff;
     width: 200px;
     border: 1px solid #ddd;
@@ -229,6 +235,7 @@
     display: flex;
     flex-direction: column;
     z-index: 1000;
+    margin-top: -8px;  /* Changed from 8px to -8px */
   }
   
   .dropdown-item {

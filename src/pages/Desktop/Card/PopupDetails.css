@@ -1,0 +1,9 @@
+.popup-title {
+  font-weight: bold;
+}
+
+@media (max-width: 480px) {
+  .popup-container {
+    display: none;
+  }
+}
