@@ -1,84 +1,314 @@
-import React, { useEffect } from "react";
-import "./styles.css";
-import { Button, Chip, Skeleton } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
-import { useFetchJob } from "../../../hooks/Jobs/useFetchJob";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { 
+  Container, 
+  Typography, 
+  Paper, 
+  Grid, 
+  Chip,
+  Button,
+  Box,
+  Skeleton,
+} from '@mui/material';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../../firebaseConfig';
 
-import dayjs from "dayjs";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
-import { db } from "../../../firebaseConfig";
+import HeaderImg from '../../../assets/images/single-courses/header-img.png';
 
-const ViewJob = () => {
-  const navigate = useNavigate();
+import FillStar from '../../../assets/images/single-courses/orange-fill-star.svg';
+import StudentIcon from '../../../assets/images/single-courses/student-icon.svg';
+import TimeIcon from '../../../assets/images/single-courses/time-icon.svg';
+
+
+import AccessTime from '@mui/icons-material/AccessTime';
+
+
+const SingleJob = () => {
   const { jobId } = useParams();
-  const { jobData, loading } = useFetchJob(jobId);
-  useEffect(() => {
-    console.log("Job ID:", jobData);
-    
-  });
-  const jobDetails = {
-    title: "Software Engineer",
-    company: "Google",
-    city: "Bangalore",
-    description:
-      "Software Engineer at Google, working on Fullstack Web Development",
-    salary: "12lpa",
-    logo: "data:image/png;base64,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",
-    applicants: 102,
-    banner:
-      "https://www.piramalaranya.com/wp-content/uploads/2024/01/Rising-Demand-of-Residential-Projects-In-Mulund.png",
-    skills: ["React", "Node.js", "MongoDB", "HTML", "CSS", "JavaScript"],
-  };
-  return (
-    <div id="view-job-container">
-      <div id="view-job-card" className="job-stats-card">
-        {loading ? (
-          <Skeleton variant="rectangular" width="100%" height="100%" sx={{ borderRadius: "10px"}} />
-        ) : (
-          <>
-            <div id="job-stats-logo">
-              
-              <img id="job-stats-banner" src={jobData.image} alt="" />
-            </div>
-            <h4>{jobData.title}</h4>
-            <h5>
-              {jobData.companyName}, {jobData.location}
-            </h5>
-            <h6>Created: {dayjs(new Timestamp(jobData.createdAt.seconds, jobData.createdAt.nanoseconds).toDate()).format("DD/MM/YYYY")}</h6>
-            <div id="job-stats-description">{jobData.description}</div>
-            <h5>Skills:</h5>
-            <div id="job-stats-skills">
-              {jobData.skills.map((skill, index) => {
-                return (
-                  <Chip
-                    label={skill}
-                    key={index + skill + "job-stat-skill"}
-                  ></Chip>
-                );
-              })}
-            </div>
-            <Button
-              variant="contained"
-              sx={{ marginTop: "10px", borderRadius: "10px", padding: "10px" }}
-            >
-              View Assesment Details
-            </Button>
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-            <div id="job-stats-controls">
-              <div>Applicants: {jobData.applicants.length}</div>
-              <Button
-                onClick={() => navigate("/jobstats/" + jobId)}
-                variant="contained"
-                sx={{ borderRadius: "10px", padding: "10px" }}
+  useEffect(() => {
+    const fetchJob = async () => {
+      if (!jobId) return;
+
+      try {
+        const jobDoc = await getDoc(doc(db, 'jobPosting', jobId));
+        if (jobDoc.exists()) {
+          setJob(jobDoc.data());
+        } else {
+          console.log('No such job!');
+        }
+      } catch (error) {
+        console.error('Error fetching job:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJob();
+  }, [jobId]);
+
+  if (loading) {
+    return (
+      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+        <Skeleton variant="rectangular" width="100%" height={200} />
+        <Skeleton variant="text" sx={{ mt: 2 }} />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+      </Container>
+    );
+  }
+
+  if (!job) {
+    return (
+      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+        <Typography variant="h4">Job not found</Typography>
+      </Container>
+    );
+  }
+
+  return (
+    <>
+      {/* Header start */}
+      <header id="top-navbar" className="top-navbar">
+        <div className="container">
+          <div className="top-navbar_full">
+            <div className="back-btn" onClick={() => navigate(-1)}>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                View Applicants
-              </Button>
+                <mask
+                  id="mask0_330_7385"
+                  style={{ maskType: "alpha" }}
+                  maskUnits="userSpaceOnUse"
+                  x="0"
+                  y="0"
+                  width="24"
+                  height="24"
+                >
+                  <rect width="24" height="24" fill="black" />
+                </mask>
+                <g mask="url(#mask0_330_7385)">
+                  <path
+                    d="M15 18L9 12L15 6"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </g>
+              </svg>
             </div>
-          </>
-        )}
-      </div>
-    </div>
+            <div className="top-navbar-title">
+              <p>Job Details</p>
+            </div>
+            <div></div>
+          </div>
+        </div>
+        <div className="navbar-boder"></div>
+      </header>
+      {/* Header end */}
+
+      <section id="single-description-screen">
+        <div className="container">
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={4}>
+              <div className="hero-img-desc">
+                <img
+                  src={job.image || HeaderImg}
+                  alt="social-media-img"
+                  height="350"
+                  width="350"
+                  className="img-fluid"
+                />
+              </div>
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <div className="single-courses-description">
+                <div className="first-decs-sec mt-16">
+                  <div className="first-decs-sec-wrap">
+                    <div className="skills-left-sec">
+                      {job.skills && job.skills.length > 0 ? (
+                        <>
+                          <div className="first-left-sec">
+                            <div> {job.skills[0]} </div>
+                          </div>
+                          <div className="first-left-sec">
+                            <div> {job.skills[1]} </div>
+                          </div>
+                          <div className="first-left-sec">
+                            <div> {job.skills[2]} </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div>No skills available</div>
+                      )}
+                    </div>
+
+                    <div className="second-decs-sec-top">
+                      {job.companyName}
+                    </div>
+                  </div>
+                </div>
+                <div className="second-decs-sec mt-16">
+                  <div className="second-decs-sec-wrap">
+                    <div className="second-decs-sec-top">
+                      <h1 className="second-txt1">
+                        {job.title}
+                      </h1>
+                    </div>
+
+                    <div className="second-decs-sec-bottom">
+                      <div className="second-decs-sec-bottom-wrap">
+                        <div className="mt-12">
+                          <span className="student-img mr-8">
+                            <img src={StudentIcon} alt="student-icon" />
+                          </span>
+                          <span className="second-txt2">04 Application</span>
+                        </div>
+                        <div className="mt-12">
+                          <span className="student-img mr-8 fillStar">
+                            <img src={FillStar} alt="student-icon" />
+                          </span>
+                          <span className="second-txt2">
+                            {job.location}
+                          </span>
+                        </div>
+                        <div className="mt-12">
+                          <span className="student-img mr-8">
+                            <img src={TimeIcon} alt="student-icon" />
+                          </span>
+                          <span className="second-txt2">
+                            Assessment: {job.assessmentDuration}
+                          </span>
+                        </div>
+                        <div className="mt-12">
+                          <span className="student-img mr-8">
+                            <img src={TimeIcon} alt="student-icon" />
+                          </span>
+                          <span className="second-txt2">
+                            Duration: {job.duration}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="third-decs-sec mt-32">
+                  <div className="third-decs-sec-wrap"></div>
+                </div>
+
+                <div className="fifth-decs-sec mt-32">
+                  <div className="fifth-decs-sec-wrap">
+                    <ul
+                      className="nav nav-pills single-courses-tab"
+                      id="description-tab"
+                      role="tablist"
+                    >
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className="nav-link active"
+                          id="description-tab-btn"
+                          data-bs-toggle="pill"
+                          data-bs-target="#description-content"
+                          type="button"
+                          role="tab"
+                          aria-selected="true"
+                        >
+                          Description
+                        </button>
+                      </li>
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className="nav-link"
+                          id="lessons-tab-btn"
+                          data-bs-toggle="pill"
+                          data-bs-target="#lesson-content"
+                          type="button"
+                          role="tab"
+                          aria-selected="false"
+                        >
+                          Assessment
+                        </button>
+                      </li>
+                      <li className="nav-item" role="presentation"></li>
+                    </ul>
+                    <div className="tab-content" id="description-tabContent">
+                      <div
+                        className="tab-pane fade show active"
+                        id="description-content"
+                        role="tabpanel"
+                        tabIndex="0"
+                      >
+                        <div className="description-content-wrap mt-24">
+                          <div className="description-first-content">
+                            <h3 className="des-con-txt1">Details</h3>
+                            <div>
+                              {job.description}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className="tab-pane fade"
+                        id="lesson-content"
+                        role="tabpanel"
+                        tabIndex="0"
+                      >
+                        <div className="lesson-content-wrap mt-24">
+                          <div className="lesson-first-content">
+                            <div className="lesson-first-content-top">
+                              <div className="lesson-first-content-wrap">
+                                <div className="lesson-course">
+                                  <h3 className="des-con-txt1">Assessment Details</h3>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="lesson-second-content">
+                              <div className="lesson-second-content-bottom">
+                                <Typography variant="body1" >
+                                  <AccessTime sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                  {job.assessmentDetail}
+                                </Typography>
+                                <Typography variant="body1">
+                                <AccessTime sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                  Assessment Duration: {job.assessmentDuration}
+                                </Typography>
+                                {/* <Typography variant="body1">
+                                  <Schedule sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                  Assessment Type: {job.assessmentType}
+                                </Typography>
+                                <Typography variant="body1">
+                                  <Schedule sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                  Assessment Date: {job.assessmentDate}
+                                </Typography> */}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Grid>
+          </Grid>
+        </div>
+
+        <div className="buy-now-description text-center mt-4">
+          <Button variant="contained" color="primary" onClick={() => navigate(`/jobstats/${jobId}`)}>
+            View Applicants
+          </Button>
+        </div>
+      </section>
+    </>
   );
 };
 
-export default ViewJob;
+export default SingleJob;

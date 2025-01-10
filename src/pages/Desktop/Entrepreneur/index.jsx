@@ -412,7 +412,7 @@ const SingleMentor = () => {
                     >
                       Create job
                     </button>
-                    <button className="chat-btn">View jobs</button>
+                    <button onClick={() => navigate("/jobpostings")} className="chat-btn">View jobs</button>
                   </>
                 )}
                 {/* <button
