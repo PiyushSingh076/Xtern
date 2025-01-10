@@ -147,7 +147,7 @@ const SingleMentor = () => {
       const sanitized = JSON.parse(JSON.stringify(profileData));
       navigate("/userdetail", { state: { profileData: sanitized } });
     } else {
-      navigate("/userdetail");
+      // navigate("/userdetail");
     }
   };
 

@@ -78,6 +78,7 @@ const useUserProfileData = (uid) => {
         console.table("Combined Data:", combinedData); // Final combined data
         setUserData(combinedData);
       } catch (err) {
+        console.log("here")
         console.log("Error:", err);
         setError(err.message);
       } finally {
