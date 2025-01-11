@@ -58,7 +58,6 @@ const CardList = ({ profession }) => {
     });
 
     setFilteredUsers(filtered);
-    // console.log("list of user to display inside the card ", filtered);
   }, [users, searchSkill, experience, selectedCity, selectedState]);
 
   const handleStateChange = (stateCode) => {
