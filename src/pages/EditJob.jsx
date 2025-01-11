@@ -50,7 +50,7 @@ const EditJob = () => {
               </svg>
             </div>
             <div className="top-navbar-title">
-              <p>Job Posting</p>
+              <p>Edit Job</p>
             </div>
             <div></div>
           </div>

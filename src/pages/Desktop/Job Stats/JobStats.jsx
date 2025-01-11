@@ -57,7 +57,7 @@ const JobStats = () => {
     setSelectedUser(null);
   };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSubscribe = async () => {
     setSelectedUser((prev) => ({
@@ -135,7 +135,12 @@ const JobStats = () => {
               </div>
             </div>
             <div className="mt-auto flex justify-end">
-              <Button variant="contained" onClick={() => navigate("/editjob/"+jobId)}>Edit Job</Button>
+              <Button
+                variant="contained"
+                onClick={() => navigate("/editjob/" + jobId)}
+              >
+                Edit Job
+              </Button>
             </div>
           </div>
           <div className="flex flex-col border border-[#e5e5e5] rounded-xl size-full relative overflow-hidden">
@@ -149,48 +154,56 @@ const JobStats = () => {
                     <TableCell align="center">Assesment Link</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
-                  {jobData.applicants.map((applicant, index) => (
-                    <TableRow
-                      hover="true"
-                      sx={{
-                        "&:hover": {
-                          backgroundColor: "primary.main",
-                        },
-                        padding: "10px",
-                      }}
-                      key={index}
-                    >
-                      <TableCell>{applicant.name}</TableCell>
-                      <TableCell>
-                        {dayjs(
-                          new Timestamp(
-                            applicant.appliedAt.seconds,
-                            applicant.appliedAt.nanoseconds
-                          ).toDate()
-                        ).format("MM/DD/YYYY")}
-                      </TableCell>
-                      <TableCell>{applicant.status.toUpperCase()}</TableCell>
-                      <TableCell align="center">
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          color="red"
+                {jobData.applicants.length > 0 ? (
+                  <>
+                    <TableBody>
+                      {jobData.applicants.map((applicant, index) => (
+                        <TableRow
+                          hover="true"
                           sx={{
-                            borderRadius: "100px",
-                            width: "50%",
-                            height: "5vh",
-                            padding: "5px",
-                            color: "#176cc7",
+                            "&:hover": {
+                              backgroundColor: "primary.main",
+                            },
+                            padding: "10px",
                           }}
-                          onClick={() => openModal(applicant)}
+                          key={index}
                         >
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                          <TableCell>{applicant.name}</TableCell>
+                          <TableCell>
+                            {dayjs(
+                              new Timestamp(
+                                applicant.appliedAt.seconds,
+                                applicant.appliedAt.nanoseconds
+                              ).toDate()
+                            ).format("MM/DD/YYYY")}
+                          </TableCell>
+                          <TableCell>
+                            {applicant.status.toUpperCase()}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              color="red"
+                              sx={{
+                                borderRadius: "100px",
+                                width: "50%",
+                                height: "5vh",
+                                padding: "5px",
+                                color: "#176cc7",
+                              }}
+                              onClick={() => openModal(applicant)}
+                            >
+                              View
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </>
+                ) : (
+                  <div className="size-full flex items-center justify-center absolute bottom-0 right-0 text-xl font-medium text-black/70">No applicants yet</div>
+                )}
               </Table>
             </TableContainer>
           </div>
@@ -206,7 +219,11 @@ const JobStats = () => {
                     <h5 className="modal-title !h-[1.5em]">
                       {loadingDetails ? (
                         <div className="h-[1.5em] w-[200px] rounded-lg overflow-hidden">
-                          <Skeleton variant="rectangular" width="100%" height="100%" ></Skeleton>
+                          <Skeleton
+                            variant="rectangular"
+                            width="100%"
+                            height="100%"
+                          ></Skeleton>
                         </div>
                       ) : (
                         <>
