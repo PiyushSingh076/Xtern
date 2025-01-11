@@ -3,7 +3,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const useImageUpload = () => {
   const [projectImage, setProjectImage] = useState(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +21,7 @@ const useImageUpload = () => {
   const clearImage = (e) => {
     e.stopPropagation();
     setProjectImage(null);
-    setImagePreviewUrl(null);
+    setImagePreviewUrl("");
   };
 
   const uploadImage = async () => {

@@ -6,26 +6,16 @@ const useSaveEntrepreneurDetails = () => {
   const auth2 = useAuthState()
   
   const saveEntrepreneurDetails = async (data) => {
-    if (data) {
-      console.log(data);
-    }
     try {
-      // Ensure user is logged in
       const user = auth.currentUser;
       if (!user) throw new Error("User is not logged in.");
 
-      const userId = user.uid;
+      const userId = data.uid || user.uid; // Use existing uid if editing
       const userRef = doc(db, "users", userId);
 
       if (!data) throw new Error("No data provided");
-
-      // Validate Firestore instance
       if (!db) throw new Error("Firestore instance not initialized");
 
-      // Check if profileImage exists and contains a valid URL
-      // let photoUrl = data.profileImage?.url || null; // Set to null if URL is undefined
-
-      // Normalized Data
       let normalizedData = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -36,7 +26,7 @@ const useSaveEntrepreneurDetails = () => {
           city: data.city,
           state: data.state,
         },
-        photo_url: data.photo_url, // Use the photo_url if it's defined, otherwise null
+        photo_url: data.photo_url,
         companyDetails: {
           name: data.companyDetails.name,
           description: data.companyDetails.description,
@@ -44,10 +34,11 @@ const useSaveEntrepreneurDetails = () => {
           startDate: data.companyDetails.startDate,
         },
         skills: data.skillsRequired,
-        jobPostings: [],
+        jobPostings: data.jobPostings || [], // Preserve existing job postings if any
         uid: userId,
         type: "entrepreneur",
       };
+
 
       // Debugging to check data
       console.log("Normalized Data:", normalizedData);
@@ -65,8 +56,10 @@ const useSaveEntrepreneurDetails = () => {
       } catch (error) {
         console.error("Error while saving data to Firestore: ", error);
         throw new Error("Failed to save data to Firestore");
+
       }
 
+      await setDoc(userRef, normalizedData, { merge: true });
       return userId;
 
     } catch (error) {

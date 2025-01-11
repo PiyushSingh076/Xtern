@@ -50,7 +50,8 @@ import { useRefreshUserData } from "../../../hooks/Auth/useRefreshUserData";
 export default function EntrepreneurProfileForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [profileImg, setProfileImg] = useState(null);
+  const [profileImg, setProfileImg] = useState("");
+  const [tempProfileImg, setTempProfileImg] = useState(null);  // For temporary storage during upload
   const [errors, setErrors] = useState({});
   const [companyDetails, setCompanyDetails] = useState({
     name: "",
@@ -67,7 +68,9 @@ export default function EntrepreneurProfileForm() {
   const [cities, setCities] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [linkedinProfile, setLinkedinProfile] = useState("");
+
   const [isLinkedInFetched, setIsLinkedInFetched] = useState(false);
+
 
   const {refreshUser} = useRefreshUserData()
   const navigate = useNavigate();
@@ -91,6 +94,40 @@ export default function EntrepreneurProfileForm() {
     skillsRequired: false,
     linkedinProfile: false, // Error state for LinkedIn
   });
+
+  // Add useEffect to populate form with existing data
+  useEffect(() => {
+    if (profileData) {
+      setFirstName(profileData.firstName || "");
+      setLastName(profileData.lastName || "");
+      setProfileImg(profileData.photo_url || null);
+      setExperience(profileData.experience || "");
+      setIndustry(profileData.industry || "");
+      setState(profileData.location?.state || "");
+      setCity(profileData.location?.city || "");
+      setLinkedinProfile(profileData.linkedinProfileUrl || "");
+      setSkillsRequired(profileData.skills || []);
+      
+      // Set company details
+      setCompanyDetails({
+        name: profileData.companyDetails?.name || "",
+        logo: { 
+          url: profileData.companyDetails?.logo || "",
+          fileName: "",
+          preview: profileData.companyDetails?.logo || ""
+        },
+        startDate: profileData.companyDetails?.startDate || "",
+        description: profileData.companyDetails?.description || "",
+      });
+
+      // Load cities for the selected state
+      if (profileData.location?.state) {
+        const stateCities = City.getCitiesOfState("IN", profileData.location.state);
+        setCities(stateCities);
+      }
+    }
+  }, [profileData]);
+
 
   const handleLinkedInEntrepreneurData = (data) => {
     if (data) {
@@ -223,12 +260,18 @@ export default function EntrepreneurProfileForm() {
   const clearProfileImage = () => setProfileImg(null);
 
   const handleEntreneurSubmitInfo = async (e) => {
-    setSubmitting(true);
-    e.preventDefault();
 
-    const imageURL = await uploadImage();
+    setSubmitting(true);
+
+    e.preventDefault();
+    setIsSubmitting(true); // Set loading state to true
+
+    try {
+      let finalImageURL = profileImg;  // Start with current profile image
+
 
     console.log(imageURL);
+
 
     const missingFields = [];
     if (!firstName) missingFields.push("First Name");
@@ -241,7 +284,7 @@ export default function EntrepreneurProfileForm() {
 
     if (missingFields.length === 0) {
       const entrepreneurData = {
-        photo_url: imageURL, // Ensure profileImg is included here
+        photo_url: finalImageURL, // Ensure profileImg is included here
         firstName,
         lastName,
         state,
@@ -251,6 +294,8 @@ export default function EntrepreneurProfileForm() {
         industry,
         skillsRequired,
         linkedinProfile,
+        // Add the user's ID if editing
+        uid: profileData?.uid
       };
 
       dispatch(setEntrepreneurDetails(entrepreneurData));
@@ -259,18 +304,30 @@ export default function EntrepreneurProfileForm() {
 
       try {
         const userId = await saveEntrepreneurDetails(entrepreneurData);
+
         toast.success("Profile saved successfully!");
         refreshUser()
         setSubmitting(false);
+
         navigate(`/entrepreneur/${userId}`);
       } catch (error) {
         toast.error(`Error saving profile: ${error.message || error}`);
         console.error(error);
-      }
+      } finally {
+      setIsSubmitting(false); // Set loading state to true
+    }
     } else {
       setSubmitting(false);
       missingFields.forEach((field) => toast.error(`${field} is required)`));
+      setIsSubmitting(false); // Set loading state to true
+
     }
+  } catch (error) {
+    toast.error(`Error processing image: ${error.message}`);
+    console.error(error);
+  } finally {
+    setIsSubmitting(false); // Set loading state to true
+  }
   };
 
   return (
@@ -313,8 +370,8 @@ export default function EntrepreneurProfileForm() {
                   <IconButton component="span">
                     <Avatar
                       src={
-                        imagePreviewUrl
-                          ? imagePreviewUrl
+                        imagePreviewUrl || profileImg
+                          ? imagePreviewUrl || profileImg 
                           : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
                       }
                       sx={{ width: 120, height: 120 }}
@@ -714,6 +771,7 @@ export default function EntrepreneurProfileForm() {
               disabled={submitting || Object.values(errors).includes(true)}
               onClick={handleEntreneurSubmitInfo}
             >
+
               {submitting && (
                 <div class="spinner-border spinner-border-sm" role="status">
                   <span class="sr-only">Loading...</span>
@@ -721,6 +779,7 @@ export default function EntrepreneurProfileForm() {
               )}
               <span>Submit</span>
             </Button>
+
           </Grid>
         </Grid>
       </Grid>
