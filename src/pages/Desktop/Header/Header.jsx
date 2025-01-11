@@ -5,6 +5,7 @@ import {
   AiOutlineQuestionCircle,
   AiOutlineLogout,
 } from "react-icons/ai";
+import { FaBriefcase } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./Header.css";
@@ -23,6 +24,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -125,6 +127,13 @@ export default function Header() {
                 <div className="dropdown-item" onClick={handleMenuProfileClick}>
                   <AiOutlineUser className="menu-icon" />
                   Profile
+                </div>
+                <div
+                  className="dropdown-item"
+                  onClick={() => handleMenuOptionClick("/jobs")}
+                >
+                  <FaBriefcase className="menu-icon" />
+                  Jobs
                 </div>
                 {/* <div
                   className="dropdown-item"

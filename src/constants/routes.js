@@ -3,6 +3,8 @@ export const ROUTES = {
   HOME_SCREEN: '/homescreen',
   SIGN_UP: "/signup",
   SIGN_IN: "/signin",
+  JOBS: "/jobs",
+  APPLYJOB: "/applyjob",
   APPLY_PROJECT: "/applyproject",
   CREATE_PROJECT: "/createproject",
   CREATE_JOB: "/createjob",

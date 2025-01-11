@@ -1,12 +1,9 @@
+import Skeleton from "@mui/material/Skeleton";
 import React from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import useUserProfileData from "../../hooks/Profile/useUserProfileData";
-import { useParams } from "react-router-dom";
-import Skeleton from "@mui/material/Skeleton";
-import code from "../../assets/svg/code.svg";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import code from "../../assets/svg/code.svg";
 
 export default function SkillSet({ profileData, skillloading }) {
   const navigate = useNavigate();
