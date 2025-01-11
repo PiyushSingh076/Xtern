@@ -330,7 +330,7 @@ const SingleMentor = () => {
                     <div className="flex flex-col">
                       <div>Years of Experience: {profileData?.experience}</div>
                       <a
-                        className="text-sm flex gap-1 items-center"
+                        className="text-sm flex gap-1 items-center justify-center"
                         href={profileData.linkedinProfileUrl}
                       >
                         <LinkedIn></LinkedIn>
