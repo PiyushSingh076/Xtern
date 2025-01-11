@@ -47,3 +47,5 @@ export const professionalsFilterConfig = [
   // { id: 7, name: "HR", icon: <FaUserTie /> },
   // { id: 8, name: "Accountant", icon: <FaCalculator /> },
 ];
+
+export const ENTREPRENEUR_ROLE = "entrepreneur";

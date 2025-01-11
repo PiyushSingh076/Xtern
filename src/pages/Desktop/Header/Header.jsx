@@ -12,6 +12,7 @@ import "./Header.css";
 import { ROUTES } from "../../../constants/routes";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
+import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 
 export default function Header() {
   const data = useSelector((state) => state.user);
@@ -24,26 +25,6 @@ export default function Header() {
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
 
-
-  // Decide if we have a valid userPhoto
-  const hasUserPhoto =
-    userData?.photo_url &&
-    typeof userData.photo_url === "string" &&
-    userData.photo_url.trim() !== "";
-
-
-
-
-  const handleMenuOptionClick = (route) => {
-    navigate(route)
-    
-  };
-
-
-  const handleMenuToggle = (event) => {
-    event.stopPropagation();
-    setMenuOpen(!menuOpen);
-  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -64,15 +45,33 @@ export default function Header() {
     };
   }, []);
 
-  function handleRedirectProfile(){
-    
-    if(userData.type === "entrepreneur"){
-      navigate("/entrepreneur/" + userData.uid);
+  // Decide if we have a valid userPhoto
+  const hasUserPhoto =
+    userData?.photo_url &&
+    typeof userData.photo_url === "string" &&
+    userData.photo_url.trim() !== "";
+
+  const handleMenuProfileClick = () => {
+    if (userData.type === ENTREPRENEUR_ROLE) {
+      navigate(`/entrepreneur/${userData?.uid}`);
+    } else {
+      navigate(`/profile/${userData?.uid}`);
     }
-    else{
-      navigate("/profile/" + userData.uid);
+  };
+
+  const handleMenuOptionClick = () => {
+    if (userData.type === ENTREPRENEUR_ROLE) {
+      navigate("/jobpostings"); // Redirect for entrepreneurs
+    } else {
+      navigate("/myvideocall"); // Redirect for other users
     }
-  }
+  };
+
+  const handleMenuToggle = (event) => {
+    event.stopPropagation();
+    setMenuOpen(!menuOpen);
+  };
+
 
   return (
     <div className="nav-bar-container">
@@ -93,7 +92,6 @@ export default function Header() {
         )}
 
         {userData && (
-
           <div className="profile-menu-container">
             <button
               ref={profileButtonRef}
@@ -119,10 +117,9 @@ export default function Header() {
 
             {menuOpen && (
               <div className="dropdown-menu" ref={menuRef}>
-                <div
-                  className="dropdown-item"
-                  onClick={() => handleRedirectProfile()}
-                >
+
+                <div className="dropdown-item" onClick={handleMenuProfileClick}>
+
                   <AiOutlineUser className="menu-icon" />
                   Profile
                 </div>
@@ -147,12 +144,9 @@ export default function Header() {
                   <AiOutlineQuestionCircle className="menu-icon" />
                   Support
                 </div> */}
-                <div
-                  className="dropdown-item"
-                  onClick={() => navigate("/myvideocall")}
-                >
+                <div className="dropdown-item" onClick={handleMenuOptionClick}>
                   <AiOutlineQuestionCircle className="menu-icon" />
-                  My Schedule
+                  My {userData.type === ENTREPRENEUR_ROLE ? "Jobs" : "Schedule"}
                 </div>
                 <div
                   className="dropdown-item logout"
@@ -169,7 +163,6 @@ export default function Header() {
           </div>
         )}
       </div>
-
     </div>
   );
 }

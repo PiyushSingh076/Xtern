@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
+import CreateJobCard from "./CreateJobCard";
 import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
 import { State, City } from "country-state-city";
 import {
@@ -18,10 +19,14 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import PopupDetails from "./PopupDetails";
+import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 
 const CardList = ({ profession }) => {
   const { users, loading, error } = useFetchUsersByType(profession);
+  const { userData } = useFetchUserData();
 
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchSkill, setSearchSkill] = useState("");
@@ -53,7 +58,6 @@ const CardList = ({ profession }) => {
     });
 
     setFilteredUsers(filtered);
-    // console.log("what is there in filtered user ", filtered);
   }, [users, searchSkill, experience, selectedCity, selectedState]);
 
   const handleStateChange = (stateCode) => {
@@ -216,6 +220,9 @@ const CardList = ({ profession }) => {
               gap: 3,
             }}
           >
+            {/* this card is displayed only for users whose role is entrepreneur */}
+            {(userData?.type ?? "") === ENTREPRENEUR_ROLE && <CreateJobCard />}
+
             {filteredUsers.map((data, index) => (
               <Box
                 key={index}
@@ -252,9 +259,3 @@ const CardList = ({ profession }) => {
 };
 
 export default CardList;
-
-// task for 07-01-2025
-// add intern in filter screen -- done
-// take care of tags should not overflow -- done
-// remove NA -- done
-// icon color in filter screen -- done
