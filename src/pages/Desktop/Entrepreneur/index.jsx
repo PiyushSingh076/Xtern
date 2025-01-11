@@ -51,7 +51,7 @@ const SingleMentor = () => {
   const [interviewTime, setInterviewTime] = useState(dayjs());
   const [description, setDescription] = useState("");
   const [interviewScheduled, setInterviewScheduled] = useState(false);
-  const [editable, setEditable] = useState(false);
+  const [editable, setEditable] = useState(true);
   const [callsModalOpen, setCallsModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -166,12 +166,10 @@ const SingleMentor = () => {
         description: `
         📞 XTERN Mentorship Call
 
-        👤 Host: ${currentUser?.firstName} ${currentUser?.lastName} (${
-          currentUser?.email
-        })
-        👥 Recipient: ${profileData?.firstName} ${profileData?.lastName} (${
-          profileData?.email
-        })
+        👤 Host: ${currentUser?.firstName} ${currentUser?.lastName} (${currentUser?.email
+          })
+        👥 Recipient: ${profileData?.firstName} ${profileData?.lastName} (${profileData?.email
+          })
 
         📅 Date: ${interviewDate.format("D MMM YYYY")}
         ⏰ Time: ${interviewTime.format("h:mm A")}
@@ -263,6 +261,15 @@ const SingleMentor = () => {
     }
   };
 
+  const handleEdit = () => {
+    if (profileData?.type) {
+      const sanitized = JSON.parse(JSON.stringify(profileData));
+      navigate("/entrepreneurdetails", { state: { profileData: sanitized } });
+    } else {
+      // navigate("/userdetail");
+    }
+  };
+
   return (
     <div className="desktop-profile-container">
       {/* Profile details section */}
@@ -270,6 +277,30 @@ const SingleMentor = () => {
         <div className="profile-details">
           <div className="profile-details-wrap">
             <div className="profile-details-first-wrap">
+              {editable && (
+                <button
+                  onClick={handleEdit}
+                  className="edit-btn"
+                  title="Edit Profile"
+                  style={{
+                    backgroundColor: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "8px",
+                    borderRadius: "50%",
+                    transition: "background-color 0.3s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = "#f0f0f0"; // Light gray on hover
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "transparent"; // Reset on leave
+                  }}
+                >
+                  <MdEdit size={24} color="#007bff" />
+                </button>
+              )}
+
               <div className="profile-img-info-container">
                 <div className="mentor-img-sec">
                   {profileLoading ? (
@@ -502,9 +533,11 @@ const SingleMentor = () => {
                         <div className="size-[60px] rounded-full shrink-0 overflow-hidden mr-4 relative">
                           <img
                             src={profileData.companyDetails.logo}
-                            className="absolute"
+                            alt="Company Logo"
+                            className="absolute inset-0 w-full h-full object-cover"
                           />
                         </div>
+
                         <div className="experience-info">
                           <h4>{profileData.companyDetails.name}</h4>
                           {/* <p>
