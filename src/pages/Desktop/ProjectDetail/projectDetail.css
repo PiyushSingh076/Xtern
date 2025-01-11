@@ -1,124 +1,169 @@
-.des-project-detail-container{
-  
-
-   margin-top: 5%;
-   height: 90vh;
-  
-  }
-.des-buy-now-description{
-    box-shadow: none;
-    position: initial;
-    margin-top: 20px;
-    background-color: #3374AE;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 50px;
-    border-radius: 10px;
-    color: white;
-    text-decoration: none;
+.course-page {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
 }
 
-.buy-now{
-    text-decoration: none;
-    color: white;
+/* Left Section */
+.left-section {
+  flex: 0 0 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.des-first-desc-img-sec{
-    display: flex;
-    flex-direction: row;
-
+/* Right Section */
+.right-section {
+  flex: 0 0 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.des-img-fluid{
-    margin-left: 50px;
-    margin-right: 100px;
-    border-radius: 20px;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+.course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.desc-container{
-    width: 50%;
-    min-width: 50%;
-    
+.course-price {
+  font-weight: bold;
+  font-size: 26px;
+  color: "#0a65fc";
+  margin-right: 16px;
 }
 
-
-
-.apply-project-conatainer{
-    margin-top: 100px;
-    display: flex;
-    flex-direction: row;
-   
+.course-summary {
+  display: flex;
+  gap: 15px;
 }
 
-.des-steps-section{
-    flex: 0.8;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    justify-content: center;
-    height: 390px;
-
-
+.course-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.skill-project-section{
-    flex: 1.2;
-    
+.course-detail-icon {
+  width: 24px;
+  height: 24px;
 }
 
-.submit-btn{
-    width: 150px;
-    height: 50px;
-    background-color: #3374AE;
-    border-radius: 10px;
-    color: white;
-    border: none;
-   
-
+.course-detail-text {
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.des-single-courses-description{
-    width: 100%;
-    
-   
-    
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 10px;
 }
 
-
-.des-all-projects-container{
-    width: 100%;
-    margin-top: 100px;
+.tab {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #444;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-.des-new-courses-wrap{
-    place-items: center;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 80px;
+.tab.active {
+  background: #3374ae; /* Active tab background color */
+  color: #fff; /* Active tab text color */
+  border-color: #3374ae;
 }
 
-.des-new-courses-sec{
-    margin-top: 20px;
-    width: 350px;
-    height: 350px;
-    margin-bottom: 50px;
-    transition: all 0.5s ease;
+.tab:hover {
+  background: #3374ae;
+  color: #fff;
 }
 
-.des-new-courses-sec:hover{
-    transform: scale(1.05);
-    transition: all 1s ease;
-    cursor: pointer;
-  
+/* Tab Content Container */
+.tab-content-container {
+  display: flex;
+  gap: 20px;
 }
 
+/* Description Section */
+.description {
+  flex: 1;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  border-radius: 5px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
 
+/* Reviews Section */
+.reviews {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  border-radius: 5px;
+  padding: 20px;
+}
 
-.des-new-courses img{
-    width: 100%;
-    height: 100%;
-    border-radius: 20px;
+.review-item {
+  display: flex;
+  gap: 15px;
+}
+
+.review-profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.review-content {
+  flex-grow: 1;
+}
+
+.review-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.review-rating {
+  display: flex;
+  gap: 5px;
+  margin: 5px 0;
+}
+
+.review-star {
+  width: 16px;
+  height: 16px;
+}
+
+.review-comment {
+  font-size: 14px;
+  color: #666;
+}
+
+.des-buy-now-description {
+  box-shadow: none;
+  position: initial;
+  max-width: 40%;
+  margin-top: 20px;
+  background-color: #3374ae;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  border-radius: 10px;
+  color: white;
+  text-decoration: none;
+}
+
+.buy-now {
+  text-decoration: none;
+  color: white;
 }
