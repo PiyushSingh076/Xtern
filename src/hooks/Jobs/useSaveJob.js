@@ -21,6 +21,7 @@ const useSaveJob = () => {
     assessmentDuration,
     duration,
     imageURL,
+    data
   }) => {
     try {
       // Validate if user is authenticate
@@ -39,7 +40,7 @@ const useSaveJob = () => {
             description: description,
             image: imageURL,
             jobId: jobId,
-            skills: skills
+            skills: skills,
           }),
         });
 
@@ -60,7 +61,8 @@ const useSaveJob = () => {
         image: imageURL,
         createdAt: new Date(),
         createdBy: currentUser.uid, // User reference
-        applicants: [], // Empty applicants array initially
+        applicants: [],
+        fileData: data // Empty applicants array initially
       });
 
       // Fetch the newly created job by its ID
