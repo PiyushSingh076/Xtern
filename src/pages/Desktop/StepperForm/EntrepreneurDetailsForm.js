@@ -45,6 +45,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { storage } from "../../../firebaseConfig";
 import { FlashOnOutlined } from "@mui/icons-material";
+import { useRefreshUserData } from "../../../hooks/Auth/useRefreshUserData";
 
 export default function EntrepreneurProfileForm() {
   const [firstName, setFirstName] = useState("");
@@ -68,6 +69,7 @@ export default function EntrepreneurProfileForm() {
   const [linkedinProfile, setLinkedinProfile] = useState("");
   const [isLinkedInFetched, setIsLinkedInFetched] = useState(false);
 
+  const {refreshUser} = useRefreshUserData()
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -258,6 +260,7 @@ export default function EntrepreneurProfileForm() {
       try {
         const userId = await saveEntrepreneurDetails(entrepreneurData);
         toast.success("Profile saved successfully!");
+        refreshUser()
         setSubmitting(false);
         navigate(`/entrepreneur/${userId}`);
       } catch (error) {

@@ -25,7 +25,7 @@ import useImageUpload from "../hooks/Auth/useImageUpload.js"; // Custom hook for
 import { getAuth } from "firebase/auth";
 import { storage } from "../firebaseConfig.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { TextField, InputAdornment } from "@mui/material";
+import { TextField, InputAdornment, Chip } from "@mui/material";
 const Stepper = ({data}) => {
   const steps = [
     { id: 1, name: "Job" },
@@ -146,12 +146,15 @@ const Stepper = ({data}) => {
       const snapshot = await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(snapshot.ref);
       // Adding job to Firestore with userref
-      const data2 = {
+      const file_data = {
         fileName: file.name,
         filePath: downloadURL, // Store the file URL
         uploadedAt: new Date(),
       };
+
+      console.log(file_data)
       if(data){
+      
         const isUploaded = await updateJob(data.jobId,{
           currentUser,
           jobTitle,
@@ -163,8 +166,8 @@ const Stepper = ({data}) => {
           assessmentDetail,
           assessmentDuration,
           duration,
+          file: file_data,
           imageURL: imageURL || data?.image,
-          data: data2,
         })
 
         if(isUploaded){
@@ -173,6 +176,7 @@ const Stepper = ({data}) => {
           navigate("/viewjob/" + data.jobId)
         }
         else{
+          
           setSubmitLoading(false)
           toast.error("Failed to update job.")
         }
@@ -190,7 +194,7 @@ const Stepper = ({data}) => {
           assessmentDuration,
           duration,
           imageURL: imageURL || data?.image,
-          data: data2,
+          file: file_data ,
         });
         if (isSaved) {
           // alert("Job added successfully!");
@@ -223,6 +227,7 @@ const Stepper = ({data}) => {
       setFileName(uploadedFile.name);
       setFilePreview(URL.createObjectURL(uploadedFile));
       toast.success("File uploaded successfully!");
+      
     }
   };
 
@@ -680,6 +685,7 @@ const Stepper = ({data}) => {
                 style={{ margin: "0 auto", border: "1px solid #ccc" }}
               >
                 <ToastContainer />
+                {data && filePreview==null && <><Chip className="mb-4"  label={data.file.fileName}></Chip></>}
                 <label
                   htmlFor="file-upload"
                   className="flex items-center px-6 py-3 text-white bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 transition duration-300 shadow-lg"

@@ -14,6 +14,7 @@ import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import { Spinner } from "react-bootstrap";
+import { useRefreshUserData } from "../../../hooks/Auth/useRefreshUserData";
 
 export default function Header() {
   const data = useSelector((state) => state.user);
@@ -25,8 +26,9 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
-
+  const {refreshUser, refresh} = useRefreshUserData();
   useEffect(() => {
+    
     const handleClickOutside = (event) => {
       // Check if click is outside both menu AND profile button
       if (
@@ -79,7 +81,7 @@ export default function Header() {
           <span style={{ color: "#0d6efd", fontSize: "34px" }}>X</span>pert
         </span>
       </div>
-
+      
       <div className="hire-btns">
         {userData == null && !loading && (
           <button

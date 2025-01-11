@@ -13,7 +13,9 @@ import {
   Typography,
   Table,
   Skeleton,
+  Tab,
 } from "@mui/material";
+import StudentIcon from "../../../assets/images/single-courses/student-icon.svg";
 
 import dayjs from "dayjs";
 import { useFetchJob } from "../../../hooks/Jobs/useFetchJob";
@@ -27,6 +29,7 @@ import {
   AccessTimeRounded,
   BookmarkAdded,
   LocationOn,
+  LocationSearchingRounded,
   WorkspacePremiumRounded,
 } from "@mui/icons-material";
 
@@ -75,55 +78,122 @@ const JobStats = () => {
         <>
           <div
             id="job-stats-details"
-            className="flex flex-col border border-[#e5e5e5] rounded-xl relative"
+            className="flex flex-col items-center gap-2 justify-center border border-[#e5e5e5] rounded-xl relative"
           >
-            <div className="h-[80px] gap-2 w-full flex">
-              <div className="size-[80px] relative flex items-center justify-center  rounded-lg overflow-hidden  mb-2">
+            <div className="h-[80px] mt-4 gap-2 w-full flex">
+              <div className="size-[80px] w-full relative flex items-center justify-center  rounded-lg overflow-hidden  mb-2">
                 <img
                   src={jobData.image}
-                  className="absolute top-0 left-0 size-[80px] object-cover rounded-lg"
+                  className="relative  size-[80px] object-cover rounded-lg"
                   alt=""
                 />
               </div>
-              <div className="flex flex-col">
-                <div className="text-lg font-normal flex gap-1 text-zinc-800 items-center">
-                  <User opacity={0.8} size="20"></User> {jobData.title}
+            </div>
+            <div className="font-bold text-xl text-black/90">
+              {jobData.title} <span className="font-normal">at</span>{" "}
+              {jobData.companyName}
+            </div>
+            <div className="gap-2 flex">
+              {jobData.skills.map((skill, index) => {
+                return (
+                  <Chip
+                    label={skill}
+                    sx={{
+                      borderRadius: "10px",
+                    }}
+                    key={index + skill + "job-stat-skill"}
+                  ></Chip>
+                );
+              })}
+            </div>
+            <div className="flex flex-col w-full gap-2 justify-center items-start">
+              <div className="flex gap-2 items-center">
+                <LocationSearchingRounded fontSize="small"></LocationSearchingRounded>
+                <div className="flex text-nowrap w-fit">{jobData.location}</div>
+              </div>
+              <div className="flex gap-2 items-center">
+                <AccessTimeRounded fontSize="small"></AccessTimeRounded>
+                <div className="flex text-nowrap w-fit">
+                  {jobData.duration} Months
                 </div>
-                <div className="text-lg font-normal flex gap-1 text-zinc-800 items-center">
-                  <Building size="20" opacity={0.8}></Building>
-                  {jobData.companyName}
-                </div>
-                <div className=" text-lg flex gap-1 text-zinc-800 items-center">
-                  <MapPin size="20" opacity={0.8}></MapPin>
-                  {jobData.location}
+              </div>
+              <div className="flex gap-2 items-center">
+                <img
+                  style={{
+                    filter: "var(--svg)",
+                  }}
+                  className="size-[20px]"
+                  src={StudentIcon}
+                  alt=""
+                />
+                <div className="flex text-nowrap w-fit">
+                  {`${jobData.applicants.length} Applicants`}
                 </div>
               </div>
             </div>
+            <div className="size-full">
+              <ul
+                className="nav nav-pills single-mentor-tab overflow-hidden"
+                id="mentor-tab"
+                role="tablist"
+              >
+                <li className="nav-item" role="presentation">
+                  <button
+                    className="nav-link active"
+                    id="mentor-course-tab-btn"
+                    data-bs-toggle="pill"
+                    data-bs-target="#job-details-content"
+                    type="button"
+                    role="tab"
+                    aria-selected="true"
+                  >
+                    Details
+                  </button>
+                </li>
+                <li className="nav-item" role="presentation">
+                  <button
+                    className="nav-link"
+                    id="assessment-tab-btn"
+                    data-bs-toggle="pill"
+                    data-bs-target="#assessment-content"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                  >
+                    Assessment
+                  </button>
+                </li>
+              </ul>
 
-            <div className="h-fit w-full flex gap-2 items-stretch shrink-0"></div>
-            <div className="font-medium text-black/70 mt-2">Details</div>
-            <div className="flex gap-1 mb-2">
+              <div className="tab-content !h-full">
+                <div
+                  id="job-details-content"
+                  className="tab-pane fade show active !h-full"
+                  role="tabpanel"
+                  aria-labelledby="mentor-course-tab-btn"
+                >
+                  <div className="border border-[#e5e5e5] mt-2 h-full max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50" >{jobData.description}</div>
+                </div>
+                <div
+                  id="assessment-content"
+                  className="tab-pane fade !h-full flex flex-col"
+                  role="tabpanel"
+                  aria-labelledby="assessment-tab-btn"
+                >
+                <div className="flex gap-1 items-center mt-2" ><AccessTimeRounded fontSize="small" ></AccessTimeRounded> {`${jobData.assessmentDuration} days`}</div>
+                  <div className="border border-[#e5e5e5] mt-2 h-full max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50" >{jobData.assessmentDetail}</div>
+                </div>
+              </div>
+            </div>
+            {/* <div className="font-medium text-black/70 mt-2">Details</div> */}
+            {/* <div className="flex gap-1 mb-2">
               <WorkspacePremiumRounded></WorkspacePremiumRounded>{" "}
               {jobData.experienceLevel}
             </div>
             <div className=" shrink-0 min-h-0 text-left border border-[#e5e5e5] max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50 ">
               {jobData.description}
             </div>
-            <div className="shrink-0 h-fit my-2">
-              <div id="job-stats-skills">
-                {jobData.skills.map((skill, index) => {
-                  return (
-                    <Chip
-                      label={skill}
-                      sx={{
-                        borderRadius: "10px",
-                      }}
-                      key={index + skill + "job-stat-skill"}
-                    ></Chip>
-                  );
-                })}
-              </div>
-            </div>
+          
             <div className="flex flex-col">
               <div className="font-medium text-black/70">Assesment Details</div>
               <div className="border border-[#e5e5e5] max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50 ">
@@ -133,8 +203,8 @@ const JobStats = () => {
                 <AccessTimeRounded></AccessTimeRounded>
                 <span>{jobData.assessmentDuration}</span>
               </div>
-            </div>
-            <div className="mt-auto flex justify-end">
+            </div> */}
+            <div className="mt-auto absolute bottom-0 right-0 m-2 flex justify-end">
               <Button
                 variant="contained"
                 onClick={() => navigate("/editjob/" + jobId)}
@@ -202,7 +272,9 @@ const JobStats = () => {
                     </TableBody>
                   </>
                 ) : (
-                  <div className="size-full flex items-center justify-center absolute bottom-0 right-0 text-xl font-medium text-black/70">No applicants yet</div>
+                  <div className="size-full flex items-center justify-center absolute bottom-0 right-0 text-xl font-medium text-black/70">
+                    No applicants yet
+                  </div>
                 )}
               </Table>
             </TableContainer>

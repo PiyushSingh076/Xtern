@@ -477,8 +477,10 @@ const SingleMentor = () => {
                   onClick={openScheduledCallsModal}
                   variant="outline-primary"
                   size="small"
+                  className="!flex  !flex-row items-center gap-1 !w-fit whitespace-nowrap"
                 >
-                  <FaRegClock size={16} /> Upcoming Meets
+                  <FaRegClock size={16} /> 
+                  <div>Upcoming Meets</div>
                 </Button>
               </Tooltip>
             </Box>
@@ -620,13 +622,13 @@ const SingleMentor = () => {
               <div className="tab-content">
                 {/* Work Experience Tab */}
                 <div
-                  className="tab-pane fade show active mt-16"
+                  className="tab-pane fade show active "
                   id="course-content"
                   role="tabpanel"
                 >
                   {profileLoading ? (
                     <Skeleton
-                      sx={{ width: "100%", height: "200px", marginTop: "20px" }}
+                      sx={{ width: "100%", height: "200px" }}
                     />
                   ) : profileData?.workExperience?.length ? (
                     profileData.workExperience.map((work, index) => (

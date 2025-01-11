@@ -158,7 +158,7 @@ const SingleJob = () => {
                       <div className="second-decs-sec-bottom-wrap">
                         <div className="mt-12 flex items-center">
                           <span className="student-img mr-8">
-                            <img src={StudentIcon} alt="student-icon" />
+                            <img  src={StudentIcon} alt="student-icon" />
                           </span>
                           <span className="second-txt2">04 Application</span>
                         </div>

@@ -63,54 +63,14 @@ const SingleMentor = () => {
     useEntrepreneurDetails(uid);
 
   useEffect(() => {
-    console.log(profileData);
-  }, [profileLoading]);
-
-  // const profileData = {
-  //   photo_url: "https://static.vecteezy.com/system/resources/thumbnails/049/174/246/small_2x/a-smiling-young-indian-man-with-formal-shirts-outdoors-photo.jpg",
-  //   firstName: "John",
-  //   lastName: "Doe",
-  //   city: "Mumbai",
-  //   experience: 5,
-  //   state: "Maharashtra",
-  //   type: "entrepreneur",
-  //   skillSet: [{
-  //     skill: "React",
-  //     skillRating: 4,
-  //   }],
-  //   companyDetails: [
-  //     {
-  //       logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png",
-  //       name: "Google",
-  //       description:
-  //         "Google is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.",
-  //       startDate: Date.now() / 1000,
-  //       endDate: "present",
-  //     },
-  //   ],
-  //   jobDetails: [
-  //     {
-  //       role: "Fronten Intern",
-  //       techstack: ["React", "Redux", "HTML", "CSS"],
-  //       description:
-  //         "Frontend Intern at Google working on building web applications using React and Redux",
-  //       lastDate: Date.now() / 1000,
-  //       company: "Optacloud",
-  //       salary: "9lpa",
-  //     },
-  //     {
-  //       role: "Fullstack Developer",
-  //       techstack: ["React", "Redux", "Express", "Firebase"],
-  //       description:
-  //         "Fullstack Developer at Google working on building web applications using React and Redux",
-  //       lastDate: Date.now() / 1000,
-  //       company: "Google",
-  //       salary: "20lpa",
-  //     },
-  //   ],
-  // };
-
-  //   const { userData: currentUser } = useFetchUserData();
+    if(profileData){
+      console.log(profileData);
+      if(profileData.type !== "entrepreneur"){
+        toast.error("Entrepreneur not found")
+        navigate("/homescreen/")
+      }
+    }
+  }, [profileData]);
 
   const {
     signIn,
@@ -124,13 +84,6 @@ const SingleMentor = () => {
     loading: callsLoading,
     error: callsError,
   } = useScheduledCallsForUser(currentUser?.uid);
-
-  //   const registrationStatus = useRegisterUser(
-  //     profileData,
-  //     profileLoading,
-  //     profileError
-  //   );
-
   const handleDateChange = (date) => {
     setInterviewDate(date);
     setCurrentStep(2);
@@ -496,29 +449,30 @@ const SingleMentor = () => {
                 >
                   {profileLoading ? (
                     <></>
-                  ) : (
+                  ) : ( profileData &&
                     <>
                       <div
                         className="experience-sec"
-                        key={`${profileData.companyDetails.name}`}
+                        key={`${profileData.companyDetails?.name}`}
                       >
                         <div className="size-[60px] rounded-full shrink-0 overflow-hidden mr-4 relative">
                           <img
-                            src={profileData.companyDetails.logo}
+                            src={profileData.companyDetails?.logo}
                             className="absolute"
                           />
                         </div>
                         <div className="experience-info">
-                          <h4>{profileData.companyDetails.name}</h4>
+                          <h4>{profileData.companyDetails?.name}</h4>
                           {/* <p>
                           {dayjs.unix(company?.startDate).format("D MMM YYYY")}{" "}
                           -{" "}
+                          --
                           {company.endDate === "present"
                             ? "Now"
                             : dayjs.unix(company.endDate).format("D MMM YYYY")}
                         </p> */}
                           <h4 className="text-black/60">
-                            {profileData.companyDetails.description}
+                            {profileData.companyDetails?.description}
                           </h4>
                           {/* <h4>{dayjs(new Timestamp(profileData.companyDetails.startDate.seconds, profileData.companyDetails.startDate.nanoseconds).toDate()).format("D MMM YYYY")}</h4> */}
                         </div>
