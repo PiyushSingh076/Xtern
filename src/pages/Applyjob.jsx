@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import useFetchUserData from '../hooks/Auth/useFetchUserData';
 import {
   Container,
   Typography,
@@ -14,7 +15,7 @@ import {
   Alert,
 } from '@mui/material';
 import { Link as MuiLink, Description, GitHub, VideoCall, ArrowBack } from '@mui/icons-material';
-import { collection, doc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, addDoc, serverTimestamp, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { getAuth } from 'firebase/auth';
 
@@ -41,6 +42,8 @@ const ApplyJob = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const { userData } = useFetchUserData();
+
 
   const navigate = useNavigate();
   const { jobId } = useParams();
@@ -105,6 +108,7 @@ const ApplyJob = () => {
         jobTitle: jobData.title,
         companyName: jobData.companyName,
         applicantId: currentUser.uid,
+        name: userData.firstName,
         // applicantName: userData.name || currentUser.displayName,
         // applicantEmail: currentUser.email,
         deploymentUrl,
@@ -128,7 +132,9 @@ const ApplyJob = () => {
       };
 
       // Add to appliedJobs collection
-      await addDoc(collection(db, 'RealWorldSubmissions'), applicationData);
+      const applicationRef = await addDoc(collection(db, 'RealWorldSubmissions'), applicationData);
+      const jobRef = await getDoc(doc(collection(db, 'jobPosting'), jobId));
+      await updateDoc(jobRef.ref, { applicants: arrayUnion(applicationRef.id) });
 
       setSubmitSuccess(true);
       // Navigate after successful submission

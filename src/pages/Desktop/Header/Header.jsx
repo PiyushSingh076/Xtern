@@ -51,14 +51,6 @@ export default function Header() {
     typeof userData.photo_url === "string" &&
     userData.photo_url.trim() !== "";
 
-  // const handleMenuToggle = () => {
-  //   if (profileButtonRef.current) {
-  //     const rect = profileButtonRef.current.getBoundingClientRect();
-  //     setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left });
-  //   }
-  //   setMenuOpen(!menuOpen);
-  // };
-
   const handleMenuProfileClick = () => {
     if (userData.type === ENTREPRENEUR_ROLE) {
       navigate(`/entrepreneur/${userData?.uid}`);
@@ -79,6 +71,7 @@ export default function Header() {
     event.stopPropagation();
     setMenuOpen(!menuOpen);
   };
+
 
   return (
     <div className="nav-bar-container">
@@ -124,7 +117,9 @@ export default function Header() {
 
             {menuOpen && (
               <div className="dropdown-menu" ref={menuRef}>
+
                 <div className="dropdown-item" onClick={handleMenuProfileClick}>
+
                   <AiOutlineUser className="menu-icon" />
                   Profile
                 </div>

@@ -115,6 +115,7 @@ import InstaPull from "./pages/Desktop/InstaPull/MainSection.js";
 import JobPostings from "./pages/Desktop/Job Postings/JobPostings";
 import JobStats from "./pages/Desktop/Job Stats/JobStats.jsx";
 import ViewJob from "./pages/Desktop/View Job/ViewJob.jsx";
+import ChooseType from "./pages/Desktop/Auth/SignUp/ChooseType.jsx";
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -198,6 +199,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path={ROUTES.CHOOSETYPE} element={
+          <ProtectedRoute><ChooseType></ChooseType></ProtectedRoute>
+        } ></Route>
         <Route
           path={ROUTES.SIGN_IN}
           element={isMobileView ? <SignIn /> : <DesktopSignIn />}
