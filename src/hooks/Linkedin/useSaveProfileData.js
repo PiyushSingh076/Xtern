@@ -207,7 +207,6 @@ const useSaveProfileData = () => {
       }
 
       toast.success("Data saved successfully!");
-      navigate(`/profile/${user.uid}`);
     } catch (err) {
       setError(err.message);
       console.error("Error saving profile data:", err);
