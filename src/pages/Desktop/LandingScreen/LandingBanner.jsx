@@ -55,7 +55,7 @@ export default function LandingBanner({ pop, setRole }) {
               <span className="become-xpert-subtitle">
                 Become Top Quality Xperts
               </span>
-
+            </button>
             <button
               onClick={() => {
                 navigate(ROUTES.SIGN_UP);
@@ -65,7 +65,7 @@ export default function LandingBanner({ pop, setRole }) {
               <h4 className="hire-xpert-title">Hire Expert</h4>{" "}
               <span className="hire-xpert-subtitle">Top Quality Xperts</span>
             </button>
-          </div> */}
+          </div> 
 
           <span className="xpert-count">
             Over 3000+ Xpert are waiting for you

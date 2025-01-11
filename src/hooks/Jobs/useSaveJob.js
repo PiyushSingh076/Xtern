@@ -5,6 +5,7 @@ import {
   doc,
   updateDoc,
   arrayUnion,
+  setDoc,
 } from "firebase/firestore";
 import { auth, db } from "../../firebaseConfig.js"; // Adjust the path if necessary
 
@@ -84,7 +85,48 @@ const useSaveJob = () => {
     }
   };
 
-  return { saveJob }; // Return the function
+  const updateJob = async (jobId,{
+    jobTitle,
+    companyName,
+    description,
+    location,
+    skills,
+    experienceLevel,
+    assessmentDetail,
+    assessmentDuration,
+    duration,
+    imageURL,
+  }) => {
+    try {
+      // Validate if user is authenticate
+      // Add job data to Firestore and get the reference
+
+
+      await setDoc(doc(db, "jobPosting", jobId), {
+        title: jobTitle,
+        companyName,
+        description,
+        location,
+        skills,
+        experienceLevel,
+        assessmentDetail,
+        assessmentDuration,
+        duration,
+        image: imageURL,
+         // User reference
+      }, {merge: true});
+
+      // Fetch the newly created job by its ID
+     
+
+      return true; // Success response
+    } catch (error) {
+      console.error("Error adding job: ", error);
+      return false; // Failure response
+    }
+  };
+
+  return { saveJob, updateJob }; // Return the function
 };
 
 export default useSaveJob;

@@ -11,6 +11,7 @@ import {
   AccordionSummary,
   Button as ButtonM,
   Chip,
+  IconButton,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -54,8 +55,9 @@ const SingleMentor = () => {
   const [editable, setEditable] = useState(false);
   const [callsModalOpen, setCallsModalOpen] = useState(false);
   const navigate = useNavigate();
-
+  
   const currentUser = auth.currentUser;
+  
   const { uid } = useParams();
   const { loading: profileLoading, userData: profileData } =
     useEntrepreneurDetails(uid);
@@ -327,15 +329,16 @@ const SingleMentor = () => {
                       sx={{ fontSize: "1rem", width: "200px", height: "20px" }}
                     />
                   ) : (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col justify-center items-center">
                       <div>Years of Experience: {profileData?.experience}</div>
-                      <a
-                        className="text-sm flex gap-1 items-center justify-center"
-                        href={profileData.linkedinProfileUrl}
+                      <IconButton
+                        className="size-[40px]"
+                        sx={{color: "#0A66C2"}}
+                        onClick={() => window.open(profileData.linkedinProfileUrl)}
                       >
                         <LinkedIn></LinkedIn>
-                        {profileData.linkedinProfileUrl}
-                      </a>
+                        
+                      </IconButton>
                     </div>
                   )}
 

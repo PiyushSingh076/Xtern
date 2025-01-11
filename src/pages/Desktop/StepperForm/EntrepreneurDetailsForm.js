@@ -26,7 +26,6 @@ import {
   Stack,
   Divider,
   CardHeader,
-
 } from "@mui/material";
 import { FiTrash } from "react-icons/fi";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -47,37 +46,35 @@ import { db } from "../../../firebaseConfig";
 import { storage } from "../../../firebaseConfig";
 import { FlashOnOutlined } from "@mui/icons-material";
 
-
 export default function EntrepreneurProfileForm() {
-  
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [profileImg, setProfileImg] = useState(null);
   const [errors, setErrors] = useState({});
   const [companyDetails, setCompanyDetails] = useState({
     name: "",
-    logo: { file: null, fileName: "" , preview: ''},
+    logo: { file: null, fileName: "", preview: "" },
     startDate: "",
     description: "",
   });
   const [uploadingLogo, setUploadingLogo] = useState(false); // Track logo upload progress
-  const [uploading, setUploading] = useState(false)
+  const [uploading, setUploading] = useState(false);
   const [experience, setExperience] = useState("");
   const [industry, setIndustry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [cities, setCities] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [linkedinProfile, setLinkedinProfile] = useState("");
-  const [isLinkedInFetched, setIsLinkedInFetched] = useState(false)
+  const [isLinkedInFetched, setIsLinkedInFetched] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation()
+  const location = useLocation();
 
-  const { userData } = useFetchUserData()
+  const { userData } = useFetchUserData();
 
-  const { profileData } = location.state || {}
+  const { profileData } = location.state || {};
 
   const [error, setError] = useState({
     firstName: false,
@@ -99,10 +96,7 @@ export default function EntrepreneurProfileForm() {
       setLastName(data.last_name || "");
       setProfileImg(data.profile_pic_url || "");
 
-
-
       setIndustry(data.industry || "");
-
     }
     if (data.state && data.city) {
       const stateObj = State.getStatesOfCountry("IN").find(
@@ -120,7 +114,6 @@ export default function EntrepreneurProfileForm() {
         }
       }
     }
-
   };
 
   const {
@@ -155,55 +148,51 @@ export default function EntrepreneurProfileForm() {
     currentSkill,
     setCurrentSkill,
     saveSkill,
-  } = useModalForm(
+  } = useModalForm({ name: "", rating: 0 });
+  // // Handle modal close
+  // const closeModal = () => {
+  //   setModalType(null);
+  // };
 
-    { name: "", rating: 0 }
-  );
-    // // Handle modal close
-    // const closeModal = () => {
-    //   setModalType(null);
-    // };
+  const handleLogoUpload = (file) => {
+    if (!file) return;
 
-    const handleLogoUpload = (file) => {
-      if (!file) return;
-    
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please upload a valid image file.");
-        return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload a valid image file.");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File size should not exceed 2MB.");
+      return;
+    }
+
+    // Upload logo to Firebase Storage
+    const storageRef = ref(storage, `companyLogos/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        setUploadingLogo(true); // Show loading state
+      },
+      (error) => {
+        toast.error("Error uploading logo.");
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setCompanyDetails((prev) => ({
+            ...prev,
+            logo: {
+              url: downloadURL, // Store the URL after upload
+              fileName: file.name,
+            },
+          }));
+          setUploadingLogo(false); // Hide loading state
+        });
       }
-    
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error("File size should not exceed 2MB.");
-        return;
-      }
-    
-      // Upload logo to Firebase Storage
-      const storageRef = ref(storage, `companyLogos/${file.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-    
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          setUploadingLogo(true); // Show loading state
-        },
-        (error) => {
-          toast.error("Error uploading logo.");
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setCompanyDetails((prev) => ({
-              ...prev,
-              logo: {
-                url: downloadURL, // Store the URL after upload
-                fileName: file.name,
-              },
-            }));
-            setUploadingLogo(false); // Hide loading state
-          });
-        }
-      );
-    };
-    
+    );
+  };
 
   const handleCompanyDialogSave = async () => {
     try {
@@ -225,22 +214,20 @@ export default function EntrepreneurProfileForm() {
     }
   };
 
-  
+  // isse direct upload ho rahi hai
 
-// isse direct upload ho rahi hai
-
-
-
+  const [submitting, setSubmitting] = useState(false);
 
   const clearProfileImage = () => setProfileImg(null);
 
   const handleEntreneurSubmitInfo = async (e) => {
+    setSubmitting(true);
     e.preventDefault();
 
     const imageURL = await uploadImage();
 
-    console.log(imageURL)
-  
+    console.log(imageURL);
+
     const missingFields = [];
     if (!firstName) missingFields.push("First Name");
     if (!lastName) missingFields.push("Last Name");
@@ -249,7 +236,7 @@ export default function EntrepreneurProfileForm() {
     if (!companyDetails) missingFields.push("Company Details");
     if (!experience) missingFields.push("Years in Experience");
     if (!industry) missingFields.push("Industry");
-  
+
     if (missingFields.length === 0) {
       const entrepreneurData = {
         photo_url: imageURL, // Ensure profileImg is included here
@@ -263,37 +250,41 @@ export default function EntrepreneurProfileForm() {
         skillsRequired,
         linkedinProfile,
       };
-  
+
       dispatch(setEntrepreneurDetails(entrepreneurData));
 
       console.log("Entrepreneur Data:", entrepreneurData);
-  
+
       try {
         const userId = await saveEntrepreneurDetails(entrepreneurData);
         toast.success("Profile saved successfully!");
+        setSubmitting(false);
         navigate(`/entrepreneur/${userId}`);
       } catch (error) {
         toast.error(`Error saving profile: ${error.message || error}`);
         console.error(error);
       }
     } else {
+      setSubmitting(false);
       missingFields.forEach((field) => toast.error(`${field} is required)`));
     }
   };
-  
-
 
   return (
-    <Box sx={{ width: "80wh", overflow: "auto", }}>
+    <Box sx={{ width: "80wh", overflow: "auto" }}>
       <Stepper activeStep={0} alternativeLabel>
         <Step key="Entrepreneur Details">
-          <StepLabel sx={{
-            "& .MuiStepLabel-label": {
-              fontSize: "1.25rem",
-              fontWeight: "bold",
-              mb: 3,
-            },
-          }}>Entrepreneur Details</StepLabel>
+          <StepLabel
+            sx={{
+              "& .MuiStepLabel-label": {
+                fontSize: "1.25rem",
+                fontWeight: "bold",
+                mb: 3,
+              },
+            }}
+          >
+            Entrepreneur Details
+          </StepLabel>
         </Step>
       </Stepper>
 
@@ -301,14 +292,19 @@ export default function EntrepreneurProfileForm() {
         <Grid item xs={12} md={4}>
           <Card sx={{ padding: 3, boxShadow: 3 }}>
             <CardContent>
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
                 <input
                   accept="image/*"
                   style={{ display: "none" }}
                   id="profile-image-upload"
                   type="file"
                   onChange={handleImageUpload}
-
                 />
                 <label htmlFor="profile-image-upload">
                   <IconButton component="span">
@@ -323,24 +319,28 @@ export default function EntrepreneurProfileForm() {
                   </IconButton>
                 </label>
                 {profileImg && (
-                      <IconButton
-                        aria-label="clear"
-                        onClick={clearProfileImage}
-                        sx={{
-                          position: "absolute",
-                          top: 0,
-                          right: 0,
-                          backgroundColor: "rgba(255,255,255,0.7)",
-                          "&:hover": {
-                            backgroundColor: "rgba(255,255,255,1)",
-                          },
-                        }}
-                        size="small"
-                      >
-                        <ClearIcon fontSize="small" />
-                      </IconButton>
-                    )}
-                <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
+                  <IconButton
+                    aria-label="clear"
+                    onClick={clearProfileImage}
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      backgroundColor: "rgba(255,255,255,0.7)",
+                      "&:hover": {
+                        backgroundColor: "rgba(255,255,255,1)",
+                      },
+                    }}
+                    size="small"
+                  >
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                )}
+                <Typography
+                  variant="caption"
+                  color="textSecondary"
+                  sx={{ mt: 1 }}
+                >
                   Click to upload
                 </Typography>
               </Box>
@@ -376,13 +376,11 @@ export default function EntrepreneurProfileForm() {
                   onChange={(e) => setExperience(e.target.value)}
                 >
                   <MenuItem value="Less than 1">Less than 1</MenuItem>
-                  {Array.from({ length: 20 }, (_, i) => i + 1).map(
-                    (year) => (
-                      <MenuItem key={year} value={year}>
-                        {year}
-                      </MenuItem>
-                    )
-                  )}
+                  {Array.from({ length: 20 }, (_, i) => i + 1).map((year) => (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
               <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
@@ -422,8 +420,8 @@ export default function EntrepreneurProfileForm() {
         </Grid>
 
         <Grid item xs={12} md={8}>
-          {!profileData &&
-            (<Box
+          {!profileData && (
+            <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
@@ -457,7 +455,7 @@ export default function EntrepreneurProfileForm() {
                 <span>Import LinkedIn Profile</span>
               </div>
             </Box>
-            )}
+          )}
 
           {!isLinkedInFetched && (
             <Box sx={{ mb: 2, mt: 2 }}>
@@ -500,11 +498,11 @@ export default function EntrepreneurProfileForm() {
                     {companyDetails.description}
                   </Typography>
                 </Box>
-              ) : ""}
+              ) : (
+                ""
+              )}
             </CardContent>
-
           </Card>
-
 
           <Card sx={{ mb: 2, boxShadow: 2 }}>
             <CardHeader
@@ -539,7 +537,9 @@ export default function EntrepreneurProfileForm() {
                   >
                     <FiTrash color="red" size={16} />
                   </IconButton>
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <Box
+                    sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+                  >
                     <Typography variant="subtitle1">
                       <strong>{item.name}</strong>
                     </Typography>
@@ -561,7 +561,6 @@ export default function EntrepreneurProfileForm() {
             helperText={errors.industry}
             sx={{ mb: 3 }}
           />
-
 
           <TextField
             label="LinkedIn Profile"
@@ -600,7 +599,10 @@ export default function EntrepreneurProfileForm() {
                     required
                     value={currentSkill.rating}
                     onChange={(e) =>
-                      setCurrentSkill({ ...currentSkill, rating: e.target.value })
+                      setCurrentSkill({
+                        ...currentSkill,
+                        rating: e.target.value,
+                      })
                     }
                     error={!!errors.skillRating}
                     helperText={errors.skillRating}
@@ -619,38 +621,38 @@ export default function EntrepreneurProfileForm() {
           </Dialog>
           {/* Dialog for Company Details */}
           <Dialog open={modalType === "Company"} onClose={closeModal} fullWidth>
-          <DialogTitle>Add Company Details</DialogTitle>
-          <DialogContent>
-            <TextField
-              label="Company Name"
-              fullWidth
-              value={companyDetails.name}
-              onChange={(e) =>
-                setCompanyDetails({ ...companyDetails, name: e.target.value })
-              }
-              sx={{ mb: 2 }}
-            />
-            <input
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              id="logo-upload"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                handleLogoUpload(file); // Save logo to state
-              }}
-            />
-            <label htmlFor="logo-upload">
-              <Button
-                variant="contained"
-                component="span"
-                disabled={uploadingLogo}
+            <DialogTitle>Add Company Details</DialogTitle>
+            <DialogContent>
+              <TextField
+                label="Company Name"
+                fullWidth
+                value={companyDetails.name}
+                onChange={(e) =>
+                  setCompanyDetails({ ...companyDetails, name: e.target.value })
+                }
                 sx={{ mb: 2 }}
-              >
-                Upload Logo
-              </Button>
-            </label>
-            {companyDetails.logo.preview && (
+              />
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                id="logo-upload"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  handleLogoUpload(file); // Save logo to state
+                }}
+              />
+              <label htmlFor="logo-upload">
+                <Button
+                  variant="contained"
+                  component="span"
+                  disabled={uploadingLogo}
+                  sx={{ mb: 2 }}
+                >
+                  Upload Logo
+                </Button>
+              </label>
+              {companyDetails.logo.preview && (
                 <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-200 mb-3">
                   <img
                     src={companyDetails.logo.preview}
@@ -659,48 +661,62 @@ export default function EntrepreneurProfileForm() {
                   />
                 </div>
               )}
-           
-            <TextField
-              label="Start Date"
-              type="date"
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-              value={companyDetails.startDate}
-              onChange={(e) =>
-                setCompanyDetails({ ...companyDetails, startDate: e.target.value })
-              }
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Description"
-              fullWidth
-              multiline
-              rows={4}
-              value={companyDetails.description}
-              onChange={(e) =>
-                setCompanyDetails({ ...companyDetails, description: e.target.value })
-              }
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCompanyDialogSave} variant="contained">
-              Save
-            </Button>
-            <Button onClick={closeModal} variant="outlined">
-              Cancel
-            </Button>
-          </DialogActions>
-        </Dialog>
 
-          <Grid item={4} sx={{ m: 3, display: "flex", justifyContent: "flex-end" }}>
+              <TextField
+                label="Start Date"
+                type="date"
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                value={companyDetails.startDate}
+                onChange={(e) =>
+                  setCompanyDetails({
+                    ...companyDetails,
+                    startDate: e.target.value,
+                  })
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="Description"
+                fullWidth
+                multiline
+                rows={4}
+                value={companyDetails.description}
+                onChange={(e) =>
+                  setCompanyDetails({
+                    ...companyDetails,
+                    description: e.target.value,
+                  })
+                }
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCompanyDialogSave} variant="contained">
+                Save
+              </Button>
+              <Button onClick={closeModal} variant="outlined">
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Grid
+            item={4}
+            sx={{ m: 3, display: "flex", justifyContent: "flex-end" }}
+          >
             <Button
               variant="contained"
               color="primary"
-              
+              className="flex gap-1 items-center"
+              disabled={submitting || Object.values(errors).includes(true)}
               onClick={handleEntreneurSubmitInfo}
-              disabled={Object.values(errors).includes(true)} // Disable button if any error exists
             >
-              Submit
+              {submitting && (
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              )}
+              <span>Submit</span>
             </Button>
           </Grid>
         </Grid>

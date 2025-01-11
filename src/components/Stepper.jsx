@@ -26,25 +26,25 @@ import { getAuth } from "firebase/auth";
 import { storage } from "../firebaseConfig.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { TextField, InputAdornment } from "@mui/material";
-const Stepper = () => {
+const Stepper = ({data}) => {
   const steps = [
     { id: 1, name: "Job" },
     { id: 2, name: "Assessment" },
   ];
   const [Id, setId] = useState(1);
-  const [jobTitle, setJobTitle] = useState("");
-  const [companyName, setCompanyName] = useState("");
+  const [jobTitle, setJobTitle] = useState(data?.title || "");
+  const [companyName, setCompanyName] = useState(data?.companyName || "");
   const [fileName, setFileName] = useState("");
   const [file, setFile] = useState([]);
   const [filePreview, setFilePreview] = useState(null);
-  const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [skills, setSkills] = useState([]);
+  const [description, setDescription] = useState(data?.description || "");
+  const [location, setLocation] = useState(data?.location || "");
+  const [skills, setSkills] = useState(data?.skills || []);
   const [skillInput, setSkillInput] = useState("");
-  const [experienceLevel, setExperienceLevel] = useState("");
-  const [assessmentDetail, setAssessmentDetail] = useState("");
-  const [assessmentDuration, setAssessmentDuration] = useState("");
-  const [duration, setDuration] = useState("");
+  const [experienceLevel, setExperienceLevel] = useState(data?.experienceLevel || "");
+  const [assessmentDetail, setAssessmentDetail] = useState(data?.assessmentDetail || "");
+  const [assessmentDuration, setAssessmentDuration] = useState(data?.assessmentDuration || "");
+  const [duration, setDuration] = useState(data?.duration || "");
 
   const {
     projectImage,
@@ -55,7 +55,7 @@ const Stepper = () => {
     clearImage,
     uploadImage,
   } = useImageUpload();
-  const { saveJob } = useSaveJob();
+  const { saveJob, updateJob } = useSaveJob();
   const [submitLoading, setSubmitLoading] = useState(false);
   const navigate = useNavigate();
   const onStepClick = (id) => {
@@ -91,6 +91,17 @@ const Stepper = () => {
   };
 
   const validateForm = () => {
+    console.log(
+      jobTitle,
+      companyName,
+      description,
+      location,
+      skills.length,
+      experienceLevel,
+      assessmentDetail, assessmentDuration,
+      duration,
+      fileName,
+      (projectImage || data?.image))
     return (
       jobTitle &&
       companyName &&
@@ -102,21 +113,21 @@ const Stepper = () => {
       assessmentDuration &&
       duration &&
       fileName &&
-      projectImage
+      (projectImage || data?.image)
     );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
-      alert("Please fill all required fields.");
+      toast.error("Please fill all required fields.");
       return;
     }
 
     setSubmitLoading(true);
     const imageURL = await uploadImage();
     console.log(imageURL, imagePreviewUrl);
-    if (!imageURL) {
+    if (!imageURL && data == null) {
       setSubmitLoading(false);
       return;
     }
@@ -135,31 +146,59 @@ const Stepper = () => {
       const snapshot = await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(snapshot.ref);
       // Adding job to Firestore with userref
-      const data = {
+      const data2 = {
         fileName: file.name,
         filePath: downloadURL, // Store the file URL
         uploadedAt: new Date(),
       };
-      const isSaved = await saveJob({
-        currentUser,
-        jobTitle,
-        companyName,
-        description,
-        location,
-        skills,
-        experienceLevel,
-        assessmentDetail,
-        assessmentDuration,
-        duration,
-        imageURL,
-        data,
-      });
-      if (isSaved) {
-        alert("Job added successfully!");
-        setSubmitLoading(false);
-        navigate("/viewjob/" + isSaved); // Redirect to home screen
-      } else {
-        toast.error("Failed to add job.");
+      if(data){
+        const isUploaded = await updateJob(data.jobId,{
+          currentUser,
+          jobTitle,
+          companyName,
+          description,
+          location,
+          skills,
+          experienceLevel,
+          assessmentDetail,
+          assessmentDuration,
+          duration,
+          imageURL: imageURL || data?.image,
+          data: data2,
+        })
+
+        if(isUploaded){
+          setSubmitLoading(false)
+          toast.success("Job updated successfully!");
+          navigate("/viewjob/" + data.jobId)
+        }
+        else{
+          setSubmitLoading(false)
+          toast.error("Failed to update job.")
+        }
+      }
+      else{
+        const isSaved = await saveJob({
+          currentUser,
+          jobTitle,
+          companyName,
+          description,
+          location,
+          skills,
+          experienceLevel,
+          assessmentDetail,
+          assessmentDuration,
+          duration,
+          imageURL: imageURL || data?.image,
+          data: data2,
+        });
+        if (isSaved) {
+          // alert("Job added successfully!");
+          setSubmitLoading(false);
+          navigate("/viewjob/" + isSaved); // Redirect to home screen
+        } else {
+          toast.error("Failed to add job.");
+        }
       }
     } catch (err) {
       console.error("Error adding job: ", err);
@@ -266,10 +305,10 @@ const Stepper = () => {
                     backgroundColor: "#f8f9fa",
                   }}
                 >
-                  {imagePreviewUrl ? (
+                  {imagePreviewUrl || data?.image ? (
                     <div style={{ position: "relative", textAlign: "center" }}>
                       <img
-                        src={imagePreviewUrl}
+                        src={imagePreviewUrl || data?.image}
                         alt="Project Preview"
                         style={{
                           width: "36vw",
@@ -692,7 +731,7 @@ const Stepper = () => {
                   className="btn btn-primary px-5 py-3 w-100"
                   disabled={loading || submitLoading}
                 >
-                  {submitLoading ? "Submitting..." : "Post Job"}
+                  {submitLoading ? <div className="spinner-border spinner-border-sm" ></div> : data ? "Update" : "Post"}
                 </button>
               </div>
             </div>

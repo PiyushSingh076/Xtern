@@ -68,6 +68,9 @@ const SingleMentor = () => {
   const navigate = useNavigate();
   const { uid } = useParams();
   const { user, loading } = useAuthState();
+  
+
+  
 
   // For scheduling calls
   const [interviewScheduled, setInterviewScheduled] = useState(false);
@@ -96,6 +99,15 @@ const SingleMentor = () => {
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(uid);
+
+  useEffect(() => {
+    if(profileData){
+      console.log(profileData)
+      if(profileData.type == "entrepreneur"){
+        navigate(`/entrepreneur/${profileData.uid}`);
+      }
+    }
+  }, [profileData])
 
   const handleChatClick = () => {
     if (user) {

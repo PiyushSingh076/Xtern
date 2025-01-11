@@ -17,7 +17,7 @@ import {
 
 import dayjs from "dayjs";
 import { useFetchJob } from "../../../hooks/Jobs/useFetchJob";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Timestamp } from "firebase/firestore";
 import { Spinner } from "react-bootstrap";
@@ -57,6 +57,8 @@ const JobStats = () => {
     setSelectedUser(null);
   };
 
+  const navigate = useNavigate()
+
   const handleSubscribe = async () => {
     setSelectedUser((prev) => ({
       ...selectedUser,
@@ -76,10 +78,10 @@ const JobStats = () => {
             className="flex flex-col border border-[#e5e5e5] rounded-xl relative"
           >
             <div className="h-[80px] gap-2 w-full flex">
-              <div className="size-[80px] relative flex items-center justify-center  rounded-lg  mb-2">
+              <div className="size-[80px] relative flex items-center justify-center  rounded-lg overflow-hidden  mb-2">
                 <img
                   src={jobData.image}
-                  className="absolute top-0 left-0 size-[80px] object-cover"
+                  className="absolute top-0 left-0 size-[80px] object-cover rounded-lg"
                   alt=""
                 />
               </div>
@@ -133,7 +135,7 @@ const JobStats = () => {
               </div>
             </div>
             <div className="mt-auto flex justify-end">
-              <Button variant="contained">Edit Job</Button>
+              <Button variant="contained" onClick={() => navigate("/editjob/"+jobId)}>Edit Job</Button>
             </div>
           </div>
           <div className="flex flex-col border border-[#e5e5e5] rounded-xl size-full relative overflow-hidden">
