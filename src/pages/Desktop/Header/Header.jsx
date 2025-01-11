@@ -13,20 +13,22 @@ import { ROUTES } from "../../../constants/routes";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
+import { Spinner } from "react-bootstrap";
+import { useRefreshUserData } from "../../../hooks/Auth/useRefreshUserData";
 
 export default function Header() {
   const data = useSelector((state) => state.user);
   const isDetailEmpty = Object.keys(data.detail).length === 0;
-  const { userData } = useFetchUserData();
+  const { userData, loading } = useFetchUserData();
   const { handleLogout } = useOAuthLogout();
   const navigate = useNavigate();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
-
-
+  const {refreshUser, refresh} = useRefreshUserData();
   useEffect(() => {
+    
     const handleClickOutside = (event) => {
       // Check if click is outside both menu AND profile button
       if (
@@ -72,7 +74,6 @@ export default function Header() {
     setMenuOpen(!menuOpen);
   };
 
-
   return (
     <div className="nav-bar-container">
       <div className="logo-search-container">
@@ -80,9 +81,9 @@ export default function Header() {
           <span style={{ color: "#0d6efd", fontSize: "34px" }}>X</span>pert
         </span>
       </div>
-
+      
       <div className="hire-btns">
-        {!userData && (
+        {userData == null && !loading && (
           <button
             onClick={() => navigate(ROUTES.SIGN_IN)}
             className="hire-xpert-btn"
@@ -91,76 +92,97 @@ export default function Header() {
           </button>
         )}
 
-        {userData && (
+        {loading ? (
           <div className="profile-menu-container">
-            <button
-              ref={profileButtonRef}
-              className="profile-container"
-              onClick={handleMenuToggle}
-            >
-              {hasUserPhoto ? (
-                <img
-                  src={userData.photo_url}
-                  width="30px"
-                  height="30px"
-                  className="border"
-                  style={{ borderRadius: "50%", cursor: "pointer" }}
-                  alt={userData?.firstName || "User"}
-                />
-              ) : (
-                <AiOutlineUser
-                  style={{ fontSize: "1.5rem", marginRight: "5px" }}
-                />
-              )}
-              <span className="profile-name">{userData?.firstName}</span>
-            </button>
-
-            {menuOpen && (
-              <div className="dropdown-menu" ref={menuRef}>
-
-                <div className="dropdown-item" onClick={handleMenuProfileClick}>
-
-                  <AiOutlineUser className="menu-icon" />
-                  Profile
-                </div>
-                <div
-                  className="dropdown-item"
-                  onClick={() => handleMenuOptionClick("/jobs")}
-                >
-                  <FaBriefcase className="menu-icon" />
-                  Jobs
-                </div>
-                {/* <div
-                  className="dropdown-item"
-                  onClick={() => handleMenuOptionClick("/wallet")}
-                >
-                  <AiOutlineWallet className="menu-icon" />
-                  Wallet
-                </div>
-                <div
-                  className="dropdown-item"
-                  onClick={() => handleMenuOptionClick("/support")}
-                >
-                  <AiOutlineQuestionCircle className="menu-icon" />
-                  Support
-                </div> */}
-                <div className="dropdown-item" onClick={handleMenuOptionClick}>
-                  <AiOutlineQuestionCircle className="menu-icon" />
-                  My {userData.type === ENTREPRENEUR_ROLE ? "Jobs" : "Schedule"}
-                </div>
-                <div
-                  className="dropdown-item logout"
-                  onClick={() => {
-                    handleLogout();
-                    setMenuOpen(false);
-                  }}
-                >
-                  <AiOutlineLogout className="menu-icon" />
-                  Log Out
-                </div>
-              </div>
-            )}
+            <div class="spinner-border spinner-border-sm mx-6" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
           </div>
+        ) : (
+          userData && (
+            <>
+              <>
+                <div className="profile-menu-container">
+                  <button
+                    ref={profileButtonRef}
+                    className="profile-container"
+                    onClick={handleMenuToggle}
+                  >
+                    {hasUserPhoto ? (
+                      <img
+                        src={userData.photo_url}
+                        width="30px"
+                        height="30px"
+                        className="border size-[30px] object-cover"
+                        style={{ borderRadius: "50%", cursor: "pointer" }}
+                        alt={userData?.firstName || "User"}
+                      />
+                    ) : (
+                      <AiOutlineUser
+                        style={{ fontSize: "1.5rem", marginRight: "5px" }}
+                      />
+                    )}
+                    <span className="profile-name !text-black hover:!text-black">
+                      {userData?.firstName}
+                    </span>
+                  </button>
+
+                  {menuOpen && (
+                    <div className="dropdown-menu" ref={menuRef}>
+                      <div
+                        className="dropdown-item"
+                        onClick={handleMenuProfileClick}
+                      >
+                        <AiOutlineUser className="menu-icon" />
+                        Profile
+                      </div>
+                      <div
+                        className="dropdown-item"
+                        onClick={() => handleMenuOptionClick("/jobs")}
+                      >
+                        <FaBriefcase className="menu-icon" />
+                        Jobs
+                      </div>
+                      {/* <div
+                className="dropdown-item"
+                onClick={() => handleMenuOptionClick("/wallet")}
+              >
+                <AiOutlineWallet className="menu-icon" />
+                Wallet
+              </div>
+              <div
+                className="dropdown-item"
+                onClick={() => handleMenuOptionClick("/support")}
+              >
+                <AiOutlineQuestionCircle className="menu-icon" />
+                Support
+              </div> */}
+                      <div
+                        className="dropdown-item"
+                        onClick={handleMenuOptionClick}
+                      >
+                        <AiOutlineQuestionCircle className="menu-icon" />
+                        My{" "}
+                        {userData.type === ENTREPRENEUR_ROLE
+                          ? "Jobs"
+                          : "Schedule"}
+                      </div>
+                      <div
+                        className="dropdown-item logout"
+                        onClick={() => {
+                          handleLogout();
+                          setMenuOpen(false);
+                        }}
+                      >
+                        <AiOutlineLogout className="menu-icon" />
+                        Log Out
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            </>
+          )
         )}
       </div>
     </div>

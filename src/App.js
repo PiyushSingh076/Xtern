@@ -7,7 +7,6 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./assets/css/media-query.css";
 import { ROUTES } from "./constants/routes"; // Import the route constants
 
-
 //  Desktop View
 import Entrepreneur from "./pages/Desktop/Entrepreneur/index.jsx";
 import DesktopHomeScreen from "./pages/Desktop/Homescreen/index.jsx";
@@ -100,9 +99,10 @@ import ApplyInternship from "./pages/ApplyInternship";
 import CreateProject from "./pages/CreateProject";
 import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
-import Jobs from "./pages/jobs.jsx"
+import Jobs from "./pages/jobs.jsx";
 import SingleJob from "./pages/SingleJob.jsx";
 import ApplyJob from "./pages/Applyjob.jsx";
+import { AuthProvider } from "./hooks/Auth/useRefreshUserData.jsx";
 
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
@@ -116,6 +116,7 @@ import JobPostings from "./pages/Desktop/Job Postings/JobPostings";
 import JobStats from "./pages/Desktop/Job Stats/JobStats.jsx";
 import ViewJob from "./pages/Desktop/View Job/ViewJob.jsx";
 import ChooseType from "./pages/Desktop/Auth/SignUp/ChooseType.jsx";
+import EditJob from "./pages/EditJob.jsx";
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -155,568 +156,591 @@ function App() {
 
   // comment
   return (
-    <div className="App">
-      {!isMobileView && !isVideoCallRoute && <Header />}
-      {isMobileView && !isVideoCallRoute && <MobHeader />}
-      {isMobileView && !isVideoCallRoute && (
-        <div style={{ height: "50px" }}></div>
-      )}
-      {!isMobileView && !isVideoCallRoute && (
-        <div style={{ height: "90px" }}></div>
-      )}
-      <Toaster />
-      <Routes>
-        {/* Public Routes */}
-        {/* <Route
-          path={ROUTES.HOME}
-          element={isMobileView ? <DesktopHomeScreen /> : <DesktopHomeScreen />}
-        /> */}
-        <Route
-          path={ROUTES.SIGN_UP}
-          element={isMobileView ? <SignUp /> : <DesktopSignUp />}
-        />
-        <Route
-          path={ROUTES.MYCHAT}
-          element={
-            <ProtectedRoute>
-              <MyChat />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.VIDEOCALL}
-          element={
-            <ProtectedRoute>
-              <VideoCall />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.MYVIDEOCALL}
-          element={
-            <ProtectedRoute>
-              <MyVideoCall />
-            </ProtectedRoute>
-          }
-        />
-        <Route path={ROUTES.CHOOSETYPE} element={
-          <ProtectedRoute><ChooseType></ChooseType></ProtectedRoute>
-        } ></Route>
-        <Route
-          path={ROUTES.SIGN_IN}
-          element={isMobileView ? <SignIn /> : <DesktopSignIn />}
-        />
-        <Route path={ROUTES.FORGET_PASSWORD} element={<ForgetPassword />} />
-        <Route path="/insta" element={<InstaPull />} />
-        <Route path={ROUTES.CHECK_MAIL_SCREEN} element={<CheckMailScreen />} />
-        <Route
-          path={ROUTES.RESET_PASSWORD_SCREEN}
-          element={<ResetPasswordScreen />}
-        />
-        <Route
-          path={ROUTES.VERIFY_SCREEN}
-          element={
-            <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
-              <VerifyScreen />
-              
-            </ProtectedRoute>
-          }
-        />
+    <AuthProvider>
+      <div className="App">
+        {!isMobileView && !isVideoCallRoute && <Header />}
+        {isMobileView && !isVideoCallRoute && <MobHeader />}
+        {isMobileView && !isVideoCallRoute && (
+          <div style={{ height: "50px" }}></div>
+        )}
+        {!isMobileView && !isVideoCallRoute && (
+          <div style={{ height: "90px" }}></div>
+        )}
+        <Toaster />
+        <Routes>
+          {/* Public Routes */}
+          {/* <Route
+        path={ROUTES.HOME}
+        element={isMobileView ? <DesktopHomeScreen /> : <DesktopHomeScreen />}
+      /> */}
+          <Route
+            path={ROUTES.SIGN_UP}
+            element={isMobileView ? <SignUp /> : <DesktopSignUp />}
+          />
+          <Route
+            path={ROUTES.MYCHAT}
+            element={
+              <ProtectedRoute>
+                <MyChat />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.VIDEOCALL}
+            element={
+              <ProtectedRoute>
+                <VideoCall />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.MYVIDEOCALL}
+            element={
+              <ProtectedRoute>
+                <MyVideoCall />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.CHOOSETYPE}
+            element={
+              <ProtectedRoute>
+                <ChooseType></ChooseType>
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path={ROUTES.SIGN_IN}
+            element={isMobileView ? <SignIn /> : <DesktopSignIn />}
+          />
+          <Route path={ROUTES.FORGET_PASSWORD} element={<ForgetPassword />} />
+          <Route path="/insta" element={<InstaPull />} />
+          <Route
+            path={ROUTES.CHECK_MAIL_SCREEN}
+            element={<CheckMailScreen />}
+          />
+          <Route
+            path={ROUTES.RESET_PASSWORD_SCREEN}
+            element={<ResetPasswordScreen />}
+          />
+          <Route
+            path={ROUTES.VERIFY_SCREEN}
+            element={
+              <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
+                <VerifyScreen />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path={ROUTES.PREFERRED_ROLE} element={<DesktopPrefferRole />} />
-        {/*iffat*/}
-        <Route path={ROUTES.FILTER_SCREEN} element={<DesktopFilterScreen />} />
-        <Route path={ROUTES.CARD_DESIGN} element={<DesktopCard />} />
+          <Route
+            path={ROUTES.PREFERRED_ROLE}
+            element={<DesktopPrefferRole />}
+          />
+          {/*iffat*/}
+          <Route
+            path={ROUTES.FILTER_SCREEN}
+            element={<DesktopFilterScreen />}
+          />
+          <Route path={ROUTES.CARD_DESIGN} element={<DesktopCard />} />
 
-        {/* <Route
-          path={ROUTES.PROFESSIONAL_PROFILE}
-          element={<DesktopProfileDetails />}
-        /> */}
+          {/* <Route
+        path={ROUTES.PROFESSIONAL_PROFILE}
+        element={<DesktopProfileDetails />}
+      /> */}
 
-        <Route
-          path={ROUTES.INTERN}
-          element={
-            isMobileView ? (
-              <PrefferedServiceIntern />
-            ) : (
-              <DesktopPrefferedServiceIntern />
-            )
-          }
-        />
-        <Route
-          path={ROUTES.MENTOR}
-          element={
-            isMobileView ? (
-              <PrefferedServiceMentor />
-            ) : (
-              <DesktopPrefferServiceMentor />
-            )
-          }
-        />
+          <Route
+            path={ROUTES.INTERN}
+            element={
+              isMobileView ? (
+                <PrefferedServiceIntern />
+              ) : (
+                <DesktopPrefferedServiceIntern />
+              )
+            }
+          />
+          <Route
+            path={ROUTES.MENTOR}
+            element={
+              isMobileView ? (
+                <PrefferedServiceMentor />
+              ) : (
+                <DesktopPrefferServiceMentor />
+              )
+            }
+          />
 
-        <Route
-          path={ROUTES.VENTURE}
-          element={
-            isMobileView ? (
-              <PrefferedServiceVenture />
-            ) : (
-              <DesktopPrefferServiceVenture />
-            )
-          }
-        />
+          <Route
+            path={ROUTES.VENTURE}
+            element={
+              isMobileView ? (
+                <PrefferedServiceVenture />
+              ) : (
+                <DesktopPrefferServiceVenture />
+              )
+            }
+          />
 
-        {/* Protected Routes */}
-        <Route
-          path={ROUTES.NOTIFICATION_ALLOW}
-          element={
-            <ProtectedRoute>
-              <NotificationAllow />
-            </ProtectedRoute>
-          }
-        />
+          {/* Protected Routes */}
+          <Route
+            path={ROUTES.NOTIFICATION_ALLOW}
+            element={
+              <ProtectedRoute>
+                <NotificationAllow />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path={ROUTES.WALLET_SCREEN} element={<WalletScreen />} />
+          <Route path={ROUTES.WALLET_SCREEN} element={<WalletScreen />} />
 
-        <Route path={ROUTES.STEPPER_FORM} element={<DesktopStepperForm />} />
+          <Route path={ROUTES.STEPPER_FORM} element={<DesktopStepperForm />} />
 
-        <Route
-          path={ROUTES.ENTREPRENEURS_FORM}
-          element={<EntrepreneurDetailsForm />}
-        />
-        <Route
-          path={ROUTES.CREATE_JOB}
-          element={
-            <ProtectedRoute>
-              <CreateJob />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.JOBS}
-          element={
-            <ProtectedRoute>
-              <Jobs />
-            </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path={ROUTES.JOBS + "/:jobId"}
-          element={
-            <ProtectedRoute>
-              <SingleJob />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.APPLYJOB + "/:jobId"}
-          element={
-            <ProtectedRoute>
-              <ApplyJob />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path={ROUTES.ENTREPRENEURS_FORM}
+            element={<EntrepreneurDetailsForm />}
+          />
+          <Route
+            path={ROUTES.CREATE_JOB}
+            element={
+              <ProtectedRoute>
+                <CreateJob />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.JOBS}
+            element={
+              <ProtectedRoute>
+                <Jobs />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path={ROUTES.SPEND_LEARNING}
-          element={
-            <ProtectedRoute>
-              <SpendLearning />
-            </ProtectedRoute>
-          }
-        />
-        {/* <Route
-          path={ROUTES.INTEREST_SCREEN}
-          element={
-            <ProtectedRoute allowedRoles={["Intern"]}>
-              <SelectSkills />
-            </ProtectedRoute>
-          }
-        /> */}
-        <Route
-          path={ROUTES.SELECT_COURSES_SCREEN}
-          element={
-            <ProtectedRoute>
-              <SelectCoursesScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.LANDING_PAGE}
-          element={
-            <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
-              {isMobileView ? <HomeScreen /> : <DesktopLandingPage />}
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path={ROUTES.JOBS + "/:jobId"}
+            element={
+              <ProtectedRoute>
+                <SingleJob />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.APPLYJOB + "/:jobId"}
+            element={
+              <ProtectedRoute>
+                <ApplyJob />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path={ROUTES.HOME_SCREEN} element={<DesktopHomeScreen />} />
+          <Route
+            path={ROUTES.SPEND_LEARNING}
+            element={
+              <ProtectedRoute>
+                <SpendLearning />
+              </ProtectedRoute>
+            }
+          />
+          {/* <Route
+        path={ROUTES.INTEREST_SCREEN}
+        element={
+          <ProtectedRoute allowedRoles={["Intern"]}>
+            <SelectSkills />
+          </ProtectedRoute>
+        }
+      /> */}
+          <Route
+            path={ROUTES.SELECT_COURSES_SCREEN}
+            element={
+              <ProtectedRoute>
+                <SelectCoursesScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.LANDING_PAGE}
+            element={
+              <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
+                {isMobileView ? <HomeScreen /> : <DesktopLandingPage />}
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path={ROUTES.NOTIFICATION}
-          element={
-            <ProtectedRoute>
-              <Notification />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.CATEGORY_SCREEN}
-          element={
-            <ProtectedRoute>
-              <CategoryScreen />
-            </ProtectedRoute>
-          }
-        />
+          <Route path={ROUTES.HOME_SCREEN} element={<DesktopHomeScreen />} />
 
-        <Route
-          path={ROUTES.USER_TYPE}
-          element={
-            isMobileView ? <UserType /> : <div>This Page only for Mobile</div>
-          }
-        />
-        <Route
-          path={ROUTES.BUSINESS}
-          element={
-            <ProtectedRoute>
-              <Business />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.CREATE_PROJECT}
-          element={
-            <ProtectedRoute>
-              {isMobileView ? <CreateProject /> : null}
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.SINGLE_COURSE_DESCRIPTION}
-          element={
-            <ProtectedRoute>
-              {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />}
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.APPLY_PROJECT + "/:projectId"}
-          element={
-            <ProtectedRoute>
-              {isMobileView ? <ApplyProject /> : <DesktopCreateProject />}
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.INTERNSHIP + "/:internshipId"}
-          element={
-            <ProtectedRoute>
-              <SingleJobDescription />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.APPLY_INTERNSHIP + "/:internshipId"}
-          element={
-            <ProtectedRoute>
-              <ApplyInternship />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.TRENDING_COURSE}
-          element={
-            <ProtectedRoute>
-              <TrendingCourse />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.CHECKOUT_SCREEN}
-          element={
-            <ProtectedRoute>
-              <CheckOutScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.PAYMENT_SCREEN}
-          element={
-            <ProtectedRoute>
-              <PaymentScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.PAYMENT_SUCCESSFUL_SCREEN}
-          element={
-            <ProtectedRoute>
-              <PaymentSuccessfulScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.APPLY_COUPON}
-          element={
-            <ProtectedRoute>
-              <ApplyCoupon />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.MENTOR_SCREEN}
-          element={
-            <ProtectedRoute>
-              <MentorScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.FILTER_SCREEN}
-          element={
-            <ProtectedRoute>
-              <FilterScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.NEW_RELEASE_COURSE}
-          element={
-            <ProtectedRoute>
-              {isMobileView ? <NewReleaseCourse /> : <DesktopAllProjects />}
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.BOOKMARK}
-          element={
-            <ProtectedRoute>
-              <Bookmark />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.COURSE_ONGOING_SCREEN}
-          element={
-            <ProtectedRoute>
-              <CourseOngoingScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.SINGLE_COURSE_ONGOING}
-          element={
-            <ProtectedRoute>
-              <SingleCourseOngoing />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.SINGLE_COURSE_COMPLETE}
-          element={
-            <ProtectedRoute>
-              <SingleCourseComplete />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.CHAT_SCREEN}
-          element={
-            <ProtectedRoute>
-              <ChatScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.SINGLE_CHAT_SCREEN}
-          element={
-            <ProtectedRoute>
-              <SingleChatScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.PROFILE}
-          element={
-            <ProtectedRoute>
-              {isMobileView ? <Profile /> : <DesktopProfile />}
-            </ProtectedRoute>
-          }
-        />
-        <Route path={ROUTES.ENTREPRENEUR} element={<Entrepreneur />} />
-        <Route
-          path={ROUTES.JOBSPOSTINGS}
-          element={
-            <ProtectedRoute allowedRoles={["entrepreneur"]}>
-              <JobPostings></JobPostings>
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path={ROUTES.JOBSTATS}
-          element={
-            <ProtectedRoute>
-              <JobStats></JobStats>
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path={ROUTES.PROFILE_EDIT}
-          element={
-            <ProtectedRoute>
-              <ProfileEdit />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.ADD_LINKEDIN_PROFILE}
-          element={
-            <ProtectedRoute>
-              <AddLinkedInProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.USER_PROFILE}
-          element={
-            <ProtectedRoute>
-              <UserProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.SINGLE_MENTOR + "/:uid"}
-          element={
-            <ProtectedRoute>
-              <SingleMentor />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.NOTIFICATION_OPTION}
-          element={
-            <ProtectedRoute>
-              <NotificationOption />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.LANGUAGE}
-          element={
-            <ProtectedRoute>
-              <Language />
-            </ProtectedRoute>
-          }
-        />
-        <Route path={ROUTES.VIEWJOB} element={<ViewJob></ViewJob>}></Route>
-        <Route
-          path={ROUTES.CURRENCY}
-          element={
-            <ProtectedRoute>
-              <Currency />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.ABOUT_US_SCREEN}
-          element={
-            <ProtectedRoute>
-              <AboutUsScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.POLICY_SCREEN}
-          element={
-            <ProtectedRoute>
-              <PolicyScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.FAQ_SCREEN}
-          element={
-            <ProtectedRoute>
-              <FaqScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.FEEDBACK_SCREEN}
-          element={
-            <ProtectedRoute>
-              <FeedBackScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.COMPLETE_COURSE_RATING}
-          element={
-            <ProtectedRoute>
-              <CompleteCourseRating />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.REVIEW_SCREEN}
-          element={
-            <ProtectedRoute>
-              <ReviewScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.SEARCH_RESULT_FOUND}
-          element={
-            <ProtectedRoute>
-              <SearchResultFound />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.SEARCH_NO_RESULT_SCREEN}
-          element={
-            <ProtectedRoute>
-              <SearchNoResultScreen />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={ROUTES.TEAMS}
-          element={
-            <ProtectedRoute>
-              <Teams />
-            </ProtectedRoute>
-          }
-        />
-        {/*//---------CHATS------------// */}
-        <Route
-          path={ROUTES.CHAT}
-          element={
-            <ProtectedRoute>
-              <Chat />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path={ROUTES.NOTIFICATION}
+            element={
+              <ProtectedRoute>
+                <Notification />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.CATEGORY_SCREEN}
+            element={
+              <ProtectedRoute>
+                <CategoryScreen />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Footer */}
-        <Route path="" element={<Footer />} />
-      </Routes>
+          <Route
+            path={ROUTES.USER_TYPE}
+            element={
+              isMobileView ? <UserType /> : <div>This Page only for Mobile</div>
+            }
+          />
+          <Route
+            path={ROUTES.BUSINESS}
+            element={
+              <ProtectedRoute>
+                <Business />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.CREATE_PROJECT}
+            element={
+              <ProtectedRoute>
+                {isMobileView ? <CreateProject /> : null}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.SINGLE_COURSE_DESCRIPTION}
+            element={
+              <ProtectedRoute>
+                {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.APPLY_PROJECT + "/:projectId"}
+            element={
+              <ProtectedRoute>
+                {isMobileView ? <ApplyProject /> : <DesktopCreateProject />}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.INTERNSHIP + "/:internshipId"}
+            element={
+              <ProtectedRoute>
+                <SingleJobDescription />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.APPLY_INTERNSHIP + "/:internshipId"}
+            element={
+              <ProtectedRoute>
+                <ApplyInternship />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.TRENDING_COURSE}
+            element={
+              <ProtectedRoute>
+                <TrendingCourse />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.CHECKOUT_SCREEN}
+            element={
+              <ProtectedRoute>
+                <CheckOutScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.PAYMENT_SCREEN}
+            element={
+              <ProtectedRoute>
+                <PaymentScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.PAYMENT_SUCCESSFUL_SCREEN}
+            element={
+              <ProtectedRoute>
+                <PaymentSuccessfulScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.APPLY_COUPON}
+            element={
+              <ProtectedRoute>
+                <ApplyCoupon />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.MENTOR_SCREEN}
+            element={
+              <ProtectedRoute>
+                <MentorScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.FILTER_SCREEN}
+            element={
+              <ProtectedRoute>
+                <FilterScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.NEW_RELEASE_COURSE}
+            element={
+              <ProtectedRoute>
+                {isMobileView ? <NewReleaseCourse /> : <DesktopAllProjects />}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.BOOKMARK}
+            element={
+              <ProtectedRoute>
+                <Bookmark />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.COURSE_ONGOING_SCREEN}
+            element={
+              <ProtectedRoute>
+                <CourseOngoingScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.SINGLE_COURSE_ONGOING}
+            element={
+              <ProtectedRoute>
+                <SingleCourseOngoing />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.SINGLE_COURSE_COMPLETE}
+            element={
+              <ProtectedRoute>
+                <SingleCourseComplete />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.CHAT_SCREEN}
+            element={
+              <ProtectedRoute>
+                <ChatScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.SINGLE_CHAT_SCREEN}
+            element={
+              <ProtectedRoute>
+                <SingleChatScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.PROFILE}
+            element={
+              <ProtectedRoute>
+                {isMobileView ? <Profile /> : <DesktopProfile />}
+              </ProtectedRoute>
+            }
+          />
+          <Route path={ROUTES.ENTREPRENEUR} element={<Entrepreneur />} />
+          <Route
+            path={ROUTES.JOBSPOSTINGS}
+            element={
+              <ProtectedRoute allowedRoles={["entrepreneur"]}>
+                <JobPostings></JobPostings>
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path={ROUTES.JOBSTATS}
+            element={
+              <ProtectedRoute>
+                <JobStats></JobStats>
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path={ROUTES.PROFILE_EDIT}
+            element={
+              <ProtectedRoute>
+                <ProfileEdit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.ADD_LINKEDIN_PROFILE}
+            element={
+              <ProtectedRoute>
+                <AddLinkedInProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.USER_PROFILE}
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.EDITJOB}
+            element={
+              <ProtectedRoute>
+                <EditJob />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path={ROUTES.SINGLE_MENTOR + "/:uid"}
+            element={
+              <ProtectedRoute>
+                <SingleMentor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.NOTIFICATION_OPTION}
+            element={
+              <ProtectedRoute>
+                <NotificationOption />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.LANGUAGE}
+            element={
+              <ProtectedRoute>
+                <Language />
+              </ProtectedRoute>
+            }
+          />
+          <Route path={ROUTES.VIEWJOB} element={<ViewJob></ViewJob>}></Route>
+          <Route
+            path={ROUTES.CURRENCY}
+            element={
+              <ProtectedRoute>
+                <Currency />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.ABOUT_US_SCREEN}
+            element={
+              <ProtectedRoute>
+                <AboutUsScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.POLICY_SCREEN}
+            element={
+              <ProtectedRoute>
+                <PolicyScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.FAQ_SCREEN}
+            element={
+              <ProtectedRoute>
+                <FaqScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.FEEDBACK_SCREEN}
+            element={
+              <ProtectedRoute>
+                <FeedBackScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.COMPLETE_COURSE_RATING}
+            element={
+              <ProtectedRoute>
+                <CompleteCourseRating />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.REVIEW_SCREEN}
+            element={
+              <ProtectedRoute>
+                <ReviewScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.SEARCH_RESULT_FOUND}
+            element={
+              <ProtectedRoute>
+                <SearchResultFound />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.SEARCH_NO_RESULT_SCREEN}
+            element={
+              <ProtectedRoute>
+                <SearchNoResultScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.TEAMS}
+            element={
+              <ProtectedRoute>
+                <Teams />
+              </ProtectedRoute>
+            }
+          />
+          {/*//---------CHATS------------// */}
+          <Route
+            path={ROUTES.CHAT}
+            element={
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            }
+          />
 
-      {/* {isMobileView &&
-        location.pathname !== ROUTES.SIGN_IN &&
-        location.pathname !== ROUTES.SIGN_UP &&
-        location.pathname !== ROUTES.INTERN &&
-        location.pathname !== ROUTES.MENTOR &&
-        location.pathname !== ROUTES.VENTURE && (
-          <>
-            {selectedRole === "venture" && <BottomNavigationVenture />}
-            {selectedRole === "intern" && <BottomNavigation />}
-            {selectedRole === "mentor" && <BottomNavigationVenture />}
-            {selectedRole === "" && <BottomNavigation />}
-          </>
-        )} */}
-    </div>
+          {/* Footer */}
+          <Route path="" element={<Footer />} />
+        </Routes>
+
+        {/* {isMobileView &&
+      location.pathname !== ROUTES.SIGN_IN &&
+      location.pathname !== ROUTES.SIGN_UP &&
+      location.pathname !== ROUTES.INTERN &&
+      location.pathname !== ROUTES.MENTOR &&
+      location.pathname !== ROUTES.VENTURE && (
+        <>
+          {selectedRole === "venture" && <BottomNavigationVenture />}
+          {selectedRole === "intern" && <BottomNavigation />}
+          {selectedRole === "mentor" && <BottomNavigationVenture />}
+          {selectedRole === "" && <BottomNavigation />}
+        </>
+      )} */}
+      </div>
+    </AuthProvider>
   );
 }
 

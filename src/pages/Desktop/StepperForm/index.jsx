@@ -46,6 +46,8 @@ import toast from "react-hot-toast";
 
 // import XpertRole from "../Prefference/XpertRole";
 import SummaryStep from "./SummaryStep";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
+import { useRefreshUserData } from "../../../hooks/Auth/useRefreshUserData";
 
 
 /**
@@ -90,6 +92,7 @@ export default function StepperForm() {
   // Basic personal data
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
+  const {setRefreshCount,} = useAuthState()
   const [Xpert, setXpert] = useState("");
   const [Experience, setExperience] = useState(""); // Usually a string or number
   const [profileImg, setProfileImg] = useState(null);
@@ -139,7 +142,7 @@ export default function StepperForm() {
   const navigate = useNavigate();
   const { saveProfileData, loading } = useSaveProfileData();
   const { userData } = useFetchUserData();
-
+  const {refreshUser} = useRefreshUserData()
   // If user clicked "edit" with existing profile
   const location = useLocation();
   const { profileData } = location.state || {};
@@ -911,7 +914,12 @@ export default function StepperForm() {
     try {
       dispatch(setDetail(data));
       await saveProfileData(data);
+
+      
       setActiveStep(3);
+      setTimeout(() => {
+        refreshUser();
+      }, 200);
       console.log("After setting step:", 3); // Debug log
 
     } catch (err) {

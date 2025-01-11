@@ -1,7 +1,10 @@
 import { collection, addDoc, getDoc, doc, updateDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../../src/firebaseConfig";
+import useAuthState from "../Authentication/useAuthState";
 
 const useSaveEntrepreneurDetails = () => {
+  const auth2 = useAuthState()
+  
   const saveEntrepreneurDetails = async (data) => {
     try {
       const user = auth.currentUser;
@@ -36,15 +39,24 @@ const useSaveEntrepreneurDetails = () => {
         type: "entrepreneur",
       };
 
-      // If editing, merge with existing data to preserve fields not in the form
-      if (data.uid) {
-        const existingDoc = await getDoc(userRef);
-        if (existingDoc.exists()) {
-          normalizedData = {
-            ...existingDoc.data(),
-            ...normalizedData,
-          };
-        }
+
+      // Debugging to check data
+      console.log("Normalized Data:", normalizedData);
+      // Check if user document exists
+      const testUser = await getDoc(userRef);
+      console.log(testUser.data());
+      
+      // Save or overwrite the document in Firestore
+      console.log("Saving entrepreneur details...");
+      try {
+        await setDoc(userRef, normalizedData);
+        auth2.setRegistrationStatus("logged_in");
+        
+        console.log("Data successfully saved to Firestore.");
+      } catch (error) {
+        console.error("Error while saving data to Firestore: ", error);
+        throw new Error("Failed to save data to Firestore");
+
       }
 
       await setDoc(userRef, normalizedData, { merge: true });
