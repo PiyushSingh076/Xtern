@@ -15,10 +15,20 @@ import {
   MenuItem,
   Box,
   styled,
+  keyframes,
 } from '@mui/material';
 import { collection, query, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+const shimmer = keyframes`
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+`;
 
 const StyledCard = styled(Card)(({ theme }) => ({
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
@@ -31,6 +41,17 @@ const StyledCard = styled(Card)(({ theme }) => ({
     boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
   },
 }));
+
+const ShimmerEffect = styled('div')({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+  backgroundSize: '200% 100%',
+  animation: `${shimmer} 1.5s infinite`,
+});
 
 const StyledCardMedia = styled(CardMedia)({
   height: 140,
@@ -46,6 +67,7 @@ const Jobs = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
   const [userRole, setUserRole] = useState('');
+  const [imagesLoaded, setImagesLoaded] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,8 +87,9 @@ const Jobs = () => {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          setUserRole(userData.typeUser || 'all');
-          setFilter(userData.typeUser || 'all');
+          const role = userData.typeUser || 'all';
+          setUserRole(role);
+          setFilter(role); // Set default filter to user's role
         }
       }
     });
@@ -74,11 +97,16 @@ const Jobs = () => {
 
   useEffect(() => {
     const filtered = jobs.filter(job => 
-      job.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (filter === 'all' || job.skills.includes(filter))
+      job.title?.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (filter === 'all' || (job.skills || []).includes(filter))
     );
+    
     setFilteredJobs(filtered);
   }, [searchTerm, filter, jobs]);
+
+  const handleImageLoad = (jobId) => {
+    setImagesLoaded(prev => ({ ...prev, [jobId]: true }));
+  };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4, pt: 3, pb: 6, backgroundColor: '#fafafa', borderRadius: '16px' }}>
@@ -112,11 +140,25 @@ const Jobs = () => {
         {filteredJobs.map((job) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={job.id}>
             <StyledCard>
-              <StyledCardMedia
-                component="img"
-                image={job.image || '/placeholder.png'}
-                alt={job.title}
-              />
+              <Box sx={{ position: 'relative', paddingTop: '56.25%' }}>
+                {!imagesLoaded[job.id] && <ShimmerEffect />}
+                <StyledCardMedia
+                  component="img"
+                  image={job.image || '/placeholder.png'}
+                  alt={job.title}
+                  onLoad={() => handleImageLoad(job.id)}
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    opacity: imagesLoaded[job.id] ? 1 : 0,
+                    transition: 'opacity 0.3s ease-in-out',
+                  }}
+                />
+              </Box>
               <CardContent sx={{ p: 2.5 }}>
                 <Typography gutterBottom variant="h6" component="div" noWrap>
                   {job.title}
