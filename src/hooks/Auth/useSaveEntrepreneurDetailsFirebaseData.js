@@ -3,22 +3,27 @@ import { auth, db } from "../../../src/firebaseConfig";
 
 const useSaveEntrepreneurDetails = () => {
   const saveEntrepreneurDetails = async (data) => {
-    if (data){
-      console.log(data)
+    if (data) {
+      console.log(data);
     }
     try {
-      // Validate that the data exists
+      // Ensure user is logged in
       const user = auth.currentUser;
+      if (!user) throw new Error("User is not logged in.");
+
       const userId = user.uid;
-      const userRef = doc(db, "users", userId)
+      const userRef = doc(db, "users", userId);
+
       if (!data) throw new Error("No data provided");
 
-      // Validate the Firestore instance
+      // Validate Firestore instance
       if (!db) throw new Error("Firestore instance not initialized");
 
-      // Save data in the "entrepreneurs" collection
-      console.log(data)
-      let normalizedData= {
+      // Check if profileImage exists and contains a valid URL
+      // let photoUrl = data.profileImage?.url || null; // Set to null if URL is undefined
+
+      // Normalized Data
+      let normalizedData = {
         firstName: data.firstName,
         lastName: data.lastName,
         industry: data.industry,
@@ -26,42 +31,42 @@ const useSaveEntrepreneurDetails = () => {
         experience: data.experience,
         location: {
           city: data.city,
-          state: data.state
+          state: data.state,
         },
-        photo_url: data.profileImage.url,
-        companyDetails : {
+        photo_url: data.photo_url, // Use the photo_url if it's defined, otherwise null
+        companyDetails: {
           name: data.companyDetails.name,
           description: data.companyDetails.description,
           logo: data.companyDetails.logo.url,
-          startDate: data.companyDetails.startDate
+          startDate: data.companyDetails.startDate,
         },
         skills: data.skillsRequired,
         jobPostings: [],
         uid: userId,
-        type: "entrepreneur"
+        type: "entrepreneur",
       };
 
-      // console.log(normalizedData)
-      const testuser = await getDoc(userRef);
-      console.log(testuser.data())
-      console.log(normalizedData, data)
-      try {
-        console.log("Overwrite")
-        await setDoc(userRef, normalizedData);
-        
-      } catch (error) {
-        console.log(error)
-      }
-      // return docRef.id;
+      // Debugging to check data
+      console.log("Normalized Data:", normalizedData);
       
+      // Check if user document exists
+      const testUser = await getDoc(userRef);
+      console.log(testUser.data());
+
+      // Save or overwrite the document in Firestore
+      console.log("Saving entrepreneur details...");
+      try {
+        await setDoc(userRef, normalizedData);
+        console.log("Data successfully saved to Firestore.");
+      } catch (error) {
+        console.error("Error while saving data to Firestore: ", error);
+        throw new Error("Failed to save data to Firestore");
+      }
+
       return userId;
 
-      // const docRef = await addDoc(collection(db, "users"),{...data, type: "entrepreneur", jobs: [], });
-      // console.log(docRef)
-      // return docRef.id; // Return document ID
-      throw new Error("test")
-      
     } catch (error) {
+      console.error("Error: ", error.message);
       throw new Error("Failed to save entrepreneur details: " + error.message);
     }
   };

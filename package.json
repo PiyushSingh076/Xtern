@@ -48,6 +48,7 @@
     "react-scroll-to-bottom": "^4.2.0",
     "react-simple-typewriter": "^5.0.1",
     "react-slick": "^0.30.3",
+    "react-toastify": "^11.0.2",
     "slick-carousel": "^1.8.1",
     "stream-chat": "^8.49.0",
     "stream-chat-react": "^12.8.1",

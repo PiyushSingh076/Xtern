@@ -41,6 +41,7 @@ import { Box, Tooltip } from "@mui/material";
 import { addDoc, collection, getDocs, Timestamp } from "firebase/firestore";
 import { auth, db } from "../../../firebaseConfig";
 import { useEntrepreneurDetails } from "../../../hooks/Entrepreneur/useEntrepreneurDetails";
+import { LinkedIn } from "@mui/icons-material";
 
 const SingleMentor = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -329,9 +330,10 @@ const SingleMentor = () => {
                     <div className="flex flex-col">
                       <div>Years of Experience: {profileData?.experience}</div>
                       <a
-                        className="text-sm"
+                        className="text-sm flex gap-1 items-center justify-center"
                         href={profileData.linkedinProfileUrl}
                       >
+                        <LinkedIn></LinkedIn>
                         {profileData.linkedinProfileUrl}
                       </a>
                     </div>
@@ -368,9 +370,7 @@ const SingleMentor = () => {
                     return <Chip label={item.name}></Chip>;
                   })}
                 </div>
-                {!profileData?.skills && (
-                  <span>No skill set available</span>
-                )}
+                {!profileData?.skills && <span>No skill set available</span>}
               </div>
             )}
           </div>
@@ -404,13 +404,17 @@ const SingleMentor = () => {
               </div>
 
               <div className="consulting-btn !w-full !mb-0">
-                <button
-                  className="chat-btn"
-                  onClick={() => navigate("/createjob")}
-                >
-                  Create job
-                </button>
-                <button className="chat-btn">View jobs</button>
+                {currentUser.uid === uid && (
+                  <>
+                    <button
+                      className="chat-btn"
+                      onClick={() => navigate("/createjob")}
+                    >
+                      Create job
+                    </button>
+                    <button onClick={() => navigate("/jobpostings")} className="chat-btn">View jobs</button>
+                  </>
+                )}
                 {/* <button
                   onClick={() => navigate("/mychat")}
                   className="chat-btn"
@@ -524,9 +528,16 @@ const SingleMentor = () => {
                 <div className="tab-pane fade" id="job-content" role="tabpanel">
                   {/* <Link to="/jobpostings">Your job postings</Link> */}
                   {profileData?.jobPostings?.map((job, index) => (
-                    <div className="experience-sec flex !items-start" key={`project-${index}`}>
-                      <div className="size-[100px] shrink-0 relative overflow-hidden flex items-center justify-center" >
-                        <img src={job.image} className="absolute size-[80px] object-cover" alt="" />
+                    <div
+                      className="experience-sec flex !items-start"
+                      key={`project-${index}`}
+                    >
+                      <div className="size-[100px] shrink-0 relative overflow-hidden flex items-center justify-center">
+                        <img
+                          src={job.image}
+                          className="absolute size-[80px] object-cover"
+                          alt=""
+                        />
                       </div>
                       <div className="w-full h-full">
                         <div className="experience-info">
@@ -557,7 +568,7 @@ const SingleMentor = () => {
                           <div className="desc-view-job-btn-container ml-auto">
                             {currentUser.uid != profileData.uid ? (
                               <>
-                                <button className="desc-btn ml-auto">
+                                <button onClick={() => navigate(`/jobs/${job.jobId}`)} className="desc-btn ml-auto">
                                   Apply
                                 </button>
                               </>
