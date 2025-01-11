@@ -255,7 +255,7 @@ export default function EntrepreneurProfileForm() {
 
       dispatch(setEntrepreneurDetails(entrepreneurData));
 
-      console.log("Entrepreneur Data:", entrepreneurData);
+      console.log("Entrepreneur:", entrepreneurData);
 
       try {
         const userId = await saveEntrepreneurDetails(entrepreneurData);
