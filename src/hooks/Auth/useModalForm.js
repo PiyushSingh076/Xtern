@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "../../firebaseConfig"; // Adjust to your Firebase config path
+import { storage } from "../../firebaseConfig";
 
 export const useModalForm = (initialSkill) => {
   const [modalType, setModalType] = useState(null);
-  
   const [skillsRequired, setSkillsRequired] = useState([]);
   const [currentSkill, setCurrentSkill] = useState(initialSkill);
-const[skillsErrors,setSkillsErrors]=useState([{}])
+  const [skillsErrors, setSkillsErrors] = useState([{}]);
+  const [editingSkillIndex, setEditingSkillIndex] = useState(null);
   const mainContentRef = useRef(null);
 
   useEffect(() => {
@@ -18,20 +18,24 @@ const[skillsErrors,setSkillsErrors]=useState([{}])
     };
   }, [mainContentRef]);
 
-  // Open modal
-  const openModal = (type) => setModalType(type);
+  const openModal = (type, skillIndex = null) => {
+    setModalType(type);
+    if (skillIndex !== null) {
+      setEditingSkillIndex(skillIndex);
+      setCurrentSkill(skillsRequired[skillIndex]);
+    } else {
+      setEditingSkillIndex(null);
+      setCurrentSkill(initialSkill);
+    }
+  };
 
-  // Close modal
   const closeModal = () => {
     setModalType(null);
     setSkillsErrors({});
-   
     setCurrentSkill(initialSkill);
+    setEditingSkillIndex(null);
   };
 
-  
-
-  // Validate skill
   const validateSkill = () => {
     const newErrors = {};
     if (!currentSkill.name.trim()) {
@@ -44,10 +48,17 @@ const[skillsErrors,setSkillsErrors]=useState([{}])
     return Object.keys(newErrors).length === 0;
   };
 
-  // Save skill
   const saveSkill = () => {
     if (validateSkill()) {
-      setSkillsRequired([...skillsRequired, currentSkill]);
+      if (editingSkillIndex !== null) {
+        // Update existing skill
+        const updatedSkills = [...skillsRequired];
+        updatedSkills[editingSkillIndex] = currentSkill;
+        setSkillsRequired(updatedSkills);
+      } else {
+        // Add new skill
+        setSkillsRequired([...skillsRequired, currentSkill]);
+      }
       closeModal();
     }
   };
@@ -56,14 +67,13 @@ const[skillsErrors,setSkillsErrors]=useState([{}])
     modalType,
     openModal,
     closeModal,
-  
     skillsRequired,
     setSkillsRequired,
     currentSkill,
     setCurrentSkill,
-   
     saveSkill,
-   skillsErrors,
-  setSkillsErrors,
-  }
-}
+    skillsErrors,
+    setSkillsErrors,
+    editingSkillIndex
+  };
+};
