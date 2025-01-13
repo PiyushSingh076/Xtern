@@ -484,7 +484,7 @@ const SingleMentor = () => {
               <div className="service-list">
                 {profileData.serviceDetails.map((item, index) => (
                   <div
-                    // onClick={() => handleService(item)}
+                    onClick={() => handleService(item)}
                     className="service-item"
                     key={index}
                     style={{

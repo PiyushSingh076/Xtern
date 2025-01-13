@@ -7,7 +7,6 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./assets/css/media-query.css";
 import { ROUTES } from "./constants/routes"; // Import the route constants
 
-
 //  Desktop View
 import Entrepreneur from "./pages/Desktop/Entrepreneur/index.jsx";
 import DesktopHomeScreen from "./pages/Desktop/Homescreen/index.jsx";
@@ -100,7 +99,7 @@ import ApplyInternship from "./pages/ApplyInternship";
 import CreateProject from "./pages/CreateProject";
 import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
-import Jobs from "./pages/jobs.jsx"
+import Jobs from "./pages/jobs.jsx";
 import SingleJob from "./pages/SingleJob.jsx";
 import ApplyJob from "./pages/Applyjob.jsx";
 
@@ -199,9 +198,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path={ROUTES.CHOOSETYPE} element={
-          <ProtectedRoute><ChooseType></ChooseType></ProtectedRoute>
-        } ></Route>
+        <Route
+          path={ROUTES.CHOOSETYPE}
+          element={
+            <ProtectedRoute>
+              <ChooseType></ChooseType>
+            </ProtectedRoute>
+          }
+        ></Route>
         <Route
           path={ROUTES.SIGN_IN}
           element={isMobileView ? <SignIn /> : <DesktopSignIn />}
@@ -218,7 +222,6 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
               <VerifyScreen />
-              
             </ProtectedRoute>
           }
         />
@@ -299,7 +302,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
         <Route
           path={ROUTES.JOBS + "/:jobId"}
           element={
@@ -395,7 +398,8 @@ function App() {
           path={ROUTES.SINGLE_COURSE_DESCRIPTION}
           element={
             <ProtectedRoute>
-              {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />}
+              <DesktopProjectDetails />
+              {/* {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />} */}
             </ProtectedRoute>
           }
         />
