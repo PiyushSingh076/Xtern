@@ -7,11 +7,13 @@ import { useDispatch } from "react-redux";
 import { removeAuth, removeRole } from "../../Store/Slice/UserInfo";
 import { clearVentureInfo } from "../../Store/Slice/VentureInfo";
 import { resetInternInfo } from "../../Store/Slice/InternInfo";
+import { useAuth } from "./useAuth";
 
 const useOAuthLogout = () => {
   const [loading, setLoading] = useState(false); // Track loading state
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {refreshUser} = useAuth()
 
   const handleLogout = async () => {
     setLoading(true); // Set loading state to true during logout
@@ -19,7 +21,8 @@ const useOAuthLogout = () => {
       await signOut(auth); // Sign out the user from Firebase authentication
 
       // Clear any user-related data from storage
-      sessionStorage.removeItem("uid"); // Remove specific item
+      sessionStorage.removeItem("uid");
+      sessionStorage.removeItem("phone-verified") // Remove specific item
       // If you store other user data, consider clearing it here
 
       toast.success("Successfully logged out", { position: "bottom-left" });
@@ -28,12 +31,14 @@ const useOAuthLogout = () => {
       dispatch(removeRole());
       dispatch(clearVentureInfo());
       dispatch(resetInternInfo());
+      
       // Redirect the user to the login page
     } catch (error) {
       console.error("Error during logout:", error);
       toast.error("Logout failed", { position: "bottom-left" });
     } finally {
-      setLoading(false); // Reset the loading state after logout
+      setLoading(false);
+      refreshUser() // Reset the loading state after logout
     }
   };
 

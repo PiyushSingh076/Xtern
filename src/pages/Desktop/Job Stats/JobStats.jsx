@@ -73,12 +73,12 @@ const JobStats = () => {
   };
 
   return (
-    <div id="job-stats-container" className="!px-[80px] !py-[20px]">
+    <div id="job-stats-container" className="md:!px-[80px] md:!py-[20px]  ">
       {loading == false && (
         <>
           <div
             id="job-stats-details"
-            className="flex flex-col items-center gap-2 justify-center border border-[#e5e5e5] rounded-xl relative"
+            className=" flex-col items-center gap-2 justify-center border border-[#e5e5e5] rounded-xl !hidden md:!flex relative"
           >
             <div className="h-[80px] mt-4 gap-2 w-full flex">
               <div className="size-[80px] w-full relative flex items-center justify-center  rounded-lg overflow-hidden  mb-2">
@@ -219,7 +219,7 @@ const JobStats = () => {
                 <TableHead id="jobstats-table-head">
                   <TableRow>
                     <TableCell>Name</TableCell>
-                    <TableCell>Date Applied</TableCell>
+                    <TableCell className="!hidden sm:!table-cell" >Date Applied</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell align="center">Assesment Link</TableCell>
                   </TableRow>
@@ -239,7 +239,7 @@ const JobStats = () => {
                           key={index}
                         >
                           <TableCell>{applicant.name}</TableCell>
-                          <TableCell>
+                          <TableCell className="!hidden sm:!table-cell">
                             {dayjs(
                               new Timestamp(
                                 applicant.appliedAt.seconds,
