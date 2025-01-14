@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }) => {
         const docRef = doc(db, "users", user);
         const docSnap = await getDoc(docRef);
         const userData = docSnap.data();
+        console.log("Phone Status",userData);
         setUser(userData);
         if (userData.isPhoneVerified === true) {
           setPhoneVerified(true);

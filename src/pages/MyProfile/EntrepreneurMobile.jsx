@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -37,6 +35,7 @@ import useFetchUserData from "../../hooks/Auth/useFetchUserData";
 import useGoogleCalendar from "../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../hooks/Profile/useScheduledCallsForUser";
 import ScheduledCallsModal from "../Desktop/Profile/ScheduledCallsModal";
+import { useEntrepreneurDetails } from "../../hooks/Entrepreneur/useEntrepreneurDetails";
 
 const EntrepreneurMobile = () => {
   const navigate = useNavigate();
@@ -52,14 +51,12 @@ const EntrepreneurMobile = () => {
   const [callsModalOpen, setCallsModalOpen] = useState(false);
   const [meetLink, setMeetLink] = useState("");
 
- 
-
   // Hooks for data fetching
   const {
-    userData: profileData,
     loading: profileLoading,
+    userData: profileData,
     error: profileError,
-  } = useUserProfileData(uid);
+  } = useEntrepreneurDetails(uid);
 
   const {
     users,
@@ -101,9 +98,9 @@ const EntrepreneurMobile = () => {
   const handleEdit = () => {
     if (profileData?.type) {
       const sanitized = JSON.parse(JSON.stringify(profileData));
-      navigate("/userdetail", { state: { profileData: sanitized } });
+      navigate("/entrepreneurdetails", { state: { profileData: sanitized } });
     } else {
-      navigate("/userdetail");
+      navigate("/entrepreneurdetails");
     }
   };
 
@@ -211,7 +208,9 @@ const EntrepreneurMobile = () => {
   const handleBackClick = () => {
     navigate(-1);
   };
-
+  if (!profileData) {
+    return <></>;
+  }
   // Render fallback for errors
   if (profileError) {
     return (
@@ -235,56 +234,30 @@ const EntrepreneurMobile = () => {
           {profileLoading ? (
             <Skeleton variant="rounded" width={"100%"} height={"300px"} />
           ) : (
-            <MainProfile
-              userdata={profileData}
-              loading={profileLoading}
-              handleEdit={handleEdit}
-              handleShare={handleShare}
-            />
-          )}
-
-          {/* Consulting Section */}
-          {profileLoading ? (
-            <Skeleton
-              variant="rectangular"
-              width={"100%"}
-              height={"100px"}
-              style={{ marginTop: "20px" }}
-            />
-          ) : (
-            <div style={styles.consultingContainer}>
-              <div style={styles.consultingInfo}>
-                {profileData?.consultingPrice && (
-                  <span style={styles.consultingPrice}>
-                    ₹{profileData.consultingPrice}/minute
-                  </span>
-                )}
+            <>
+              <MainProfile
+                userdata={profileData}
+                loading={profileLoading}
+                handleEdit={handleEdit}
+                handleShare={handleShare}
+              />
+              <div className="w-full flex flex-wrap gap-1">
+                {profileData.skills.map((skill, index) => {
+                  return (
+                    <Chip
+                      key={index + "entrepreneur-skills"}
+                      label={skill.name}
+                    ></Chip>
+                  );
+                })}
               </div>
-              {!editable && (
-                <div style={styles.consultingButtons}>
-                  <Button
-                    onClick={() => navigate("/mychat")}
-                    variant="outline-primary"
-                    size="small"
-                    style={{ marginRight: "10px" }}
-                  >
-                    <MdChat size={20} /> Chat
-                  </Button>
-                  <Button
-                    onClick={() => setInterviewScheduled(true)}
-                    variant="outline-success"
-                    size="small"
-                    disabled={!isInitialized}
-                  >
-                    <MdCalendarToday size={20} /> Meet
-                  </Button>
-                </div>
-              )}
-              
-            </div>
+            </>
           )}
 
-          
+          <div className="w-full flex justify-end mt-4 gap-1" >
+            <Button onClick={() => navigate("/createjob")} >Create job</Button>
+            <Button onClick={() => navigate("/jobpostings")} >View jobs</Button>
+          </div>
 
           {/* Academic and Other Sections */}
           {profileLoading ? (
@@ -295,7 +268,192 @@ const EntrepreneurMobile = () => {
               style={{ marginTop: "20px" }}
             />
           ) : (
-            <Acadamic profileData={profileData} />
+            <>
+              <div className="single-mentor-third-sec mt-4">
+                <div className="fifth-decs-sec">
+                  <div className="fifth-decs-sec-wrap">
+                    {profileLoading ? (
+                      <Skeleton
+                        variant="rectangle"
+                        sx={{
+                          width: "100%",
+                          height: "50px",
+                          marginTop: "20px",
+                          borderRadius: "10px",
+                        }}
+                      />
+                    ) : (
+                      <ul
+                        className="nav nav-pills single-mentor-tab overflow-hidden"
+                        id="mentor-tab"
+                        role="tablist"
+                      >
+                        <li className="nav-item" role="presentation">
+                          <button
+                            className="nav-link active"
+                            id="mentor-course-tab-btn"
+                            data-bs-toggle="pill"
+                            data-bs-target="#company-content"
+                            type="button"
+                            role="tab"
+                            aria-selected="true"
+                          >
+                            Company Details
+                          </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                          <button
+                            className="nav-link"
+                            id="mentor-course-tab-btn"
+                            data-bs-toggle="pill"
+                            data-bs-target="#job-content"
+                            type="button"
+                            role="tab"
+                            aria-selected="false"
+                          >
+                            Job Postings
+                          </button>
+                        </li>
+                      </ul>
+                    )}
+
+                    <div className="tab-content" id="mentor-tab-content">
+                      {/* Company Details tab */}
+                      <div
+                        className="tab-pane fade show active mt-0"
+                        id="company-content"
+                        role="tabpanel"
+                      >
+                        {profileLoading ? (
+                          <></>
+                        ) : (
+                          profileData && (
+                            <>
+                              <div
+                                className="experience-sec"
+                                key={`${profileData.companyDetails?.name}`}
+                              >
+                                <div className="size-[60px] rounded-full shrink-0 overflow-hidden mr-4 relative">
+                                  <img
+                                    src={profileData.companyDetails.logo}
+                                    alt="Company Logo"
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                  />
+                                </div>
+
+                                <div className="experience-info">
+                                  <h4>{profileData.companyDetails?.name}</h4>
+                                  {/* <p>
+                            {dayjs.unix(company?.startDate).format("D MMM YYYY")}{" "}
+                            -{" "}
+                            --
+                            {company.endDate === "present"
+                              ? "Now"
+                              : dayjs.unix(company.endDate).format("D MMM YYYY")}
+                          </p> */}
+                                  <h4 className="text-black/60">
+                                    {profileData.companyDetails?.description}
+                                  </h4>
+                                  {/* <h4>{dayjs(new Timestamp(profileData.companyDetails.startDate.seconds, profileData.companyDetails.startDate.nanoseconds).toDate()).format("D MMM YYYY")}</h4> */}
+                                </div>
+                              </div>
+                            </>
+                          )
+                        )}
+                      </div>
+
+                      {/* Projects Tab */}
+                      <div
+                        className="tab-pane fade"
+                        id="job-content"
+                        role="tabpanel"
+                      >
+                        {/* <Link to="/jobpostings">Your job postings</Link> */}
+                        {profileData?.jobPostings?.map((job, index) => (
+                          <div
+                            className="experience-sec flex !items-start"
+                            key={`project-${index}`}
+                          >
+                            <div className="size-[100px] shrink-0 relative overflow-hidden flex items-center justify-center">
+                              <img
+                                src={job.image}
+                                className="absolute size-[80px] object-cover"
+                                alt=""
+                              />
+                            </div>
+                            <div className="w-full h-full">
+                              <div className="experience-info">
+                                <h4>{job?.title}</h4>
+                                <b>{job.companyName}</b>
+                                <div>
+                                  <b>Skills:</b>
+                                  {job?.skills?.map((item, idx) => (
+                                    <span key={idx}>
+                                      {item}
+                                      {idx !== job.skills.length - 1 && ", "}
+                                    </span>
+                                  )) || "No tech stack available"}
+                                </div>
+                                <Accordion
+                                  sx={{
+                                    width: "100%",
+                                    borderRadius: "10px",
+                                    boxShadow: "none",
+                                  }}
+                                >
+                                  <AccordionSummary>
+                                    Description
+                                  </AccordionSummary>
+                                  <AccordionDetails>
+                                    {job.description}
+                                  </AccordionDetails>
+                                </Accordion>
+
+                                <div className="desc-view-job-btn-container ml-auto">
+                                  {currentUser.uid != profileData.uid ? (
+                                    <>
+                                      <button
+                                        onClick={() =>
+                                          navigate(`/jobs/${job.jobId}`)
+                                        }
+                                        className="desc-btn ml-auto"
+                                      >
+                                        Apply
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <button
+                                        onClick={() =>
+                                          navigate(`/viewjob/${job.jobId}`)
+                                        }
+                                        className="desc-btn ml-auto"
+                                      >
+                                        View Job
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                                <div
+                                  id={`project-collapse-${job.jobId}`}
+                                  className="collapse"
+                                  aria-labelledby={`project-collapse-${index}`}
+                                >
+                                  <div className="card card-body">
+                                    {job?.description ||
+                                      "No description available"}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </section>
