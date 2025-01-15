@@ -22,7 +22,7 @@ const useOAuthLogout = () => {
 
       // Clear any user-related data from storage
       sessionStorage.removeItem("uid");
-      sessionStorage.removeItem("phone-verified") // Remove specific item
+      localStorage.removeItem("phone-verified") // Remove specific item
       // If you store other user data, consider clearing it here
 
       toast.success("Successfully logged out", { position: "bottom-left" });

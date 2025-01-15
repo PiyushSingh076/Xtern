@@ -10,56 +10,72 @@ export const AuthProvider = ({ children }) => {
   const [refresh, setRefresh] = useState(0);
   const [phoneVerified, setPhoneVerified] = useState(null);
   const [loading, setLoading] = useState(null);
+  const [loaded, setLoaded] = useState(false)
 
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Phone verify", phoneVerified);
+    console.log("Phone verify", phoneVerified, user);
   }, [phoneVerified]);
 
   function verifyPhone() {
-    sessionStorage.setItem("phone-verified", true);
+    localStorage.setItem("phone-verified", true);
     setPhoneVerified(true);
   }
 
-  function checkPhoneVerified() {
-    if (sessionStorage.getItem("phone-verified") === "true") {
-      return true;
-    } else {
-      const user = auth.currentUser.uid;
-      console.log("Auth Test", user);
-      return true;
-    }
-  }
-
   useEffect(() => {
-    async function checkIfVerified() {
-      const verified = sessionStorage.getItem("phone-verified");
-      if (verified === "true") {
-        console.log("Phone Status", auth.currentUser);
-        const user = auth.currentUser.uid;
-        const docRef = doc(db, "users", user);
-        const docSnap = await getDoc(docRef);
-        const userData = docSnap.data();
-        console.log("Phone Status",userData);
-        setUser(userData);
-        if (userData.isPhoneVerified === true) {
+    async function checkPhoneVerified(uid) {
+      setLoaded(false)
+      const userSnapshot = await getDoc(doc(db, "users", uid));
+      const userData = userSnapshot.data();
+      if(userSnapshot.exists()){
+        if(userData.isPhoneVerified === true){
           setPhoneVerified(true);
-        } else {
-          setPhoneVerified(false);
+        }
+        else{
+          setPhoneVerified(false)
         }
       }
-      else{
-        setPhoneVerified(false)
-      }
+      setLoaded(true)
     }
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        checkIfVerified();
+        checkPhoneVerified(user.uid)
       }
-    });
+    })
   }, [refresh]);
+
+  // useEffect(() => {
+  //   async function checkIfVerified() {
+  //     const verified = localStorage.getItem("phone-verified");
+  //     if (verified === "true") {
+  //       console.log("Phone Status", auth.currentUser);
+  //       const user = auth.currentUser.uid;
+  //       const docRef = doc(db, "users", user);
+  //       const docSnap = await getDoc(docRef);
+  //       const userData = docSnap.data();
+
+  //       console.log("Phone Status",userData);
+  //       setUser(userData);
+  //       if (userData.isPhoneVerified === true) {
+  //         setPhoneVerified(true);
+  //       } else {
+  //         setPhoneVerified(false);
+  //       }
+  //     }
+  //     else{
+  //       setPhoneVerified(false)
+  //     }
+  //   }
+  //   onAuthStateChanged(auth, (user) => {
+
+  //     if (user) {
+  //       checkIfVerified();
+  //     }
+  //   });
+  // }, [refresh]);
 
   return (
     <AuthContext.Provider
@@ -70,7 +86,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         verifyPhone,
         user,
-        checkPhoneVerified,
+        loaded
       }}
     >
       {children}
@@ -92,6 +108,6 @@ export const useAuth = () => {
     loading: authContext.loading,
     verifyPhone: authContext.verifyPhone,
     userData: authContext.user,
-    checkPhoneVerified: authContext.checkPhoneVerified,
+    loaded: authContext.loaded,
   };
 };

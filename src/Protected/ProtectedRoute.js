@@ -13,28 +13,35 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   const navigate = useNavigate();
 
-  const { phoneVerified, loading, checkPhoneVerified } = useAuth();
+  const { phoneVerified, loading, refreshUser, loaded: authLoaded } = useAuth();
+  
   const { userData, loading: userLoading } = useFetchUserData();
 
   
-
   useEffect(() => {
-    console.log("Phone Latest", phoneVerified)
-    if(phoneVerified !== null){
-      if(!phoneVerified){
-        navigate("/verifyscreen");
-      }
+    if(authLoaded === true){
+      console.log("Latest Phone", phoneVerified)
     }
-  }, [phoneVerified])
+  }, [authLoaded])
+ 
 
-  useEffect(() => {
-    if (userData) {
-      if (allowedRoles && !allowedRoles.includes(userData.type)) {
-        navigate("/homescreen");
-        toast.error("Unauthorized access");
-      }
-    }
-  }, [userData]);
+  // useEffect(() => {
+  //   console.log("Phone Latest", phoneVerified)
+  //   if(phoneVerified !== null){
+  //     if(!phoneVerified){
+  //       navigate("/verifyscreen");
+  //     }
+  //   }
+  // }, [phoneVerified])
+
+  // useEffect(() => {
+  //   if (userData) {
+  //     if (allowedRoles && !allowedRoles.includes(userData.type)) {
+  //       navigate("/homescreen");
+  //       toast.error("Unauthorized access");
+  //     }
+  //   }
+  // }, [userData]);
 
   return <>{children}</>;
 };

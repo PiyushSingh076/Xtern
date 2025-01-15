@@ -353,9 +353,9 @@ function App() {
           <Route
             path={ROUTES.LANDING_PAGE}
             element={
-              <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
+              <>
                 {isMobileView ? <HomeScreen /> : <DesktopLandingPage />}
-              </ProtectedRoute>
+              </>
             }
           />
 
