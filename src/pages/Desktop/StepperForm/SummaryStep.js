@@ -131,11 +131,14 @@ const SummaryStep = ({
                 </Tooltip>
                 <Stack spacing={2} alignItems="center">
                   <Avatar
-                    src={profileImg}
+                     src={
+                      profileImg
+                        ? profileImg
+                        : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
+                    }
                     sx={{
-                      width: 120,
-                      height: 120,
-                      boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
+                      width: 150,
+                      height: 150,
                     }}
                   />
                   <Stack spacing={0.5} alignItems="center">

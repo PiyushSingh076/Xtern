@@ -4,12 +4,14 @@ import {
   linkWithCredential,
   updatePhoneNumber,
 } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { auth, db } from "../../firebaseConfig";
+import { useRefreshUserData } from "./useRefreshUserData";
 
 const useVerifyOtp = () => {
   const [loading, setLoading] = useState(false);
+  const {refreshUser} = useRefreshUserData()
 
   /**
    * Verifies OTP and links phone number to the current authenticated user.
@@ -59,7 +61,25 @@ const useVerifyOtp = () => {
       });
 
       toast.success("Phone number verified and linked successfully!");
-      navigate("/homescreen"); // Redirect to dashboard or home page
+      const userSnapshot = await getDoc(userDocRef);
+          console.log("userSnapshot", userSnapshot.data());
+      const userData = userSnapshot.data();
+      if(userData.type == null){
+        navigate("/choosetype");
+      }
+      
+
+      else if(userData.type == "entrepreneur"){
+        navigate("/entrepreneur/"+userDocRef.id);
+      }
+      else{
+        navigate("/profile/"+userDocRef.id);
+      }
+      refreshUser()
+
+
+
+          navigate("/choosetype"); // Redirect to dashboard or home page
     } catch (error) {
       console.error("Error verifying OTP:", error);
 
@@ -92,6 +112,11 @@ const useVerifyOtp = () => {
           toast.success(
             "Phone number provider already linked. Firestore updated successfully!"
           );
+
+          const userSnapshot = await getDoc(userDocRef);
+          console.log("userSnapshot", userSnapshot.data());
+
+
           navigate("/homescreen"); // Redirect to dashboard or home page
         } catch (firestoreError) {
           console.error("Error updating Firestore:", firestoreError);

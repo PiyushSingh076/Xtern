@@ -187,7 +187,7 @@ const ApplyJob = () => {
         BACK TO JOB DETAILS
       </Button>
 
-      <Typography variant="h3" align="center" gutterBottom sx={{ mb: 4 }}>
+      <Typography variant="h5" align="center" gutterBottom sx={{ mb: 4 }}>
         Apply for {jobData?.title}
       </Typography>
 

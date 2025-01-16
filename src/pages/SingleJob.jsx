@@ -12,7 +12,18 @@ import {
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import { Work, LocationOn, Business, Assessment, Schedule, CalendarToday } from '@mui/icons-material';
+import BookmarkSvg from '../assets/svg/white-bookmark.svg';
+import PlayIcon from '../assets/images/single-courses/play-icon.svg';
+import HeaderImg from '../assets/images/single-courses/header-img.png';
+import FillStar from '../assets/images/single-courses/orange-fill-star.svg';
+import StudentIcon from '../assets/images/single-courses/student-icon.svg';
+import TimeIcon from '../assets/images/single-courses/time-icon.svg';
+import LockIconSvg from '../assets/images/single-courses/lock-icon.svg';
+import DisableLockSvg from '../assets/images/single-courses/disable-lock.svg';
+import AccessTime from '@mui/icons-material/AccessTime';
+import Schedule from '@mui/icons-material/Schedule';
+import { MapPin } from 'lucide-react';
+import { LocationSearchingRounded } from '@mui/icons-material';
 
 const SingleJob = () => {
   const { jobId } = useParams();
@@ -61,78 +72,234 @@ const SingleJob = () => {
   }
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
-            <Typography variant="h4" gutterBottom>{job.title}</Typography>
-            <Typography variant="h6" color="textSecondary" gutterBottom>
-              <Business sx={{ mr: 1, verticalAlign: 'middle' }} />
-              {job.companyName}
-            </Typography>
-            <Typography variant="body1" color="textSecondary" gutterBottom>
-              <LocationOn sx={{ mr: 1, verticalAlign: 'middle' }} />
-              {job.location}
-            </Typography>
+    <>
+      {/* Header start */}
+      <header id="top-navbar" className="top-navbar">
+        <div className="container">
+          <div className="top-navbar_full">
+            <div className="back-btn" onClick={() => navigate(-1)}>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <mask
+                  id="mask0_330_7385"
+                  style={{ maskType: "alpha" }}
+                  maskUnits="userSpaceOnUse"
+                  x="0"
+                  y="0"
+                  width="24"
+                  height="24"
+                >
+                  <rect width="24" height="24" fill="black" />
+                </mask>
+                <g mask="url(#mask0_330_7385)">
+                  <path
+                    d="M15 18L9 12L15 6"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </g>
+              </svg>
+            </div>
+            <div className="top-navbar-title">
+              <p>Job Details</p>
+            </div>
+            <div></div>
+          </div>
+        </div>
+        <div className="navbar-boder"></div>
+      </header>
+      {/* Header end */}
+
+      <section id="single-description-screen">
+        <div className="container">
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={4}>
+              <div className="hero-img-desc">
+                <img
+                  src={job.image || HeaderImg}
+                  alt="social-media-img"
+                  height="350"
+                  width="350"
+                  className="img-fluid"
+                />
+              </div>
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <div className="single-courses-description">
+                <div className="first-decs-sec mt-16">
+                  <div className="first-decs-sec-wrap">
+                    <div className="skills-left-sec">
+                      {job.skills && job.skills.length > 0 ? (
+                        <>{job.skills.map((skill, index) => <Chip key={index + "view-job-skill"} label={skill}>{skill}</Chip>)}</>
+                      ) : (
+                        <div>No skills available</div>
+                      )}
+                    </div>
+
+                    <div className="second-decs-sec-top">
+                      {job.companyName}
+                    </div>
+                  </div>
+                </div>
+                <div className="second-decs-sec mt-16">
+                  <div className="second-decs-sec-wrap">
+                    <div className="second-decs-sec-top">
+                      <h1 className="second-txt1">
+                        {job.title} <span className='font-normal'>at</span> {job.companyName}
+                      </h1>
+                    </div>
+
+                    <div className="second-decs-sec-bottom">
+                      <div className="second-decs-sec-bottom-wrap">
+                        <div className="mt-12 flex items-center">
+                          <span className="student-img mr-8">
+                            <img src={StudentIcon} alt="student-icon" />
+                          </span>
+                          <span className="second-txt2">04 Application</span>
+                        </div>
+                        <div className="mt-12 flex items-center">
+                          <span className="student-img mr-8 fillStar">
+                            <LocationSearchingRounded fontSize='small'></LocationSearchingRounded>
+                          </span>
+                          <span className="second-txt2">
+                            {job.location}
+                          </span>
+                        </div>
+                        <div className="mt-12 flex items-center">
+                          <span className="student-img mr-8">
+                            <img src={TimeIcon} alt="student-icon" />
+                          </span>
+                          <span className="second-txt2">
+                            Assessment: {job.assessmentDuration}
+                          </span>
+                        </div>
+                        <div className="mt-12 flex items-center">
+                          <span className="student-img mr-8">
+                            <img src={TimeIcon} alt="student-icon" />
+                          </span>
+                          <span className="second-txt2">
+                            Duration: {job.duration}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="third-decs-sec mt-32">
+                  <div className="third-decs-sec-wrap"></div>
+                </div>
+
+                <div className="fifth-decs-sec mt-32">
+                  <div className="fifth-decs-sec-wrap">
+                    <ul
+                      className="nav nav-pills single-courses-tab"
+                      id="description-tab"
+                      role="tablist"
+                    >
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className="nav-link active"
+                          id="description-tab-btn"
+                          data-bs-toggle="pill"
+                          data-bs-target="#description-content"
+                          type="button"
+                          role="tab"
+                          aria-selected="true"
+                        >
+                          Description
+                        </button>
+                      </li>
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className="nav-link"
+                          id="lessons-tab-btn"
+                          data-bs-toggle="pill"
+                          data-bs-target="#lesson-content"
+                          type="button"
+                          role="tab"
+                          aria-selected="false"
+                        >
+                          Assessment
+                        </button>
+                      </li>
+                      <li className="nav-item" role="presentation"></li>
+                    </ul>
+                    <div className="tab-content" id="description-tabContent">
+                      <div
+                        className="tab-pane fade show active"
+                        id="description-content"
+                        role="tabpanel"
+                        tabIndex="0"
+                      >
+                        <div className="description-content-wrap mt-24">
+                          <div className="description-first-content">
+                            <h3 className="des-con-txt1">Details</h3>
+                            <div>
+                              {job.description}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className="tab-pane fade"
+                        id="lesson-content"
+                        role="tabpanel"
+                        tabIndex="0"
+                      >
+                        <div className="lesson-content-wrap mt-24">
+                          <div className="lesson-first-content">
+                            <div className="lesson-first-content-top">
+                              <div className="lesson-first-content-wrap">
+                                <div className="lesson-course">
+                                  <h3 className="des-con-txt1">Assessment Details</h3>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="lesson-second-content">
+                              <div className="lesson-second-content-bottom">
+                                <Typography variant="body1" >
+                                  <AccessTime sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                  {job.assessmentDetail}
+                                </Typography>
+                                <Typography variant="body1">
+                                <AccessTime sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                  Assessment Duration: {job.assessmentDuration}
+                                </Typography>
+                                {/* <Typography variant="body1">
+                                  <Schedule sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                  Assessment Type: {job.assessmentType}
+                                </Typography>
+                                <Typography variant="body1">
+                                  <Schedule sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                  Assessment Date: {job.assessmentDate}
+                                </Typography> */}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Box
-              component="img"
-              sx={{
-                width: '100%',
-                height: 'auto',
-                maxHeight: 200,
-                objectFit: 'contain',
-              }}
-              alt={job.title}
-              src={job.image || '/placeholder.png'}
-            />
-          </Grid>
-        </Grid>
+        </div>
 
-        <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Job Description</Typography>
-        <Typography variant="body1" paragraph>{job.description}</Typography>
-
-        <Typography variant="h6" gutterBottom>Required Skills</Typography>
-        <Box sx={{ mb: 2 }}>
-          {job.skills.map((skill, index) => (
-            <Chip key={index} label={skill} sx={{ mr: 1, mb: 1 }} />
-          ))}
-        </Box>
-
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid item xs={12} sm={6}>
-            <Typography variant="body1">
-              <Work sx={{ mr: 1, verticalAlign: 'middle' }} />
-              Experience: {job.experienceLevel}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Typography variant="body1">
-              <Schedule sx={{ mr: 1, verticalAlign: 'middle' }} />
-              Duration: {job.duration}
-            </Typography>
-          </Grid>
-        </Grid>
-
-        <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Assessment Details</Typography>
-        <Typography variant="body1" paragraph>{job.assessmentDetail}</Typography>
-
-        <Typography variant="body1">
-          <Assessment sx={{ mr: 1, verticalAlign: 'middle' }} />
-          Assessment Duration: {job.assessmentDuration}
-        </Typography>
-
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
-          <Button variant="outlined" onClick={() => navigate('/jobs')}>
-            Back to Jobs
-          </Button>
+        <div className="buy-now-description text-center mt-4">
           <Button variant="contained" color="primary" onClick={() => navigate(`/applyjob/${jobId}`)}>
             Apply Now
           </Button>
-        </Box>
-      </Paper>
-    </Container>
+        </div>
+      </section>
+    </>
   );
 };
 

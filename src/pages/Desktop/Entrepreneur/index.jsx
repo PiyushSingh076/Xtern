@@ -11,6 +11,7 @@ import {
   AccordionSummary,
   Button as ButtonM,
   Chip,
+  IconButton,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -51,64 +52,25 @@ const SingleMentor = () => {
   const [interviewTime, setInterviewTime] = useState(dayjs());
   const [description, setDescription] = useState("");
   const [interviewScheduled, setInterviewScheduled] = useState(false);
-  const [editable, setEditable] = useState(false);
+  const [editable, setEditable] = useState(true);
   const [callsModalOpen, setCallsModalOpen] = useState(false);
   const navigate = useNavigate();
-
+  
   const currentUser = auth.currentUser;
+  
   const { uid } = useParams();
   const { loading: profileLoading, userData: profileData } =
     useEntrepreneurDetails(uid);
 
   useEffect(() => {
-    console.log(profileData);
-  }, [profileLoading]);
-
-  // const profileData = {
-  //   photo_url: "https://static.vecteezy.com/system/resources/thumbnails/049/174/246/small_2x/a-smiling-young-indian-man-with-formal-shirts-outdoors-photo.jpg",
-  //   firstName: "John",
-  //   lastName: "Doe",
-  //   city: "Mumbai",
-  //   experience: 5,
-  //   state: "Maharashtra",
-  //   type: "entrepreneur",
-  //   skillSet: [{
-  //     skill: "React",
-  //     skillRating: 4,
-  //   }],
-  //   companyDetails: [
-  //     {
-  //       logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png",
-  //       name: "Google",
-  //       description:
-  //         "Google is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.",
-  //       startDate: Date.now() / 1000,
-  //       endDate: "present",
-  //     },
-  //   ],
-  //   jobDetails: [
-  //     {
-  //       role: "Fronten Intern",
-  //       techstack: ["React", "Redux", "HTML", "CSS"],
-  //       description:
-  //         "Frontend Intern at Google working on building web applications using React and Redux",
-  //       lastDate: Date.now() / 1000,
-  //       company: "Optacloud",
-  //       salary: "9lpa",
-  //     },
-  //     {
-  //       role: "Fullstack Developer",
-  //       techstack: ["React", "Redux", "Express", "Firebase"],
-  //       description:
-  //         "Fullstack Developer at Google working on building web applications using React and Redux",
-  //       lastDate: Date.now() / 1000,
-  //       company: "Google",
-  //       salary: "20lpa",
-  //     },
-  //   ],
-  // };
-
-  //   const { userData: currentUser } = useFetchUserData();
+    if(profileData){
+      console.log(profileData);
+      if(profileData.type !== "entrepreneur"){
+        toast.error("Entrepreneur not found")
+        navigate("/homescreen/")
+      }
+    }
+  }, [profileData]);
 
   const {
     signIn,
@@ -122,13 +84,6 @@ const SingleMentor = () => {
     loading: callsLoading,
     error: callsError,
   } = useScheduledCallsForUser(currentUser?.uid);
-
-  //   const registrationStatus = useRegisterUser(
-  //     profileData,
-  //     profileLoading,
-  //     profileError
-  //   );
-
   const handleDateChange = (date) => {
     setInterviewDate(date);
     setCurrentStep(2);
@@ -166,12 +121,10 @@ const SingleMentor = () => {
         description: `
         📞 XTERN Mentorship Call
 
-        👤 Host: ${currentUser?.firstName} ${currentUser?.lastName} (${
-          currentUser?.email
-        })
-        👥 Recipient: ${profileData?.firstName} ${profileData?.lastName} (${
-          profileData?.email
-        })
+        👤 Host: ${currentUser?.firstName} ${currentUser?.lastName} (${currentUser?.email
+          })
+        👥 Recipient: ${profileData?.firstName} ${profileData?.lastName} (${profileData?.email
+          })
 
         📅 Date: ${interviewDate.format("D MMM YYYY")}
         ⏰ Time: ${interviewTime.format("h:mm A")}
@@ -263,6 +216,15 @@ const SingleMentor = () => {
     }
   };
 
+  const handleEdit = () => {
+    if (profileData?.type) {
+      const sanitized = JSON.parse(JSON.stringify(profileData));
+      navigate("/entrepreneurdetails", { state: { profileData: sanitized } });
+    } else {
+      // navigate("/userdetail");
+    }
+  };
+
   return (
     <div className="desktop-profile-container">
       {/* Profile details section */}
@@ -270,6 +232,30 @@ const SingleMentor = () => {
         <div className="profile-details">
           <div className="profile-details-wrap">
             <div className="profile-details-first-wrap">
+              {editable && (
+                <button
+                  onClick={handleEdit}
+                  className="edit-btn"
+                  title="Edit Profile"
+                  style={{
+                    backgroundColor: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "8px",
+                    borderRadius: "50%",
+                    transition: "background-color 0.3s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = "#f0f0f0"; // Light gray on hover
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "transparent"; // Reset on leave
+                  }}
+                >
+                  <MdEdit size={24} color="#007bff" />
+                </button>
+              )}
+
               <div className="profile-img-info-container">
                 <div className="mentor-img-sec">
                   {profileLoading ? (
@@ -327,15 +313,16 @@ const SingleMentor = () => {
                       sx={{ fontSize: "1rem", width: "200px", height: "20px" }}
                     />
                   ) : (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col justify-center items-center">
                       <div>Years of Experience: {profileData?.experience}</div>
-                      <a
-                        className="text-sm flex gap-1 items-center"
-                        href={profileData.linkedinProfileUrl}
+                      <IconButton
+                        className="size-[40px]"
+                        sx={{color: "#0A66C2"}}
+                        onClick={() => window.open(profileData.linkedinProfileUrl)}
                       >
                         <LinkedIn></LinkedIn>
-                        {profileData.linkedinProfileUrl}
-                      </a>
+                        
+                      </IconButton>
                     </div>
                   )}
 
@@ -412,7 +399,7 @@ const SingleMentor = () => {
                     >
                       Create job
                     </button>
-                    <button className="chat-btn">View jobs</button>
+                    <button onClick={() => navigate("/jobpostings")} className="chat-btn">View jobs</button>
                   </>
                 )}
                 {/* <button
@@ -451,7 +438,7 @@ const SingleMentor = () => {
                 />
               ) : (
                 <ul
-                  className="nav nav-pills single-mentor-tab"
+                  className="nav nav-pills single-mentor-tab overflow-hidden"
                   id="mentor-tab"
                   role="tablist"
                 >
@@ -493,29 +480,34 @@ const SingleMentor = () => {
                 >
                   {profileLoading ? (
                     <></>
-                  ) : (
+                  ) : ( profileData &&
                     <>
                       <div
                         className="experience-sec"
-                        key={`${profileData.companyDetails.name}`}
+                        key={`${profileData.companyDetails?.name}`}
                       >
                         <div className="size-[60px] rounded-full shrink-0 overflow-hidden mr-4 relative">
                           <img
+
                             src={profileData.companyDetails.logo}
-                            className="absolute"
+                            alt="Company Logo"
+                            className="absolute inset-0 w-full h-full object-cover"
+
                           />
                         </div>
+
                         <div className="experience-info">
-                          <h4>{profileData.companyDetails.name}</h4>
+                          <h4>{profileData.companyDetails?.name}</h4>
                           {/* <p>
                           {dayjs.unix(company?.startDate).format("D MMM YYYY")}{" "}
                           -{" "}
+                          --
                           {company.endDate === "present"
                             ? "Now"
                             : dayjs.unix(company.endDate).format("D MMM YYYY")}
                         </p> */}
                           <h4 className="text-black/60">
-                            {profileData.companyDetails.description}
+                            {profileData.companyDetails?.description}
                           </h4>
                           {/* <h4>{dayjs(new Timestamp(profileData.companyDetails.startDate.seconds, profileData.companyDetails.startDate.nanoseconds).toDate()).format("D MMM YYYY")}</h4> */}
                         </div>

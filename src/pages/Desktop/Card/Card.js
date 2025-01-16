@@ -6,6 +6,7 @@ import { Chip, Stack, Tooltip } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import ChatIcon from "@mui/icons-material/Chat";
 import InfoIcon from "@mui/icons-material/Info";
+import WorkIcon from "@mui/icons-material/Work";
 
 const consultingChargesConfig = {
   astrologist: true,
@@ -162,7 +163,15 @@ const Card = ({ data }) => {
             : ` ${formatName(lastName)}`
         }`}
       </span>
-      <span>Experience: {experience}</span>
+      {/* <span>Experience: {experience}</span> */}
+      <span>
+        {window.innerWidth < 480 ? (
+          <WorkIcon sx={{ color: "#0a65fc" }} />
+        ) : (
+          "Experience:"
+        )}{" "}
+        {experience} {experience === 1 ? "Year" : "Years"}
+      </span>
 
       {consultingChargesConfig[type?.toLowerCase()] && consultingPrice && (
         <span>

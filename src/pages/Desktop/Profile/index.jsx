@@ -31,6 +31,7 @@ import {
 import ScheduledCallsModal from "./ScheduledCallsModal";
 import { Box, Tooltip, IconButton, Chip } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
 
 /**
  * Utility to safely format Firestore Timestamp or "Present"/string.
@@ -66,6 +67,10 @@ function formatExperience(expValue) {
 const SingleMentor = () => {
   const navigate = useNavigate();
   const { uid } = useParams();
+  const { user, loading } = useAuthState();
+  
+
+  
 
   // For scheduling calls
   const [interviewScheduled, setInterviewScheduled] = useState(false);
@@ -94,6 +99,31 @@ const SingleMentor = () => {
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(uid);
+
+  useEffect(() => {
+    if(profileData){
+      console.log(profileData)
+      if(profileData.type == "entrepreneur"){
+        navigate(`/entrepreneur/${profileData.uid}`);
+      }
+    }
+  }, [profileData])
+
+  const handleChatClick = () => {
+    if (user) {
+      navigate("/mychat"); // Redirect to chat page if logged in
+    } else {
+      navigate("/signin"); // Redirect to sign-in page if not logged in
+    }
+  };
+
+  const handleMeetClick = () => {
+    if (user) {
+      navigate("/meet"); // Redirect to meet page if logged in
+    } else {
+      navigate("/signin"); // Redirect to sign-in page if not logged in
+    }
+  };
 
   // Example: fetching other users by type
   const {
@@ -423,14 +453,11 @@ const SingleMentor = () => {
               </div>
               {!editable && (
                 <div className="consulting-btn">
-                  <button
-                    onClick={() => navigate("/mychat")}
-                    className="chat-btn"
-                  >
+                  <button onClick={handleChatClick} className="chat-btn">
                     <MdChat /> Chat
                   </button>
                   <button
-                    onClick={() => setInterviewScheduled(true)}
+                    onClick={handleMeetClick}
                     className="chat-btn"
                     disabled={!isInitialized}
                   >
@@ -450,8 +477,10 @@ const SingleMentor = () => {
                   onClick={openScheduledCallsModal}
                   variant="outline-primary"
                   size="small"
+                  className="!flex  !flex-row items-center gap-1 !w-fit whitespace-nowrap"
                 >
-                  <FaRegClock size={16} /> Upcoming Meets
+                  <FaRegClock size={16} /> 
+                  <div>Upcoming Meets</div>
                 </Button>
               </Tooltip>
             </Box>
@@ -593,13 +622,13 @@ const SingleMentor = () => {
               <div className="tab-content">
                 {/* Work Experience Tab */}
                 <div
-                  className="tab-pane fade show active mt-16"
+                  className="tab-pane fade show active "
                   id="course-content"
                   role="tabpanel"
                 >
                   {profileLoading ? (
                     <Skeleton
-                      sx={{ width: "100%", height: "200px", marginTop: "20px" }}
+                      sx={{ width: "100%", height: "200px" }}
                     />
                   ) : profileData?.workExperience?.length ? (
                     profileData.workExperience.map((work, index) => (

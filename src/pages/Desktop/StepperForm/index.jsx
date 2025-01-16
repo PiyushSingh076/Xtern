@@ -46,6 +46,8 @@ import toast from "react-hot-toast";
 
 // import XpertRole from "../Prefference/XpertRole";
 import SummaryStep from "./SummaryStep";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
+import { useRefreshUserData } from "../../../hooks/Auth/useRefreshUserData";
 
 
 /**
@@ -90,6 +92,7 @@ export default function StepperForm() {
   // Basic personal data
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
+  const {setRefreshCount,} = useAuthState()
   const [Xpert, setXpert] = useState("");
   const [Experience, setExperience] = useState(""); // Usually a string or number
   const [profileImg, setProfileImg] = useState(null);
@@ -131,6 +134,7 @@ export default function StepperForm() {
   // Single object that holds form data for the modal
   const [modalFormData, setModalFormData] = useState({});
 
+  const [loadingg, setLoadingg] = useState(false);
 
 
   // Redux / Navigation
@@ -138,7 +142,7 @@ export default function StepperForm() {
   const navigate = useNavigate();
   const { saveProfileData, loading } = useSaveProfileData();
   const { userData } = useFetchUserData();
-
+  const {refreshUser} = useRefreshUserData()
   // If user clicked "edit" with existing profile
   const location = useLocation();
   const { profileData } = location.state || {};
@@ -862,10 +866,15 @@ export default function StepperForm() {
     }
   };
 
+  useEffect(() => {
+    console.log("Active Step changed to:", activeStep);
+  }, [activeStep]);
+  
   // Final Submit of the entire form
   const handleSubmitInfo = async (e) => {
     e.preventDefault();
-
+    setLoadingg(true);
+  
     const missingFields = [];
     if (!FirstName) missingFields.push("First Name");
     if (!LastName) missingFields.push("Last Name");
@@ -874,12 +883,13 @@ export default function StepperForm() {
     if (!selectedState) missingFields.push("State");
     if (!profileImg) missingFields.push("Profile Image");
     if (!selectedCity) missingFields.push("City");
-
+  
     if (missingFields.length > 0) {
       missingFields.forEach((f) => toast.error(`${f} is required`));
+      setLoadingg(false);
       return;
     }
-
+  
     // Gather data
     const data = {
       profileImage: profileImg,
@@ -898,14 +908,25 @@ export default function StepperForm() {
       consultingDuration: ConsultingDuration,
       consultingDurationType: ConsultingDurationType,
     };
+  
+    console.log("Before setting step:", activeStep);
 
-    dispatch(setDetail(data));
     try {
+      dispatch(setDetail(data));
       await saveProfileData(data);
-      navigate(`/profile/${userData?.uid}`);
+
+      
+      setActiveStep(3);
+      setTimeout(() => {
+        refreshUser();
+      }, 200);
+      console.log("After setting step:", 3); // Debug log
+
     } catch (err) {
       toast.error(`Error saving data: ${err.message}`);
       console.log(err);
+    } finally {
+      setLoadingg(false);
     }
   };
 
@@ -1739,15 +1760,17 @@ export default function StepperForm() {
                   sx={{ mr: 2 }}
                 >
                   Back
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setActiveStep(3)}
-                  size="large"
-                >
-                  Next
-                </Button>
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmitInfo}
+                size="large"
+                disabled={loading}
+                startIcon={loading && <CircularProgress size={20} color="inherit" />}
+              >
+                {loading ? "Submitting..." : "Submit"}
+              </Button>
               </Box>
             </Grid>
           </Grid>
@@ -1791,12 +1814,10 @@ export default function StepperForm() {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleSubmitInfo}
+                onClick={() => navigate(`/profile/${userData?.uid}`)}
                 size="large"
-                disabled={loading}
-                startIcon={loading && <CircularProgress size={20} color="inherit" />}
               >
-                {loading ? "Submitting..." : "Submit"}
+                Profile
               </Button>
             </Box>
           </>

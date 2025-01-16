@@ -75,4 +75,6 @@ export const ROUTES = {
   JOBSPOSTINGS: '/jobpostings/',
   JOBSTATS: "/jobstats/:jobId",
   VIEWJOB: "/viewjob/:jobId",
+  CHOOSETYPE: "/choosetype",
+  EDITJOB: "/editjob/:jobId"
 };
