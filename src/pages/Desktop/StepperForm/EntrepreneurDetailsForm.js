@@ -264,13 +264,13 @@ export default function EntrepreneurProfileForm() {
     setSubmitting(true);
 
     e.preventDefault();
-    setIsSubmitting(true); // Set loading state to true
+    setSubmitting(true); // Set loading state to true
 
     try {
       let finalImageURL = profileImg;  // Start with current profile image
 
 
-    console.log(imageURL);
+    console.log(finalImageURL);
 
 
     const missingFields = [];
@@ -314,19 +314,19 @@ export default function EntrepreneurProfileForm() {
         toast.error(`Error saving profile: ${error.message || error}`);
         console.error(error);
       } finally {
-      setIsSubmitting(false); // Set loading state to true
+      setSubmitting(false); // Set loading state to true
     }
     } else {
       setSubmitting(false);
       missingFields.forEach((field) => toast.error(`${field} is required)`));
-      setIsSubmitting(false); // Set loading state to true
+      setSubmitting(false); // Set loading state to true
 
     }
   } catch (error) {
     toast.error(`Error processing image: ${error.message}`);
     console.error(error);
   } finally {
-    setIsSubmitting(false); // Set loading state to true
+    setSubmitting(false); // Set loading state to true
   }
   };
 

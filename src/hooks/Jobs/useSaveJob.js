@@ -22,7 +22,6 @@ const useSaveJob = () => {
     assessmentDuration,
     duration,
     imageURL,
-    data
     file
   }) => {
     try {
@@ -42,7 +41,7 @@ const useSaveJob = () => {
             description: description,
             image: imageURL,
             jobId: jobId,
-            skills: skills,,
+            skills: skills,
             file: file
           }),
         });
@@ -65,7 +64,6 @@ const useSaveJob = () => {
         createdAt: new Date(),
         createdBy: currentUser.uid, // User reference
         applicants: [],
-        fileData: data
         file: file, // Empty applicants array initially
       });
 
@@ -90,7 +88,7 @@ const useSaveJob = () => {
     }
   };
 
-  const updateJob = async (jobId,{
+  const updateJob = async (jobId, {
     jobTitle,
     companyName,
     description,
@@ -100,7 +98,8 @@ const useSaveJob = () => {
     assessmentDetail,
     assessmentDuration,
     duration,
-    imageURL,
+    file,
+    imageURL
   }) => {
     try {
       // Validate if user is authenticate
@@ -118,11 +117,12 @@ const useSaveJob = () => {
         assessmentDuration,
         duration,
         image: imageURL,
-         // User reference
-      }, {merge: true});
+        file
+        // User reference
+      }, { merge: true });
 
       // Fetch the newly created job by its ID
-     
+
 
       return true; // Success response
     } catch (error) {
