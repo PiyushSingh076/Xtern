@@ -75,7 +75,7 @@ const useUserProfileData = (uid) => {
           serviceDetails,
         };
 
-        console.table("Combined Data:", combinedData); // Final combined data
+        // console.table("Combined Data:", combinedData); // Final combined data
         setUserData(combinedData);
       } catch (err) {
         console.log("here")
