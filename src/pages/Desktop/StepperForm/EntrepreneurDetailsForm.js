@@ -72,7 +72,7 @@ export default function EntrepreneurProfileForm() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [linkedinProfile, setLinkedinProfile] = useState("");
   const [isLinkedInFetched, setIsLinkedInFetched] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false); // Add loading state
+  const [isSubmitting, setSubmitting] = useState(false); // Add loading state
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -281,12 +281,6 @@ export default function EntrepreneurProfileForm() {
     try {
       let finalImageURL = profileImg;  // Start with current profile image
 
-<<<<<<< HEAD
-
-    console.log(finalImageURL);
-
-
-=======
       // Only upload new image if one was selected
       if (projectImage) {
         const uploadedImageURL = await uploadImage();
@@ -294,63 +288,9 @@ export default function EntrepreneurProfileForm() {
           finalImageURL = uploadedImageURL;
         }
       }
-<<<<<<< HEAD
-    // console.log(imageURL)
-  
->>>>>>> e6548042ada9ce78cda465a16cbf5b11d84a4f7b
-    const missingFields = [];
-    if (!firstName) missingFields.push("First Name");
-    if (!lastName) missingFields.push("Last Name");
-    if (!state) missingFields.push("State");
-    if (!city) missingFields.push("City");
-    if (!companyDetails) missingFields.push("Company Details");
-    if (!experience) missingFields.push("Years in Experience");
-    if (!industry) missingFields.push("Industry");
-  
-    if (missingFields.length === 0) {
-      const entrepreneurData = {
-        photo_url: finalImageURL, // Ensure profileImg is included here
-        firstName,
-        lastName,
-        state,
-        city,
-        companyDetails,
-        experience,
-        industry,
-        skillsRequired,
-        linkedinProfile,
-        // Add the user's ID if editing
-        uid: profileData?.uid
-      };
-  
-      dispatch(setEntrepreneurDetails(entrepreneurData));
 
-      console.log("Entrepreneur Data:", entrepreneurData);
-  
-      try {
-        const userId = await saveEntrepreneurDetails(entrepreneurData);
-        toast.success(profileData ? "Profile updated successfully!" : "Profile saved successfully!");
-        navigate(`/entrepreneur/${userId}`);
-        navigate(`/entrepreneur/${userId}`);
-      } catch (error) {
-        toast.error(`Error saving profile: ${error.message || error}`);
-        console.error(error);
-      } finally {
-      setSubmitting(false); // Set loading state to true
-    }
-    } else {
-      missingFields.forEach((field) => toast.error(`${field} is required)`));
-      setSubmitting(false); // Set loading state to true
-
-    }
-  } catch (error) {
-    toast.error(`Error processing image: ${error.message}`);
-    console.error(error);
-  } finally {
-    setSubmitting(false); // Set loading state to true
-  }
-=======
       // console.log(imageURL)
+
 
       const missingFields = [];
       if (!firstName) missingFields.push("First Name");
@@ -390,462 +330,461 @@ export default function EntrepreneurProfileForm() {
           toast.error(`Error saving profile: ${error.message || error}`);
           console.error(error);
         } finally {
-          setIsSubmitting(false); // Set loading state to true
+          setSubmitting(false); // Set loading state to true
         }
       } else {
         missingFields.forEach((field) => toast.error(`${field} is required)`));
-        setIsSubmitting(false); // Set loading state to true
+        setSubmitting(false); // Set loading state to true
 
       }
     } catch (error) {
       toast.error(`Error processing image: ${error.message}`);
       console.error(error);
     } finally {
-      setIsSubmitting(false); // Set loading state to true
+      setSubmitting(false); // Set loading state to true
     }
->>>>>>> 4bb7f6afb20bfb8b0feed1e574e5b136302ad10d
-  };
+};
 
 
 
-  return (
-    <Box sx={{ width: "80wh", overflow: "auto", }}>
-      <Stepper activeStep={0} alternativeLabel>
-        <Step key="Entrepreneur Details">
-          <StepLabel sx={{
-            "& .MuiStepLabel-label": {
-              fontSize: "1.25rem",
-              fontWeight: "bold",
-              mb: 3,
-            },
-          }}>Entrepreneur Details</StepLabel>
-        </Step>
-      </Stepper>
+return (
+  <Box sx={{ width: "80wh", overflow: "auto", }}>
+    <Stepper activeStep={0} alternativeLabel>
+      <Step key="Entrepreneur Details">
+        <StepLabel sx={{
+          "& .MuiStepLabel-label": {
+            fontSize: "1.25rem",
+            fontWeight: "bold",
+            mb: 3,
+          },
+        }}>Entrepreneur Details</StepLabel>
+      </Step>
+    </Stepper>
 
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ padding: 3, boxShadow: 3 }}>
-            <CardContent>
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <input
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  id="profile-image-upload"
-                  type="file"
-                  onChange={handleImageUpload}
+    <Grid container spacing={4}>
+      <Grid item xs={12} md={4}>
+        <Card sx={{ padding: 3, boxShadow: 3 }}>
+          <CardContent>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <input
+                accept="image/*"
+                style={{ display: "none" }}
+                id="profile-image-upload"
+                type="file"
+                onChange={handleImageUpload}
 
-                />
-                <label htmlFor="profile-image-upload">
-                  <IconButton component="span">
-                    <Avatar
-                      src={
-                        imagePreviewUrl || profileImg
-                          ? imagePreviewUrl || profileImg
-                          : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
-                      }
-                      sx={{ width: 120, height: 120 }}
-                    />
-                  </IconButton>
-                </label>
-                {profileImg && (
-                  <IconButton
-                    aria-label="clear"
-                    onClick={clearProfileImage}
-                    sx={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      backgroundColor: "rgba(255,255,255,0.7)",
-                      "&:hover": {
-                        backgroundColor: "rgba(255,255,255,1)",
-                      },
-                    }}
-                    size="small"
-                  >
-                    <ClearIcon fontSize="small" />
-                  </IconButton>
-                )}
-                <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
-                  Click to upload
-                </Typography>
-              </Box>
-
-              <TextField
-                label="First Name"
-                variant="outlined"
-                fullWidth
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                error={!!errors.firstName}
-                helperText={errors.firstName}
-                sx={{ mb: 3 }}
               />
-              <TextField
-                label="Last Name"
-                variant="outlined"
-                fullWidth
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                error={!!errors.lastName}
-                helperText={errors.lastName}
-                sx={{ mb: 3 }}
-              />
-              <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
-                <InputLabel id="experience-label">
-                  Years of Experience
-                </InputLabel>
-                <Select
-                  labelId="experience-label"
-                  value={experience}
-                  label="Years of Experience"
-                  onChange={(e) => setExperience(e.target.value)}
-                >
-                  <MenuItem value="Less than 1">Less than 1</MenuItem>
-                  {Array.from({ length: 20 }, (_, i) => i + 1).map(
-                    (year) => (
-                      <MenuItem key={year} value={year}>
-                        {year}
-                      </MenuItem>
-                    )
-                  )}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
-                <InputLabel id="state-label">State</InputLabel>
-                <Select
-                  labelId="state-label"
-                  value={state}
-                  label="State"
-                  onChange={(e) => handleStateChange(e.target.value)}
-                >
-                  {indiaStates.map((state) => (
-                    <MenuItem key={state.isoCode} value={state.isoCode}>
-                      {state.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth required size="small">
-                <InputLabel id="city-label">City</InputLabel>
-                <Select
-                  labelId="city-label"
-                  value={city}
-                  label="City"
-                  onChange={(e) => setCity(e.target.value)}
-                  disabled={!state}
-                >
-                  {cities.map((city) => (
-                    <MenuItem key={city.id} value={city.name}>
-                      {city.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={8}>
-          {!profileData &&
-            (<Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "start",
-                justifyContent: "center",
-                gap: "10px",
-                width: "100%",
-                height: "50px",
-                marginBottom: "20px",
-              }}
-            >
-              <div
-                onClick={() => setIsLinkedInFetched(false)}
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: "10px",
-                  border: "1px solid #ccc",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                  backgroundColor: "#f5f5f5",
-                }}
-              >
-                <img
-                  src={LinkedInLogo}
-                  alt="LinkedIn Logo"
-                  style={{ width: "40px", height: "40px" }}
-                />
-                <span>Import LinkedIn Profile</span>
-              </div>
-            </Box>
-            )}
-
-          {!isLinkedInFetched && (
-            <Box sx={{ mb: 2, mt: 2 }}>
-              <LinkedInFetcher
-                close={setIsLinkedInFetched}
-                onFetchSuccess={handleLinkedInEntrepreneurData}
-              />
-            </Box>
-          )}
-
-          <Card sx={{ mb: 2, boxShadow: 2 }}>
-            <CardHeader
-              title="Company Details"
-              titleTypographyProps={{ variant: "h6" }}
-              action={
-                <Button
-                  variant="contained"
-                  startIcon={<AddCircleOutlineIcon />}
-                  onClick={() => openModal("Company")} // Opens the modal for company details
-                  size="small"
-                  sx={{ textTransform: "none" }}
-                >
-                  Add Details
-                </Button>
-              }
-              sx={{ padding: 2 }}
-            />
-            <Divider />
-
-            <CardContent sx={{ padding: 2 }}>
-              {companyDetails.name ? (
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  <Typography variant="subtitle1">
-                    <strong>{companyDetails.name}</strong>
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Started on: {companyDetails.startDate}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {companyDetails.description}
-                  </Typography>
-                </Box>
-              ) : ""}
-            </CardContent>
-
-          </Card>
-
-
-          <Card sx={{ mb: 2, boxShadow: 2 }}>
-            <CardHeader
-              title="Skills Required"
-              titleTypographyProps={{ variant: "h6" }}
-              action={
-                <Button
-                  variant="contained"
-                  startIcon={<AddCircleOutlineIcon />}
-                  onClick={() => openModal("Skill")} // Opens the modal for adding a skill
-                  size="small"
-                  sx={{ textTransform: "none" }}
-                >
-                  Add Skill
-                </Button>
-              }
-              sx={{ padding: 2 }}
-            />
-            <Divider />
-            <CardContent sx={{ padding: 2 }}>
-              {skillsRequired.map((item, index) => (
-                <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                  <Box sx={{
+              <label htmlFor="profile-image-upload">
+                <IconButton component="span">
+                  <Avatar
+                    src={
+                      imagePreviewUrl || profileImg
+                        ? imagePreviewUrl || profileImg
+                        : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
+                    }
+                    sx={{ width: 120, height: 120 }}
+                  />
+                </IconButton>
+              </label>
+              {profileImg && (
+                <IconButton
+                  aria-label="clear"
+                  onClick={clearProfileImage}
+                  sx={{
                     position: "absolute",
                     top: 0,
                     right: 0,
-                    display: 'flex',
-                    gap: 1
-                  }}>
-                    <IconButton
-                      aria-label="edit"
-                      size="small"
-                      onClick={() => openModal("Skill", index)}
-                    >
-                      <EditOutlinedIcon size={16} sx={{ color: 'blue' }} />
-                    </IconButton>
-                    <IconButton
-                      aria-label="delete"
-                      size="small"
-                      onClick={() => {
-                        const updatedSkills = [...skillsRequired];
-                        updatedSkills.splice(index, 1);
-                        setSkillsRequired(updatedSkills);
-                      }}
-                    >
-                      <FiTrash color="red" size={16} />
-                    </IconButton>
-                  </Box>
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                    <Typography variant="subtitle1">
-                      <strong>{item.name}</strong>
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Rating: {item.rating}
-                    </Typography>
-                  </Box>
-                </Box>
-              ))}
-            </CardContent>
-          </Card>
-          <TextField
-            label="Industry"
-            variant="outlined"
-            fullWidth
-            value={industry}
-            onChange={(e) => setIndustry(e.target.value)}
-            error={!!errors.industry}
-            helperText={errors.industry}
-            sx={{ mb: 3 }}
-          />
-
-
-          <TextField
-            label="LinkedIn Profile"
-            variant="outlined"
-            fullWidth
-            value={linkedinProfile}
-            onChange={(e) => setLinkedinProfile(e.target.value)}
-            sx={{ mb: 3 }}
-          />
-
-          {/* Dialog for Adding Skills */}
-          <Dialog open={modalType === "Skill"} onClose={closeModal} fullWidth>
-            <DialogTitle>
-              {editingSkillIndex !== null ? "Edit Skill" : "Add Skill"}
-            </DialogTitle>
-            <DialogContent>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Skill Name"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={currentSkill.name}
-                    onChange={(e) =>
-                      setCurrentSkill({ ...currentSkill, name: e.target.value })
-                    }
-                    error={!!errors.skillName}
-                    helperText={errors.skillName}
-                    sx={{ mt: 2 }} // Add margin-top to create space
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Rating"
-                    type="number"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={currentSkill.rating}
-                    onChange={(e) =>
-                      setCurrentSkill({ ...currentSkill, rating: e.target.value })
-                    }
-                    error={!!errors.skillRating}
-                    helperText={errors.skillRating}
-                  />
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions>
-              <Button variant="contained" color="primary" onClick={saveSkill}>
-                Save
-              </Button>
-              <Button variant="outlined" color="secondary" onClick={closeModal}>
-                Cancel
-              </Button>
-            </DialogActions>
-          </Dialog>
-          {/* Dialog for Company Details */}
-          <Dialog open={modalType === "Company"} onClose={closeModal} fullWidth  sx={{ mt: 10 }} >
-            <DialogTitle>Add Company Details</DialogTitle>
-            <DialogContent>
-              <TextField
-                label="Company Name"
-                fullWidth
-                value={companyDetails.name}
-                onChange={(e) =>
-                  setCompanyDetails({ ...companyDetails, name: e.target.value })
-                }
-                sx={{ mb: 2, mt: 2 }}
-              />
-              <input
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                id="logo-upload"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  handleLogoUpload(file); // Save logo to state
-                }}
-              />
-              <label htmlFor="logo-upload">
-                <Button
-                  variant="contained"
-                  component="span"
-                  disabled={uploadingLogo}
-                  sx={{ mb: 2 }}
+                    backgroundColor: "rgba(255,255,255,0.7)",
+                    "&:hover": {
+                      backgroundColor: "rgba(255,255,255,1)",
+                    },
+                  }}
+                  size="small"
                 >
-                  Upload Logo
-                </Button>
-              </label>
-              {companyDetails.logo.preview && (
-                <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-200 mb-3">
-                  <img
-                    src={companyDetails.logo.preview}
-                    alt="Company logo preview"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+                  <ClearIcon fontSize="small" />
+                </IconButton>
               )}
+              <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
+                Click to upload
+              </Typography>
+            </Box>
 
-              <TextField
-                label="Start Date"
-                type="date"
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                value={companyDetails.startDate}
-                onChange={(e) =>
-                  setCompanyDetails({ ...companyDetails, startDate: e.target.value })
-                }
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                label="Description"
-                fullWidth
-                multiline
-                rows={4}
-                value={companyDetails.description}
-                onChange={(e) =>
-                  setCompanyDetails({ ...companyDetails, description: e.target.value })
-                }
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCompanyDialogSave} variant="contained">
-                Save
-              </Button>
-              <Button onClick={closeModal} variant="outlined">
-                Cancel
-              </Button>
-            </DialogActions>
-          </Dialog>
+            <TextField
+              label="First Name"
+              variant="outlined"
+              fullWidth
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              error={!!errors.firstName}
+              helperText={errors.firstName}
+              sx={{ mb: 3 }}
+            />
+            <TextField
+              label="Last Name"
+              variant="outlined"
+              fullWidth
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              error={!!errors.lastName}
+              helperText={errors.lastName}
+              sx={{ mb: 3 }}
+            />
+            <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
+              <InputLabel id="experience-label">
+                Years of Experience
+              </InputLabel>
+              <Select
+                labelId="experience-label"
+                value={experience}
+                label="Years of Experience"
+                onChange={(e) => setExperience(e.target.value)}
+              >
+                <MenuItem value="Less than 1">Less than 1</MenuItem>
+                {Array.from({ length: 20 }, (_, i) => i + 1).map(
+                  (year) => (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  )
+                )}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth required size="small" sx={{ mb: 3 }}>
+              <InputLabel id="state-label">State</InputLabel>
+              <Select
+                labelId="state-label"
+                value={state}
+                label="State"
+                onChange={(e) => handleStateChange(e.target.value)}
+              >
+                {indiaStates.map((state) => (
+                  <MenuItem key={state.isoCode} value={state.isoCode}>
+                    {state.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <Grid item={4} sx={{ m: 3, display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              variant="contained"
-              color="primary"
+            <FormControl fullWidth required size="small">
+              <InputLabel id="city-label">City</InputLabel>
+              <Select
+                labelId="city-label"
+                value={city}
+                label="City"
+                onChange={(e) => setCity(e.target.value)}
+                disabled={!state}
+              >
+                {cities.map((city) => (
+                  <MenuItem key={city.id} value={city.name}>
+                    {city.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </CardContent>
+        </Card>
+      </Grid>
 
-              onClick={handleEntreneurSubmitInfo}
-              disabled={Object.values(errors).includes(true)} // Disable button if any error exists
+      <Grid item xs={12} md={8}>
+        {!profileData &&
+          (<Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "start",
+              justifyContent: "center",
+              gap: "10px",
+              width: "100%",
+              height: "50px",
+              marginBottom: "20px",
+            }}
+          >
+            <div
+              onClick={() => setIsLinkedInFetched(false)}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: "10px",
+                border: "1px solid #ccc",
+                padding: "10px",
+                borderRadius: "10px",
+                cursor: "pointer",
+                backgroundColor: "#f5f5f5",
+              }}
             >
-              {isSubmitting ? "Submitting..." : "Submit"} {/* Show dynamic text */}            </Button>
-          </Grid>
+              <img
+                src={LinkedInLogo}
+                alt="LinkedIn Logo"
+                style={{ width: "40px", height: "40px" }}
+              />
+              <span>Import LinkedIn Profile</span>
+            </div>
+          </Box>
+          )}
+
+        {!isLinkedInFetched && (
+          <Box sx={{ mb: 2, mt: 2 }}>
+            <LinkedInFetcher
+              close={setIsLinkedInFetched}
+              onFetchSuccess={handleLinkedInEntrepreneurData}
+            />
+          </Box>
+        )}
+
+        <Card sx={{ mb: 2, boxShadow: 2 }}>
+          <CardHeader
+            title="Company Details"
+            titleTypographyProps={{ variant: "h6" }}
+            action={
+              <Button
+                variant="contained"
+                startIcon={<AddCircleOutlineIcon />}
+                onClick={() => openModal("Company")} // Opens the modal for company details
+                size="small"
+                sx={{ textTransform: "none" }}
+              >
+                Add Details
+              </Button>
+            }
+            sx={{ padding: 2 }}
+          />
+          <Divider />
+
+          <CardContent sx={{ padding: 2 }}>
+            {companyDetails.name ? (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Typography variant="subtitle1">
+                  <strong>{companyDetails.name}</strong>
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Started on: {companyDetails.startDate}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {companyDetails.description}
+                </Typography>
+              </Box>
+            ) : ""}
+          </CardContent>
+
+        </Card>
+
+
+        <Card sx={{ mb: 2, boxShadow: 2 }}>
+          <CardHeader
+            title="Skills Required"
+            titleTypographyProps={{ variant: "h6" }}
+            action={
+              <Button
+                variant="contained"
+                startIcon={<AddCircleOutlineIcon />}
+                onClick={() => openModal("Skill")} // Opens the modal for adding a skill
+                size="small"
+                sx={{ textTransform: "none" }}
+              >
+                Add Skill
+              </Button>
+            }
+            sx={{ padding: 2 }}
+          />
+          <Divider />
+          <CardContent sx={{ padding: 2 }}>
+            {skillsRequired.map((item, index) => (
+              <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                <Box sx={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  display: 'flex',
+                  gap: 1
+                }}>
+                  <IconButton
+                    aria-label="edit"
+                    size="small"
+                    onClick={() => openModal("Skill", index)}
+                  >
+                    <EditOutlinedIcon size={16} sx={{ color: 'blue' }} />
+                  </IconButton>
+                  <IconButton
+                    aria-label="delete"
+                    size="small"
+                    onClick={() => {
+                      const updatedSkills = [...skillsRequired];
+                      updatedSkills.splice(index, 1);
+                      setSkillsRequired(updatedSkills);
+                    }}
+                  >
+                    <FiTrash color="red" size={16} />
+                  </IconButton>
+                </Box>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <Typography variant="subtitle1">
+                    <strong>{item.name}</strong>
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Rating: {item.rating}
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+          </CardContent>
+        </Card>
+        <TextField
+          label="Industry"
+          variant="outlined"
+          fullWidth
+          value={industry}
+          onChange={(e) => setIndustry(e.target.value)}
+          error={!!errors.industry}
+          helperText={errors.industry}
+          sx={{ mb: 3 }}
+        />
+
+
+        <TextField
+          label="LinkedIn Profile"
+          variant="outlined"
+          fullWidth
+          value={linkedinProfile}
+          onChange={(e) => setLinkedinProfile(e.target.value)}
+          sx={{ mb: 3 }}
+        />
+
+        {/* Dialog for Adding Skills */}
+        <Dialog open={modalType === "Skill"} onClose={closeModal} fullWidth>
+          <DialogTitle>
+            {editingSkillIndex !== null ? "Edit Skill" : "Add Skill"}
+          </DialogTitle>
+          <DialogContent>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  label="Skill Name"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={currentSkill.name}
+                  onChange={(e) =>
+                    setCurrentSkill({ ...currentSkill, name: e.target.value })
+                  }
+                  error={!!errors.skillName}
+                  helperText={errors.skillName}
+                  sx={{ mt: 2 }} // Add margin-top to create space
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Rating"
+                  type="number"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={currentSkill.rating}
+                  onChange={(e) =>
+                    setCurrentSkill({ ...currentSkill, rating: e.target.value })
+                  }
+                  error={!!errors.skillRating}
+                  helperText={errors.skillRating}
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" color="primary" onClick={saveSkill}>
+              Save
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={closeModal}>
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {/* Dialog for Company Details */}
+        <Dialog open={modalType === "Company"} onClose={closeModal} fullWidth sx={{ mt: 10 }} >
+          <DialogTitle>Add Company Details</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Company Name"
+              fullWidth
+              value={companyDetails.name}
+              onChange={(e) =>
+                setCompanyDetails({ ...companyDetails, name: e.target.value })
+              }
+              sx={{ mb: 2, mt: 2 }}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              id="logo-upload"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                handleLogoUpload(file); // Save logo to state
+              }}
+            />
+            <label htmlFor="logo-upload">
+              <Button
+                variant="contained"
+                component="span"
+                disabled={uploadingLogo}
+                sx={{ mb: 2 }}
+              >
+                Upload Logo
+              </Button>
+            </label>
+            {companyDetails.logo.preview && (
+              <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-200 mb-3">
+                <img
+                  src={companyDetails.logo.preview}
+                  alt="Company logo preview"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
+
+            <TextField
+              label="Start Date"
+              type="date"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              value={companyDetails.startDate}
+              onChange={(e) =>
+                setCompanyDetails({ ...companyDetails, startDate: e.target.value })
+              }
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Description"
+              fullWidth
+              multiline
+              rows={4}
+              value={companyDetails.description}
+              onChange={(e) =>
+                setCompanyDetails({ ...companyDetails, description: e.target.value })
+              }
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCompanyDialogSave} variant="contained">
+              Save
+            </Button>
+            <Button onClick={closeModal} variant="outlined">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Grid item={4} sx={{ m: 3, display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            variant="contained"
+            color="primary"
+
+            onClick={handleEntreneurSubmitInfo}
+            disabled={Object.values(errors).includes(true)} // Disable button if any error exists
+          >
+            {isSubmitting ? "Submitting..." : "Submit"} {/* Show dynamic text */}            </Button>
         </Grid>
       </Grid>
-    </Box>
-  );
+    </Grid>
+  </Box>
+);
 }
