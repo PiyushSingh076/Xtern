@@ -39,24 +39,24 @@ const SignIn = () => {
 
   const handleSignIn = async (event) => {
     event.preventDefault();
-
+  
     try {
       await signInWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
       if (user) {
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
-
+  
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          // Check if 'preferredLanguage' and 'typeUser' fields exist
-
-            // One or both fields are missing, redirect to preferred language page
-            navigate('/');
-          
+          if (userData.isPhoneNumberVerified) {
+            navigate('/homescreen')
+          } else {
+            navigate('/verifyscreen')
+          }
         } else {
           console.error("No such user profile!");
-          // Handle the case where the user document doesn't exist
+          // Handle the case where the user document doesn't exist--
           // You might want to redirect to a registration page or show an error
         }
       } else {

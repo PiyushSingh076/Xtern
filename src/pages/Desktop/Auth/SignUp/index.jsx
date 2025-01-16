@@ -68,7 +68,7 @@ const SignUp = () => {
 
       await setDoc(doc(db, "users", user.uid), userData);
 
-      navigate("/signin"); // Redirect to sign-in page after successful signup
+      navigate("/verifyscreen"); // Redirect to sign-in page after successful signup
     } catch (error) {
       // Check for specific error codes
       if (error.code === "auth/email-already-in-use") {

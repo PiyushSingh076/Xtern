@@ -1,157 +1,11 @@
-.course-page {
-  display: flex;
-  gap: 20px;
-  padding: 20px;
+.des-project-detail-container {
+  margin-top: 5%;
+  height: auto;
+  overflow: hidden;
 }
-
-/* Left Section */
-.left-section {
-  flex: 0 0 40%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Right Section */
-.right-section {
-  flex: 0 0 60%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.course-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.course-price {
-  font-weight: bold;
-  font-size: 26px;
-  color: "#0a65fc";
-  margin-right: 16px;
-}
-
-.course-summary {
-  display: flex;
-  gap: 15px;
-}
-
-.course-detail-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.course-detail-icon {
-  width: 24px;
-  height: 24px;
-}
-
-.course-detail-text {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* Tabs */
-.tabs {
-  display: flex;
-  gap: 10px;
-}
-
-.tab {
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #444;
-  border: 1px solid #ddd;
-  background: #f9f9f9;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.tab.active {
-  background: #3374ae; /* Active tab background color */
-  color: #fff; /* Active tab text color */
-  border-color: #3374ae;
-}
-
-.tab:hover {
-  background: #3374ae;
-  color: #fff;
-}
-
-/* Tab Content Container */
-.tab-content-container {
-  display: flex;
-  gap: 20px;
-}
-
-/* Description Section */
-.description {
-  flex: 1;
-  border: 1px solid #ddd;
-  background: #f9f9f9;
-  border-radius: 5px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Reviews Section */
-.reviews {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  border: 1px solid #ddd;
-  background: #f9f9f9;
-  border-radius: 5px;
-  padding: 20px;
-}
-
-.review-item {
-  display: flex;
-  gap: 15px;
-}
-
-.review-profile-pic {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-}
-
-.review-content {
-  flex-grow: 1;
-}
-
-.review-name {
-  font-size: 16px;
-  font-weight: bold;
-  margin: 0;
-}
-
-.review-rating {
-  display: flex;
-  gap: 5px;
-  margin: 5px 0;
-}
-
-.review-star {
-  width: 16px;
-  height: 16px;
-}
-
-.review-comment {
-  font-size: 14px;
-  color: #666;
-}
-
 .des-buy-now-description {
   box-shadow: none;
   position: initial;
-  max-width: 40%;
   margin-top: 20px;
   background-color: #3374ae;
   display: flex;
@@ -163,7 +17,325 @@
   text-decoration: none;
 }
 
+.second-txt1 {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.firs-txt2 {
+  font-weight: bold;
+}
+
+.second-decs-sec-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .buy-now {
   text-decoration: none;
   color: white;
+}
+
+.des-first-desc-img-sec {
+  display: flex;
+  flex-direction: row;
+  margin-left: 20px;
+  overflow: hidden;
+}
+
+/* .des-img-fluid {
+  margin-left: 50px;
+  margin-right: 100px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+} */
+
+.desc-container {
+  margin-left: 100px;
+  width: 50%;
+  min-width: 50%;
+}
+
+.apply-project-conatainer {
+  margin-top: 100px;
+  display: flex;
+  flex-direction: row;
+}
+
+.des-steps-section {
+  flex: 0.8;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  height: 390px;
+}
+
+.skill-project-section {
+  flex: 1.2;
+}
+
+.submit-btn {
+  width: 150px;
+  height: 50px;
+  background-color: #3374ae;
+  border-radius: 10px;
+  color: white;
+  border: none;
+}
+
+.des-single-courses-description {
+  width: 100%;
+}
+
+.des-all-projects-container {
+  width: 100%;
+  margin-top: 100px;
+}
+
+.des-new-courses-wrap {
+  place-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 80px;
+}
+
+.des-new-courses-sec {
+  margin-top: 20px;
+  width: 350px;
+  height: 350px;
+  margin-bottom: 50px;
+  transition: all 0.5s ease;
+}
+
+.des-new-courses-sec:hover {
+  transform: scale(1.05);
+  transition: all 1s ease;
+  cursor: pointer;
+}
+
+.des-new-courses img {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
+
+.second-decs-sec-bottom-wrap {
+  display: flex;
+  flex-direction: row; /* Stack items vertically */
+  gap: 12px; /* Adds spacing between each row */
+}
+
+.second-decs-sec-bottom-wrap .mt-12 {
+  display: flex;
+  align-items: center; /* Vertically align icon and text */
+}
+
+.student-img {
+  display: flex; /* Ensures proper alignment of the image inside */
+  align-items: center;
+  margin-right: 8px; /* Space between icon and text */
+}
+
+.second-txt2 {
+  flex: 1; /* Ensures text takes remaining space if needed */
+}
+
+.review-content-wrap {
+  padding: 16px;
+  /* background-color: #f9f9f9; */
+  border-radius: 8px;
+}
+
+.review-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.review-profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: blue;
+  object-fit: cover;
+}
+
+.review-details {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.review-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.review-text {
+  font-size: 14px;
+  color: #555;
+  margin: 4px 0 0;
+}
+
+@media (max-width: 992px) {
+  .des-project-detail-container {
+    width: 100%;
+    padding: 5px;
+    margin: none;
+  }
+
+  .single-description-screen1 {
+    padding: 20px;
+    width: auto;
+  }
+
+  .des-clearsingle-courses-description {
+    width: 800px;
+    overflow: hidden !important;
+    padding: 10px;
+  }
+
+  .des-first-desc-img-sec {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+    overflow: hidden !important;
+  }
+
+  .hero-img-desc {
+    display: none !important;
+  }
+
+  .desc-container {
+    width: 45%; /* Adjust width for mobile screens */
+    margin-left: 5px; /* Add spacing */
+  }
+
+  .second-txt1 {
+    font-size: 24px; /* Adjust font-size for mobile */
+  }
+
+  .firs-txt2 {
+    font-size: 16px; /* Adjust font-size for mobile */
+  }
+
+  .review-content-wrap {
+    padding: 10px; /* Adjust padding for smaller screens */
+    margin: 10px 0; /* Add vertical spacing */
+  }
+
+  .review-title {
+    font-size: 18px; /* Adjust font-size */
+  }
+
+  .review-item {
+    gap: 8px; /* Reduce gap between items */
+    padding: 10px; /* Adjust padding */
+  }
+
+  .review-profile-pic {
+    width: 40px; /* Adjust profile pic size */
+    height: 40px;
+  }
+
+  .review-name {
+    font-size: 14px; /* Adjust font-size */
+  }
+
+  .review-text {
+    font-size: 12px; /* Adjust font-size */
+  }
+
+  .des-new-courses-sec {
+    width: 100%; /* Use full width */
+    height: auto; /* Adjust for smaller height */
+    margin-bottom: 20px; /* Reduce bottom margin */
+  }
+
+  .des-buy-now-description {
+    height: 40px; /* Adjust button height */
+    font-size: 14px; /* Adjust text size */
+  }
+
+  .apply-project-conatainer {
+    flex-direction: column; /* Stack elements vertically */
+    margin-top: 50px; /* Adjust top margin */
+  }
+
+  .second-decs-sec-bottom-wrap {
+    flex-direction: row; /* Stack rows vertically */
+    gap: 8px; /* Reduce spacing */
+  }
+
+  .student-img {
+    margin-right: 4px; /* Adjust spacing for icons */
+  }
+}
+
+@media (max-width: 480px) {
+  .des-project-detail-container {
+    margin: 0;
+    height: 100vh;
+  }
+
+  .firs-txt2 {
+    font-size: 26px;
+  }
+
+  .des-first-desc-img-sec {
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    overflow: hidden !important;
+  }
+
+  .des-clearsingle-courses-description {
+    width: 300px;
+  }
+
+  .second-decs-sec-bottom-wrap {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .second-txt2 {
+    font-size: 12px;
+  }
+
+  .des-text {
+    font-size: 16px;
+  }
+
+  .review-details {
+    flex-direction: column;
+  }
+
+  .review-stars-icon {
+    font-size: 32px;
+  }
 }
