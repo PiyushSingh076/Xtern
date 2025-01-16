@@ -7,9 +7,11 @@ import {
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { auth, db } from "../../firebaseConfig";
+import { useRefreshUserData } from "./useRefreshUserData";
 
 const useVerifyOtp = () => {
   const [loading, setLoading] = useState(false);
+  const {refreshUser} = useRefreshUserData()
 
   /**
    * Verifies OTP and links phone number to the current authenticated user.
@@ -65,6 +67,7 @@ const useVerifyOtp = () => {
       if(userData.type == null){
         navigate("/choosetype");
       }
+      
 
       else if(userData.type == "entrepreneur"){
         navigate("/entrepreneur/"+userDocRef.id);
@@ -72,6 +75,8 @@ const useVerifyOtp = () => {
       else{
         navigate("/profile/"+userDocRef.id);
       }
+      refreshUser()
+
 
 
           navigate("/choosetype"); // Redirect to dashboard or home page

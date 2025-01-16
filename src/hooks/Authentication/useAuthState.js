@@ -8,6 +8,8 @@ const useAuthState = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [registrationStatus, setRegistrationStatus] = useState(null);
+  const [refreshCount, setRefreshCount] = useState(0);
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
@@ -32,7 +34,7 @@ const useAuthState = () => {
     return () => unsubscribe();
   }, []);
 
-  return { user, loading, registrationStatus };
+  return { user, loading, registrationStatus, setRegistrationStatus, refreshCount, setRefreshCount };
 };
 
 export default useAuthState;

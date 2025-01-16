@@ -22,6 +22,8 @@ import LockIconSvg from '../assets/images/single-courses/lock-icon.svg';
 import DisableLockSvg from '../assets/images/single-courses/disable-lock.svg';
 import AccessTime from '@mui/icons-material/AccessTime';
 import Schedule from '@mui/icons-material/Schedule';
+import { MapPin } from 'lucide-react';
+import { LocationSearchingRounded } from '@mui/icons-material';
 
 const SingleJob = () => {
   const { jobId } = useParams();
@@ -135,17 +137,7 @@ const SingleJob = () => {
                   <div className="first-decs-sec-wrap">
                     <div className="skills-left-sec">
                       {job.skills && job.skills.length > 0 ? (
-                        <>
-                          <div className="first-left-sec">
-                            <div> {job.skills[0]} </div>
-                          </div>
-                          <div className="first-left-sec">
-                            <div> {job.skills[1]} </div>
-                          </div>
-                          <div className="first-left-sec">
-                            <div> {job.skills[2]} </div>
-                          </div>
-                        </>
+                        <>{job.skills.map((skill, index) => <Chip key={index + "view-job-skill"} label={skill}>{skill}</Chip>)}</>
                       ) : (
                         <div>No skills available</div>
                       )}
@@ -160,27 +152,27 @@ const SingleJob = () => {
                   <div className="second-decs-sec-wrap">
                     <div className="second-decs-sec-top">
                       <h1 className="second-txt1">
-                        {job.title}
+                        {job.title} <span className='font-normal'>at</span> {job.companyName}
                       </h1>
                     </div>
 
                     <div className="second-decs-sec-bottom">
                       <div className="second-decs-sec-bottom-wrap">
-                        <div className="mt-12">
+                        <div className="mt-12 flex items-center">
                           <span className="student-img mr-8">
                             <img src={StudentIcon} alt="student-icon" />
                           </span>
                           <span className="second-txt2">04 Application</span>
                         </div>
-                        <div className="mt-12">
+                        <div className="mt-12 flex items-center">
                           <span className="student-img mr-8 fillStar">
-                            <img src={FillStar} alt="student-icon" />
+                            <LocationSearchingRounded fontSize='small'></LocationSearchingRounded>
                           </span>
                           <span className="second-txt2">
                             {job.location}
                           </span>
                         </div>
-                        <div className="mt-12">
+                        <div className="mt-12 flex items-center">
                           <span className="student-img mr-8">
                             <img src={TimeIcon} alt="student-icon" />
                           </span>
@@ -188,7 +180,7 @@ const SingleJob = () => {
                             Assessment: {job.assessmentDuration}
                           </span>
                         </div>
-                        <div className="mt-12">
+                        <div className="mt-12 flex items-center">
                           <span className="student-img mr-8">
                             <img src={TimeIcon} alt="student-icon" />
                           </span>
