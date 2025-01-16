@@ -304,7 +304,7 @@ const Stepper = ({ data }) => {
       </div>
       <div className="mt-4">
         {Id === 1 && (
-          <div className="flex md:justify-evenly md:items-start md:flex-row flex-col gap-2 justify-center items-center">
+          <div className="flex md:justify-evenly md:items-start md:flex-row flex-col gap-3 justify-center items-center">
             {/* First Column */}
             <div className="flex flex-col w-[50vw] h-auto gap-2">
               <div className="mb-4" style={{ width: "36vw", margin: "0 auto" }}>
@@ -443,7 +443,7 @@ const Stepper = ({ data }) => {
               />
             </div>
             {/* Second Column */}
-            <div className="flex flex-col w-[50vw] gap-2">
+            <div className="flex flex-col w-[50vw] md:gap-2 gap-3">
               <TextField
                 className="w-[40vw]"
                 style={{ margin: "0 auto" }}
@@ -621,11 +621,11 @@ const Stepper = ({ data }) => {
         {Id === 2 && (
           <div className="flex md:flex-row flex-col gap-2 md:items-start justify-center items-center">
             {/* Assessment Detail */}
-            <div className="w-[50vw] md:ml-[20px] ml-[36px]">
+            <div>
               <TextField
                 placeholder="Assessment Detail *"
-                required
                 className="w-[45vw]"
+                required
                 multiline
                 rows={10} // Adjust rows for multiline input
                 value={assessmentDetail}
@@ -743,22 +743,28 @@ const Stepper = ({ data }) => {
                   width: "45vw",
                   margin: "0 auto",
                   padding: "10px",
-                  background: "white",
-                  boxShadow: "0 -4px 4px 0 rgb(0 0 0 / 4%)",
+                  display: "flex",
+                  justifyContent: "center",
                 }}
               >
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="btn btn-primary px-5 py-3 w-100 text-center"
+                  className="btn btn-primary px-4 py-3 w-auto"
                   disabled={loading || submitLoading}
                 >
                   {submitLoading ? (
                     <div className="spinner-border spinner-border-sm"></div>
                   ) : data ? (
-                    "Update Requirement"
+                    <div className="flex md:flex-row md:gap-2 flex-col">
+                      <span>Update</span>
+                      <span>Requirement</span>
+                    </div>
                   ) : (
-                    "Post Requirement"
+                    <div className="flex md:flex-row md:gap-2 flex-col">
+                      <span className="text-center">Post</span>
+                      <span className="text-center">Requirement</span>
+                    </div>
                   )}
                 </button>
               </div>
