@@ -156,6 +156,7 @@ function App() {
 
   // comment
   return (
+
     <AuthProvider>
       <div className="App">
         {!isMobileView && !isVideoCallRoute && <Header />}
@@ -410,7 +411,8 @@ function App() {
             path={ROUTES.SINGLE_COURSE_DESCRIPTION}
             element={
               <ProtectedRoute>
-                {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />}
+                <DesktopProjectDetails />
+              {/* {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />} */}
               </ProtectedRoute>
             }
           />
@@ -741,6 +743,7 @@ function App() {
       )} */}
       </div>
     </AuthProvider>
+
   );
 }
 

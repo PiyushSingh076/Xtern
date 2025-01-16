@@ -19,25 +19,19 @@ import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { ImTab } from "react-icons/im";
 
-
-
 const ProjectDetails = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
   const navigate = useNavigate();
 
-  
   const { userData } = useFetchUserData();
 
   const auth = useSelector((state) => state.role.auth);
 
   console.log(auth);
 
-
-    const location = useLocation();
-  const { item } = location.state || {}; 
-
-
+  const location = useLocation();
+  const { item } = location.state || {};
 
   const handleBackClick = () => {
     navigate(-1); // This will navigate to the previous page in the history stack
@@ -61,10 +55,8 @@ const ProjectDetails = () => {
     arrows: false,
   };
 
-
   return (
     <>
-
       <section id="single-description-screen">
         <div className="first-desc-img-sec">
           <div className="hero-img-desc">
@@ -149,8 +141,7 @@ const ProjectDetails = () => {
 
                   <div className="first-right-sec">
                     <div>
-                     
-                        <span className="firs-txt2">₹{item.servicePrice}</span>
+                      <span className="firs-txt2">₹{item.servicePrice}</span>
                     </div>
                   </div>
                 </div>
@@ -158,9 +149,7 @@ const ProjectDetails = () => {
               <div className="second-decs-sec mt-16">
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
-                    <h1 className="second-txt1">
-                      {   item.serviceName}
-                    </h1>
+                    <h1 className="second-txt1">{item.serviceName}</h1>
                   </div>
                   <div className="second-decs-sec-bottom">
                     <div className="second-decs-sec-bottom-wrap">
@@ -177,12 +166,14 @@ const ProjectDetails = () => {
                         {/* <span className="second-txt2">4.3 (3.7k ratings)</span> */}
                         <span className="second-txt2">Level: Medium</span>
                       </div>
-                    
+
                       <div className="mt-12">
                         <span className="student-img mr-8">
                           <img src={TimeIcon} alt="student-icon" />
                         </span>
-                        <span className="second-txt2">Due: {item.serviceDuration} {item.serviceDurationType}</span>
+                        <span className="second-txt2">
+                          Due: {item.serviceDuration} {item.serviceDurationType}
+                        </span>
                       </div>
                       {/* <div className="mt-12">
                         <span className="student-img mr-8">
@@ -282,7 +273,7 @@ const ProjectDetails = () => {
                         Description
                       </button>
                     </li>
-                   
+
                     <li className="nav-item" role="presentation">
                       {/* <button
                         className="nav-link"
@@ -307,8 +298,10 @@ const ProjectDetails = () => {
                       <div className="description-content-wrap mt-24">
                         <div className="description-first-content">
                           <h3 className="des-con-txt1">Details</h3>
-                       <div style={{marginTop: '10px' , marginBottom: '10px'}}>
-                            { item.serviceDescription }
+                          <div
+                            style={{ marginTop: "10px", marginBottom: "10px" }}
+                          >
+                            {item.serviceDescription}
                           </div>
                         </div>
                         {/* <div className="description-second-content mt-24">
@@ -561,7 +554,7 @@ const ProjectDetails = () => {
           </div>
 
           <div className="buy-now-description">
-         <Link className="buy-now">Buy Now</Link>
+            <Link className="buy-now">Buy Now</Link>
           </div>
         </div>
       </section>
