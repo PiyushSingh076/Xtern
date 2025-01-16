@@ -57,7 +57,7 @@ const useFetchUserData = () => {
       }
     
     fetchUserData();
-    console.log("Registration Status:", registrationStatus, refreshCount);
+    // console.log("Registration Status:", registrationStatus, refreshCount);
     // Clean up the listener when the component unmounts
     
   }, [registrationStatus, refreshCount, refreshData.refresh ]);

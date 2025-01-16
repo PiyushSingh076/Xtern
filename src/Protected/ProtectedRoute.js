@@ -18,11 +18,11 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   const { userData, loading: userLoading } = useFetchUserData();
 
   
-  useEffect(() => {
-    if(authLoaded === true){
-      console.log("Latest Phone", phoneVerified)
-    }
-  }, [authLoaded])
+  // useEffect(() => {
+  //   if(authLoaded === true){
+  //     console.log("Latest Phone", phoneVerified)
+  //   }
+  // }, [authLoaded])
  
 
   // useEffect(() => {
