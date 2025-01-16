@@ -47,7 +47,7 @@ import toast from "react-hot-toast";
 // import XpertRole from "../Prefference/XpertRole";
 import SummaryStep from "./SummaryStep";
 import useAuthState from "../../../hooks/Authentication/useAuthState";
-import { useRefreshUserData } from "../../../hooks/Auth/useRefreshUserData";
+import { useAuth } from "../../../hooks/Auth/useAuth";
 
 
 /**
@@ -142,7 +142,7 @@ export default function StepperForm() {
   const navigate = useNavigate();
   const { saveProfileData, loading } = useSaveProfileData();
   const { userData } = useFetchUserData();
-  const {refreshUser} = useRefreshUserData()
+  const {refreshUser} = useAuth()
   // If user clicked "edit" with existing profile
   const location = useLocation();
   const { profileData } = location.state || {};

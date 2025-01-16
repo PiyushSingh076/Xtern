@@ -16,9 +16,9 @@ export default function MobHomeScreen() {
   const navigate = useNavigate();
   const { userData } = useFetchUserData();
 
-  if (userData) {
-    navigate("/homescreen");
-  }
+  // if (userData) {
+  //   navigate("/homescreen");
+  // }
 
   return (
     <div className="MobHomeScreen-container">

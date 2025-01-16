@@ -39,7 +39,7 @@ const useUserRole = () => {
       if (selectedRole === "Intern") {
         navigate("/select-skills");
       } else {
-        navigate("/homescreen");
+        // navigate("/homescreen");
       }
     } catch (error) {
       console.error("Error saving role:", error);
