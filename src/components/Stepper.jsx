@@ -425,7 +425,6 @@ const Stepper = ({ data }) => {
                   onChange={handleImageUpload}
                 />
               </div>
-              ;
               <TextField
                 className="w-[40vw]"
                 style={{ margin: "0 auto" }}
