@@ -207,6 +207,18 @@
     padding: 5px;
     margin: none;
   }
+
+  .single-description-screen1 {
+    padding: 20px;
+    width: auto;
+  }
+
+  .des-clearsingle-courses-description {
+    width: 800px;
+    overflow: hidden !important;
+    padding: 10px;
+  }
+
   .des-first-desc-img-sec {
     flex-direction: row;
     justify-content: space-between;
@@ -275,7 +287,7 @@
   }
 
   .second-decs-sec-bottom-wrap {
-    flex-direction: column; /* Stack rows vertically */
+    flex-direction: row; /* Stack rows vertically */
     gap: 8px; /* Reduce spacing */
   }
 
