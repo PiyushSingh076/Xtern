@@ -15,6 +15,7 @@ import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import { Spinner } from "react-bootstrap";
 import { useAuth } from "../../../hooks/Auth/useAuth";
+import { Skeleton } from "@mui/material";
 
 export default function Header() {
   const data = useSelector((state) => state.user);
@@ -94,8 +95,8 @@ export default function Header() {
 
         {loading ? (
           <div className="profile-menu-container">
-            <div class="spinner-border spinner-border-sm mx-6" role="status">
-              <span class="sr-only">Loading...</span>
+            <div className="overflow-auto h-[45px] mr-[10px] w-[100px] rounded-full" >
+              <Skeleton variant="rectangular"  width={100} height={45}></Skeleton>
             </div>
           </div>
         ) : (
