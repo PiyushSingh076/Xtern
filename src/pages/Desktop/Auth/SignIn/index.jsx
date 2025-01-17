@@ -22,9 +22,9 @@ const SignIn = () => {
 
   const { userData, isLoading, error: fetchError } = useFetchUserData();
 
-if (userData ) {
-  navigate('/homescreen')
-}
+// if (userData ) {
+//   navigate('/homescreen')
+// }
   
 
   const handleBackClick = () => {

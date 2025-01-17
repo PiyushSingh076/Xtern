@@ -4,7 +4,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import useAuthState from "../Authentication/useAuthState";
 import { setRef } from "@mui/material";
-import { AuthContext, useRefreshUserData } from "./useRefreshUserData";
+import { AuthContext, useAuth } from "./useAuth";
 
 
 const useFetchUserData = () => {
@@ -13,7 +13,7 @@ const useFetchUserData = () => {
   const [error, setError] = useState(null);
   const {registrationStatus, refreshCount} = useAuthState();
   
-  const refreshData = useRefreshUserData()
+  const refreshData = useAuth()
 
   
    // Holds error messages, if any
@@ -25,7 +25,7 @@ const useFetchUserData = () => {
 
 
         const user = auth.currentUser;
-        console.log(user);
+        
         if (user) {
           setLoading(true)
           // User is signed in
@@ -33,7 +33,7 @@ const useFetchUserData = () => {
             const userDocRef = doc(db, "users", user.uid);
             const userDoc = await getDoc(userDocRef);
   
-            console.log(userDoc.data());
+            
   
             if (userDoc.exists()) {
               setUserData(userDoc.data()); // Update userData state with Firestore data

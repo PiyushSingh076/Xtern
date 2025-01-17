@@ -9,6 +9,7 @@ import { toast, Toaster } from "react-hot-toast";
 import useSendOtp from "../hooks/Auth/useSendOtp";
 import useVerifyOtp from "../hooks/Auth/useVerifyOtp";
 import useRecaptcha from "../hooks/Auth/useRecaptcha";
+import { useAuth } from "../hooks/Auth/useAuth";
 
 const VerifyScreen = () => {
   const [seconds, setSeconds] = useState(50); // Timer for OTP resend
@@ -17,6 +18,9 @@ const VerifyScreen = () => {
   const [showOTP, setShowOTP] = useState(false); // Toggle to show OTP input
   const [error, setError] = useState(""); // Error state
   const navigate = useNavigate();
+  const {verifyPhone} = useAuth()
+
+  
 
   // Initialize Recaptcha hook
   const { resetRecaptcha, initRecaptchaVerifier } = useRecaptcha();

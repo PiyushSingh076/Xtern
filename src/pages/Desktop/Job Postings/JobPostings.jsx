@@ -20,6 +20,7 @@ import { collection, query, getDocs, doc, getDoc, where } from 'firebase/firesto
 import { db } from '../../../firebaseConfig';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import useFetchUserData from '../../../hooks/Auth/useFetchUserData';
+import { Add } from '@mui/icons-material';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
@@ -120,7 +121,13 @@ const Jobs = () => {
           </Select>
         </FormControl>
       </Box>
-      <Grid container spacing={3} sx={{ mt: 2 }}>
+        <div className='w-full justify-end flex' >
+        <Button onClick={() => navigate("/createjob")} variant='contained'><Add></Add> Create Posting</Button>
+        </div>
+      <Grid container spacing={3} >
+        {filteredJobs.length === 0 && (
+          <div className='size-full p-4 flex items-center justify-center text-xl font-medium text-black/70'>You have no jobs posted yet</div>
+        )}
         {filteredJobs.map((job) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={job.id}>
             <StyledCard>

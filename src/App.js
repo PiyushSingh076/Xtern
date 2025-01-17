@@ -102,7 +102,6 @@ import CreateJob from "./pages/CreateJob";
 import Jobs from "./pages/jobs.jsx";
 import SingleJob from "./pages/SingleJob.jsx";
 import ApplyJob from "./pages/Applyjob.jsx";
-import { AuthProvider } from "./hooks/Auth/useRefreshUserData.jsx";
 
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
@@ -117,6 +116,8 @@ import JobStats from "./pages/Desktop/Job Stats/JobStats.jsx";
 import ViewJob from "./pages/Desktop/View Job/ViewJob.jsx";
 import ChooseType from "./pages/Desktop/Auth/SignUp/ChooseType.jsx";
 import EditJob from "./pages/EditJob.jsx";
+import { AuthProvider } from "./hooks/Auth/useAuth.jsx";
+import EntrepreneurMobile from "./pages/MyProfile/EntrepreneurMobile.jsx";
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -224,14 +225,7 @@ function App() {
             path={ROUTES.RESET_PASSWORD_SCREEN}
             element={<ResetPasswordScreen />}
           />
-          <Route
-            path={ROUTES.VERIFY_SCREEN}
-            element={
-              <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
-                <VerifyScreen />
-              </ProtectedRoute>
-            }
-          />
+          <Route path={ROUTES.VERIFY_SCREEN} element={<VerifyScreen />} />
 
           <Route
             path={ROUTES.PREFERRED_ROLE}
@@ -360,9 +354,9 @@ function App() {
           <Route
             path={ROUTES.LANDING_PAGE}
             element={
-              <ProtectedRoute allowedRoles={["entrepreneur", "Intern"]}>
+              <>
                 {isMobileView ? <HomeScreen /> : <DesktopLandingPage />}
-              </ProtectedRoute>
+              </>
             }
           />
 
@@ -560,7 +554,18 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path={ROUTES.ENTREPRENEUR} element={<Entrepreneur />} />
+          <Route
+            path={ROUTES.ENTREPRENEUR}
+            element={
+              <ProtectedRoute>
+                {isMobileView ? (
+                  <EntrepreneurMobile></EntrepreneurMobile>
+                ) : (
+                  <Entrepreneur />
+                )}
+              </ProtectedRoute>
+            }
+          />
           <Route
             path={ROUTES.JOBSPOSTINGS}
             element={
@@ -572,7 +577,7 @@ function App() {
           <Route
             path={ROUTES.JOBSTATS}
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["entrepreneur"]}>
                 <JobStats></JobStats>
               </ProtectedRoute>
             }

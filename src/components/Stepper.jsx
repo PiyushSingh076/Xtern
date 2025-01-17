@@ -17,7 +17,8 @@ import DescriptionIcon from "@mui/icons-material/Description"; // Equivalent to 
 import ArticleIcon from "@mui/icons-material/Article"; // Equivalent to FaFileWord
 import TableChartIcon from "@mui/icons-material/TableChart"; // Equivalent to FaFileExcel
 
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 import { FiXCircle } from "react-icons/fi";
 import useSaveJob from "../hooks/Jobs/useSaveJob.js";
@@ -25,8 +26,8 @@ import useImageUpload from "../hooks/Auth/useImageUpload.js"; // Custom hook for
 import { getAuth } from "firebase/auth";
 import { storage } from "../firebaseConfig.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { TextField, InputAdornment, Chip } from "@mui/material";
-const Stepper = ({data}) => {
+import { TextField, InputAdornment } from "@mui/material";
+const Stepper = ({ data }) => {
   const steps = [
     { id: 1, name: "Job" },
     { id: 2, name: "Assessment" },
@@ -34,22 +35,30 @@ const Stepper = ({data}) => {
   const [Id, setId] = useState(1);
   const [jobTitle, setJobTitle] = useState(data?.title || "");
   const [companyName, setCompanyName] = useState(data?.companyName || "");
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState(data?.file.fileName || "");
   const [file, setFile] = useState([]);
-  const [filePreview, setFilePreview] = useState(null);
+  const [fileSize, setFileSize] = useState(null);
+  const [filePreview, setFilePreview] = useState(
+    data?.file.filePreview || null
+  );
   const [description, setDescription] = useState(data?.description || "");
   const [location, setLocation] = useState(data?.location || "");
   const [skills, setSkills] = useState(data?.skills || []);
   const [skillInput, setSkillInput] = useState("");
-  const [experienceLevel, setExperienceLevel] = useState(data?.experienceLevel || "");
-  const [assessmentDetail, setAssessmentDetail] = useState(data?.assessmentDetail || "");
-  const [assessmentDuration, setAssessmentDuration] = useState(data?.assessmentDuration || "");
-  const [duration, setDuration] = useState(data?.duration || "");
+  const [experienceLevel, setExperienceLevel] = useState(
+    data?.experienceLevel || ""
+  );
+  const [assessmentDetail, setAssessmentDetail] = useState(
+    data?.assessmentDetail || ""
+  );
+  const [assessmentDuration, setAssessmentDuration] = useState(
+    data?.assessmentDuration || ""
+  );
 
+  const [duration, setDuration] = useState(data?.duration || "");
   const {
     projectImage,
     imagePreviewUrl,
-    error,
     loading,
     handleImageUpload,
     clearImage,
@@ -85,23 +94,24 @@ const Stepper = ({data}) => {
       setSkillInput("");
     }
   };
-
   const removeSkill = (index) => {
     setSkills(skills.filter((_, i) => i !== index));
   };
 
   const validateForm = () => {
-    console.log(
-      jobTitle,
-      companyName,
-      description,
-      location,
-      skills.length,
-      experienceLevel,
-      assessmentDetail, assessmentDuration,
-      duration,
-      fileName,
-      (projectImage || data?.image))
+    // console.log(
+    //   jobTitle,
+    //   companyName,
+    //   description,
+    //   location,
+    //   skills.length,
+    //   experienceLevel,
+    //   assessmentDetail,
+    //   assessmentDuration,
+    //   duration,
+    //   fileName,
+    //   projectImage || data?.image
+    // );
     return (
       jobTitle &&
       companyName &&
@@ -116,7 +126,6 @@ const Stepper = ({data}) => {
       (projectImage || data?.image)
     );
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -126,12 +135,11 @@ const Stepper = ({data}) => {
 
     setSubmitLoading(true);
     const imageURL = await uploadImage();
-    console.log(imageURL, imagePreviewUrl);
+    // console.log(imageURL, imagePreviewUrl);
     if (!imageURL && data == null) {
       setSubmitLoading(false);
       return;
     }
-
     try {
       // Get the current user using Firebase Authentication
       const auth = getAuth();
@@ -148,14 +156,14 @@ const Stepper = ({data}) => {
       // Adding job to Firestore with userref
       const file_data = {
         fileName: file.name,
-        filePath: downloadURL, // Store the file URL
+        filePath: downloadURL,
+        filePreview: filePreview, // Store the file URL
         uploadedAt: new Date(),
       };
 
-      console.log(file_data)
-      if(data){
-      
-        const isUploaded = await updateJob(data.jobId,{
+      // console.log(file_data);
+      if (data) {
+        const isUploaded = await updateJob(data.jobId, {
           currentUser,
           jobTitle,
           companyName,
@@ -168,20 +176,18 @@ const Stepper = ({data}) => {
           duration,
           file: file_data,
           imageURL: imageURL || data?.image,
-        })
+        });
 
-        if(isUploaded){
-          setSubmitLoading(false)
+        if (isUploaded) {
+          setSubmitLoading(false);
+
           toast.success("Job updated successfully!");
-          navigate("/viewjob/" + data.jobId)
+          navigate("/viewjob/" + data.jobId);
+        } else {
+          setSubmitLoading(false);
+          toast.error("Failed to update job.");
         }
-        else{
-          
-          setSubmitLoading(false)
-          toast.error("Failed to update job.")
-        }
-      }
-      else{
+      } else {
         const isSaved = await saveJob({
           currentUser,
           jobTitle,
@@ -194,7 +200,7 @@ const Stepper = ({data}) => {
           assessmentDuration,
           duration,
           imageURL: imageURL || data?.image,
-          file: file_data ,
+          file: file_data,
         });
         if (isSaved) {
           // alert("Job added successfully!");
@@ -205,13 +211,12 @@ const Stepper = ({data}) => {
         }
       }
     } catch (err) {
-      console.error("Error adding job: ", err);
+      // console.error("Error adding job: ", err);
       setSubmitLoading(false);
     }
   };
   const handleFileUpload = (event) => {
     const uploadedFile = event.target.files[0];
-
     // Check if file exists
     if (!uploadedFile) {
       toast.error("No file selected");
@@ -223,19 +228,30 @@ const Stepper = ({data}) => {
     if (uploadedFile.size > maxSize) {
       toast.error("File exceeds the 10MB size limit!");
     } else {
-      setFile(uploadedFile);
-      setFileName(uploadedFile.name);
-      setFilePreview(URL.createObjectURL(uploadedFile));
-      toast.success("File uploaded successfully!");
-      
+      if (uploadedFile) {
+        setFileSize((uploadedFile.size / 1024).toFixed(2));
+        setFile(uploadedFile);
+        setFileName(uploadedFile.name);
+        setFilePreview(URL.createObjectURL(uploadedFile));
+        console.log(filePreview);
+        toast.success("File uploaded successfully!");
+      }
     }
   };
 
   const clearFile = () => {
     setFile(null);
+    setFileSize(null);
     setFileName("");
     setFilePreview(null);
-    toast.info("File cleared successfully!");
+    toast("File cleared successfully!", {
+      icon: "ℹ️", // Add an information icon
+      style: {
+        borderRadius: "8px",
+        background: "#f5f5f5",
+        color: "#333",
+      },
+    });
   };
   return (
     <div className="flex flex-col">
@@ -286,15 +302,13 @@ const Stepper = ({data}) => {
           </div>
         ))}
       </div>
-      <form onSubmit={handleSubmit} className="mt-4">
+      <div className="mt-4">
         {Id === 1 && (
-          <div className="flex justify-evenly">
+          <div className="flex md:justify-evenly md:items-start md:flex-row flex-col gap-3 justify-center items-center">
             {/* First Column */}
             <div className="flex flex-col w-[50vw] h-auto gap-2">
-              <div
-                className={`mb-4 ${error ? "is-invalid" : ""}`}
-                style={{ width: "36vw", margin: "0 auto" }}
-              >
+              <div className="mb-4" style={{ width: "36vw", margin: "0 auto" }}>
+                <Toaster />
                 <label
                   htmlFor="projectImage"
                   className="drag-drop-label"
@@ -330,7 +344,10 @@ const Stepper = ({data}) => {
                           borderRadius: "50%",
                           padding: "5px",
                         }}
-                        onClick={clearImage}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Stop event propagation
+                          clearImage(e);
+                        }}
                       >
                         <FiXCircle
                           size={32}
@@ -392,13 +409,15 @@ const Stepper = ({data}) => {
                           </clipPath>
                         </defs>
                       </svg>
-                      <p style={{ color: "#7f7f7f", fontSize: "14px" }}>
-                        Drag & Drop or Click to Upload Image
+                      <p
+                        style={{ color: "#7f7f7f", fontSize: "14px" }}
+                        className="text-center"
+                      >
+                        Upload Company Logo/Company Image
                       </p>
                     </div>
                   )}
                 </label>
-                {error && <p className="text-danger">{error}</p>}
                 <input
                   type="file"
                   id="projectImage"
@@ -406,7 +425,6 @@ const Stepper = ({data}) => {
                   onChange={handleImageUpload}
                 />
               </div>
-
               <TextField
                 className="w-[40vw]"
                 style={{ margin: "0 auto" }}
@@ -425,7 +443,7 @@ const Stepper = ({data}) => {
               />
             </div>
             {/* Second Column */}
-            <div className="flex flex-col w-[50vw] gap-2">
+            <div className="flex flex-col w-[50vw] md:gap-2 gap-3">
               <TextField
                 className="w-[40vw]"
                 style={{ margin: "0 auto" }}
@@ -601,14 +619,13 @@ const Stepper = ({data}) => {
           </div>
         )}
         {Id === 2 && (
-          <div className="flex  gap-4">
+          <div className="flex md:flex-row flex-col gap-2 md:items-start justify-center items-center">
             {/* Assessment Detail */}
-            <div className="w-[50vw]">
+            <div>
               <TextField
                 placeholder="Assessment Detail *"
-                required
                 className="w-[45vw]"
-                style={{ margin: "0 20px" }}
+                required
                 multiline
                 rows={10} // Adjust rows for multiline input
                 value={assessmentDetail}
@@ -682,14 +699,10 @@ const Stepper = ({data}) => {
               />
               <div
                 className="flex flex-col items-center justify-center h-auto w-[45vw] bg-gray p-4 rounded-md cursor-pointer"
-                style={{ margin: "0 auto", border: "1px solid #ccc" }}
+                style={{ margin: "0 auto", border: "2px dashed black" }}
               >
-                <ToastContainer />
-                {data && filePreview==null && <><Chip className="mb-4"  label={data.file.fileName}></Chip></>}
-                <label
-                  htmlFor="file-upload"
-                  className="flex items-center px-6 py-3 text-white bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 transition duration-300 shadow-lg"
-                >
+                <Toaster />
+                <label htmlFor="file-upload" className="cursor-pointer">
                   <CloudUploadIcon size={24} className="mr-2" />
                   Upload File
                 </label>
@@ -699,9 +712,8 @@ const Stepper = ({data}) => {
                   className="hidden"
                   onChange={handleFileUpload}
                 />
-
                 {fileName && (
-                  <div className="mt-4 flex items-center text-gray-700 bg-white p-2 rounded-md shadow-md gap-2">
+                  <div className="mt-4 flex flex-col sm:flex-row sm:justify-center items-center text-gray-700 bg-white p-2 rounded-md shadow-md gap-2 sm:gap-4">
                     {fileIcons[file?.type] || (
                       <DescriptionIcon size={20} className="text-gray-500" />
                     )}
@@ -712,11 +724,14 @@ const Stepper = ({data}) => {
                     >
                       <VisibilityIcon size={20} />
                     </button>
+                    <p className="mr-2 text-sm text-gray-500">
+                      ({fileSize} KB)
+                    </p>
                     <button
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500 hover:text- red-700"
                       onClick={clearFile}
                     >
-                      <CloseIcon size={20} />
+                      <FiXCircle size={20} />
                     </button>
                   </div>
                 )}
@@ -728,22 +743,35 @@ const Stepper = ({data}) => {
                   width: "45vw",
                   margin: "0 auto",
                   padding: "10px",
-                  background: "white",
-                  boxShadow: "0 -4px 4px 0 rgb(0 0 0 / 4%)",
+                  display: "flex",
+                  justifyContent: "center",
                 }}
               >
                 <button
-                  type="submit"
-                  className="btn btn-primary px-5 py-3 w-100"
+                  type="button"
+                  onClick={handleSubmit}
+                  className="btn btn-primary px-4 py-3 w-auto"
                   disabled={loading || submitLoading}
                 >
-                  {submitLoading ? <div className="spinner-border spinner-border-sm" ></div> : data ? "Update" : "Post"}
+                  {submitLoading ? (
+                    <div className="spinner-border spinner-border-sm"></div>
+                  ) : data ? (
+                    <div className="flex md:flex-row md:gap-2 flex-col">
+                      <span>Update</span>
+                      <span>Requirement</span>
+                    </div>
+                  ) : (
+                    <div className="flex md:flex-row md:gap-2 flex-col">
+                      <span className="text-center">Post</span>
+                      <span className="text-center">Requirement</span>
+                    </div>
+                  )}
                 </button>
               </div>
             </div>
           </div>
         )}
-      </form>
+      </div>
     </div>
   );
 };
