@@ -16,7 +16,8 @@ const useOAuthLogout = () => {
   const {refreshUser} = useAuth()
 
   const handleLogout = async () => {
-    setLoading(true); // Set loading state to true during logout
+    setLoading(true);
+    navigate("/") // Set loading state to true during logout
     try {
       await signOut(auth); // Sign out the user from Firebase authentication
 
@@ -26,7 +27,7 @@ const useOAuthLogout = () => {
       // If you store other user data, consider clearing it here
 
       toast.success("Successfully logged out", { position: "bottom-left" });
-      navigate("/");
+      
       dispatch(removeAuth());
       dispatch(removeRole());
       dispatch(clearVentureInfo());

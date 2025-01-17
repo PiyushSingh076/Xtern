@@ -25,14 +25,36 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   // }, [authLoaded])
  
 
-  // useEffect(() => {
-  //   console.log("Phone Latest", phoneVerified)
-  //   if(phoneVerified !== null){
-  //     if(!phoneVerified){
-  //       navigate("/verifyscreen");
-  //     }
-  //   }
-  // }, [phoneVerified])
+  useEffect(() => {
+    // console.log("Phone Latest", phoneVerified)
+    if(phoneVerified !== null){
+      if(!phoneVerified){
+        navigate("/verifyscreen");
+      }
+    }
+  }, [phoneVerified])
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log("user", user);
+      if (user) {
+        setIsAuthenticated(true);
+      } else {
+        // toast.error("You need to be signed in to view this page")
+        navigate("/signin");
+        setIsAuthenticated(false);
+      }
+    });
+  }, [])
+
+  useEffect(() => {
+    if (userData) {
+      if (allowedRoles && !allowedRoles.includes(userData.type)) {
+        navigate("/homescreen");
+        toast.error("Unauthorized access");
+      }
+    }
+  }, [userData]);
 
   // useEffect(() => {
   //   if (userData) {

@@ -40,14 +40,9 @@ export default function MainProfile({
           <Skeleton variant="circular" width={96} height={96} />
         ) : (
           <>
-            <img
-              src={userdata?.photo_url || "/default-profile.png"}
-              alt="client-img"
-              width={80}
-              height={80}
-              style={styles.profileImage}
-              onError={(e) => (e.target.src = "/default-profile.png")}
-            />
+            <div className="relative size-[80px] flex items-center justify-center" >
+              <img src={userdata?.photo_url || "/default-profile.png"} className="absolute size-full object-cover" alt="" />
+            </div>
             <Tooltip title="Share Profile" arrow>
               <IconButton
                 onClick={handleShare}

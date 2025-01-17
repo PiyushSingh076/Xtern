@@ -44,20 +44,22 @@ export default function MobHeader() {
       // style={{ border: isOpen && "none" }}
     >
       <div className="menu-btn-container">
-        <button className="menu-btn" onClick={handleMenuClick}>
+        <button className="menu-btn flex items-center" onClick={handleMenuClick}>
           <img src={menu} width={"20px"} />
         </button>
       </div>
-      <div onClick={() => navigate("/homescreen")} className="Logo-container">
+      <div
+        onClick={() => navigate("/homescreen")}
+        className="absolute left-1/2 -translate-x-1/2"
+      >
         <span style={{ color: "#0d6efd", fontSize: "22px" }}>X</span>pert
       </div>
 
-      <div className="back-btn-container">
+      <div className="back-btn-container !w-fit">
         <img
           onClick={handleMenuToggle}
           src={userData?.photo_url}
-          width={"25px"}
-          style={{ borderRadius: "50%" }}
+          className="size-[25px] rounded-full object-cover"
         />
       </div>
 
@@ -79,7 +81,14 @@ export default function MobHeader() {
         >
           <div
             className="dropdown-item"
-            onClick={() => handleMenuOptionClick(`profile/${userData?.uid}`)}
+            onClick={() => {
+              if(userData?.type === "entrepreneur") {
+                handleMenuOptionClick(`entrepreneur/${userData?.uid}`)
+              }
+              else{
+                handleMenuOptionClick(`profile/${userData?.uid}`)
+              }
+            }}
           >
             <AiOutlineUser className="menu-icon" />
             Profile
@@ -151,21 +160,25 @@ export default function MobHeader() {
               {userData ? (
                 <>
                   <MenuLink
+                    close={() => setIsOpen(false)}
                     title="Profile"
                     icon={<AiOutlineUser></AiOutlineUser>}
-                    href={`/profile/${userData?.uid}`}
+                    href={userData.type === "entrepreneur" ? `entrepreneur/${userData.uid}` : `profile/${userData.uid}`}
                   ></MenuLink>
                   <MenuLink
-                    title="Jobs"
+                    close={() => setIsOpen(false)}
+                    title={userData.type === "entrepreneur" ? `My Jobs` : `Jobs`}
                     icon={<FaBriefcase></FaBriefcase>}
-                    href="/jobs"
+                    href={userData.type === "entrepreneur" ? `/jobpostings` : `jobs`}
                   ></MenuLink>
                   <MenuLink
+                    close={() => setIsOpen(false)}
                     title="My Schedule"
                     icon={<AiOutlineCalendar></AiOutlineCalendar>}
                     href="/"
                   ></MenuLink>
                   <button
+                    close={() => setIsOpen(false)}
                     onClick={() => {
                       handleLogout();
                       setIsOpen(false);
@@ -178,16 +191,22 @@ export default function MobHeader() {
                 </>
               ) : (
                 <>
-                  <button onClick={() => {
-                    navigate("/signin")
-                    setIsOpen(false)
-                  }} className="h-[5vh] p-2 flex rounded-full text-white justify-center bg-[#0d6efd] w-[calc(100%-16px)] items-center gap-2 text-base">
+                  <button
+                    onClick={() => {
+                      navigate("/signin");
+                      setIsOpen(false);
+                    }}
+                    className="h-[5vh] p-2 flex rounded-full text-white justify-center bg-[#0d6efd] w-[calc(100%-16px)] items-center gap-2 text-base"
+                  >
                     Log in
                   </button>
-                  <button onClick={() => {
-                    navigate("/signup")
-                    setIsOpen(false)
-                  }} className="h-[5vh] mt-2 p-2 flex rounded-full text-white justify-center bg-[#0d6efd] w-[calc(100%-16px)] items-center gap-2 text-base">
+                  <button
+                    onClick={() => {
+                      navigate("/signup");
+                      setIsOpen(false);
+                    }}
+                    className="h-[5vh] mt-2 p-2 flex rounded-full text-white justify-center bg-[#0d6efd] w-[calc(100%-16px)] items-center gap-2 text-base"
+                  >
                     Sign up
                   </button>
                 </>
@@ -256,9 +275,10 @@ export default function MobHeader() {
   );
 }
 
-function MenuLink({ title, icon, href }) {
+function MenuLink({ title, icon, href, close }) {
   return (
     <Link
+      onClick={() => close()}
       className="w-full p-2 active:bg-gray-100 h-[5vh] text-xl no-underline text-black flex gap-2 items-center "
       to={href}
     >

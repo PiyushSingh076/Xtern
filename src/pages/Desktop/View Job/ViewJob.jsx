@@ -291,7 +291,10 @@ const SingleJob = () => {
           </Grid>
         </div>
 
-        <div className="buy-now-description text-center mt-4">
+        <div className="buy-now-description text-center mt-4 flex gap-2 flex-col sm:flex-row">
+        <Button variant="contained" color="primary" onClick={() => navigate(`/editjob/${jobId}`)}>
+            Edit Job
+          </Button>
           <Button variant="contained" color="primary" onClick={() => navigate(`/jobstats/${jobId}`)}>
             View Applicants
           </Button>
