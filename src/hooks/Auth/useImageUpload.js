@@ -7,7 +7,7 @@ const useImageUpload = () => {
   const [error, setError] = useState(null);
 
   const [loading, setLoading] = useState(false);
-  const handleImageUpload = (e) => {
+  const handleImageUpload = (e,setPimageError) => {
     const file = e.target.files[0];
     if (file) {
       const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
@@ -18,6 +18,7 @@ const useImageUpload = () => {
         return;
       }
       toast.success("File Uploaded Successfully.")
+      setPimageError(false)
       setProjectImage(file);
       setImagePreviewUrl(URL.createObjectURL(file));
       setError(null); // Clear any previous errors
