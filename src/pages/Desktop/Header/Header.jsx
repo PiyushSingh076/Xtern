@@ -5,7 +5,7 @@ import {
   AiOutlineQuestionCircle,
   AiOutlineLogout,
 } from "react-icons/ai";
-import { FaBriefcase } from "react-icons/fa";
+import { FaBriefcase, FaWallet } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./Header.css";
@@ -146,6 +146,13 @@ export default function Header() {
                       >
                         <FaBriefcase className="menu-icon" />
                         Jobs
+                      </div>
+                      <div
+                        className="dropdown-item"
+                        onClick={() => navigate("/wallet")}
+                      >
+                        <FaWallet className="menu-icon" />
+                        Wallet
                       </div>
                       {/* <div
                 className="dropdown-item"

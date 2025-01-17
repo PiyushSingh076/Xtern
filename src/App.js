@@ -118,6 +118,7 @@ import ChooseType from "./pages/Desktop/Auth/SignUp/ChooseType.jsx";
 import EditJob from "./pages/EditJob.jsx";
 import { AuthProvider } from "./hooks/Auth/useAuth.jsx";
 import EntrepreneurMobile from "./pages/MyProfile/EntrepreneurMobile.jsx";
+import Wallet from "./pages/Wallet.jsx";
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -442,6 +443,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path={ROUTES.WALLET} element={
+            <ProtectedRoute><Wallet></Wallet></ProtectedRoute>
+          } ></Route>
           <Route
             path={ROUTES.CHECKOUT_SCREEN}
             element={
