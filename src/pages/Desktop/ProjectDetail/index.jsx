@@ -1,7 +1,7 @@
 // mobile response reset
 
 // Import necessary dependencies and components
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import BookmarkSvg from "../../../assets/svg/white-bookmark.svg";
 import PlayIcon from "../../../assets/images/single-courses/play-icon.svg";
 import HeaderImg from "../../../assets/images/single-courses/header-img.png";
@@ -26,6 +26,10 @@ import StarRateIcon from "@mui/icons-material/StarRate";
 import GroupIcon from "@mui/icons-material/Group";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import UploadIcon from "@mui/icons-material/Upload";
+import EditIcon from "@mui/icons-material/Edit";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
+import LeaveReviewBox from "./LeaveReviewBox";
 
 const reviews = [
   {
@@ -58,9 +62,37 @@ const ProjectDetails = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
 
+  const fileInputRef = useRef(null);
+
+  const [showReviewBox, setShowReviewBox] = useState(false);
+
+  const handleLeaveReviewClick = () => {
+    setShowReviewBox(true);
+  };
+
+  const handleCancelClick = () => {
+    setShowReviewBox(false);
+  };
+
+  const handleButtonClick = () => {
+    // Trigger click on the hidden file input
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // console.log("Selected file:", file);
+      // Add your file upload logic here
+    }
+  };
+
   // Hooks
   const navigate = useNavigate();
   const { projectId } = useParams();
+  const { user, loading } = useAuthState();
 
   // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
@@ -115,6 +147,7 @@ const ProjectDetails = () => {
                 width="400"
                 className="des-img-fluid"
               /> */}
+
               <YouTubePreview />
             </div>
 
@@ -162,6 +195,35 @@ const ProjectDetails = () => {
                 </a>
               </div>
             </div>
+            {user && (
+              <>
+                <button
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    backgroundColor: "#0a65fc",
+                    color: "white",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    marginTop: "10px",
+                    marginLeft: "140px",
+                  }}
+                  onClick={handleButtonClick}
+                >
+                  <UploadIcon sx={{ color: "white", padding: "2px" }} />
+                  Upload Video
+                </button>
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  accept="video/*"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
+              </>
+            )}
           </div>
           {/* Project details */}
           <div className="desc-container">
@@ -194,13 +256,27 @@ const ProjectDetails = () => {
                   <div className="second-decs-sec-top">
                     <h1 className="second-txt1">{item.serviceName}</h1>
                     <span className="firs-txt2">₹{item.servicePrice}500</span>
+                    {user && (
+                      <button
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          backgroundColor: "#0a65fc",
+                          color: "white",
+                          padding: "5px",
+                          borderRadius: "5px",
+                        }}
+                      >
+                        <EditIcon sx={{ color: "white", padding: "2px" }} />
+                        Edit Service
+                      </button>
+                    )}
                   </div>
 
                   <div className="second-decs-sec-bottom">
                     <div className="second-decs-sec-bottom-wrap">
                       <div className="mt-12">
                         <span className="student-img mr-8">
-                          {/* <img src={StudentIcon} alt="student-icon" /> */}
                           <GroupIcon sx={{ color: "#0a65fc" }} />
                         </span>
                         <span className="second-txt2">0 Application</span>
@@ -213,12 +289,9 @@ const ProjectDetails = () => {
                       </div>
                       <div className="mt-12">
                         <span className="student-img mr-8">
-                          {/* <img src={TimeIcon} alt="student-icon" /> */}
                           <AccessTimeFilledIcon sx={{ color: "#0a65fc" }} />
                         </span>
-                        <span className="second-txt2">
-                          {item.serviceDuration} {item.serviceDurationType}89m
-                        </span>
+                        <span className="second-txt2">89m</span>
                       </div>
                     </div>
                   </div>
@@ -346,7 +419,52 @@ const ProjectDetails = () => {
                     tabIndex="0"
                   >
                     <div className="review-content-wrap mt-24">
-                      <h3 className="des-con-txt1">User Reviews</h3>
+                      {/* <h3 className="des-con-txt1">User Reviews</h3>
+                      {user && (
+                        <button
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            backgroundColor: "#0a65fc",
+                            color: "white",
+                            padding: "5px",
+                            borderRadius: "5px",
+                          }}
+                        >
+                          Leave Review
+                        </button>
+                      )} */}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        {/* User Reviews Heading */}
+                        <h3 className="des-con-txt1">User Reviews</h3>
+
+                        {/* Leave Review Button */}
+                        {user && (
+                          <button
+                            style={{
+                              backgroundColor: "#0a65fc",
+                              color: "white",
+                              fontSize: "12px",
+                              padding: "2px 8px",
+                              borderRadius: "4px",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                            onClick={handleLeaveReviewClick}
+                          >
+                            Leave Review
+                          </button>
+                        )}
+                      </div>
+                      {showReviewBox && (
+                        <LeaveReviewBox onCancel={handleCancelClick} />
+                      )}
                       <div
                         className="review-list"
                         style={{ marginTop: "10px", marginBottom: "10px" }}
