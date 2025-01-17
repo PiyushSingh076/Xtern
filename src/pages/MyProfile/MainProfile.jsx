@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
  * Otherwise, returns the experience followed by " Yr".
  */
 function formatExperience(expValue) {
-  console.log("Experience Value:", expValue);
+  // console.log("Experience Value:", expValue);
 
   // Attempt to parse the experience value
   const parsed = parseInt(expValue, 10);
@@ -40,14 +40,9 @@ export default function MainProfile({
           <Skeleton variant="circular" width={96} height={96} />
         ) : (
           <>
-            <img
-              src={userdata?.photo_url || "/default-profile.png"}
-              alt="client-img"
-              width={80}
-              height={80}
-              style={styles.profileImage}
-              onError={(e) => (e.target.src = "/default-profile.png")}
-            />
+            <div className="relative size-[80px] flex items-center justify-center" >
+              <img src={userdata?.photo_url || "/default-profile.png"} className="absolute size-full object-cover" alt="" />
+            </div>
             <Tooltip title="Share Profile" arrow>
               <IconButton
                 onClick={handleShare}

@@ -177,18 +177,7 @@ const handlePhoneNumberSubmit = async (e) => {
                         margin: "0 auto",
                       }}
                     />
-                    {error && (
-                      <p
-                        style={{
-                          color: "red",
-                          fontSize: "14px",
-                          marginTop: "5px",
-                          paddingLeft: "65px",
-                        }}
-                      >
-                        {error}
-                      </p>
-                    )}
+                    
                     <div id="recaptcha-container"></div>
                     <div className="verify-btn mt-32">
                       <button
@@ -199,13 +188,26 @@ const handlePhoneNumberSubmit = async (e) => {
                         {sendingOtp ? (
                           <span>
                             <CgSpinner size={20} className="animate-spin" />{" "}
-                            Sending...
+                            
                           </span>
                         ) : (
                           "Send OTP"
                         )}
                       </button>
                     </div>
+                    {error && (
+                      <div
+                        style={{
+                          color: "red",
+                          fontSize: "14px",
+                          marginTop: "15px",
+                          
+                        }}
+                        className="w-full text-center"
+                      >
+                        {error}
+                      </div>
+                    )}
                   </form>
                 </>
               )}

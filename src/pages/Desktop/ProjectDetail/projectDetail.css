@@ -201,7 +201,7 @@
   margin: 4px 0 0;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 720px) {
   .des-project-detail-container {
     width: 100%;
     padding: 5px;
@@ -214,7 +214,7 @@
   }
 
   .des-clearsingle-courses-description {
-    width: 800px;
+    width: auto;
     overflow: hidden !important;
     padding: 10px;
   }
@@ -227,7 +227,10 @@
   }
 
   .hero-img-desc {
-    display: none !important;
+    margin: none;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
   }
 
   .desc-container {
@@ -311,6 +314,12 @@
     justify-content: space-between;
     padding: 10px;
     overflow: hidden !important;
+  }
+
+  .hero-img-desc {
+    /* display: none !important; */
+    display: flex;
+    flex-direction: column;
   }
 
   .des-clearsingle-courses-description {

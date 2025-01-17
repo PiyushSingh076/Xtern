@@ -102,7 +102,7 @@ const SingleMentor = () => {
 
   useEffect(() => {
     if(profileData){
-      console.log(profileData)
+      // console.log(profileData)
       if(profileData.type == "entrepreneur"){
         navigate(`/entrepreneur/${profileData.uid}`);
       }

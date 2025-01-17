@@ -71,11 +71,11 @@ const useSaveJob = () => {
       const docSnapshot = await getDoc(doc(db, "jobPosting", docRef.id));
 
       if (docSnapshot.exists()) {
-        console.log("Job added successfully!");
-        console.log("Created Job:", {
-          id: docSnapshot.id,
-          ...docSnapshot.data(),
-        });
+        // console.log("Job added successfully!");
+        // console.log("Created Job:", {
+        //   id: docSnapshot.id,
+        //   ...docSnapshot.data(),
+        // });
         addJobToEntrepreneur(docRef.id);
       } else {
         console.error("No such document!");

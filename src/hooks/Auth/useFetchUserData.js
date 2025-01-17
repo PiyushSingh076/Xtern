@@ -56,8 +56,18 @@ const useFetchUserData = () => {
         }
       }
     
-    fetchUserData();
-    console.log("Registration Status:", registrationStatus, refreshCount);
+    onAuthStateChanged(auth, (userData) => {
+      console.log("User Data",userData)
+      if (userData) {
+        fetchUserData();
+      } else {
+        setUserData(null); // Clear userData when user signs out
+        setLoading(false); // Update loading state
+      }
+    });
+     
+  
+    // console.log("Registration Status:", registrationStatus, refreshCount);
     // Clean up the listener when the component unmounts
     
   }, [registrationStatus, refreshCount, refreshData.refresh ]);

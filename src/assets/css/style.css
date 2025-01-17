@@ -295,8 +295,8 @@ textarea {
   top: 0%;
   box-shadow: 0 0 22px -4px rgb(0 0 0 / 17%);
   box-shadow: 0 0 22px -4px rgb(0 0 0 / 17%);
-  animation: fixedheader 600ms ease 0ms 1 forwards;
-  animation: fixedheader 600ms ease 0ms 1 forwards;
+  /* animation: fixedheader 600ms ease 0ms 1 forwards;
+  animation: fixedheader 600ms ease 0ms 1 forwards; */
 }
 
 .desk-main-container {
@@ -6157,15 +6157,6 @@ body::-webkit-scrollbar {
   }
 }
 
-@keyframes fixedheader {
-  from {
-    transform: translateY(-100%);
-  }
-
-  to {
-    transform: translateY(0);
-  }
-}
 
 @keyframes before {
   0% {
