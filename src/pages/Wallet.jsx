@@ -13,7 +13,7 @@ const Wallet = () => {
 
   async function handleInitiatePayment(){
     const amount = amountRef.current.value
-    const res = await initiatePayment(userData.uid, amount);
+    const res = await initiatePayment(userData.uid, 100);
   }
 
   return (

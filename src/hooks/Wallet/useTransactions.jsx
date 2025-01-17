@@ -54,7 +54,7 @@ export function useTransactions() {
     }
 
     const options = {
-      key: "YOUR_RAZORPAY_KEY_ID",
+      key: "rzp_test_w4aQ5dhNg17Owa",
       amount: amount * 100,
       currency: "INR",
       name: "Optacloud",

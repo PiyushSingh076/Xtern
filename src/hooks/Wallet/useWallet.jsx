@@ -10,7 +10,7 @@ export const useWallet = () => {
     const {refresh} = useAuth()
 
     async function createWallet(uid){
-        await setDoc(doc(db, "wallets", uid), {
+        await setDoc(doc(db, "wallet", uid), {
             amount: 0,
 
         })
@@ -22,7 +22,7 @@ export const useWallet = () => {
     useEffect(()=> {
         onAuthStateChanged(auth, async (user) => {
             if(user){
-                const walletSnapshot = await getDoc(doc(db, "wallets", user.uid));
+                const walletSnapshot = await getDoc(doc(db, "wallet", user.uid));
                 if(walletSnapshot.exists()){
                     setWallet(walletSnapshot.data());
                     setLoaded(true)
