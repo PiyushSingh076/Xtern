@@ -52,7 +52,7 @@ export const useFetchJob = (id) => {
       ...applicant
     }));
 
-    console.log(data)
+    // console.log(data)
     // delete data["applicants"];
     return data;
   }
@@ -67,7 +67,7 @@ export const useFetchJob = (id) => {
 
     const applications = applicationsSnapshot.docs.map((doc) => doc.data());
 
-    console.log("Applications", applications);
+    // console.log("Applications", applications);
 
     return applications;
     

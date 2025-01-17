@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import SkillSet from "./SkillSet";
@@ -204,6 +204,15 @@ const EntrepreneurMobile = () => {
   const openScheduledCallsModal = () => setCallsModalOpen(true);
   const closeScheduledCallsModal = () => setCallsModalOpen(false);
 
+  useLayoutEffect(() => {
+    if (profileData) {
+      if (profileData.type !== "entrepreneur") {
+        toast.error("Profile does not exist");
+        navigate("/homescreen");
+      }
+    }
+  }, [profileData]);
+
   // Navigate Back
   const handleBackClick = () => {
     navigate(-1);
@@ -242,7 +251,7 @@ const EntrepreneurMobile = () => {
                 handleShare={handleShare}
               />
               <div className="w-full flex flex-wrap gap-1">
-                {profileData.skills.map((skill, index) => {
+                {profileData?.skills?.map((skill, index) => {
                   return (
                     <Chip
                       key={index + "entrepreneur-skills"}
@@ -254,9 +263,9 @@ const EntrepreneurMobile = () => {
             </>
           )}
 
-          <div className="w-full flex justify-end mt-4 gap-1" >
-            <Button onClick={() => navigate("/createjob")} >Create job</Button>
-            <Button onClick={() => navigate("/jobpostings")} >View jobs</Button>
+          <div className="w-full flex justify-end mt-4 gap-1">
+            <Button onClick={() => navigate("/createjob")}>Create job</Button>
+            <Button onClick={() => navigate("/jobpostings")}>View jobs</Button>
           </div>
 
           {/* Academic and Other Sections */}
@@ -331,18 +340,18 @@ const EntrepreneurMobile = () => {
                             <>
                               <div
                                 className="experience-sec"
-                                key={`${profileData.companyDetails?.name}`}
+                                key={`${profileData?.companyDetails?.name}`}
                               >
                                 <div className="size-[60px] rounded-full shrink-0 overflow-hidden mr-4 relative">
                                   <img
-                                    src={profileData.companyDetails.logo}
+                                    src={profileData?.companyDetails?.logo}
                                     alt="Company Logo"
                                     className="absolute inset-0 w-full h-full object-cover"
                                   />
                                 </div>
 
                                 <div className="experience-info">
-                                  <h4>{profileData.companyDetails?.name}</h4>
+                                  <h4>{profileData?.companyDetails?.name}</h4>
                                   {/* <p>
                             {dayjs.unix(company?.startDate).format("D MMM YYYY")}{" "}
                             -{" "}
@@ -585,16 +594,15 @@ const EntrepreneurMobile = () => {
                           md={6}
                           className="d-flex align-items-center"
                         >
-                          <Image
-                            src={
-                              profileData?.photo_url || "/default-profile.png"
-                            }
-                            roundedCircle
-                            width={60}
-                            height={60}
-                            alt={`${profileData?.firstName} ${profileData?.lastName}`}
-                            className="me-3"
-                          />
+                          <div className="relative size-[60px] flex items-center justify-center">
+                            <img
+                              src={
+                                profileData?.photo_url || "/default-profile.png"
+                              }
+                              className="size-full absolute object-cover"
+                              alt=""
+                            />{" "}
+                          </div>
                           <div>
                             <strong>
                               {profileData?.firstName} {profileData?.lastName}

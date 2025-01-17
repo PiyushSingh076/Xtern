@@ -8,7 +8,7 @@ const ChooseType = () => {
   return (
     <div className="size-full h-[calc(100vh-90px)] flex items-center justify-center flex-col gap-2 relative">
       <div className="text-2xl font-medium text-black/70 h-[100px] shrink-0 flex items-center absolute top-0">Who are you?</div>
-      <div className="flex size-full items-center justify-center gap-4">
+      <div className="flex size-full items-center justify-center gap-4 flex-col sm:flex-row">
         <ChooseCard title="You want to hire experts from around the world" href="/entrepreneurdetails" icon={<Lightbulb fontSize="large"  ></Lightbulb>} >Entrepreneur</ChooseCard>
         <ChooseCard  title="You want to find job opportunities" href="/userdetail" icon={<WorkspacePremium ></WorkspacePremium>} >Expert</ChooseCard>
       </div>

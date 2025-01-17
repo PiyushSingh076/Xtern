@@ -131,7 +131,7 @@ const JobStats = () => {
                 </div>
               </div>
             </div>
-            <div className="size-full">
+            <div className="size-full overflow-y-auto">
               <ul
                 className="nav nav-pills single-mentor-tab overflow-hidden"
                 id="mentor-tab"
@@ -142,7 +142,7 @@ const JobStats = () => {
                     className="nav-link active"
                     id="mentor-course-tab-btn"
                     data-bs-toggle="pill"
-                    data-bs-target="#job-details-content"
+                    data-bs-target="#job-details-cont "
                     type="button"
                     role="tab"
                     aria-selected="true"
@@ -172,7 +172,9 @@ const JobStats = () => {
                   role="tabpanel"
                   aria-labelledby="mentor-course-tab-btn"
                 >
-                  <div className="border border-[#e5e5e5] mt-2 h-full max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50" >{jobData.description}</div>
+                  <div className="border border-[#e5e5e5] mt-2 h-full max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50">
+                    {jobData.description}
+                  </div>
                 </div>
                 <div
                   id="assessment-content"
@@ -180,8 +182,13 @@ const JobStats = () => {
                   role="tabpanel"
                   aria-labelledby="assessment-tab-btn"
                 >
-                <div className="flex gap-1 items-center mt-2" ><AccessTimeRounded fontSize="small" ></AccessTimeRounded> {`${jobData.assessmentDuration} days`}</div>
-                  <div className="border border-[#e5e5e5] mt-2 h-full max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50" >{jobData.assessmentDetail}</div>
+                  <div className="flex gap-1 items-center mt-2">
+                    <AccessTimeRounded fontSize="small"></AccessTimeRounded>{" "}
+                    {`${jobData.assessmentDuration} days`}
+                  </div>
+                  <div className="border border-[#e5e5e5] mt-2 h-full max-h-[200px] overflow-y-auto rounded-xl p-2 bg-zinc-50">
+                    {jobData.assessmentDetail}
+                  </div>
                 </div>
               </div>
             </div>
@@ -204,9 +211,10 @@ const JobStats = () => {
                 <span>{jobData.assessmentDuration}</span>
               </div>
             </div> */}
-            <div className="mt-auto absolute bottom-0 right-0 m-2 flex justify-end">
+            <div className="mt-auto w-full m-2 flex justify-end">
               <Button
                 variant="contained"
+                className="mt-2"
                 onClick={() => navigate("/editjob/" + jobId)}
               >
                 Edit Job
@@ -219,7 +227,9 @@ const JobStats = () => {
                 <TableHead id="jobstats-table-head">
                   <TableRow>
                     <TableCell>Name</TableCell>
-                    <TableCell className="!hidden sm:!table-cell" >Date Applied</TableCell>
+                    <TableCell className="!hidden sm:!table-cell">
+                      Date Applied
+                    </TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell align="center">Assesment Link</TableCell>
                   </TableRow>
@@ -306,62 +316,107 @@ const JobStats = () => {
                     </h5>
                   </div>
                   <div className="modal-body">
-                    <div className="flex size-full gap-4 items-stretch h-[250px]">
-                      {loadingDetails ? (
-                        <div className="w-[150px] h-full rounded-lg overflow-hidden">
-                          <Skeleton
-                            variant="rectangular"
-                            width="100%"
-                            height="100%"
-                          ></Skeleton>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex flex-col w-fit shrink-0">
-                            <div className="w-full h-[150px] mb-2 flex items-center justify-center">
-                              <img
-                                src={selectedUser?.user?.photo_url}
-                                className="size-[150px] rounded-full  border-2 border-black/10"
-                                alt=""
-                              />
-                            </div>
-                            <div className="w-full text-center  text-lg">
-                              {selectedUser?.user?.firstName}{" "}
-                              {selectedUser?.user?.lastName}
-                            </div>
-                            <div className="text-black/70 w-full text-center font-medium flex justify-center items-center mb-1">
-                              <LocationOn></LocationOn>
-                              {selectedUser?.user?.city}
-                            </div>
-                            <div className="w-full flex justify-center items-center">
-                              <div className="h-fit w-full flex flex-wrap gap-2 justify-center items-center">
-                                <>
-                                  {selectedUser?.user?.skillSet.map(
-                                    (skill, index) => (
-                                      <Chip
-                                        label={skill.skill}
-                                        key={index + skill + "job-stat-skill"}
-                                      ></Chip>
-                                    )
-                                  )}
-                                </>
+                    <div className="flex flex-col">
+                      <div className="flex size-full gap-4 items-stretch h-[250px]">
+                        {loadingDetails ? (
+                          <div className="w-[150px] h-full rounded-lg overflow-hidden">
+                            <Skeleton
+                              variant="rectangular"
+                              width="100%"
+                              height="100%"
+                            ></Skeleton>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex flex-col w-fit shrink-0">
+                              <div className="w-full h-[150px] mb-2 flex items-center justify-center">
+                                <img
+                                  src={selectedUser?.user?.photo_url}
+                                  className="size-[150px] rounded-full  border-2 border-black/10"
+                                  alt=""
+                                />
+                              </div>
+                              <div className="w-full text-center  text-lg">
+                                {selectedUser?.user?.firstName}{" "}
+                                {selectedUser?.user?.lastName}
+                              </div>
+                              <div className="text-black/70 w-full text-center font-medium flex justify-center items-center mb-1">
+                                <LocationOn></LocationOn>
+                                {selectedUser?.user?.city}
+                              </div>
+                              <div className="w-full flex justify-center items-center">
+                                <div className="h-fit w-full flex flex-wrap gap-2 justify-center items-center">
+                                  <>
+                                    {selectedUser?.user?.skillSet.map(
+                                      (skill, index) => (
+                                        <Chip
+                                          label={skill.skill}
+                                          key={index + skill + "job-stat-skill"}
+                                        ></Chip>
+                                      )
+                                    )}
+                                  </>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </>
-                      )}
+                          </>
+                        )}
 
-                      <div className="w-fit h-full flex items-stretch  flex-col shrink-0">
-                        <div className="h-fit w-full flex gap-2">
+                        <div className="w-full sm:w-fit h-full flex items-stretch  flex-col sm:shrink-0">
+                          <div className="h-fit w-full  gap-2 hidden sm:flex">
+                            <Button
+                              disableElevation
+                              onClick={() =>
+                                window.open(
+                                  selectedUser.deploymentUrl,
+                                  "_blank"
+                                )
+                              }
+                              variant="contained"
+                              sx={{ borderRadius: "100px" }}
+                            >
+                              Live Link
+                            </Button>
+                            <Button
+                              disableElevation
+                              onClick={() =>
+                                window.open(selectedUser.githubUrl, "_blank")
+                              }
+                              variant="contained"
+                              sx={{ borderRadius: "100px" }}
+                            >
+                              Repository
+                            </Button>
+                            <Button
+                              disableElevation
+                              onClick={() =>
+                                window.open(selectedUser.videoDemoUrl, "_blank")
+                              }
+                              variant="contained"
+                              sx={{ borderRadius: "100px" }}
+                            >
+                              Demo Video
+                            </Button>
+                          </div>
+                          <div className="mt-2 font-medium text-black/70">
+                            Description
+                          </div>
+                          <div className="h-full w-full border border-gray-200 rounded-xl overflow-y-auto p-2 bg-gray-50">
+                            {selectedUser.description}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="h-fit w-full mt-2 gap-2 text-sm flex">
                           <Button
                             disableElevation
                             onClick={() =>
                               window.open(selectedUser.deploymentUrl, "_blank")
                             }
                             variant="contained"
+                            className="w-full"
                             sx={{ borderRadius: "100px" }}
                           >
-                            Live Link
+                            Live
                           </Button>
                           <Button
                             disableElevation
@@ -369,9 +424,10 @@ const JobStats = () => {
                               window.open(selectedUser.githubUrl, "_blank")
                             }
                             variant="contained"
+                            className="w-full"
                             sx={{ borderRadius: "100px" }}
                           >
-                            Repository
+                            Repo
                           </Button>
                           <Button
                             disableElevation
@@ -379,18 +435,12 @@ const JobStats = () => {
                               window.open(selectedUser.videoDemoUrl, "_blank")
                             }
                             variant="contained"
+                            className="w-full"
                             sx={{ borderRadius: "100px" }}
                           >
-                            Demo Video
+                            Demo
                           </Button>
                         </div>
-                        <div className="mt-2 font-medium text-black/70">
-                          Description
-                        </div>
-                        <div className="h-full border border-gray-200 rounded-xl overflow-y-auto p-2 bg-gray-50">
-                          {selectedUser.description}
-                        </div>
-                      </div>
                     </div>
                   </div>
                   <div className="modal-footer gap-2">
@@ -405,9 +455,9 @@ const JobStats = () => {
                       variant="contained"
                       className=" !flex  gap-2"
                     >
-                      <>
+                      {/* <>
                         {selectedUser?.subscribed ? "Unsubscribe" : "Subscribe"}
-                      </>
+                      </> */}
 
                       {subLoading ? (
                         <Spinner size="sm"></Spinner>
