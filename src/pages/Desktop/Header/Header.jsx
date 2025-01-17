@@ -26,9 +26,8 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
-  const {refreshUser, refresh} = useRefreshUserData();
+  const { refreshUser, refresh } = useRefreshUserData();
   useEffect(() => {
-    
     const handleClickOutside = (event) => {
       // Check if click is outside both menu AND profile button
       if (
@@ -54,6 +53,7 @@ export default function Header() {
     userData.photo_url.trim() !== "";
 
   const handleMenuProfileClick = () => {
+    setMenuOpen(false);
     if (userData.type === ENTREPRENEUR_ROLE) {
       navigate(`/entrepreneur/${userData?.uid}`);
     } else {
@@ -62,6 +62,7 @@ export default function Header() {
   };
 
   const handleMenuOptionClick = () => {
+    setMenuOpen(false);
     if (userData.type === ENTREPRENEUR_ROLE) {
       navigate("/jobpostings"); // Redirect for entrepreneurs
     } else {
@@ -81,7 +82,7 @@ export default function Header() {
           <span style={{ color: "#0d6efd", fontSize: "34px" }}>X</span>pert
         </span>
       </div>
-      
+
       <div className="hire-btns">
         {userData == null && !loading && (
           <button
