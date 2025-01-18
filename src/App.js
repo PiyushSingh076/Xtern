@@ -447,9 +447,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path={ROUTES.WALLET} element={
-            <ProtectedRoute><Wallet></Wallet></ProtectedRoute>
-          } ></Route>
+          
           <Route
             path={ROUTES.CHECKOUT_SCREEN}
             element={

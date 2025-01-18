@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { auth, db } from '../../firebaseConfig';
 import { useAuth } from '../Auth/useAuth';
+import toast from 'react-hot-toast';
 
 export const useWallet = () => {
     const [wallet,setWallet] = useState();
