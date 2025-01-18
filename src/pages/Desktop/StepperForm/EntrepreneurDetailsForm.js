@@ -51,6 +51,16 @@ import { FlashOnOutlined } from "@mui/icons-material";
 
 export default function EntrepreneurProfileForm() {
 
+  const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  // Get profileData from location state first
+  const { profileData } = location.state || {};
+  
+  // Check if we're in edit mode
+  const isEditMode = Boolean(profileData);
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [profileImg, setProfileImg] = useState("");
@@ -74,13 +84,9 @@ export default function EntrepreneurProfileForm() {
   const [isLinkedInFetched, setIsLinkedInFetched] = useState(false)
   const [isSubmitting, setSubmitting] = useState(false); // Add loading state
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const location = useLocation()
 
   const { userData } = useFetchUserData()
 
-  const { profileData } = location.state || {}
 
   const [error, setError] = useState({
     firstName: false,
@@ -523,7 +529,7 @@ return (
           </Box>
           )}
 
-        {!isLinkedInFetched && (
+        {!isLinkedInFetched && !isEditMode && (
           <Box sx={{ mb: 2, mt: 2 }}>
             <LinkedInFetcher
               close={setIsLinkedInFetched}
@@ -544,7 +550,7 @@ return (
                 size="small"
                 sx={{ textTransform: "none" }}
               >
-                Add Details
+                {isEditMode ? "Edit Details" : "Add Details"}
               </Button>
             }
             sx={{ padding: 2 }}

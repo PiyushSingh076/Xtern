@@ -28,7 +28,7 @@ export default function Header() {
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
 
-  const {refreshUser, refresh} = useAuth();
+  const { refreshUser, refresh } = useAuth();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -71,6 +71,13 @@ export default function Header() {
     } else {
       navigate("/myvideocall"); // Redirect for other users
     }
+  };
+
+  const handleWalletClick = () => {
+    setMenuOpen(false);
+    // if (userData.type === ENTREPRENEUR_ROLE) {
+      navigate("/wallet-screen"); // Redirect for entrepreneurs
+    // }
   };
 
   const handleMenuToggle = (event) => {
@@ -149,7 +156,7 @@ export default function Header() {
                       </div>
                       <div
                         className="dropdown-item"
-                        onClick={() => navigate("/wallet")}
+                        onClick={() => navigate("/wallet-screen")}
                       >
                         <FaWallet className="menu-icon" />
                         Wallet

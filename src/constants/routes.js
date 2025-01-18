@@ -45,6 +45,7 @@ export const ROUTES = {
   ENTREPRENEUR: "/entrepreneur/:uid",
   PROFILE_EDIT: "/profile-edit",
   WALLET_SCREEN: "/wallet-screen",
+  WALLET: "/wallet",
   SINGLE_MENTOR: "/single-mentor",
   NOTIFICATION_OPTION: "/notification-option",
   LANGUAGE: "/language",
