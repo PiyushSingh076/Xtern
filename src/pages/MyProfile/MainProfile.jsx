@@ -31,6 +31,7 @@ export default function MainProfile({
   loading,
   handleEdit,
   handleShare,
+  editable
 }) {
   return (
     <div className="single-mentor-first-wrap" style={styles.container}>
@@ -61,6 +62,7 @@ export default function MainProfile({
         )}
 
         {/* Edit Button */}
+        {editable && (
         <Tooltip title="Edit Profile" arrow>
           <IconButton
             onClick={handleEdit}
@@ -70,6 +72,7 @@ export default function MainProfile({
             <MdEdit size={20} color="#007bff" />
           </IconButton>
         </Tooltip>
+        )}
       </div>
 
       {/* User Details */}

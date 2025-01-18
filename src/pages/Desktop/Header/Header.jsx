@@ -27,7 +27,7 @@ export default function Header() {
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
 
-  const {refreshUser, refresh} = useAuth();
+  const { refreshUser, refresh } = useAuth();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -70,6 +70,13 @@ export default function Header() {
     } else {
       navigate("/myvideocall"); // Redirect for other users
     }
+  };
+
+  const handleWalletClick = () => {
+    setMenuOpen(false);
+    // if (userData.type === ENTREPRENEUR_ROLE) {
+      navigate("/wallet-screen"); // Redirect for entrepreneurs
+    // }
   };
 
   const handleMenuToggle = (event) => {
@@ -146,14 +153,14 @@ export default function Header() {
                         <FaBriefcase className="menu-icon" />
                         Jobs
                       </div>
+                      <div
+                        className="dropdown-item"
+                        onClick={() => handleWalletClick("/wallet")}
+                      >
+                        <AiOutlineWallet className="menu-icon" />
+                        Wallet
+                      </div>
                       {/* <div
-                className="dropdown-item"
-                onClick={() => handleMenuOptionClick("/wallet")}
-              >
-                <AiOutlineWallet className="menu-icon" />
-                Wallet
-              </div>
-              <div
                 className="dropdown-item"
                 onClick={() => handleMenuOptionClick("/support")}
               >

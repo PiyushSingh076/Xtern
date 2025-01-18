@@ -103,6 +103,8 @@ import Jobs from "./pages/jobs.jsx";
 import SingleJob from "./pages/SingleJob.jsx";
 import ApplyJob from "./pages/Applyjob.jsx";
 
+import WalletPage from "./pages/wallet.jsx";
+
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
 
@@ -328,6 +330,15 @@ function App() {
           />
 
           <Route
+            path={ROUTES.WALLET}
+            element={
+              <ProtectedRoute>
+                <WalletPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path={ROUTES.SPEND_LEARNING}
             element={
               <ProtectedRoute>
@@ -406,7 +417,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <DesktopProjectDetails />
-              {/* {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />} */}
+                {/* {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />} */}
               </ProtectedRoute>
             }
           />
