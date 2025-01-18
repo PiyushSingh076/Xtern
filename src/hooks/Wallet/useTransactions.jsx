@@ -1,6 +1,7 @@
 import Razorpay from "razorpay";
 import toast from "react-hot-toast";
 import { getFunctions, httpsCallable } from "firebase/functions";
+import axios from "axios";
 
 export function useTransactions() {
   const functions = getFunctions();
@@ -8,7 +9,12 @@ export function useTransactions() {
   async function createPaymentOrder(userId, amount, currency) {
     try {
       const createOrder = httpsCallable(functions, "createPaymentOrder");
-      const result = await createOrder({ userId, amount, currency });
+      // const result = await createOrder({ userId, amount, currency });
+      const result = await axios.post("https://us-central1-startup-a54cf.cloudfunctions.net/createPaymentOrder", {
+        amount: amount,
+        userId:  userId,
+        currency: currency
+      })
 
       if (result.data.success) {
         console.log("Order created successfully:", result.data.orderId);
@@ -47,6 +53,8 @@ export function useTransactions() {
   async function initiatePayment(userId, amount) {
     const orderId = await createPaymentOrder(userId, amount, "INR");
 
+    console.log("Order iD:", orderId);
+
     if (!orderId) {
       console.error("Failed to create Razorpay order");
       // toast.error("An error occurred. Please try again.");
@@ -54,7 +62,8 @@ export function useTransactions() {
     }
 
     const options = {
-      key: "rzp_test_w4aQ5dhNg17Owa",
+      key_id: "rzp_test_w4aQ5dhNg17Owa",
+      key_secret: "2W2tU9jVcJGNvQKXYdUr7pUQ",
       amount: amount * 100,
       currency: "INR",
       name: "Optacloud",
@@ -74,7 +83,9 @@ export function useTransactions() {
       },
     };
 
-    const rzp = new Razorpay(options);
+    console.log("Razorpay options: ", options)
+
+    const rzp = new window.Razorpay(options);
     rzp.open();
   }
 
