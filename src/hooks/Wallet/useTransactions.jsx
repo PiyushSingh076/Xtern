@@ -32,11 +32,17 @@ export function useTransactions() {
   async function verifyPayment(orderId, paymentId, signature) {
     try {
       const verifyOrder = httpsCallable(functions, "verifyPayment");
-      const result = await verifyOrder({
+      // const result = await verifyOrder({
+      //   order_id: orderId,
+      //   payment_id: paymentId,
+      //   signature: signature,
+      // });
+
+      const result = await axios.post("https://us-central1-startup-a54cf.cloudfunctions.net/verifyPayment", {
         order_id: orderId,
         payment_id: paymentId,
-        signature: signature,
-      });
+        signature: signature
+      })
 
       if (result.data.success) {
         console.log("Payment verified successfully:", result.data.message);
@@ -72,7 +78,7 @@ export function useTransactions() {
       handler: async function (response) {
         console.log("Payment Successful:", response);
         await verifyPayment(
-          response.razorpay_order_id,
+          orderId,
           response.razorpay_payment_id,
           response.razorpay_signature
         );

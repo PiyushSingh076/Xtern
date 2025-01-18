@@ -69,7 +69,7 @@ export default function Header() {
     if (userData.type === ENTREPRENEUR_ROLE) {
       navigate("/jobpostings"); // Redirect for entrepreneurs
     } else {
-      navigate("/myvideocall"); // Redirect for other users
+      navigate("/jobs"); // Redirect for other users
     }
   };
 
