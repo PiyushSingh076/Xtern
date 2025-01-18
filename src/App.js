@@ -103,7 +103,7 @@ import Jobs from "./pages/jobs.jsx";
 import SingleJob from "./pages/SingleJob.jsx";
 import ApplyJob from "./pages/Applyjob.jsx";
 
-import WalletPage from "./pages/wallet.jsx";
+
 
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
@@ -120,7 +120,7 @@ import ChooseType from "./pages/Desktop/Auth/SignUp/ChooseType.jsx";
 import EditJob from "./pages/EditJob.jsx";
 import { AuthProvider } from "./hooks/Auth/useAuth.jsx";
 import EntrepreneurMobile from "./pages/MyProfile/EntrepreneurMobile.jsx";
-import Wallet from "./pages/wallet.jsx";
+
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -330,14 +330,7 @@ function App() {
             }
           />
 
-          <Route
-            path={ROUTES.WALLET}
-            element={
-              <ProtectedRoute>
-                <WalletPage />
-              </ProtectedRoute>
-            }
-          />
+          
 
           <Route
             path={ROUTES.SPEND_LEARNING}
