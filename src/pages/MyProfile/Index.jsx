@@ -864,9 +864,8 @@ const MobileSingleMentor = () => {
       const eventData = {
         title: "XTERN Mentorship Call",
         description: `
-          Mentorship Call with ${profileData?.firstName} ${
-          profileData?.lastName
-        }
+          Mentorship Call with ${profileData?.firstName} ${profileData?.lastName
+          }
           Host: ${currentUser?.firstName} ${currentUser?.lastName}
           Date: ${interviewDate.format("D MMM YYYY")}
           Time: ${interviewTime.format("h:mm A")}
@@ -958,6 +957,7 @@ const MobileSingleMentor = () => {
               loading={profileLoading}
               handleEdit={handleEdit}
               handleShare={handleShare}
+              editable={editable} // Pass editable state as a prop
             />
           )}
 
@@ -978,34 +978,41 @@ const MobileSingleMentor = () => {
                   </span>
                 )}
               </div>
-              {!editable && (
-                <div style={styles.consultingButtons}>
+              <div style={styles.consultingButtons}>
+                {!editable && (
                   <Button
                     onClick={() => navigate("/mychat")}
                     variant="outline-primary"
                     size="small"
-                    style={{ marginRight: "10px" }}
+                    style={{ ...styles.consultingButton }}
                   >
                     <MdChat size={20} /> Chat
                   </Button>
+                )}
+
+                {/* Meet Button */}
+                {!editable && (
                   <Button
                     onClick={() => setInterviewScheduled(true)}
                     variant="outline-success"
                     size="small"
+                    style={{ ...styles.consultingButton }}
                     disabled={!isInitialized}
                   >
                     <MdCalendarToday size={20} /> Meet
                   </Button>
-                </div>
-              )}
-              <Button
-                onClick={openScheduledCallsModal}
-                variant="outline-primary"
-                size="small"
-                style={{ marginTop: "10px" }}
-              >
-                <FaRegClock size={16} /> Upcoming Meets
-              </Button>
+                )}
+
+                {/* Upcoming Meets Button */}
+                <Button
+                  onClick={openScheduledCallsModal}
+                  variant="outline-primary"
+                  size="small"
+                  style={{ ...styles.consultingButton }}
+                >
+                  <FaRegClock size={16} /> Upcoming Meets
+                </Button>
+              </div>
             </div>
           )}
 
@@ -1307,9 +1314,22 @@ const styles = {
     fontSize: "16px",
   },
   consultingButtons: {
-    display: "flex",
-    justifyContent: "space-between",
+    display: "flex", // Flex container
+    flexDirection: "row", // Align items in a row
+    justifyContent: "space-between", // Distribute buttons evenly
+    alignItems: "center", // Center items vertically
+    gap: "10px", // Add space between buttons
     marginBottom: "10px",
+  },
+  consultingButton: {
+    flex: "1 1 auto", // Allow buttons to grow/shrink as needed
+    textAlign: "center",
+    padding: "10px 15px",
+    minWidth: "120px", // Ensure buttons have a minimum width
+    display: "flex", // Use flex for button content
+    alignItems: "center", // Center icon and text vertically
+    justifyContent: "center", // Center content horizontally
+    gap: "5px", // Add space between the icon and text
   },
   modalHeader: {
     backgroundColor: "#007bff",

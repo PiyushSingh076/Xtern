@@ -54,57 +54,59 @@ export default function SkillSet({ profileData, skillloading }) {
 
       {/* Skills slider */}
       <div className="skillset-container">
-        {profileData?.skillSet?.map((skillItem, index) => {
-          // Mapping the rating (1-5) to a percentage value (20-100)
-          const ratingPercentage = (skillItem?.skillRating / 5) * 100;
+        {profileData?.skillSet && profileData.skillSet.length > 0 ? (
+          profileData.skillSet.map((skillItem, index) => {
+            // Mapping the rating (1-5) to a percentage value (20-100)
+            const ratingPercentage = (skillItem?.skillRating / 5) * 100;
 
-          return (
-            <div className="profile-details-second-wrap-sec" key={index}>
-              <div
-                className={`mentor-icon ${
-                  ["purple-bg", "green-bg", "pink-bg", "orange-bg"][index % 4]
-                }`}
-                style={{
-                  position: "relative",
-                  width: "80px",
-                  height: "80px",
-                }}
-              >
-                <CircularProgressbar
-                  value={ratingPercentage} // Set progress based on the rating
-                  styles={buildStyles({
-                    pathColor:
-                      ratingPercentage >= 80
-                        ? "green"
-                        : ratingPercentage >= 60
-                        ? "orange"
-                        : "red", // Change color based on rating
-                    trailColor: "#f0f0f0",
-                  })}
-                />
-                <img
-                  src={code}
-                  alt={`${skillItem?.skill}-icon`}
+            return (
+              <div className="profile-details-second-wrap-sec" key={index}>
+                <div
+                  className={`mentor-icon ${
+                    ["purple-bg", "green-bg", "pink-bg", "orange-bg"][
+                      index % 4
+                    ]
+                  }`}
                   style={{
-                    padding: "5px",
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    width: "40px",
+                    position: "relative",
+                    width: "80px",
+                    height: "80px",
                   }}
-                />
+                >
+                  <CircularProgressbar
+                    value={ratingPercentage} // Set progress based on the rating
+                    styles={buildStyles({
+                      pathColor:
+                        ratingPercentage >= 80
+                          ? "green"
+                          : ratingPercentage >= 60
+                          ? "orange"
+                          : "red", // Change color based on rating
+                      trailColor: "#f0f0f0",
+                    })}
+                  />
+                  <img
+                    src={code}
+                    alt={`${skillItem?.skill}-icon`}
+                    style={{
+                      padding: "5px",
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: "40px",
+                    }}
+                  />
+                </div>
+                <div className="mentor-content-single mt-12">
+                  <p>{skillItem?.skill}</p>
+                  <p>{skillItem?.skillRating} Star</p>
+                </div>
               </div>
-              <div className="mentor-content-single mt-12">
-                <p>{skillItem?.skill}</p>
-                <p>{skillItem?.skillRating} Star</p>
-              </div>
-            </div>
-          );
-        })}
-
-        {!profileData?.skillSet && (
-          <span style={{ color: "red", marginBottom: "20px" }}>
+            );
+          })
+        ) : (
+          <span style={{ color: "black", marginBottom: "20px" }}>
             No skill set available
           </span>
         )}
@@ -115,19 +117,14 @@ export default function SkillSet({ profileData, skillloading }) {
         <div className="service-list">
           {profileData?.serviceDetails?.map((serviceItem, index) => (
             <div
-              // onClick={() => {
-              //   handleService(serviceItem);
-              // }}
               key={index}
               className="service-item"
+              onClick={() => handleService(serviceItem)} // Trigger navigation to project
             >
               <span className="service-name" style={{ fontSize: "0.8rem" }}>
                 {serviceItem?.serviceName}
               </span>
-              <span
-                className="service-description"
-                // style={{ fontSize: "0.6rem" }}
-              >
+              <span className="service-description">
                 {(serviceItem?.serviceDescription).slice(0, 50) + ".."}
               </span>
               <span className="service-price" style={{ fontSize: "0.7rem" }}>
