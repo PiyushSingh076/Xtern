@@ -5,7 +5,7 @@ import {
   AiOutlineQuestionCircle,
   AiOutlineLogout,
 } from "react-icons/ai";
-import { FaBriefcase } from "react-icons/fa";
+import { FaBriefcase, FaWallet } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./Header.css";
@@ -69,7 +69,7 @@ export default function Header() {
     if (userData.type === ENTREPRENEUR_ROLE) {
       navigate("/jobpostings"); // Redirect for entrepreneurs
     } else {
-      navigate("/myvideocall"); // Redirect for other users
+      navigate("/jobs"); // Redirect for other users
     }
   };
 
@@ -156,12 +156,19 @@ export default function Header() {
                       </div>
                       <div
                         className="dropdown-item"
-                        onClick={() => handleWalletClick("/wallet")}
+                        onClick={() => navigate("/wallet-screen")}
                       >
-                        <AiOutlineWallet className="menu-icon" />
+                        <FaWallet className="menu-icon" />
                         Wallet
                       </div>
                       {/* <div
+                className="dropdown-item"
+                onClick={() => handleMenuOptionClick("/wallet")}
+              >
+                <AiOutlineWallet className="menu-icon" />
+                Wallet
+              </div>
+              <div
                 className="dropdown-item"
                 onClick={() => handleMenuOptionClick("/support")}
               >

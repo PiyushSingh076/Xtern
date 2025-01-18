@@ -21,14 +21,26 @@ import {
 import { Plus, ArrowDownCircle, X } from 'lucide-react';
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
+import useWallet from '../../../hooks/Wallet/useWallet';
+import { useTransactions } from '../../../hooks/Wallet/useTransactions';
 
-const WalletPage = ({ initialBalance = 3000 }) => {
+const WalletPage = () => {
   const { userData } = useFetchUserData();
   const isEntrepreneur = (userData?.type ?? "") === ENTREPRENEUR_ROLE;
-
+  const {initiatePayment} = useTransactions()
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  const [balance, setBalance] = useState(initialBalance);
+  const [balance, setBalance] = useState(10);
+  const {wallet, loaded} = useWallet();
+  const [loading, setLoading] = useState(true);
+  useEffect(( ) => {
+    
+    if(loaded === true){
+      console.log(wallet.amount)
+      setLoading(false)
+      setBalance(wallet.amount);
+    }
+  }, [loaded])
   const [transactions] = useState([
     { name: "Elizabeth Lopez", service: "elizabethlopez@example.com", amount: 1000, type: "Admin" },
     { name: "Matthew Martinez", service: "mmartinez1997@example.com", amount: 2000, type: "Owner" },
@@ -36,26 +48,27 @@ const WalletPage = ({ initialBalance = 3000 }) => {
     { name: "Maria White", service: "maria.white@example.com", amount: 800, type: "Admin" },
     { name: "Elizabeth Watson", service: "ewatson@example.com", amount: 1200, type: "Admin" },
   ]);
-  const [loading, setLoading] = useState(true);
+  
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
+  
 
-    return () => clearTimeout(timeout);
-  }, []);
-
-  const AddFundsModal = ({ open, onClose }) => {
+  const AddFundsModal = ({ open, onClose, userData }) => {
     const [amount, setAmount] = useState('');
+    const {initiatePayment} = useTransactions()
 
-    const handleAddFunds = () => {
+    const handleAddFunds = async () => {
       const addAmount = parseFloat(amount);
-      if (!isNaN(addAmount) && addAmount > 0) {
-        setBalance((prev) => prev + addAmount);
+      
+      try {
+        await initiatePayment(userData.uid, addAmount);
+        if (!isNaN(addAmount) && addAmount > 0) {
+          setBalance((prev) => prev + addAmount);
+        }
+        setAmount('');
+        onClose();
+      } catch (error) {
+        console.error('Error adding funds:', error);
       }
-      setAmount('');
-      onClose();
     };
 
     return (
@@ -195,7 +208,7 @@ const WalletPage = ({ initialBalance = 3000 }) => {
               }}
             >
               <Typography variant="h5" fontWeight="medium">
-                ₹{balance.toLocaleString()}
+                ₹{balance}
               </Typography>
             </Box>
             <Typography variant="h6" fontWeight="medium">
@@ -259,7 +272,7 @@ const WalletPage = ({ initialBalance = 3000 }) => {
         </Paper>
 
         {/* Modals */}
-        <AddFundsModal open={showAddModal} onClose={() => setShowAddModal(false)} />
+        <AddFundsModal userData={userData} open={showAddModal} onClose={() => setShowAddModal(false)} />
         <WithdrawFundsModal open={showWithdrawModal} onClose={() => setShowWithdrawModal(false)} />
       </Box>
     </Box>
