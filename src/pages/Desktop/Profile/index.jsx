@@ -252,6 +252,8 @@ const SingleMentor = () => {
   // If user clicks "Service" item
   const handleService = (item) => {
     const serializableItem = JSON.parse(JSON.stringify(item));
+    serializableItem.uid = uid;
+    console.log("displaying si before navigating ", serializableItem);
     navigate("/project", { state: { item: serializableItem } });
   };
   // Show/hide calls
