@@ -21,6 +21,7 @@ export const useWallet = () => {
   const [wallet, setWallet] = useState();
   const [loaded, setLoaded] = useState(false);
   const { refresh } = useAuth();
+  
 
   async function creditWallet(uid, amount, description){
     await setDoc(

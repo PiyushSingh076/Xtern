@@ -40,6 +40,7 @@ const WalletPage = () => {
   const { wallet, loaded, getTransactions, getAmountInWallet } = useWallet();
   const [loading, setLoading] = useState(true);
   const [transactionsData, setTransactionsData] = useState(null);
+  const [pageLoading, setPageLoading] = useState(false);
   const fetchTransactions = async (uid) => {
     const data = await getTransactions(uid);
     setTransactionsData(data);
@@ -65,10 +66,12 @@ const WalletPage = () => {
 
     const [loading, setLoading] = useState(false);
     async function paymentHandler() {
+      setPageLoading(true);
       const updateAmount = await getAmountInWallet(userData.uid);
       setBalance(updateAmount);
       await fetchTransactions(userData.uid);
       setLoading(false);
+      setPageLoading(false);
     }
 
     const handleAddFunds = async () => {
@@ -164,6 +167,7 @@ const WalletPage = () => {
     };
 
     const handleWithdrawFunds = async () => {
+      setPageLoading(true);
       setLoading(true);
       if (validateFields()) {
         await requestWithdraw(userData.uid, amount, {
@@ -190,6 +194,7 @@ const WalletPage = () => {
         onClose();
       }
       setLoading(false);
+      setPageLoading(false);
     };
 
     return (
@@ -373,27 +378,32 @@ const WalletPage = () => {
               mb: 3,
             }}
           >
-            <Box
-              sx={{
-                width: 120,
-                height: 120,
-                borderRadius: "50%",
-                bgcolor: "#f0f7ff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                mb: 2,
-              }}
-            >
-              <Typography variant="h5" fontWeight="medium">
-                ₹{balance}
-              </Typography>
-            </Box>
-            <Typography variant="h6" fontWeight="medium">
-              Wallet Balance
-            </Typography>
+            {pageLoading ? (
+              <div className="size-[120px] items-center justify-center flex" ><div className="spinner-border"></div></div>
+            ) : (
+              <>
+                <Box
+                  sx={{
+                    width: 120,
+                    height: 120,
+                    borderRadius: "50%",
+                    bgcolor: "#f0f7ff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mb: 2,
+                  }}
+                >
+                  <Typography variant="h5" fontWeight="medium">
+                    ₹{balance}
+                  </Typography>
+                </Box>
+                <Typography variant="h6" fontWeight="medium">
+                  Wallet Balance
+                </Typography>
+              </>
+            )}
           </Box>
-
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Button
               fullWidth
