@@ -26,6 +26,7 @@ import StarRateIcon from "@mui/icons-material/StarRate";
 import GroupIcon from "@mui/icons-material/Group";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import WalletModal from "./WalletModal";
 
 const reviews = [
   {
@@ -64,9 +65,17 @@ const ProjectDetails = () => {
 
   // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
+  console.log(`auth: ${auth}`);
+  
 
   const location = useLocation();
   const { item } = location.state || {};
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleBuyNowClick = () => {
+    setShowModal(true);
+  };
 
   // console.log(item, "service");
 
@@ -193,7 +202,7 @@ const ProjectDetails = () => {
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
                     <h1 className="second-txt1">{item.serviceName}</h1>
-                    <span className="firs-txt2">₹{item.servicePrice}500</span>
+                    <span className="firs-txt2">₹{item.servicePrice}</span>
                   </div>
 
                   <div className="second-decs-sec-bottom">
@@ -301,9 +310,9 @@ const ProjectDetails = () => {
                                 Apply Now
                               </Link>
                             ) : (
-                              <Link className="buy-now" to={`/signin`}>
-                                Buy Now{" "}
-                              </Link>
+                              <button className="buy-now" onClick={handleBuyNowClick}>
+                              Buy Now
+                            </button>
                             )}
                           </div>
                         </div>
@@ -588,6 +597,14 @@ const ProjectDetails = () => {
        
       </div> */}
       {/* Video modal end */}
+
+      {showModal && (
+        <WalletModal
+          serviceName={item.serviceName}
+          servicePrice={item.servicePrice}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 };

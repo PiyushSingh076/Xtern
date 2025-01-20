@@ -84,7 +84,7 @@ const FilterScreen = () => {
             <div
               key={profession.id}
               onClick={() => handleClick(profession.name)}
-              className={`flex items-center whitespace-nowrap px-6 py-1 rounded-full border-1 cursor-pointer transition-all duration-200  ${
+              className={`flex items-center whitespace-nowrap px-6 py-1 rounded-full border-1 cursor-pointer transition-all duration-200 ; ${
                 selectedProfession === profession.name
                   ? 'bg-[#0066FF] text-white border-[#0066FF]'
                   : 'bg-white text-[#0066FF] border-[#0066FF] hover:bg-blue-50'
