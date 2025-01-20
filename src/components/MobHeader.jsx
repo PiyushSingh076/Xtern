@@ -95,7 +95,7 @@ export default function MobHeader() {
           </div>
           <div
             className="dropdown-item"
-            onClick={() => handleMenuOptionClick("/wallet")}
+            onClick={() => handleMenuOptionClick("/wallet-screen")}
           >
             <AiOutlineWallet className="menu-icon" />
             Wallet

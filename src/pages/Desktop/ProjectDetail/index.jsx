@@ -1,32 +1,32 @@
 // mobile response reset
 
 // Import necessary dependencies and components
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import BookmarkSvg from "../../../assets/svg/white-bookmark.svg";
-import PlayIcon from "../../../assets/images/single-courses/play-icon.svg";
-import HeaderImg from "../../../assets/images/single-courses/header-img.png";
-import FillStar from "../../../assets/images/single-courses/orange-fill-star.svg";
-import StudentIcon from "../../../assets/images/single-courses/student-icon.svg";
-import TimeIcon from "../../../assets/images/single-courses/time-icon.svg";
 import LockIconSvg from "../../../assets/images/single-courses/lock-icon.svg";
 import DisableLockSvg from "../../../assets/images/single-courses/disable-lock.svg";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import EditServiceForm from "./EditService";
+import LeaveReviewBox from "./LeaveReviewBox";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Loading from "../../../components/Loading";
 import useFetchProjectData from "../../../hooks/Auth/useFetchProjectData";
 import "./projectDetail.css";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import { useSelector } from "react-redux";
-import { ImTab } from "react-icons/im";
 import YouTubePreview from "./YouTubePreview";
 import StarRateIcon from "@mui/icons-material/StarRate";
 import GroupIcon from "@mui/icons-material/Group";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import WalletModal from "./WalletModal";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
+import { collection, doc, getDoc, getDocs, getFirestore, query } from "firebase/firestore";
+import { UploadIcon } from "lucide-react";
+import { db } from "../../../firebaseConfig";
 
 const reviews = [
   {
@@ -59,9 +59,62 @@ const ProjectDetails = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
 
+  const fileInputRef = useRef(null);
+
+  const [showReviewBox, setShowReviewBox] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+
+  const [serviceReviews, setServiceReviews] = useState([]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const firestore = getFirestore();
+        const reviewsRef = collection(firestore, "reviews");
+        const q = query(reviewsRef);
+        const querySnapshot = await getDocs(q);
+
+        const reviews = [];
+        querySnapshot.forEach((doc) => {
+          reviews.push({ id: doc.id, ...doc.data() });
+        });
+
+        setServiceReviews(reviews);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  const handleLeaveReviewClick = () => {
+    setShowReviewBox(true);
+  };
+
+  const handleCancelClick = () => {
+    setShowReviewBox(false);
+  };
+
+  const handleButtonClick = () => {
+    // Trigger click on the hidden file input
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // console.log("Selected file:", file);
+      // Add your file upload logic here
+    }
+  };
+
   // Hooks
   const navigate = useNavigate();
   const { projectId } = useParams();
+  const { user, loading } = useAuthState();
 
   // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
@@ -69,7 +122,21 @@ const ProjectDetails = () => {
   
 
   const location = useLocation();
-  const { item } = location.state || {};
+  // const { item } = location.state || {};
+ 
+  const [item, setItem] = useState({})
+
+  useEffect(() => {
+    const fetchItem = async () => {
+      const serviceSnapshot = await getDoc(doc(db, "services", projectId))
+
+      if (serviceSnapshot.exists()) {
+        console.log("service data", serviceSnapshot.data());
+        setItem(serviceSnapshot.data())
+      }
+    }
+    fetchItem()
+  }, [])
 
   const [showModal, setShowModal] = useState(false);
 
@@ -124,6 +191,7 @@ const ProjectDetails = () => {
                 width="400"
                 className="des-img-fluid"
               /> */}
+
               <YouTubePreview />
             </div>
 
@@ -171,6 +239,35 @@ const ProjectDetails = () => {
                 </a>
               </div>
             </div>
+            {item?.uid && user?.uid && item.uid === user.uid && (
+              <>
+                <button
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    backgroundColor: "#0a65fc",
+                    color: "white",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    marginTop: "10px",
+                    marginLeft: "140px",
+                  }}
+                  onClick={handleButtonClick}
+                >
+                  <UploadIcon sx={{ color: "white", padding: "2px" }} />
+                  Upload Video
+                </button>
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  accept="video/*"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
+              </>
+            )}
           </div>
           {/* Project details */}
           <div className="desc-container">
@@ -204,12 +301,21 @@ const ProjectDetails = () => {
                     <h1 className="second-txt1">{item.serviceName}</h1>
                     <span className="firs-txt2">₹{item.servicePrice}</span>
                   </div>
+                  {showEditForm && (
+                    <EditServiceForm
+                      initialDetails={item}
+                      onSave={(updatedDetails) => {
+                        console.log("Updated Service:", updatedDetails);
+                        setShowEditForm(false); // Hide the form after saving
+                      }}
+                      onCancel={() => setShowEditForm(false)} // Hide the form on cancel
+                    />
+                  )}
 
                   <div className="second-decs-sec-bottom">
                     <div className="second-decs-sec-bottom-wrap">
                       <div className="mt-12">
                         <span className="student-img mr-8">
-                          {/* <img src={StudentIcon} alt="student-icon" /> */}
                           <GroupIcon sx={{ color: "#0a65fc" }} />
                         </span>
                         <span className="second-txt2">0 Application</span>
@@ -222,12 +328,9 @@ const ProjectDetails = () => {
                       </div>
                       <div className="mt-12">
                         <span className="student-img mr-8">
-                          {/* <img src={TimeIcon} alt="student-icon" /> */}
                           <AccessTimeFilledIcon sx={{ color: "#0a65fc" }} />
                         </span>
-                        <span className="second-txt2">
-                          {item.serviceDuration} {item.serviceDurationType}89m
-                        </span>
+                        <span className="second-txt2">89m</span>
                       </div>
                     </div>
                   </div>
@@ -310,7 +413,7 @@ const ProjectDetails = () => {
                                 Apply Now
                               </Link>
                             ) : (
-                              <button className="buy-now" onClick={handleBuyNowClick}>
+                              <button className="buy-now size-full "  onClick={handleBuyNowClick}>
                               Buy Now
                             </button>
                             )}
@@ -355,12 +458,42 @@ const ProjectDetails = () => {
                     tabIndex="0"
                   >
                     <div className="review-content-wrap mt-24">
-                      <h3 className="des-con-txt1">User Reviews</h3>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        {/* User Reviews Heading */}
+                        <h3 className="des-con-txt1">User Reviews</h3>
+
+                        {/* Leave Review Button */}
+                        {user && (
+                          <button
+                            style={{
+                              backgroundColor: "#0a65fc",
+                              color: "white",
+                              fontSize: "12px",
+                              padding: "2px 8px",
+                              borderRadius: "4px",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                            onClick={handleLeaveReviewClick}
+                          >
+                            Leave Review
+                          </button>
+                        )}
+                      </div>
+                      {showReviewBox && (
+                        <LeaveReviewBox onCancel={handleCancelClick} />
+                      )}
                       <div
                         className="review-list"
                         style={{ marginTop: "10px", marginBottom: "10px" }}
                       >
-                        {reviews.map((review) => (
+                        {serviceReviews.map((review) => (
                           <div className="review-item" key={review.id}>
                             {/* Profile Picture */}
                             <img
@@ -600,6 +733,7 @@ const ProjectDetails = () => {
 
       {showModal && (
         <WalletModal
+        service={item}
           serviceName={item.serviceName}
           servicePrice={item.servicePrice}
           onClose={() => setShowModal(false)}
