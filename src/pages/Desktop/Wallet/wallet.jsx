@@ -30,6 +30,8 @@ const WalletPage = () => {
   const {initiatePayment} = useTransactions()
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showRequestWithdrawModal, setShowRequestWithdrawModal] = useState(false);
+
   const [balance, setBalance] = useState(10);
   const {wallet, loaded} = useWallet();
   const [loading, setLoading] = useState(true);
@@ -41,6 +43,7 @@ const WalletPage = () => {
       setBalance(wallet.amount);
     }
   }, [loaded])
+
   const [transactions] = useState([
     { name: "Elizabeth Lopez", service: "elizabethlopez@example.com", amount: 1000, type: "Admin" },
     { name: "Matthew Martinez", service: "mmartinez1997@example.com", amount: 2000, type: "Owner" },
@@ -75,9 +78,6 @@ const WalletPage = () => {
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
         <DialogTitle>
           Add Funds
-          <IconButton onClick={onClose} size="small">
-            <X size={20} />
-          </IconButton>
         </DialogTitle>
         <DialogContent>
           <Box sx={{ position: 'relative', mt: 2 }}>
@@ -132,9 +132,6 @@ const WalletPage = () => {
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
         <DialogTitle>
           Withdraw Funds
-          <IconButton onClick={onClose} size="small">
-            <X size={20} />
-          </IconButton>
         </DialogTitle>
         <DialogContent>
           <Box sx={{ position: 'relative', mt: 2 }}>
@@ -172,6 +169,62 @@ const WalletPage = () => {
       </Dialog>
     );
   };
+
+
+  const RequestWithdrawModal = ({ open, onClose }) => {
+    const [amount, setAmount] = useState('');
+
+    const handleWithdrawFunds = () => {
+      const withdrawAmount = parseFloat(amount);
+      if (!isNaN(withdrawAmount) && withdrawAmount > 0 && withdrawAmount <= balance) {
+        setBalance((prev) => prev - withdrawAmount);
+      }
+      setAmount('');
+      onClose();
+    };
+
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          Request Withdraw Funds
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ position: 'relative', mt: 2 }}>
+            <Typography
+              sx={{
+                position: 'absolute',
+                left: '14px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'text.secondary',
+              }}
+            >
+              ₹
+            </Typography>
+            <TextField
+              fullWidth
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Enter amount"
+              InputProps={{
+                sx: { paddingLeft: '24px' },
+              }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} variant="outlined" color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleWithdrawFunds} variant="contained" color="primary">
+            Withdraw
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
 
   if (loading) {
     return (
@@ -227,7 +280,7 @@ const WalletPage = () => {
               Add Funds
             </Button>
 
-            {!isEntrepreneur && (
+            {!isEntrepreneur ? (
               <Button
                 fullWidth
                 variant="outlined"
@@ -237,6 +290,16 @@ const WalletPage = () => {
               >
                 Withdraw
               </Button>
+            ):(
+              <Button
+              fullWidth
+              variant="outlined"
+              color="inherit"
+              startIcon={<ArrowDownCircle size={18} />}
+              onClick={() => setShowRequestWithdrawModal(true)}
+            >
+              Request Withdraw
+            </Button>
             )}
           </Box>
         </Paper>
@@ -274,6 +337,8 @@ const WalletPage = () => {
         {/* Modals */}
         <AddFundsModal userData={userData} open={showAddModal} onClose={() => setShowAddModal(false)} />
         <WithdrawFundsModal open={showWithdrawModal} onClose={() => setShowWithdrawModal(false)} />
+        <RequestWithdrawModal open={showRequestWithdrawModal} onClose={() => setShowRequestWithdrawModal(false)} />
+
       </Box>
     </Box>
   );
