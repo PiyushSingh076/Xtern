@@ -68,8 +68,9 @@ const SignInWithSocial = () => {
           {/* Sign in with Facebook */}
           <button
             onClick={() => handleOAuthLogin(facebookProvider, "facebook")}
-            className="sign-in-social-media-deatails"
-            disabled={loadingProvider === "facebook"}
+            className="sign-in-social-media-deatails !bg-gray-200 saturate-0 "
+            // disabled={loadingProvider === "facebook"}
+            disabled={true}
             style={buttonStyles}
           >
             {loadingProvider === "facebook" ? (

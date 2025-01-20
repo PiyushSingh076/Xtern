@@ -77,5 +77,7 @@ export const ROUTES = {
   JOBSTATS: "/jobstats/:jobId",
   VIEWJOB: "/viewjob/:jobId",
   CHOOSETYPE: "/choosetype",
-  EDITJOB: "/editjob/:jobId"
+  EDITJOB: "/editjob/:jobId",
+  WALLET: "/wallet"
+
 };

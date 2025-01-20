@@ -122,7 +122,7 @@ const Jobs = () => {
         </FormControl>
       </Box>
         <div className='w-full justify-end flex' >
-        <Button onClick={() => navigate("/createjob")} variant='contained'><Add></Add> Create Posting</Button>
+        <Button onClick={() => navigate("/createjob")} variant='contained' className='mb-2'><Add></Add> Create Posting</Button>
         </div>
       <Grid container spacing={3} >
         {filteredJobs.length === 0 && (

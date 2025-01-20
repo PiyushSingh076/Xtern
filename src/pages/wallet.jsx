@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import useWallet from '../hooks/Wallet/useWallet';
 
 const WalletPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [amount, setAmount] = useState('');
-  const [balance] = useState(1250.0);
+  const {loaded, wallet} = useWallet();
+  // const [balance] = useState(1250.0);
 
   const handleQuickAmount = (value) => {
     setAmount(value);
@@ -26,7 +28,7 @@ const WalletPage = () => {
             <div className="text-center">
               <p className="text-sm text-gray-500">Current Balance</p>
               <p className="text-4xl font-bold text-gray-900">
-                ₹{balance.toFixed(2)}
+                ₹{wallet.amount || 0}
               </p>
             </div>
 

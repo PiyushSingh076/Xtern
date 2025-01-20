@@ -43,8 +43,8 @@ const useSaveEntrepreneurDetails = () => {
       // Debugging to check data
       console.log("Normalized Data:", normalizedData);
       // Check if user document exists
-      const testUser = await getDoc(userRef);
-      console.log(testUser.data());
+      // const testUser = await getDoc(userRef);
+      // console.log(testUser.data());
       
       // Save or overwrite the document in Firestore
       console.log("Saving entrepreneur details...");

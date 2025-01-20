@@ -39,6 +39,7 @@ const SignIn = () => {
 
   const handleSignIn = async (event) => {
     event.preventDefault();
+    setLoading(true)
   
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -66,6 +67,9 @@ const SignIn = () => {
     } catch (err) {
       setError(err.message); // Handle errors, such as incorrect credentials
     }
+    finally{
+      setLoading(false)
+    }
   };
 
   // const [loading, setLoading] = useState(true);
@@ -83,7 +87,7 @@ const SignIn = () => {
   //     });
   //   };
   // }, []);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // useEffect(() => {
   //   setTimeout(() => setLoading(false), 500); // Simulate loading time
@@ -226,7 +230,7 @@ const SignIn = () => {
               </div>
               {error && <p className="error-message">{error}</p>}
               <div className="sign-in-btn mt-32 ">
-                <button type="submit">Sign In</button>
+                <button type="submit">{loading ? <div className="spinner-border spinner-border-sm"></div> : "Sign In"}</button>
               </div>
             </form>
           </div>

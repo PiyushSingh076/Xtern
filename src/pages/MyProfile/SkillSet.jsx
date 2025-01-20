@@ -20,7 +20,7 @@ export default function SkillSet({ profileData, skillloading }) {
     navigate("/project", { state: { item: serializableItem } });
   };
 
-  console.log("skill", profileData);
+  // console.log("skill", profileData);
 
   const settings = {
     dots: false,

@@ -37,7 +37,7 @@ const Stepper = ({ data }) => {
   const [companyName, setCompanyName] = useState(data?.companyName || "");
   const [fileName, setFileName] = useState(data?.file.fileName || "");
   const [file, setFile] = useState([]);
-  const [fileSize, setFileSize] = useState(null);
+  const [fileSize, setFileSize] = useState(data?.file.fileSize || null);
   const [filePreview, setFilePreview] = useState(
     data?.file.filePreview || null
   );
@@ -54,8 +54,18 @@ const Stepper = ({ data }) => {
   const [assessmentDuration, setAssessmentDuration] = useState(
     data?.assessmentDuration || ""
   );
-
   const [duration, setDuration] = useState(data?.duration || "");
+  const [pImageError, setPimageError] = useState(false);
+  const [companyError, companysetError] = useState(false);
+  const [JobTitleError, JobTitlesetError] = useState(false);
+  const [SkillsError, SkillssetError] = useState(false);
+  const [ExperienceLevelError, ExperienceLevelsetError] = useState(false);
+  const [JobDescriptionError, JobDescriptionsetError] = useState(false);
+  const [JoblocationError, JoblocationsetError] = useState(false);
+  const [AssessmentDetailError, AssessmentDetailsetError] = useState(false);
+  const [AssessmentDurationError, AssessmentDurationsetError] = useState(false);
+  const [DurationError, DurationsetError] = useState(false);
+  const [dImage, setDimage] = useState(data?.image || "");
   const {
     projectImage,
     imagePreviewUrl,
@@ -97,39 +107,62 @@ const Stepper = ({ data }) => {
   const removeSkill = (index) => {
     setSkills(skills.filter((_, i) => i !== index));
   };
-
+  // console.log(data);
   const validateForm = () => {
-    // console.log(
-    //   jobTitle,
-    //   companyName,
-    //   description,
-    //   location,
-    //   skills.length,
-    //   experienceLevel,
-    //   assessmentDetail,
-    //   assessmentDuration,
-    //   duration,
-    //   fileName,
-    //   projectImage || data?.image
-    // );
-    return (
-      jobTitle &&
-      companyName &&
-      description &&
-      location &&
-      skills.length &&
-      experienceLevel &&
-      assessmentDetail &&
-      assessmentDuration &&
-      duration &&
-      fileName &&
-      (projectImage || data?.image)
-    );
+    const errors = {};
+    if (!projectImage && !dImage) {
+      errors.projectImage = "Please Upload the Company Image/Logo.";
+      setPimageError(true);
+    }
+    if (!companyName) {
+      errors.companyName = "Please fill in the Company Name.";
+      companysetError(true);
+    }
+    if (!jobTitle) {
+      errors.jobTitle = "Please fill in the Job Title.";
+      JobTitlesetError(true);
+    }
+    if (!skills.length) {
+      errors.skills = "Please select at least one Skill.";
+      SkillssetError(true);
+    }
+    if (!experienceLevel) {
+      errors.experienceLevel = "Please select Experience Level.";
+      ExperienceLevelsetError(true);
+    }
+    if (!description) {
+      errors.description = "Please fill in the Description.";
+      JobDescriptionsetError(true);
+    }
+    if (!location) {
+      errors.location = "Please fill in the Location.";
+      JoblocationsetError(true);
+    }
+    if (!assessmentDetail) {
+      errors.assessmentDetail = "Please fill in the Assessment Detail.";
+      AssessmentDetailsetError(true);
+    }
+    if (!assessmentDuration) {
+      errors.assessmentDuration = "Please fill in the Assessment Duration.";
+      AssessmentDurationsetError(true);
+    }
+    if (!duration) {
+      errors.duration = "Please fill in the Duration.";
+      DurationsetError(true);
+    }
+
+    // Show toast for the first error
+    const errorKeys = Object.keys(errors);
+    if (errorKeys.length > 0) {
+      toast.error(errors[errorKeys[0]]);
+      return false; // Validation failed
+    }
+
+    return true; // Validation passed
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
-      toast.error("Please fill all required fields.");
       return;
     }
 
@@ -148,7 +181,7 @@ const Stepper = ({ data }) => {
       if (!currentUser) {
         throw new Error("User not authenticated");
       }
-      const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
+      const storageRef = ref(storage, `project-images/${file.name}`);
 
       // Upload the file
       const snapshot = await uploadBytes(storageRef, file);
@@ -157,7 +190,8 @@ const Stepper = ({ data }) => {
       const file_data = {
         fileName: file.name,
         filePath: downloadURL,
-        filePreview: filePreview, // Store the file URL
+        filePreview: filePreview,
+        fileSize: fileSize, // Store the file URL
         uploadedAt: new Date(),
       };
 
@@ -175,7 +209,7 @@ const Stepper = ({ data }) => {
           assessmentDuration,
           duration,
           file: file_data,
-          imageURL: imageURL || data?.image,
+          imageURL: imageURL || dImage,
         });
 
         if (isUploaded) {
@@ -199,7 +233,7 @@ const Stepper = ({ data }) => {
           assessmentDetail,
           assessmentDuration,
           duration,
-          imageURL: imageURL || data?.image,
+          imageURL: imageURL,
           file: file_data,
         });
         if (isSaved) {
@@ -308,12 +342,14 @@ const Stepper = ({ data }) => {
             {/* First Column */}
             <div className="flex flex-col w-[50vw] h-auto gap-2">
               <div className="mb-4" style={{ width: "36vw", margin: "0 auto" }}>
-                <Toaster />
+                {/* <Toaster /> */}
                 <label
                   htmlFor="projectImage"
                   className="drag-drop-label"
                   style={{
-                    border: "2px dashed black",
+                    border: `${
+                      pImageError ? "2px dashed red" : "2px dashed black"
+                    }`,
                     height: "36vh",
                     width: "36vw",
                     borderRadius: "8px",
@@ -324,10 +360,10 @@ const Stepper = ({ data }) => {
                     backgroundColor: "#f8f9fa",
                   }}
                 >
-                  {imagePreviewUrl || data?.image ? (
+                  {imagePreviewUrl || dImage ? (
                     <div style={{ position: "relative", textAlign: "center" }}>
                       <img
-                        src={imagePreviewUrl || data?.image}
+                        src={imagePreviewUrl || dImage}
                         alt="Project Preview"
                         style={{
                           width: "36vw",
@@ -345,8 +381,10 @@ const Stepper = ({ data }) => {
                           padding: "5px",
                         }}
                         onClick={(e) => {
-                          e.stopPropagation(); // Stop event propagation
+                          e.stopPropagation();
+                          setDimage("");
                           clearImage(e);
+                          setPimageError(true); // Stop event propagation
                         }}
                       >
                         <FiXCircle
@@ -422,7 +460,7 @@ const Stepper = ({ data }) => {
                   type="file"
                   id="projectImage"
                   style={{ display: "none" }}
-                  onChange={handleImageUpload}
+                  onChange={(e) => handleImageUpload(e, setPimageError)}
                 />
               </div>
               <TextField
@@ -431,7 +469,11 @@ const Stepper = ({ data }) => {
                 label="Company Name"
                 required
                 value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
+                onChange={(e) => {
+                  setCompanyName(e.target.value);
+                  companysetError(false);
+                }}
+                error={companyError}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -450,7 +492,12 @@ const Stepper = ({ data }) => {
                 label="Job Title"
                 required
                 value={jobTitle}
-                onChange={(e) => setJobTitle(e.target.value)}
+                onChange={(e) => {
+                  setJobTitle(e.target.value);
+
+                  JobTitlesetError(false);
+                }}
+                error={JobTitleError}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -468,8 +515,12 @@ const Stepper = ({ data }) => {
                 className="w-[40vw]"
                 style={{ margin: "0 auto" }}
                 value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
                 onKeyPress={handleSkillKeyPress}
+                onChange={(e) => {
+                  setSkillInput(e.target.value);
+                  SkillssetError(false);
+                }}
+                error={SkillsError}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -523,7 +574,11 @@ const Stepper = ({ data }) => {
                 className="w-[40vw]"
                 style={{ margin: "0 auto" }}
                 value={experienceLevel}
-                onChange={(e) => setExperienceLevel(e.target.value)}
+                onChange={(e) => {
+                  setExperienceLevel(e.target.value);
+                  ExperienceLevelsetError(false);
+                }}
+                error={ExperienceLevelError}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -542,7 +597,11 @@ const Stepper = ({ data }) => {
                 multiline
                 rows={4} // Adjust rows for multiline input
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => {
+                  JobDescriptionsetError(false);
+                  setDescription(e.target.value);
+                }}
+                error={JobDescriptionError}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -579,7 +638,11 @@ const Stepper = ({ data }) => {
                 className="w-[40vw]"
                 style={{ margin: "0 auto" }}
                 value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                onChange={(e) => {
+                  JoblocationsetError(false);
+                  setLocation(e.target.value);
+                }}
+                error={JoblocationError}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -589,32 +652,34 @@ const Stepper = ({ data }) => {
                 }}
                 variant="outlined"
               />
-
-              <button
-                style={{
-                  border: "none",
-                  borderRadius: "8px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  outline: "none",
-                  height: "5vh",
-                  margin: "0 auto",
-                  marginBottom: "2px",
-                  fontSize: "16px",
-                  width: "25vw",
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                  cursor: "pointer",
-                  transition: "all 0.3s ease-in-out",
-                }}
-                className="bg-blue-500 text-white hover:bg-blue-600 hover:shadow-md active:scale-95"
-                onClick={() => setId(2)}
+              <div
+                className="flex md:justify-end justify-center w-[40vw]"
+                style={{ margin: "0 auto" }}
               >
-                Next
-                <span className="ml-2 flex items-center">
-                  <ArrowForwardIcon size={16} color="white" />
-                </span>
-              </button>
+                <button
+                  style={{
+                    border: "none",
+                    borderRadius: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    outline: "none",
+                    height: "8vh",
+                    marginBottom: "2px",
+                    fontSize: "16px",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease-in-out",
+                  }}
+                  className="bg-blue-500 text-white hover:bg-blue-600 hover:shadow-md w-full md:w-auto px-4"
+                  onClick={() => setId(2)}
+                >
+                  Next
+                  <span className="ml-2 flex items-center">
+                    <ArrowForwardIcon size={16} color="white" />
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -629,7 +694,11 @@ const Stepper = ({ data }) => {
                 multiline
                 rows={10} // Adjust rows for multiline input
                 value={assessmentDetail}
-                onChange={(e) => setAssessmentDetail(e.target.value)}
+                onChange={(e) => {
+                  AssessmentDetailsetError(false);
+                  setAssessmentDetail(e.target.value);
+                }}
+                error={AssessmentDetailError}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -669,7 +738,11 @@ const Stepper = ({ data }) => {
                 label="Assessment Duration (e.g., 2 days)"
                 required
                 value={assessmentDuration}
-                onChange={(e) => setAssessmentDuration(e.target.value)}
+                onChange={(e) => {
+                  AssessmentDurationsetError(false);
+                  setAssessmentDuration(e.target.value);
+                }}
+                error={AssessmentDurationError}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -687,7 +760,11 @@ const Stepper = ({ data }) => {
                 label="Job Duration (e.g., 6 Months)"
                 required
                 value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) => {
+                  DurationsetError(false);
+                  setDuration(e.target.value);
+                }}
+                error={DurationError}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -701,7 +778,7 @@ const Stepper = ({ data }) => {
                 className="flex flex-col items-center justify-center h-auto w-[45vw] bg-gray p-4 rounded-md cursor-pointer"
                 style={{ margin: "0 auto", border: "2px dashed black" }}
               >
-                <Toaster />
+                {/* <Toaster /> */}
                 <label htmlFor="file-upload" className="cursor-pointer">
                   <CloudUploadIcon size={24} className="mr-2" />
                   Upload File
@@ -738,17 +815,15 @@ const Stepper = ({ data }) => {
               </div>
               {/* Submit Button */}
               <div
-                className=" mt-4"
+                className=" mt-4 md:justify-end justify-center"
                 style={{
                   width: "45vw",
                   margin: "0 auto",
                   padding: "10px",
                   display: "flex",
-                  justifyContent: "center",
                 }}
               >
                 <button
-                  type="button"
                   onClick={handleSubmit}
                   className="btn btn-primary px-4 py-3 w-auto"
                   disabled={loading || submitLoading}
