@@ -64,12 +64,13 @@ export const useWallet = () => {
         type: type,
         description: description,
         date: new Date(),
+        details: details || {}
       });
       await setDoc(
         doc(db, "wallet", uid),
         {
           transactions: arrayUnion(transaction.id),
-          details: details || {},
+          
         },
         { merge: true }
       );
@@ -155,7 +156,8 @@ export const useWallet = () => {
     getTransactions,
     getAmountInWallet,
     debitWallet,
-    buyService
+    buyService,
+    requestWithdraw
   };
 };
 

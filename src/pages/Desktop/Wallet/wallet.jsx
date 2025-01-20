@@ -119,9 +119,17 @@ const WalletPage = () => {
           <Button onClick={onClose} variant="outlined" color="inherit">
             Cancel
           </Button>
-          <Button onClick={handleAddFunds} variant="contained" className="flex gap-2" color="primary">
+          <Button
+            onClick={handleAddFunds}
+            variant="contained"
+            className="flex gap-2"
+            color="primary"
+          >
             {loading ? (
-              <>Please Wait<div className="spinner-border-sm spinner-border"></div></>
+              <>
+                Please Wait
+                <div className="spinner-border-sm spinner-border"></div>
+              </>
             ) : (
               "Add Funds"
             )}
@@ -131,7 +139,139 @@ const WalletPage = () => {
     );
   };
 
-  const WithdrawFundsModal = ({ open, onClose }) => {
+  const WithdrawFundsModal = ({ open, onClose, balance }) => {
+    const [accountNumber, setAccountNumber] = useState("");
+    const [bankName, setBankName] = useState("");
+    const [ifscCode, setIfscCode] = useState("");
+    const [amount, setAmount] = useState("");
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
+    const { requestWithdraw } = useWallet();
+
+    const validateFields = () => {
+      const newErrors = {};
+      if (!accountNumber.trim())
+        newErrors.accountNumber = "Account number is required.";
+      if (!bankName.trim()) newErrors.bankName = "Bank name is required.";
+      if (!ifscCode.trim()) newErrors.ifscCode = "IFSC code is required.";
+      const withdrawAmount = parseFloat(amount);
+      if (!amount.trim() || isNaN(withdrawAmount) || withdrawAmount <= 0)
+        newErrors.amount = "Enter a valid amount.";
+      else if (withdrawAmount > balance)
+        newErrors.amount = "Insufficient balance.";
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    };
+
+    const handleWithdrawFunds = async () => {
+      setLoading(true);
+      if (validateFields()) {
+        await requestWithdraw(userData.uid, amount, {
+          accountNumber,
+          bankName,
+          ifscCode,
+        });
+        await fetchTransactions(userData.uid);
+        const updateAmount = await getAmountInWallet(userData.uid);
+        setBalance(updateAmount);
+        // Logic for withdrawal (e.g., API call)
+        console.log({
+          accountNumber,
+          bankName,
+          ifscCode,
+          amount: parseFloat(amount),
+        });
+        // Clear fields and close modal
+        setAccountNumber("");
+        setBankName("");
+        setIfscCode("");
+        setAmount("");
+        setErrors({});
+        onClose();
+      }
+      setLoading(false);
+    };
+
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Withdraw Funds</DialogTitle>
+        <DialogContent>
+          {/* Account Number Input */}
+          <TextField
+            fullWidth
+            label="Account Number"
+            value={accountNumber}
+            onChange={(e) => setAccountNumber(e.target.value)}
+            placeholder="Enter account number"
+            error={!!errors.accountNumber}
+            helperText={errors.accountNumber}
+            sx={{ mb: 2, mt: 2 }}
+          />
+          {/* Bank Name Input */}
+          <TextField
+            fullWidth
+            label="Bank Name"
+            value={bankName}
+            onChange={(e) => setBankName(e.target.value)}
+            placeholder="Enter bank name"
+            error={!!errors.bankName}
+            helperText={errors.bankName}
+            sx={{ mb: 2 }}
+          />
+          {/* IFSC Code Input */}
+          <TextField
+            fullWidth
+            label="IFSC Code"
+            value={ifscCode}
+            onChange={(e) => setIfscCode(e.target.value)}
+            placeholder="Enter IFSC code"
+            error={!!errors.ifscCode}
+            helperText={errors.ifscCode}
+            sx={{ mb: 2 }}
+          />
+          {/* Amount Input */}
+          <TextField
+            fullWidth
+            type="number"
+            label="Amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Enter amount"
+            error={!!errors.amount}
+            helperText={errors.amount}
+            InputProps={{
+              startAdornment: (
+                <Typography
+                  sx={{
+                    fontSize: "1rem",
+                    marginRight: "15px",
+                    color: "text.secondary",
+                  }}
+                >
+                  ₹
+                </Typography>
+              ),
+            }}
+            sx={{ mb: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} variant="outlined" color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleWithdrawFunds}
+            variant="contained"
+            color="primary"
+          >
+            Withdraw
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
+  const RequestWithdrawModal = ({ open, onClose }) => {
     const [amount, setAmount] = useState("");
 
     const handleWithdrawFunds = () => {
@@ -149,12 +289,7 @@ const WalletPage = () => {
 
     return (
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          Withdraw Funds
-          <IconButton onClick={onClose} size="small">
-            <X size={20} />
-          </IconButton>
-        </DialogTitle>
+        <DialogTitle>Request Withdraw Funds</DialogTitle>
         <DialogContent>
           <Box sx={{ position: "relative", mt: 2 }}>
             <Typography
