@@ -1,5 +1,16 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { addDoc, arrayUnion, collection, doc, getDoc, getDocs, increment, setDoc, updateDoc, where } from "firebase/firestore";
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  increment,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../../firebaseConfig";
 import { useAuth } from "../Auth/useAuth";
@@ -11,70 +22,97 @@ export const useWallet = () => {
   const [loaded, setLoaded] = useState(false);
   const { refresh } = useAuth();
 
-  async function getTransactions(uid){
-    const q = query(collection(db, "transactions"), where("walletId", "==", uid));
+  async function creditWallet(uid, amount, description){
+    await setDoc(
+      doc(db, "wallet", uid),{
+        amount: increment(amount)
+      }, {merge: true})
+    await createTransaction(uid, amount, "CREDIT", description)
+  }
+
+  async function buyService(uid, amount, description, service){
+    
+    await debitWallet(uid, amount, "Service bought - " + service.serviceName, service)
+    await creditWallet(service.userRef.id, service.servicePrice,"Service payment - " + service.serviceName)
+
+   
+    
+  }
+
+  async function getTransactions(uid) {
+    const q = query(
+      collection(db, "transactions"),
+      where("walletId", "==", uid)
+    );
     const querySnapshot = await getDocs(q);
     const transactions = querySnapshot.docs.map((doc) => doc.data());
-    return transactions
+    transactions.sort((a, b) => {
+      if (!a.date && !b.date) return 0; // Both dates are null
+      if (!a.date) return 1; // a.date is null, push it to the end
+      if (!b.date) return -1; // b.date is null, push it to the end
+      return b.date.toMillis() - a.date.toMillis(); // Compare non-null dates
+    });
+  
+    return transactions;
   }
 
   async function createTransaction(uid, amount, type, description) {
     try {
-        const transaction = await addDoc(collection(db, "transactions"), {
-            walletId: uid,
-            amount: amount,
-            type: type,
-            description: description,
-            date: new Date()
-          });
-          await setDoc(
-            doc(db, "wallet", uid),
-            {
-              transactions: arrayUnion(transaction.id),
-            },
-            { merge: true }
-          );
+      const transaction = await addDoc(collection(db, "transactions"), {
+        walletId: uid,
+        amount: amount,
+        type: type,
+        description: description,
+        date: new Date(),
+      });
+      await setDoc(
+        doc(db, "wallet", uid),
+        {
+          transactions: arrayUnion(transaction.id),
+        },
+        { merge: true }
+      );
     } catch (error) {
-        toast.error("Error creating transaction")
+      toast.error("Error creating transaction");
     }
   }
 
   async function requestWithdraw(uid, amount) {
     try {
-      const walletSnapshot = await getDoc(doc(db, "wallet", uid));
-      if (walletSnapshot.exists()) {
-        const walletData = walletSnapshot.data();
-        if (walletData.amount >= amount) {
-          // request code here
-          toast.success("Withdrawal request sent successfully");
-        } else {
-          toast.error("Insufficient balance");
-        }
-      }
+      await updateDoc(doc(db, "wallet", uid), {
+        amount: increment(-amount),
+      })
+      await createTransaction(uid, amount, "PENDING", "Withdrawal request");
+
+      toast.success("Withdrawal request created successfully, please wait for approval");
     } catch (error) {
-      console.error("Error requesting withdrawal:", error);
-      toast.error("A error occurred, try again later.");
+      toast.error("Error creating withdrawal request, please try again");
     }
   }
 
-
-  async function debitWallet(uid, amount, description) {
+  async function debitWallet(uid, amount, description, details) {
     try {
       const transaction = await addDoc(collection(db, "transactions"), {
         walletId: uid,
         amount: amount,
         type: "DEBIT",
         description: description,
-        date: new Date()
-      }) 
-      await setDoc(doc(db, "wallet", uid), {
-        amount: increment(-amount),
-        transactions: arrayUnion(transaction.id)
-      },{merge: true})
-      toast.success("Amount debited successfully")
+        date: new Date(),
+        
+        details: details,
+      });
+      await setDoc(
+        doc(db, "wallet", uid),
+        {
+          amount: increment(-amount),
+          transactions: arrayUnion(transaction.id),
+        },
+        { merge: true }
+      );
+      toast.success("Amount debited successfully");
     } catch (error) {
-      console.log(error)
-      toast.error("An error occurred")
+      console.log(error);
+      toast.error("An error occurred");
     }
   }
 
@@ -84,12 +122,12 @@ export const useWallet = () => {
     });
   }
 
-  async function getAmountInWallet(uid){
+  async function getAmountInWallet(uid) {
     const walletSnapshot = await getDoc(doc(db, "wallet", uid));
     if (walletSnapshot.exists()) {
       const walletData = walletSnapshot.data();
-      console.log("Latest wallet data",walletData);
-      return walletData.amount
+      console.log("Latest wallet data", walletData);
+      return walletData.amount;
     }
   }
 
@@ -109,7 +147,15 @@ export const useWallet = () => {
     });
   }, [refresh]);
 
-  return { wallet, loaded, createTransaction, getTransactions, getAmountInWallet };
+  return {
+    wallet,
+    loaded,
+    createTransaction,
+    getTransactions,
+    getAmountInWallet,
+    debitWallet,
+    buyService
+  };
 };
 
 export default useWallet;

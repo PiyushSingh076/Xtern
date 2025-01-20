@@ -251,10 +251,11 @@ const SingleMentor = () => {
 
   // If user clicks "Service" item
   const handleService = (item) => {
+    console.log("Service:", item)
     const serializableItem = JSON.parse(JSON.stringify(item));
     serializableItem.uid = uid;
     console.log("displaying si before navigating ", serializableItem);
-    navigate("/project", { state: { item: serializableItem } });
+    navigate("/project/"+item.id, { state: { item: serializableItem } });
   };
   // Show/hide calls
   const openScheduledCallsModal = () => setCallsModalOpen(true);

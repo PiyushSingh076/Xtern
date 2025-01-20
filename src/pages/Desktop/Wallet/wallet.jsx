@@ -24,6 +24,8 @@ import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useWallet from "../../../hooks/Wallet/useWallet";
 import { useTransactions } from "../../../hooks/Wallet/useTransactions";
+import dayjs from "dayjs";
+import { Timestamp } from "firebase/firestore";
 
 const WalletPage = () => {
   const { userData } = useFetchUserData();
@@ -31,6 +33,9 @@ const WalletPage = () => {
   const { initiatePayment } = useTransactions();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showRequestWithdrawModal, setShowRequestWithdrawModal] =
+    useState(false);
+
   const [balance, setBalance] = useState(10);
   const { wallet, loaded, getTransactions, getAmountInWallet } = useWallet();
   const [loading, setLoading] = useState(true);
@@ -53,42 +58,38 @@ const WalletPage = () => {
       setBalance(wallet.amount);
     }
   }, [loaded]);
-  
 
   const AddFundsModal = ({ open, onClose, userData }) => {
     const [amount, setAmount] = useState("");
     const { initiatePayment } = useTransactions();
 
-    async function paymentHandler(){
+    const [loading, setLoading] = useState(false);
+    async function paymentHandler() {
       const updateAmount = await getAmountInWallet(userData.uid);
-      setBalance(updateAmount)
+      setBalance(updateAmount);
       await fetchTransactions(userData.uid);
-
-    } 
+      setLoading(false);
+    }
 
     const handleAddFunds = async () => {
       const addAmount = parseFloat(amount);
-
+      setLoading(true);
       try {
         await initiatePayment(userData.uid, addAmount, paymentHandler);
         // console.log("Funds added successfully");
         // const updateAmount = await getAmountInWallet(userData.uid);
         // setBalance(updateAmount)
-        
+
         onClose();
       } catch (error) {
+        setLoading(false);
         console.error("Error adding funds:", error);
       }
     };
 
     return (
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          Add Funds
-          <IconButton onClick={onClose} size="small">
-            <X size={20} />
-          </IconButton>
-        </DialogTitle>
+        <DialogTitle>Add Funds</DialogTitle>
         <DialogContent>
           <Box sx={{ position: "relative", mt: 2 }}>
             <Typography
@@ -118,8 +119,12 @@ const WalletPage = () => {
           <Button onClick={onClose} variant="outlined" color="inherit">
             Cancel
           </Button>
-          <Button onClick={handleAddFunds} variant="contained" color="primary">
-            Add Funds
+          <Button onClick={handleAddFunds} variant="contained" className="flex gap-2" color="primary">
+            {loading ? (
+              <>Please Wait<div className="spinner-border-sm spinner-border"></div></>
+            ) : (
+              "Add Funds"
+            )}
           </Button>
         </DialogActions>
       </Dialog>
@@ -208,7 +213,10 @@ const WalletPage = () => {
   }
 
   return (
-    <Box sx={{ p: 3, bgcolor: "#f5f5f5" }} className="max-h-fit overflow-hidden sm:max-h-[calc(100vh-90px)]">
+    <Box
+      sx={{ p: 3, bgcolor: "#f5f5f5" }}
+      className="max-h-fit overflow-hidden sm:max-h-[calc(100vh-90px)]"
+    >
       <Box
         sx={{
           maxWidth: "1200px",
@@ -262,7 +270,7 @@ const WalletPage = () => {
               Add Funds
             </Button>
 
-            {!isEntrepreneur && (
+            {!isEntrepreneur ? (
               <Button
                 fullWidth
                 variant="outlined"
@@ -271,6 +279,16 @@ const WalletPage = () => {
                 onClick={() => setShowWithdrawModal(true)}
               >
                 Withdraw
+              </Button>
+            ) : (
+              <Button
+                fullWidth
+                variant="outlined"
+                color="inherit"
+                startIcon={<ArrowDownCircle size={18} />}
+                onClick={() => setShowRequestWithdrawModal(true)}
+              >
+                Request Withdraw
               </Button>
             )}
           </Box>
@@ -285,26 +303,43 @@ const WalletPage = () => {
           {transactionsData && (
             <>
               <TableContainer className="max-h-[400px] ">
-                <Table stickyHeader >
-                  <TableHead >
+                <Table stickyHeader>
+                  <TableHead>
                     <TableRow>
                       <TableCell>Amount</TableCell>
                       <TableCell>Description</TableCell>
-                      <TableCell className="!hidden sm:!table-cell" >Date</TableCell>
-                      <TableCell>Type</TableCell>
+                      <TableCell className="!hidden sm:!table-cell">
+                        Date
+                      </TableCell>
+                      <TableCell align="center">Type</TableCell>
                     </TableRow>
                   </TableHead>
-                  <TableBody >
+                  <TableBody>
                     {transactionsData.map((transaction, index) => (
                       <TableRow key={index} hover>
                         <TableCell>₹{transaction.amount}</TableCell>
                         <TableCell>{transaction.description}</TableCell>
-                        <TableCell className="!hidden sm:!table-cell" l>test</TableCell>
-                        <TableCell>
+                        <TableCell className="!hidden sm:!table-cell" l>
+                          {transaction.date
+                            ? dayjs(
+                                new Timestamp(
+                                  transaction.date.seconds,
+                                  transaction.date.nanoseconds
+                                ).toDate()
+                              ).format("DD-MM-YYYY")
+                            : "N/A"}
+                        </TableCell>
+                        <TableCell align="center">
                           {transaction.type === "CREDIT" ? (
                             <Chip label="CREDIT" color="success"></Chip>
+                          ) : transaction.type === "DEBIT" ? (
+                            <>
+                              <Chip label="DEBIT" color="error"></Chip>
+                            </>
                           ) : (
-                            <Chip label="DEBIT" color="error"></Chip>
+                            <>
+                              <Chip label="PENDING" color="info"></Chip>
+                            </>
                           )}
                         </TableCell>
                       </TableRow>

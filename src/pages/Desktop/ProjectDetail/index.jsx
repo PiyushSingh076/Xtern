@@ -9,7 +9,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import EditServiceForm from "./EditService";
+import LeaveReviewBox from "./LeaveReviewBox";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Loading from "../../../components/Loading";
 import useFetchProjectData from "../../../hooks/Auth/useFetchProjectData";
 import "./projectDetail.css";
@@ -20,45 +22,36 @@ import StarRateIcon from "@mui/icons-material/StarRate";
 import GroupIcon from "@mui/icons-material/Group";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
-import UploadIcon from "@mui/icons-material/Upload";
-import EditIcon from "@mui/icons-material/Edit";
+import WalletModal from "./WalletModal";
 import useAuthState from "../../../hooks/Authentication/useAuthState";
-import LeaveReviewBox from "./LeaveReviewBox";
-import EditServiceForm from "./EditService";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, query } from "firebase/firestore";
+import { UploadIcon } from "lucide-react";
+import { db } from "../../../firebaseConfig";
 
-// const reviews = [
-//   {
-//     id: 1,
-//     name: "John Doe",
-//     profilePic:
-//       "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
-//     review: "Great course! Very detailed and easy to understand.",
-//     rating: 5,
-//   },
-//   {
-//     id: 2,
-//     name: "Jane Smith",
-//     profilePic: "https://via.placeholder.com/50",
-//     review: "I learned a lot from this course. Highly recommend it!",
-//     rating: 2,
-//   },
-//   {
-//     id: 3,
-//     name: "Alice Johnson",
-//     profilePic: "https://via.placeholder.com/50",
-//     review: "The content was good, but I wish it had more examples.",
-//     rating: 3,
-//   },
-// ];
+const reviews = [
+  {
+    id: 1,
+    name: "John Doe",
+    profilePic:
+      "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+    review: "Great course! Very detailed and easy to understand.",
+    rating: 5,
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    profilePic: "https://via.placeholder.com/50",
+    review: "I learned a lot from this course. Highly recommend it!",
+    rating: 2,
+  },
+  {
+    id: 3,
+    name: "Alice Johnson",
+    profilePic: "https://via.placeholder.com/50",
+    review: "The content was good, but I wish it had more examples.",
+    rating: 3,
+  },
+];
 
 // Define the ProjectDetails component
 const ProjectDetails = () => {
@@ -125,9 +118,33 @@ const ProjectDetails = () => {
 
   // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
+  console.log(`auth: ${auth}`);
+  
 
   const location = useLocation();
-  const { item } = location.state || {};
+  // const { item } = location.state || {};
+ 
+  const [item, setItem] = useState({})
+
+  useEffect(() => {
+    const fetchItem = async () => {
+      const serviceSnapshot = await getDoc(doc(db, "services", projectId))
+
+      if (serviceSnapshot.exists()) {
+        console.log("service data", serviceSnapshot.data());
+        setItem(serviceSnapshot.data())
+      }
+    }
+    fetchItem()
+  }, [])
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleBuyNowClick = () => {
+    setShowModal(true);
+  };
+
+  // console.log(item, "service");
 
   // Navigation function
   const handleBackClick = () => {
@@ -282,28 +299,7 @@ const ProjectDetails = () => {
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
                     <h1 className="second-txt1">{item.serviceName}</h1>
-                    <span className="firs-txt2">₹{item.servicePrice}500</span>
-                    {/* <span className="firs-txt2">{item.uid}</span>
-                    <span className="firs-txt2" style={{ color: "black" }}>
-                      {user.uid}
-                    </span> */}
-
-                    {item?.uid && user?.uid && item.uid === user.uid && (
-                      <button
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          backgroundColor: "#0a65fc",
-                          color: "white",
-                          padding: "5px",
-                          borderRadius: "5px",
-                        }}
-                        onClick={() => setShowEditForm(true)}
-                      >
-                        <EditIcon sx={{ color: "white", padding: "2px" }} />
-                        Edit Service
-                      </button>
-                    )}
+                    <span className="firs-txt2">₹{item.servicePrice}</span>
                   </div>
                   {showEditForm && (
                     <EditServiceForm
@@ -417,9 +413,9 @@ const ProjectDetails = () => {
                                 Apply Now
                               </Link>
                             ) : (
-                              <Link className="buy-now" to={`/buy`}>
-                                Buy Now{" "}
-                              </Link>
+                              <button className="buy-now size-full "  onClick={handleBuyNowClick}>
+                              Buy Now
+                            </button>
                             )}
                           </div>
                         </div>
@@ -734,6 +730,15 @@ const ProjectDetails = () => {
        
       </div> */}
       {/* Video modal end */}
+
+      {showModal && (
+        <WalletModal
+        service={item}
+          serviceName={item.serviceName}
+          servicePrice={item.servicePrice}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 };
