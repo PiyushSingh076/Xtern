@@ -11,7 +11,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import EditServiceForm from "./EditService";
 import LeaveReviewBox from "./LeaveReviewBox";
-import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import Loading from "../../../components/Loading";
 import useFetchProjectData from "../../../hooks/Auth/useFetchProjectData";
 import "./projectDetail.css";
@@ -24,9 +30,17 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import WalletModal from "./WalletModal";
 import useAuthState from "../../../hooks/Authentication/useAuthState";
-import { collection, doc, getDoc, getDocs, getFirestore, query } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  query,
+} from "firebase/firestore";
 import { UploadIcon } from "lucide-react";
 import { db } from "../../../firebaseConfig";
+import { Skeleton } from "@mui/material";
 
 const reviews = [
   {
@@ -58,6 +72,7 @@ const ProjectDetails = () => {
   // State variables
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
 
   const fileInputRef = useRef(null);
 
@@ -119,24 +134,25 @@ const ProjectDetails = () => {
   // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
   console.log(`auth: ${auth}`);
-  
 
   const location = useLocation();
   // const { item } = location.state || {};
- 
-  const [item, setItem] = useState({})
+
+  const [item, setItem] = useState({});
 
   useEffect(() => {
     const fetchItem = async () => {
-      const serviceSnapshot = await getDoc(doc(db, "services", projectId))
+      setPageLoading(true);
+      const serviceSnapshot = await getDoc(doc(db, "services", projectId));
 
       if (serviceSnapshot.exists()) {
         console.log("service data", serviceSnapshot.data());
-        setItem(serviceSnapshot.data())
+        setItem(serviceSnapshot.data());
       }
-    }
-    fetchItem()
-  }, [])
+      setPageLoading(false);
+    };
+    fetchItem();
+  }, []);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -298,8 +314,30 @@ const ProjectDetails = () => {
               <div className="second-decs-sec ">
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
-                    <h1 className="second-txt1">{item.serviceName}</h1>
-                    <span className="firs-txt2">₹{item.servicePrice}</span>
+                    {pageLoading == false ? (
+                      <>
+                        <h1 className="second-txt1">{item.serviceName}</h1>
+                      </>
+                    ) : (
+                      <Skeleton
+                        height={40}
+                        width={200}
+                        variant="text"
+                        className=""
+                      ></Skeleton>
+                    )}
+                    {pageLoading == false ? (
+                      <>
+                        <span className="firs-txt2">₹{item.servicePrice}</span>
+                      </>
+                    ) : (
+                      <Skeleton
+                        height={40}
+                        width={80}
+                        variant="text"
+                        className=""
+                      ></Skeleton>
+                    )}
                   </div>
                   {showEditForm && (
                     <EditServiceForm
@@ -399,9 +437,15 @@ const ProjectDetails = () => {
                           <div
                             style={{ marginTop: "10px", marginBottom: "10px" }}
                           >
-                            <p className="des-text">
-                              {item.serviceDescription}
-                            </p>
+                            {pageLoading === true ? (
+                              <Skeleton variant="text" width={300} height={40} ></Skeleton>
+                            ) : (
+                              <>
+                                <p className="des-text">
+                                  {item.serviceDescription}
+                                </p>
+                              </>
+                            )}
                           </div>
                           {/* Apply Now button */}
                           <div className="des-buy-now-description">
@@ -413,9 +457,13 @@ const ProjectDetails = () => {
                                 Apply Now
                               </Link>
                             ) : (
-                              <button className="buy-now size-full "  onClick={handleBuyNowClick}>
-                              Buy Now
-                            </button>
+                              <button
+                                disabled={pageLoading}
+                                className="buy-now size-full "
+                                onClick={handleBuyNowClick}
+                              >
+                                Buy Now
+                              </button>
                             )}
                           </div>
                         </div>
@@ -733,7 +781,7 @@ const ProjectDetails = () => {
 
       {showModal && (
         <WalletModal
-        service={item}
+          service={item}
           serviceName={item.serviceName}
           servicePrice={item.servicePrice}
           onClose={() => setShowModal(false)}
