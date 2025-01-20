@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { addDoc, arrayUnion, collection, doc, getDoc, getDocs, setDoc, where } from "firebase/firestore";
+import { addDoc, arrayUnion, collection, doc, getDoc, getDocs, increment, setDoc, updateDoc, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../../firebaseConfig";
 import { useAuth } from "../Auth/useAuth";
@@ -54,6 +54,27 @@ export const useWallet = () => {
     } catch (error) {
       console.error("Error requesting withdrawal:", error);
       toast.error("A error occurred, try again later.");
+    }
+  }
+
+
+  async function debitWallet(uid, amount, description) {
+    try {
+      const transaction = await addDoc(collection(db, "transactions"), {
+        walletId: uid,
+        amount: amount,
+        type: "DEBIT",
+        description: description,
+        date: new Date()
+      }) 
+      await setDoc(doc(db, "wallet", uid), {
+        amount: increment(-amount),
+        transactions: arrayUnion(transaction.id)
+      },{merge: true})
+      toast.success("Amount debited successfully")
+    } catch (error) {
+      console.log(error)
+      toast.error("An error occurred")
     }
   }
 
