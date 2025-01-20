@@ -56,7 +56,7 @@ export const useWallet = () => {
     return transactions;
   }
 
-  async function createTransaction(uid, amount, type, description) {
+  async function createTransaction(uid, amount, type, description, details) {
     try {
       const transaction = await addDoc(collection(db, "transactions"), {
         walletId: uid,
@@ -69,6 +69,7 @@ export const useWallet = () => {
         doc(db, "wallet", uid),
         {
           transactions: arrayUnion(transaction.id),
+          details: details || {},
         },
         { merge: true }
       );
@@ -77,12 +78,12 @@ export const useWallet = () => {
     }
   }
 
-  async function requestWithdraw(uid, amount) {
+  async function requestWithdraw(uid, amount, bankDetails) {
     try {
       await updateDoc(doc(db, "wallet", uid), {
         amount: increment(-amount),
       })
-      await createTransaction(uid, amount, "PENDING", "Withdrawal request");
+      await createTransaction(uid, amount, "PENDING", "Withdrawal request", bankDetails);
 
       toast.success("Withdrawal request created successfully, please wait for approval");
     } catch (error) {
