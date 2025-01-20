@@ -1,13 +1,8 @@
 // mobile response reset
 
 // Import necessary dependencies and components
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import BookmarkSvg from "../../../assets/svg/white-bookmark.svg";
-import PlayIcon from "../../../assets/images/single-courses/play-icon.svg";
-import HeaderImg from "../../../assets/images/single-courses/header-img.png";
-import FillStar from "../../../assets/images/single-courses/orange-fill-star.svg";
-import StudentIcon from "../../../assets/images/single-courses/student-icon.svg";
-import TimeIcon from "../../../assets/images/single-courses/time-icon.svg";
 import LockIconSvg from "../../../assets/images/single-courses/lock-icon.svg";
 import DisableLockSvg from "../../../assets/images/single-courses/disable-lock.svg";
 import "slick-carousel/slick/slick.css";
@@ -20,37 +15,50 @@ import useFetchProjectData from "../../../hooks/Auth/useFetchProjectData";
 import "./projectDetail.css";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import { useSelector } from "react-redux";
-import { ImTab } from "react-icons/im";
 import YouTubePreview from "./YouTubePreview";
 import StarRateIcon from "@mui/icons-material/StarRate";
 import GroupIcon from "@mui/icons-material/Group";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import UploadIcon from "@mui/icons-material/Upload";
+import EditIcon from "@mui/icons-material/Edit";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
+import LeaveReviewBox from "./LeaveReviewBox";
+import EditServiceForm from "./EditService";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
-const reviews = [
-  {
-    id: 1,
-    name: "John Doe",
-    profilePic:
-      "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
-    review: "Great course! Very detailed and easy to understand.",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    profilePic: "https://via.placeholder.com/50",
-    review: "I learned a lot from this course. Highly recommend it!",
-    rating: 2,
-  },
-  {
-    id: 3,
-    name: "Alice Johnson",
-    profilePic: "https://via.placeholder.com/50",
-    review: "The content was good, but I wish it had more examples.",
-    rating: 3,
-  },
-];
+// const reviews = [
+//   {
+//     id: 1,
+//     name: "John Doe",
+//     profilePic:
+//       "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
+//     review: "Great course! Very detailed and easy to understand.",
+//     rating: 5,
+//   },
+//   {
+//     id: 2,
+//     name: "Jane Smith",
+//     profilePic: "https://via.placeholder.com/50",
+//     review: "I learned a lot from this course. Highly recommend it!",
+//     rating: 2,
+//   },
+//   {
+//     id: 3,
+//     name: "Alice Johnson",
+//     profilePic: "https://via.placeholder.com/50",
+//     review: "The content was good, but I wish it had more examples.",
+//     rating: 3,
+//   },
+// ];
 
 // Define the ProjectDetails component
 const ProjectDetails = () => {
@@ -58,17 +66,68 @@ const ProjectDetails = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
   const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
 
+  const fileInputRef = useRef(null);
+
+  const [showReviewBox, setShowReviewBox] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+
+  const [serviceReviews, setServiceReviews] = useState([]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const firestore = getFirestore();
+        const reviewsRef = collection(firestore, "reviews");
+        const q = query(reviewsRef);
+        const querySnapshot = await getDocs(q);
+
+        const reviews = [];
+        querySnapshot.forEach((doc) => {
+          reviews.push({ id: doc.id, ...doc.data() });
+        });
+
+        setServiceReviews(reviews);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  const handleLeaveReviewClick = () => {
+    setShowReviewBox(true);
+  };
+
+  const handleCancelClick = () => {
+    setShowReviewBox(false);
+  };
+
+  const handleButtonClick = () => {
+    // Trigger click on the hidden file input
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // console.log("Selected file:", file);
+      // Add your file upload logic here
+    }
+  };
+
   // Hooks
   const navigate = useNavigate();
   const { projectId } = useParams();
+  const { user, loading } = useAuthState();
 
   // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
 
   const location = useLocation();
   const { item } = location.state || {};
-
-  // console.log(item, "service");
 
   // Navigation function
   const handleBackClick = () => {
@@ -115,6 +174,7 @@ const ProjectDetails = () => {
                 width="400"
                 className="des-img-fluid"
               /> */}
+
               <YouTubePreview />
             </div>
 
@@ -162,6 +222,35 @@ const ProjectDetails = () => {
                 </a>
               </div>
             </div>
+            {item?.uid && user?.uid && item.uid === user.uid && (
+              <>
+                <button
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    backgroundColor: "#0a65fc",
+                    color: "white",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    marginTop: "10px",
+                    marginLeft: "140px",
+                  }}
+                  onClick={handleButtonClick}
+                >
+                  <UploadIcon sx={{ color: "white", padding: "2px" }} />
+                  Upload Video
+                </button>
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  accept="video/*"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
+              </>
+            )}
           </div>
           {/* Project details */}
           <div className="desc-container">
@@ -194,13 +283,43 @@ const ProjectDetails = () => {
                   <div className="second-decs-sec-top">
                     <h1 className="second-txt1">{item.serviceName}</h1>
                     <span className="firs-txt2">₹{item.servicePrice}500</span>
+                    {/* <span className="firs-txt2">{item.uid}</span>
+                    <span className="firs-txt2" style={{ color: "black" }}>
+                      {user.uid}
+                    </span> */}
+
+                    {item?.uid && user?.uid && item.uid === user.uid && (
+                      <button
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          backgroundColor: "#0a65fc",
+                          color: "white",
+                          padding: "5px",
+                          borderRadius: "5px",
+                        }}
+                        onClick={() => setShowEditForm(true)}
+                      >
+                        <EditIcon sx={{ color: "white", padding: "2px" }} />
+                        Edit Service
+                      </button>
+                    )}
                   </div>
+                  {showEditForm && (
+                    <EditServiceForm
+                      initialDetails={item}
+                      onSave={(updatedDetails) => {
+                        console.log("Updated Service:", updatedDetails);
+                        setShowEditForm(false); // Hide the form after saving
+                      }}
+                      onCancel={() => setShowEditForm(false)} // Hide the form on cancel
+                    />
+                  )}
 
                   <div className="second-decs-sec-bottom">
                     <div className="second-decs-sec-bottom-wrap">
                       <div className="mt-12">
                         <span className="student-img mr-8">
-                          {/* <img src={StudentIcon} alt="student-icon" /> */}
                           <GroupIcon sx={{ color: "#0a65fc" }} />
                         </span>
                         <span className="second-txt2">0 Application</span>
@@ -213,12 +332,9 @@ const ProjectDetails = () => {
                       </div>
                       <div className="mt-12">
                         <span className="student-img mr-8">
-                          {/* <img src={TimeIcon} alt="student-icon" /> */}
                           <AccessTimeFilledIcon sx={{ color: "#0a65fc" }} />
                         </span>
-                        <span className="second-txt2">
-                          {item.serviceDuration} {item.serviceDurationType}89m
-                        </span>
+                        <span className="second-txt2">89m</span>
                       </div>
                     </div>
                   </div>
@@ -301,7 +417,7 @@ const ProjectDetails = () => {
                                 Apply Now
                               </Link>
                             ) : (
-                              <Link className="buy-now" to={`/signin`}>
+                              <Link className="buy-now" to={`/buy`}>
                                 Buy Now{" "}
                               </Link>
                             )}
@@ -346,12 +462,42 @@ const ProjectDetails = () => {
                     tabIndex="0"
                   >
                     <div className="review-content-wrap mt-24">
-                      <h3 className="des-con-txt1">User Reviews</h3>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        {/* User Reviews Heading */}
+                        <h3 className="des-con-txt1">User Reviews</h3>
+
+                        {/* Leave Review Button */}
+                        {user && (
+                          <button
+                            style={{
+                              backgroundColor: "#0a65fc",
+                              color: "white",
+                              fontSize: "12px",
+                              padding: "2px 8px",
+                              borderRadius: "4px",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                            onClick={handleLeaveReviewClick}
+                          >
+                            Leave Review
+                          </button>
+                        )}
+                      </div>
+                      {showReviewBox && (
+                        <LeaveReviewBox onCancel={handleCancelClick} />
+                      )}
                       <div
                         className="review-list"
                         style={{ marginTop: "10px", marginBottom: "10px" }}
                       >
-                        {reviews.map((review) => (
+                        {serviceReviews.map((review) => (
                           <div className="review-item" key={review.id}>
                             {/* Profile Picture */}
                             <img

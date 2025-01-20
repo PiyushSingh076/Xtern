@@ -1,8 +1,9 @@
 // Define all the route paths as constants
 export const ROUTES = {
-  HOME_SCREEN: '/homescreen',
+  HOME_SCREEN: "/homescreen",
   SIGN_UP: "/signup",
   SIGN_IN: "/signin",
+  BUY_CARD: "/buy",
   JOBS: "/jobs",
   APPLYJOB: "/applyjob",
   APPLY_PROJECT: "/applyproject",
@@ -22,11 +23,12 @@ export const ROUTES = {
   SPEND_LEARNING: "/spendlearning",
   INTEREST_SCREEN: "/select-skills",
   SELECT_COURSES_SCREEN: "/select-courses-screen",
-  LANDING_PAGE  : "/",
+  LANDING_PAGE: "/",
   NOTIFICATION: "/notification",
   CATEGORY_SCREEN: "/categoryscreen",
   BUSINESS: "/business",
   SINGLE_COURSE_DESCRIPTION: "/project",
+
   TRENDING_COURSE: "/trending-course",
   CHECKOUT_SCREEN: "/checkoutscreen",
   PAYMENT_SCREEN: "/payment-screen",
@@ -62,22 +64,20 @@ export const ROUTES = {
   INTERNSHIP: "/internship",
   APPLY_INTERNSHIP: "/applyinternship",
   USER_PROFILE: "/userprofile",
- FILTER_SCREEN: "/filterscreen/:type",
+  FILTER_SCREEN: "/filterscreen/:type",
   // PROFESSIONAL_PROFILE: "/professionalProfile/:profession",
   CARD_DESIGN: "/cardDesign",
-  STEPPER_FORM: '/userdetail',
-  ENTREPRENEURS_FORM:"/entrepreneurdetails",
+  STEPPER_FORM: "/userdetail",
+  ENTREPRENEURS_FORM: "/entrepreneurdetails",
   //chats
   CHAT: "/chat",
-  MYCHAT: '/mychat',
+  MYCHAT: "/mychat",
   //video call
-  VIDEOCALL: '/videocall',
-  MYVIDEOCALL: '/myvideocall',
-  JOBSPOSTINGS: '/jobpostings/',
+  VIDEOCALL: "/videocall",
+  MYVIDEOCALL: "/myvideocall",
+  JOBSPOSTINGS: "/jobpostings/",
   JOBSTATS: "/jobstats/:jobId",
   VIEWJOB: "/viewjob/:jobId",
   CHOOSETYPE: "/choosetype",
   EDITJOB: "/editjob/:jobId",
-  WALLET: "/wallet"
-
 };

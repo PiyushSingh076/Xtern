@@ -68,9 +68,6 @@ const SingleMentor = () => {
   const navigate = useNavigate();
   const { uid } = useParams();
   const { user, loading } = useAuthState();
-  
-
-  
 
   // For scheduling calls
   const [interviewScheduled, setInterviewScheduled] = useState(false);
@@ -101,13 +98,13 @@ const SingleMentor = () => {
   } = useUserProfileData(uid);
 
   useEffect(() => {
-    if(profileData){
-      // console.log(profileData)
-      if(profileData.type == "entrepreneur"){
+    if (profileData) {
+      console.log(profileData);
+      if (profileData.type == "entrepreneur") {
         navigate(`/entrepreneur/${profileData.uid}`);
       }
     }
-  }, [profileData])
+  }, [profileData]);
 
   const handleChatClick = () => {
     if (user) {
@@ -255,6 +252,8 @@ const SingleMentor = () => {
   // If user clicks "Service" item
   const handleService = (item) => {
     const serializableItem = JSON.parse(JSON.stringify(item));
+    serializableItem.uid = uid;
+    console.log("displaying si before navigating ", serializableItem);
     navigate("/project", { state: { item: serializableItem } });
   };
   // Show/hide calls
@@ -479,7 +478,7 @@ const SingleMentor = () => {
                   size="small"
                   className="!flex  !flex-row items-center gap-1 !w-fit whitespace-nowrap"
                 >
-                  <FaRegClock size={16} /> 
+                  <FaRegClock size={16} />
                   <div>Upcoming Meets</div>
                 </Button>
               </Tooltip>
@@ -627,9 +626,7 @@ const SingleMentor = () => {
                   role="tabpanel"
                 >
                   {profileLoading ? (
-                    <Skeleton
-                      sx={{ width: "100%", height: "200px" }}
-                    />
+                    <Skeleton sx={{ width: "100%", height: "200px" }} />
                   ) : profileData?.workExperience?.length ? (
                     profileData.workExperience.map((work, index) => (
                       <div
