@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -17,57 +17,67 @@ import {
   TableRow,
   IconButton,
   CircularProgress,
-} from '@mui/material';
-import { Plus, ArrowDownCircle, X } from 'lucide-react';
+  Chip,
+} from "@mui/material";
+import { Plus, ArrowDownCircle, X } from "lucide-react";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
-import useWallet from '../../../hooks/Wallet/useWallet';
-import { useTransactions } from '../../../hooks/Wallet/useTransactions';
+import useWallet from "../../../hooks/Wallet/useWallet";
+import { useTransactions } from "../../../hooks/Wallet/useTransactions";
 
 const WalletPage = () => {
   const { userData } = useFetchUserData();
   const isEntrepreneur = (userData?.type ?? "") === ENTREPRENEUR_ROLE;
-  const {initiatePayment} = useTransactions()
+  const { initiatePayment } = useTransactions();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [balance, setBalance] = useState(10);
-  const {wallet, loaded} = useWallet();
+  const { wallet, loaded, getTransactions, getAmountInWallet } = useWallet();
   const [loading, setLoading] = useState(true);
-  useEffect(( ) => {
-    
-    if(loaded === true){
-      console.log(wallet.amount)
-      setLoading(false)
+  const [transactionsData, setTransactionsData] = useState(null);
+  const fetchTransactions = async (uid) => {
+    const data = await getTransactions(uid);
+    setTransactionsData(data);
+    console.log(data);
+  };
+  useEffect(() => {
+    if (userData) {
+      fetchTransactions(userData.uid);
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (loaded === true) {
+      console.log(wallet);
+      setLoading(false);
       setBalance(wallet.amount);
     }
-  }, [loaded])
-  const [transactions] = useState([
-    { name: "Elizabeth Lopez", service: "elizabethlopez@example.com", amount: 1000, type: "Admin" },
-    { name: "Matthew Martinez", service: "mmartinez1997@example.com", amount: 2000, type: "Owner" },
-    { name: "Elizabeth Hall", service: "elizabeth_hall_1998@example.com", amount: 500, type: "Owner" },
-    { name: "Maria White", service: "maria.white@example.com", amount: 800, type: "Admin" },
-    { name: "Elizabeth Watson", service: "ewatson@example.com", amount: 1200, type: "Admin" },
-  ]);
-  
-
+  }, [loaded]);
   
 
   const AddFundsModal = ({ open, onClose, userData }) => {
-    const [amount, setAmount] = useState('');
-    const {initiatePayment} = useTransactions()
+    const [amount, setAmount] = useState("");
+    const { initiatePayment } = useTransactions();
+
+    async function paymentHandler(){
+      const updateAmount = await getAmountInWallet(userData.uid);
+      setBalance(updateAmount)
+      await fetchTransactions(userData.uid);
+
+    } 
 
     const handleAddFunds = async () => {
       const addAmount = parseFloat(amount);
-      
+
       try {
-        await initiatePayment(userData.uid, addAmount);
-        if (!isNaN(addAmount) && addAmount > 0) {
-          setBalance((prev) => prev + addAmount);
-        }
-        setAmount('');
+        await initiatePayment(userData.uid, addAmount, paymentHandler);
+        // console.log("Funds added successfully");
+        // const updateAmount = await getAmountInWallet(userData.uid);
+        // setBalance(updateAmount)
+        
         onClose();
       } catch (error) {
-        console.error('Error adding funds:', error);
+        console.error("Error adding funds:", error);
       }
     };
 
@@ -80,14 +90,14 @@ const WalletPage = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ position: 'relative', mt: 2 }}>
+          <Box sx={{ position: "relative", mt: 2 }}>
             <Typography
               sx={{
-                position: 'absolute',
-                left: '14px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'text.secondary',
+                position: "absolute",
+                left: "14px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "text.secondary",
               }}
             >
               ₹
@@ -99,7 +109,7 @@ const WalletPage = () => {
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount"
               InputProps={{
-                sx: { paddingLeft: '24px' },
+                sx: { paddingLeft: "24px" },
               }}
             />
           </Box>
@@ -117,14 +127,18 @@ const WalletPage = () => {
   };
 
   const WithdrawFundsModal = ({ open, onClose }) => {
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState("");
 
     const handleWithdrawFunds = () => {
       const withdrawAmount = parseFloat(amount);
-      if (!isNaN(withdrawAmount) && withdrawAmount > 0 && withdrawAmount <= balance) {
+      if (
+        !isNaN(withdrawAmount) &&
+        withdrawAmount > 0 &&
+        withdrawAmount <= balance
+      ) {
         setBalance((prev) => prev - withdrawAmount);
       }
-      setAmount('');
+      setAmount("");
       onClose();
     };
 
@@ -137,14 +151,14 @@ const WalletPage = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ position: 'relative', mt: 2 }}>
+          <Box sx={{ position: "relative", mt: 2 }}>
             <Typography
               sx={{
-                position: 'absolute',
-                left: '14px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'text.secondary',
+                position: "absolute",
+                left: "14px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "text.secondary",
               }}
             >
               ₹
@@ -156,7 +170,7 @@ const WalletPage = () => {
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount"
               InputProps={{
-                sx: { paddingLeft: '24px' },
+                sx: { paddingLeft: "24px" },
               }}
             />
           </Box>
@@ -165,7 +179,11 @@ const WalletPage = () => {
           <Button onClick={onClose} variant="outlined" color="inherit">
             Cancel
           </Button>
-          <Button onClick={handleWithdrawFunds} variant="contained" color="primary">
+          <Button
+            onClick={handleWithdrawFunds}
+            variant="contained"
+            color="primary"
+          >
             Withdraw
           </Button>
         </DialogActions>
@@ -177,11 +195,11 @@ const WalletPage = () => {
     return (
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          bgcolor: '#f5f5f5',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          bgcolor: "#f5f5f5",
         }}
       >
         <CircularProgress size={50} />
@@ -190,20 +208,37 @@ const WalletPage = () => {
   }
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#f5f5f5', minHeight: '100vh' }}>
-      <Box sx={{ maxWidth: '1200px', mx: 'auto', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+    <Box sx={{ p: 3, bgcolor: "#f5f5f5" }} className="max-h-fit overflow-hidden sm:max-h-[calc(100vh-90px)]">
+      <Box
+        sx={{
+          maxWidth: "1200px",
+          mx: "auto",
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          gap: 3,
+        }}
+      >
         {/* Left Section */}
-        <Paper sx={{ width: { xs: '100%', md: '350px' }, p: 3, borderRadius: 2 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+        <Paper
+          sx={{ width: { xs: "100%", md: "350px" }, p: 3, borderRadius: 2 }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              mb: 3,
+            }}
+          >
             <Box
               sx={{
                 width: 120,
                 height: 120,
-                borderRadius: '50%',
-                bgcolor: '#f0f7ff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                borderRadius: "50%",
+                bgcolor: "#f0f7ff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 mb: 2,
               }}
             >
@@ -216,7 +251,7 @@ const WalletPage = () => {
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Button
               fullWidth
               variant="contained"
@@ -247,33 +282,50 @@ const WalletPage = () => {
             Transaction History
           </Typography>
 
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Service</TableCell>
-                  <TableCell>Amount</TableCell>
-                  <TableCell>Type</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {transactions.map((transaction, index) => (
-                  <TableRow key={index} hover>
-                    <TableCell>{transaction.name}</TableCell>
-                    <TableCell>{transaction.service}</TableCell>
-                    <TableCell>₹{transaction.amount.toLocaleString()}</TableCell>
-                    <TableCell>{transaction.type}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {transactionsData && (
+            <>
+              <TableContainer className="max-h-[400px] ">
+                <Table stickyHeader >
+                  <TableHead >
+                    <TableRow>
+                      <TableCell>Amount</TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell className="!hidden sm:!table-cell" >Date</TableCell>
+                      <TableCell>Type</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody >
+                    {transactionsData.map((transaction, index) => (
+                      <TableRow key={index} hover>
+                        <TableCell>₹{transaction.amount}</TableCell>
+                        <TableCell>{transaction.description}</TableCell>
+                        <TableCell className="!hidden sm:!table-cell" l>test</TableCell>
+                        <TableCell>
+                          {transaction.type === "CREDIT" ? (
+                            <Chip label="CREDIT" color="success"></Chip>
+                          ) : (
+                            <Chip label="DEBIT" color="error"></Chip>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </>
+          )}
         </Paper>
 
         {/* Modals */}
-        <AddFundsModal userData={userData} open={showAddModal} onClose={() => setShowAddModal(false)} />
-        <WithdrawFundsModal open={showWithdrawModal} onClose={() => setShowWithdrawModal(false)} />
+        <AddFundsModal
+          userData={userData}
+          open={showAddModal}
+          onClose={() => setShowAddModal(false)}
+        />
+        <WithdrawFundsModal
+          open={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+        />
       </Box>
     </Box>
   );
