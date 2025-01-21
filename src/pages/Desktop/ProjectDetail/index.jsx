@@ -1,158 +1,57 @@
-// mobile response reset
-
-// Import necessary dependencies and components
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import BookmarkSvg from "../../../assets/svg/white-bookmark.svg";
-import LockIconSvg from "../../../assets/images/single-courses/lock-icon.svg";
-import DisableLockSvg from "../../../assets/images/single-courses/disable-lock.svg";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
-import EditServiceForm from "./EditService";
-import LeaveReviewBox from "./LeaveReviewBox";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
-import Loading from "../../../components/Loading";
-import useFetchProjectData from "../../../hooks/Auth/useFetchProjectData";
-import "./projectDetail.css";
-import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
-import { useSelector } from "react-redux";
-import YouTubePreview from "./YouTubePreview";
 import StarRateIcon from "@mui/icons-material/StarRate";
 import GroupIcon from "@mui/icons-material/Group";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import "./projectDetail.css";
+import { saveReview } from "./firestoreHelpers";
+import { getAuth } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { toast } from "react-hot-toast";
 import WalletModal from "./WalletModal";
-import useAuthState from "../../../hooks/Authentication/useAuthState";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  getFirestore,
-  query,
-} from "firebase/firestore";
-import { UploadIcon } from "lucide-react";
-import { db } from "../../../firebaseConfig";
-import { Skeleton } from "@mui/material";
 
-const reviews = [
-  {
-    id: 1,
-    name: "John Doe",
-    profilePic:
-      "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png",
-    review: "Great course! Very detailed and easy to understand.",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    profilePic: "https://via.placeholder.com/50",
-    review: "I learned a lot from this course. Highly recommend it!",
-    rating: 2,
-  },
-  {
-    id: 3,
-    name: "Alice Johnson",
-    profilePic: "https://via.placeholder.com/50",
-    review: "The content was good, but I wish it had more examples.",
-    rating: 3,
-  },
-];
 
-// Define the ProjectDetails component
+const db = getFirestore();
+
 const ProjectDetails = () => {
-  // State variables
   const [isBookmarked, setIsBookmarked] = useState(true);
-  const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewText, setReviewText] = useState("");
+  const [rating, setRating] = useState(0);
+  const [reviews, setReviews] = useState([]);
+  const [videoFile, setVideoFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showReviews, setShowReviews] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState('');
 
-  const fileInputRef = useRef(null);
-
-  const [showReviewBox, setShowReviewBox] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false);
-
-  const [serviceReviews, setServiceReviews] = useState([]);
-
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const firestore = getFirestore();
-        const reviewsRef = collection(firestore, "reviews");
-        const q = query(reviewsRef);
-        const querySnapshot = await getDocs(q);
-
-        const reviews = [];
-        querySnapshot.forEach((doc) => {
-          reviews.push({ id: doc.id, ...doc.data() });
-        });
-
-        setServiceReviews(reviews);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      }
-    };
-
-    fetchReviews();
-  }, []);
-
-  const handleLeaveReviewClick = () => {
-    setShowReviewBox(true);
-  };
-
-  const handleCancelClick = () => {
-    setShowReviewBox(false);
-  };
-
-  const handleButtonClick = () => {
-    // Trigger click on the hidden file input
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      // console.log("Selected file:", file);
-      // Add your file upload logic here
-    }
-  };
-
-  // Hooks
   const navigate = useNavigate();
   const { projectId } = useParams();
-  const { user, loading } = useAuthState();
-
-  // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
-  console.log(`auth: ${auth}`);
-
   const location = useLocation();
-  // const { item } = location.state || {};
+  const { item } = location.state || {};
 
-  const [item, setItem] = useState({});
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
+  const toggleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+  };
 
   useEffect(() => {
-    const fetchItem = async () => {
-      setPageLoading(true);
-      const serviceSnapshot = await getDoc(doc(db, "services", projectId));
-
-      if (serviceSnapshot.exists()) {
-        console.log("service data", serviceSnapshot.data());
-        setItem(serviceSnapshot.data());
-      }
-      setPageLoading(false);
-    };
-    fetchItem();
-  }, []);
+    if (videoFile) {
+      setUploadMessage('Video uploaded successfully!');
+      const timer = setTimeout(() => {
+        setUploadMessage('');
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [videoFile]);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -160,58 +59,182 @@ const ProjectDetails = () => {
     setShowModal(true);
   };
 
-  // console.log(item, "service");
-
-  // Navigation function
-  const handleBackClick = () => {
-    navigate(-1); // Navigate to the previous page in the history stack
+  const handleFileChange = (event) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setSelectedFile(event.target.files[0]);
+      console.log("File selected:", event.target.files[0]);
+    }
   };
 
-  // Toggle bookmark functions
-  const toggleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
+  const handleClearVideo = () => {
+    setSelectedFile(null);
+    setVideoFile(null);
+    document.querySelector("input[type='file']").value = "";
   };
 
-  const toggleBookmarkIcon = () => {
-    setIsBookmarkIcon(!isBookmarkIcon);
+  const handleVideoUpload = async () => {
+    if (!selectedFile) {
+      alert("Please select a file before uploading.");
+      return;
+    }
+  
+    const file = selectedFile;
+  
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File size should not exceed 10 MB.");
+      return;
+    }
+  
+    try {
+      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
+      const storage = getStorage();
+      const storageRef = ref(storage, `videos/${sanitizedFileName}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const videoURL = await getDownloadURL(snapshot.ref);
+  
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+  
+      if (!currentUser) {
+        alert("You must be logged in to upload a video.");
+        return;
+      }
+  
+      const serviceNameData = {
+        serviceName: item?.serviceName || "Unknown Service", 
+        userId: currentUser.uid, 
+        videoURL,
+        timestamp: new Date(),
+      };
+  
+      const servicesRef = collection(db, "services");
+      const docRef = await addDoc(servicesRef, serviceNameData);
+  
+      setVideoFile(videoURL);
+      setSelectedFile(null);
+      document.querySelector("input[type='file']").value = "";
+
+    } catch (error) {
+      console.error("Error uploading video:", error);
+      alert("Failed to upload video. Please try again.");
+    }
+  };
+  
+
+  const handleReviewTabClick = () => {
+    setShowReviews(true);
+    fetchReviews();
   };
 
-  // Slider settings (not used in this component)
-  const settings = {
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    swipeToSlide: true,
-    infinite: true,
-    variableWidth: true,
-    autoplaySpeed: 2000,
-    dots: false,
-    arrows: false,
+  const handleReviewSubmit = async () => {
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        alert("You must be logged in to submit a review.");
+        return;
+      }
+
+      const userRef = doc(db, "users", currentUser.uid);
+      const userDoc = await getDoc(userRef);
+
+      let userPhotoURL = "";
+      if (userDoc.exists()) {
+        userPhotoURL = userDoc.data().photo_url;
+      }
+
+      let userName = "";
+      if (userDoc.exists()) {
+        userName = userDoc.data().display_name || userDoc.data().email;
+      } else {
+        userName = currentUser.display_name || currentUser.email;
+      }
+
+      const reviewData = {
+        name: userName,
+        review: reviewText,
+        rating,
+        userId: currentUser.uid,
+        photoURL: userPhotoURL,
+        timestamp: new Date(),
+      };
+
+      const reviewId = await saveReview(reviewData);
+
+      setReviews((prevReviews) => [...prevReviews, { id: reviewId, ...reviewData }]);
+
+      setReviewText("");
+      setRating(0);
+      setShowReviewForm(false);
+    } catch (error) {
+      console.error("Failed to save review:", error);
+    }
   };
 
-  // Show loading component while data is being fetched
+  const fetchReviews = async () => {
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
 
-  // Render the component
+      if (!currentUser) {
+        console.error("User is not logged in.");
+        setReviews([]);
+        return;
+      }
+
+      const reviewsRef = collection(db, "reviews");
+      const q = query(reviewsRef, where("userId", "==", currentUser.uid));
+      const querySnapshot = await getDocs(q);
+
+      const userReviews = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setReviews(userReviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
   return (
     <div className="des-project-detail-container">
-      {/* Single description section start */}
       <section id="single-description-screen1">
         <div className="des-first-desc-img-sec">
-          {/* Project image */}
           <div className="hero-img-desc">
-            <div className="d-flex justify-content-center">
-              {/* <img
-                src={HeaderImg}
-                alt="social-media-img"
-                height="400"
-                width="400"
-                className="des-img-fluid"
-              /> */}
+          <div className="d-flex justify-content-center">
+            <div className="video-upload-container">
+              <div className="video-upload-wrapper">
+              
+                <input
+                  type="file"
+                  accept="video/mp4"
+                  onChange={handleFileChange}
+                />
+                {selectedFile && (
+                  <div>
+                    <p>Selected Video: {selectedFile.name}</p>
+                    <button onClick={handleClearVideo}>Clear Video</button>
+                  </div>
+                )}
+                <p>Upload a video of (Max size: 10 MB)</p>
+                <button onClick={handleVideoUpload}>Upload Video</button>
 
-              <YouTubePreview />
+                {/* Display success message after upload */}
+                {uploadMessage && <p>{uploadMessage}</p>}
+                {videoFile && (
+                  <div>
+                    {/* <p>Video uploaded successfully!</p> */}
+                  </div>
+                )}
+              </div>
             </div>
-
-            {/* Back button and bookmark icon */}
+          </div>
             <div className="single-courses-top">
               <div className="course-back-icon">
                 <svg
@@ -222,519 +245,171 @@ const ProjectDetails = () => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <mask
-                    id="mask0_330_7385"
-                    style={{ maskType: "alpha" }}
-                    maskUnits="userSpaceOnUse"
-                    x="0"
-                    y="0"
-                    width="24"
-                    height="24"
-                  >
-                    <rect width="24" height="24" fill="black" />
-                  </mask>
-                  <g mask="url(#mask0_330_7385)">
-                    <path
-                      d="M15 18L9 12L15 6"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </g>
+                  <path
+                    d="M15 18L9 12L15 6"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
               <div className="single-courses-bookmark-icon">
                 <a
-                  href=""
+                  href="#"
                   className={`item-bookmark ${isBookmarked ? "active" : ""}`}
                   onClick={toggleBookmark}
-                  tabIndex="0"
                 >
                   <img src={BookmarkSvg} alt="bookmark-icon" />
                 </a>
               </div>
             </div>
-            {item?.uid && user?.uid && item.uid === user.uid && (
-              <>
-                <button
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    flexDirection: "row",
-                    backgroundColor: "#0a65fc",
-                    color: "white",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    marginTop: "10px",
-                    marginLeft: "140px",
-                  }}
-                  onClick={handleButtonClick}
-                >
-                  <UploadIcon sx={{ color: "white", padding: "2px" }} />
-                  Upload Video
-                </button>
-                {/* Hidden file input */}
-                <input
-                  type="file"
-                  accept="video/*"
-                  ref={fileInputRef}
-                  style={{ display: "none" }}
-                  onChange={handleFileChange}
-                />
-              </>
-            )}
           </div>
-          {/* Project details */}
+
           <div className="desc-container">
             <div className="des-clearsingle-courses-description">
-              {/* Skills and price */}
-              {/* <div className="first-decs-sec mt-16">
-                 <div className="first-decs-sec-wrap">
-                  <div className="skills-left-sec">
-                     <div className="first-left-sec">
-                      <div> {"Design"}</div>
-                    </div>
-                    <div className="first-left-sec">
-                      <div> {"UI/UX"}</div>
-                    </div>
-                    <div className="first-left-sec">
-                      <div> {"Figma"}</div>
-                    </div> 
-                  </div>
-
-                  <div className="first-right-sec">
-                    <div>
-                      <span className="firs-txt2">₹{item.servicePrice}</span>
-                    </div>
-                  </div>
-                </div> 
-              </div> */}
-              {/* Project title and details */}
-              <div className="second-decs-sec ">
+              <div className="second-decs-sec">
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
-                    {pageLoading == false ? (
-                      <>
-                        <h1 className="second-txt1">{item.serviceName}</h1>
-                      </>
-                    ) : (
-                      <Skeleton
-                        height={40}
-                        width={200}
-                        variant="text"
-                        className=""
-                      ></Skeleton>
-                    )}
-                    {pageLoading == false ? (
-                      <>
-                        <span className="firs-txt2">₹{item.servicePrice}</span>
-                      </>
-                    ) : (
-                      <Skeleton
-                        height={40}
-                        width={80}
-                        variant="text"
-                        className=""
-                      ></Skeleton>
-                    )}
+                    <h1 className="second-txt1">{item.serviceName}</h1>
+                    <span className="firs-txt2">₹{item.servicePrice}</span>
                   </div>
-                  {showEditForm && (
-                    <EditServiceForm
-                      initialDetails={item}
-                      onSave={(updatedDetails) => {
-                        console.log("Updated Service:", updatedDetails);
-                        setShowEditForm(false); // Hide the form after saving
-                      }}
-                      onCancel={() => setShowEditForm(false)} // Hide the form on cancel
-                    />
-                  )}
 
                   <div className="second-decs-sec-bottom">
                     <div className="second-decs-sec-bottom-wrap">
                       <div className="mt-12">
-                        <span className="student-img mr-8">
-                          <GroupIcon sx={{ color: "#0a65fc" }} />
-                        </span>
+                        <GroupIcon sx={{ color: "#0a65fc" }} />
                         <span className="second-txt2">0 Application</span>
                       </div>
                       <div className="mt-12">
-                        <span className="student-img mr-8 fillStar">
-                          <StarRateIcon sx={{ color: "#0a65fc" }} />
-                        </span>
+                        <StarRateIcon sx={{ color: "#0a65fc" }} />
                         <span className="second-txt2">Level: Medium</span>
                       </div>
                       <div className="mt-12">
-                        <span className="student-img mr-8">
-                          <AccessTimeFilledIcon sx={{ color: "#0a65fc" }} />
+                        <AccessTimeFilledIcon sx={{ color: "#0a65fc" }} />
+                        <span className="second-txt2">
+                          {item.serviceDuration} {item.serviceDurationType}
                         </span>
-                        <span className="second-txt2">89m</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              {/* Description tabs */}
+
               <div className="fifth-decs-sec mt-32">
                 <div className="fifth-decs-sec-wrap">
-                  <ul
-                    className="nav nav-pills single-courses-tab"
-                    id="description-tab"
-                    role="tablist"
-                  >
-                    <li className="nav-item" role="presentation">
+                  <ul className="nav nav-pills single-courses-tab">
+                    <li className="nav-item">
                       <button
                         className="nav-link active"
-                        id="description-tab-btn"
                         data-bs-toggle="pill"
                         data-bs-target="#description-content"
-                        type="button"
-                        role="tab"
-                        aria-selected="true"
                       >
                         Description
                       </button>
                     </li>
-                    <li className="nav-item" role="presentation">
+                    <li className="nav-item">
                       <button
                         className="nav-link"
-                        id="review-tab-btn"
+                        onClick={handleReviewTabClick}
                         data-bs-toggle="pill"
                         data-bs-target="#review-content"
-                        type="button"
-                        role="tab"
-                        aria-selected="false"
                       >
                         Review
                       </button>
                     </li>
-                    {/*  <li className="nav-item" role="presentation">
-                       <button
-                        className="nav-link"
-                        id="lessons-tab-btn"
-                        data-bs-toggle="pill"
-                        data-bs-target="#lesson-content"
-                        type="button"
-                        role="tab"
-                        aria-selected="false"
-                      >
-                        Assessment
-                      </button> 
-                    </li>
-                    <li className="nav-item" role="presentation"></li>*/}
                   </ul>
-                  {/* Description content */}
-                  <div className="tab-content" id="description-tabContent">
+
+                  <div className="tab-content">
                     <div
                       className="tab-pane fade show active"
                       id="description-content"
-                      role="tabpanel"
-                      tabIndex="0"
                     >
                       <div className="description-content-wrap mt-24">
-                        <div className="description-first-content">
-                          <h3 className="des-con-txt1">Details</h3>
-                          <div
-                            style={{ marginTop: "10px", marginBottom: "10px" }}
+                        <h3 className="des-con-txt1">Details</h3>
+                        <p className="des-text">{item.serviceDescription}</p>
+                        <div className="des-buy-now-description">
+                          {auth ? (
+                            <Link
+                              className="buy-now"
+                              to={`/applyproject/${projectId}`}
+                            >
+                              Apply Now
+                            </Link>
+                          ) : (
+                            <button
+                            // disabled={pageLoading}
+                            className="buy-now size-full "
+                            onClick={handleBuyNowClick}
                           >
-                            {pageLoading === true ? (
-                              <Skeleton variant="text" width={300} height={40} ></Skeleton>
-                            ) : (
-                              <>
-                                <p className="des-text">
-                                  {item.serviceDescription}
-                                </p>
-                              </>
-                            )}
-                          </div>
-                          {/* Apply Now button */}
-                          <div className="des-buy-now-description">
-                            {auth ? (
-                              <Link
-                                className="buy-now"
-                                to={`/applyproject/${projectId}`}
-                              >
-                                Apply Now
-                              </Link>
-                            ) : (
-                              <button
-                                disabled={pageLoading}
-                                className="buy-now size-full "
-                                onClick={handleBuyNowClick}
-                              >
-                                Buy Now
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* review content */}
-                  {/* <div
-                    className="tab-pane fade"
-                    id="review-content"
-                    role="tabpanel"
-                    tabIndex="0"
-                  >
-                    <div className="review-content-wrap mt-24">
-                      <h3 className="des-con-txt1">User Reviews</h3>
-                      <div
-                        className="review-list"
-                        style={{ marginTop: "10px", marginBottom: "10px" }}
-                      >
-                        {reviews.map((review) => (
-                          <div className="review-item" key={review.id}>
-                            <img
-                              src={review.profilePic}
-                              alt={`${review.name}'s profile`}
-                              className="review-profile-pic"
-                            />
-                            <div className="review-details">
-                              <h4 className="review-name">{review.name}</h4>
-                              <p className="review-text">{review.review}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div> */}
-                  <div
-                    className="tab-pane fade"
-                    id="review-content"
-                    role="tabpanel"
-                    tabIndex="0"
-                  >
-                    <div className="review-content-wrap mt-24">
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        {/* User Reviews Heading */}
-                        <h3 className="des-con-txt1">User Reviews</h3>
-
-                        {/* Leave Review Button */}
-                        {user && (
-                          <button
-                            style={{
-                              backgroundColor: "#0a65fc",
-                              color: "white",
-                              fontSize: "12px",
-                              padding: "2px 8px",
-                              borderRadius: "4px",
-                              border: "none",
-                              cursor: "pointer",
-                            }}
-                            onClick={handleLeaveReviewClick}
-                          >
-                            Leave Review
+                            Buy Now
                           </button>
-                        )}
-                      </div>
-                      {showReviewBox && (
-                        <LeaveReviewBox onCancel={handleCancelClick} />
-                      )}
-                      <div
-                        className="review-list"
-                        style={{ marginTop: "10px", marginBottom: "10px" }}
-                      >
-                        {serviceReviews.map((review) => (
-                          <div className="review-item" key={review.id}>
-                            {/* Profile Picture */}
-                            <img
-                              src={review.profilePic}
-                              alt={`${review.name}'s profile`}
-                              className="review-profile-pic"
-                            />
-                            <div className="review-details">
-                              {/* User Name */}
-                              <div>
-                                <h4 className="review-name">{review.name}</h4>
-
-                                {/* User Review */}
-                                <p className="review-text">{review.review}</p>
-                              </div>
-                              {/* Star Rating */}
-                              <div className="review-stars">
-                                {Array.from({ length: 5 }).map((_, index) => (
-                                  <span key={index}>
-                                    {index < review.rating ? (
-                                      <StarRateIcon sx={{ color: "#0a65fc" }} />
-                                    ) : (
-                                      <StarBorderIcon
-                                        sx={{ color: "#0a65fc" }}
-                                      />
-                                    )}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {/* Assessment content */}
-                  <div className="tab-content" id="lessons-tabContent">
-                    <div
-                      className="tab-pane fade show"
-                      id="lesson-content"
-                      role="tabpanel"
-                      tabIndex="0"
-                    >
-                      <div className="lesson-content-wrap mt-24">
-                        <div className="lesson-first-content">
-                          <div className="lesson-first-content-top">
-                            <div className="lesson-first-content-wrap">
-                              <div className="lesson-course">
-                                <h3 className="des-con-txt1">Course content</h3>
-                              </div>
-                              <div className="lesson-expand">
-                                <p className="lesson-txt1">Expand Sections</p>
-                              </div>
-                            </div>
+
+                    <div className="tab-pane fade" id="review-content">
+                      <div className="review-content-wrap mt-24">
+                        <h2 className="review-heading">What Our Users Say</h2>
+
+                        <div className="review-form">
+                          <textarea
+                            placeholder="Write your review here..."
+                            value={reviewText}
+                            onChange={(e) => setReviewText(e.target.value)}
+                            className="review-textarea"
+                          />
+                          <div className="rating-input">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                              <span key={index} onClick={() => setRating(index + 1)}>
+                                {index < rating ? (
+                                  <StarRateIcon sx={{ color: "#0a65fc" }} />
+                                ) : (
+                                  <StarBorderIcon sx={{ color: "#0a65fc" }} />
+                                )}
+                              </span>
+                            ))}
+                            
                           </div>
+                          <button
+                            className="submit-review-btn"
+                            onClick={handleReviewSubmit}
+                          >
+                            Submit Review
+                          </button>
                         </div>
-                        {/* Accordion for course content */}
-                        <div className="lesson-second-content">
-                          <div className="lesson-second-content-bottom">
-                            <div className="accordion" id="lesson-introduction">
-                              {/* Introduction section */}
-                              <div className="accordion-item mt-16">
-                                <h2
-                                  className="accordion-header"
-                                  id="lesson-title1"
-                                >
-                                  <button
-                                    className="accordion-button lesson-custom-btn"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapse1"
-                                    aria-expanded="true"
-                                  >
-                                    <span className="lesson-title">
-                                      Introduction
-                                    </span>
-                                    <span className="lesson-custom-time">
-                                      5 min
-                                    </span>
-                                  </button>
-                                </h2>
-                                <div
-                                  id="collapse1"
-                                  className="accordion-collapse collapse show"
-                                  data-bs-parent="#lesson-introduction"
-                                >
-                                  <div className="accordion-body">
-                                    <div className="lesson-intro-content mt-12">
-                                      <div className="lesson-intro-content-wrap">
-                                        <span className="lesson-txt2">
-                                          Promotion
+
+                        {showReviews && reviews.length > 0 && (
+                          <div className="review-list-container">
+                            <div className="review-list">
+                              {reviews.map((review) => (
+                                <div className="review-item" key={review.id}>
+                                  <img
+                                    src={review.photoURL}
+                                    alt={`${review.name}'s profile`}
+                                    className="review-profile-pic"
+                                  />
+                                  <div className="review-details">
+                                    <h4 className="review-name">{review.name}</h4>
+                                    <p className="review-text">{review.review}</p>
+                                    <div className="review-stars">
+                                      {Array.from({ length: 5 }).map((_, index) => (
+                                        <span key={index}>
+                                          {index < review.rating ? (
+                                            <StarRateIcon sx={{ color: "#0a65fc" }} />
+                                          ) : (
+                                            <StarBorderIcon sx={{ color: "#0a65fc" }} />
+                                          )}
                                         </span>
-                                        <span className="lesson-lock-img">
-                                          <img
-                                            src={LockIconSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
-                                      <div className="lesson-intro-content-wrap mt-12">
-                                        <span className="lesson-txt2">
-                                          Introduction
-                                        </span>
-                                        <span className="lesson-lock-img">
-                                          <img
-                                            src={LockIconSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
-                                      <div className="lesson-intro-content-wrap mt-12">
-                                        <span className="lesson-txt2 color-grey">
-                                          Course Material
-                                        </span>
-                                        <span className="lesson-lock-img color-grey">
-                                          <img
-                                            src={DisableLockSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
+                                      ))}
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                              {/* How Grids Work section */}
-                              <div className="accordion-item mt-16">
-                                <h2
-                                  className="accordion-header"
-                                  id="lesson-title2"
-                                >
-                                  <button
-                                    className="accordion-button lesson-custom-btn"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapse2"
-                                    aria-expanded="true"
-                                  >
-                                    <span className="lesson-title">
-                                      How Grids Work
-                                    </span>
-                                    <span className="lesson-custom-time">
-                                      21 min
-                                    </span>
-                                  </button>
-                                </h2>
-                                <div
-                                  id="collapse2"
-                                  className="accordion-collapse collapse"
-                                  data-bs-parent="#lesson-introduction"
-                                >
-                                  <div className="accordion-body">
-                                    <div className="lesson-intro-content mt-12">
-                                      <div className="lesson-intro-content-wrap">
-                                        <span className="lesson-txt2">
-                                          Promotion
-                                        </span>
-                                        <span className="lesson-lock-img">
-                                          <img
-                                            src={LockIconSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
-                                      <div className="lesson-intro-content-wrap mt-12">
-                                        <span className="lesson-txt2">
-                                          Introduction
-                                        </span>
-                                        <span className="lesson-lock-img">
-                                          <img
-                                            src={LockIconSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
-                                      <div className="lesson-intro-content-wrap mt-12">
-                                        <span className="lesson-txt2 color-grey">
-                                          Course Material
-                                        </span>
-                                        <span className="lesson-lock-img color-grey">
-                                          <img
-                                            src={DisableLockSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+                              ))}
                             </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -743,42 +418,7 @@ const ProjectDetails = () => {
             </div>
           </div>
         </div>
-        {/* <YouTubePreview /> */}
       </section>
-      {/* Single description section end */}
-      {/* Video modal start */}
-      {/* <div
-        className="modal"
-        id="review-video-modal"
-        tabIndex="-1"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-             <div className="modal-header">
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div> 
-             <div className="modal-body">
-              <iframe
-                src="https://www.youtube.com/embed/1SZle1skb84?si=2wmkzqF3sKhSy3xH"
-                title="YouTube video player"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen=""
-              ></iframe>
-             
-            </div> 
-            
-           </div>
-        </div> 
-       
-      </div> */}
-      {/* Video modal end */}
-
       {showModal && (
         <WalletModal
           service={item}
@@ -790,5 +430,6 @@ const ProjectDetails = () => {
     </div>
   );
 };
+
 
 export default ProjectDetails;
