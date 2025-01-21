@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import "./projectDetail.css";
 import { saveReview } from "./firestoreHelpers";
 import { getAuth } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
@@ -122,8 +122,13 @@ const ProjectDetails = () => {
         timestamp: new Date(),
       };
 
-      const servicesRef = collection(db, "services");
-      const docRef = await addDoc(servicesRef, serviceNameData);
+      await setDoc(
+        doc(db, "services", projectId),
+        {
+          videoUrl: videoURL,
+        },
+        { merge: true }
+      );
 
       setVideoFile(videoURL);
       setSelectedFile(null);
@@ -224,29 +229,43 @@ const ProjectDetails = () => {
         <div className="des-first-desc-img-sec">
           <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
-              <div className="video-upload-container">
-                <div className="video-upload-wrapper">
-                  <input
-                    type="file"
-                    accept="video/mp4"
-                    onChange={handleFileChange}
-                  />
-                  {selectedFile && (
-                    <div>
-                      <p>Selected Video: {selectedFile.name}</p>
-                      <button onClick={handleClearVideo}>Clear Video</button>
-                    </div>
-                  )}
-                  <p>Upload a video of (Max size: 10 MB)</p>
-                  <button onClick={handleVideoUpload}>Upload Video</button>
-
-                  {/* Display success message after upload */}
-                  {uploadMessage && <p>{uploadMessage}</p>}
-                  {videoFile && (
-                    <div>{/* <p>Video uploaded successfully!</p> */}</div>
-                  )}
+              {videoFile || item.videoUrl ? (
+                <div className="w-[400px] h-[300px] relative flex items-center justify-center">
+                  <video
+                    controls
+                    src={item.videoURL || videoFile}
+                    className="absolute size-full object-cover"
+                  ></video>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div className="video-upload-container">
+                    <div className="video-upload-wrapper">
+                      <input
+                        type="file"
+                        accept="video/mp4"
+                        onChange={handleFileChange}
+                      />
+                      {selectedFile && (
+                        <div>
+                          <p>Selected Video: {selectedFile.name}</p>
+                          <button onClick={handleClearVideo}>
+                            Clear Video
+                          </button>
+                        </div>
+                      )}
+                      <p>Upload a video of (Max size: 10 MB)</p>
+                      <button onClick={handleVideoUpload}>Upload Video</button>
+
+                      {/* Display success message after upload */}
+                      {uploadMessage && <p>{uploadMessage}</p>}
+                      {videoFile && (
+                        <div>{/* <p>Video uploaded successfully!</p> */}</div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
             <div className="single-courses-top">
               <div className="course-back-icon">
