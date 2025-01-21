@@ -18,8 +18,9 @@ import {
   IconButton,
   CircularProgress,
   Chip,
-} from "@mui/material";
-import { Plus, ArrowDownCircle, X } from "lucide-react";
+  Grid
+} from '@mui/material';
+import { Plus, ArrowDownCircle, X } from 'lucide-react';
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useWallet from "../../../hooks/Wallet/useWallet";
@@ -39,6 +40,16 @@ const WalletPage = () => {
   const [balance, setBalance] = useState(10);
   const { wallet, loaded, getTransactions, getAmountInWallet } = useWallet();
   const [loading, setLoading] = useState(true);
+
+
+  useEffect(( ) => {
+    if(loaded === true){
+      console.log(wallet.amount)
+      setLoading(false)
+      setBalance(wallet.amount);
+    }
+  }, [loaded])
+  
   const [transactionsData, setTransactionsData] = useState(null);
   const [pageLoading, setPageLoading] = useState(false);
   const fetchTransactions = async (uid) => {
@@ -148,6 +159,14 @@ const WalletPage = () => {
     const [ifscCode, setIfscCode] = useState("");
     const [amount, setAmount] = useState("");
     const [errors, setErrors] = useState({});
+
+
+    const remainingBalance = () => {
+      const withdrawAmount = parseFloat(amount) || 0;
+      const remaining = balance - withdrawAmount;
+      return remaining >= 0 ? remaining.toFixed(2) : '0.00';
+    };
+
     const [loading, setLoading] = useState(false);
     const { requestWithdraw } = useWallet();
 
@@ -158,6 +177,8 @@ const WalletPage = () => {
       if (!bankName.trim()) newErrors.bankName = "Bank name is required.";
       if (!ifscCode.trim()) newErrors.ifscCode = "IFSC code is required.";
       const withdrawAmount = parseFloat(amount);
+      console.log(`wa: ${withdrawAmount}, blance: ${balance}`);
+      
       if (!amount.trim() || isNaN(withdrawAmount) || withdrawAmount <= 0)
         newErrors.amount = "Enter a valid amount.";
       else if (withdrawAmount > balance)
@@ -235,30 +256,52 @@ const WalletPage = () => {
             sx={{ mb: 2 }}
           />
           {/* Amount Input */}
-          <TextField
-            fullWidth
-            type="number"
-            label="Amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount"
-            error={!!errors.amount}
-            helperText={errors.amount}
-            InputProps={{
-              startAdornment: (
-                <Typography
-                  sx={{
-                    fontSize: "1rem",
-                    marginRight: "15px",
-                    color: "text.secondary",
-                  }}
-                >
-                  ₹
-                </Typography>
-              ),
-            }}
-            sx={{ mb: 2 }}
-          />
+          <Grid container spacing={2} alignItems="center">
+          <Grid item xs={7}>
+            <TextField
+              fullWidth
+              type="number"
+              label="Amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Enter amount"
+              error={!!errors.amount}
+              helperText={errors.amount}
+              InputProps={{
+                startAdornment: (
+                  <Typography
+                    sx={{
+                      fontSize: "1rem",
+                      marginRight: "8px",
+                      color: "text.secondary",
+                    }}
+                  >
+                    ₹
+                  </Typography>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid item xs={5}>
+            <Box
+              sx={{
+                backgroundColor: "background.paper",
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: 1,
+                p: 1,
+                textAlign: "center",
+              }}
+            >
+              <Typography variant="caption" color="text.secondary">
+                Remaining Balance
+              </Typography>
+              <Typography variant="h6" color="primary.main" fontWeight="bold">
+                ₹{remainingBalance()}
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} variant="outlined" color="inherit">
@@ -497,15 +540,11 @@ const WalletPage = () => {
         </Paper>
 
         {/* Modals */}
-        <AddFundsModal
-          userData={userData}
-          open={showAddModal}
-          onClose={() => setShowAddModal(false)}
-        />
-        <WithdrawFundsModal
-          open={showWithdrawModal}
-          onClose={() => setShowWithdrawModal(false)}
-        />
+
+        <AddFundsModal userData={userData} open={showAddModal} onClose={() => setShowAddModal(false)} />
+        <WithdrawFundsModal open={showWithdrawModal} onClose={() => setShowWithdrawModal(false)} balance={balance}/>
+        <RequestWithdrawModal open={showRequestWithdrawModal} onClose={() => setShowRequestWithdrawModal(false)} />
+
       </Box>
     </Box>
   );
