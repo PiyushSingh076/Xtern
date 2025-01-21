@@ -18,6 +18,7 @@ import useFetchUserData from "../hooks/Auth/useFetchUserData";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { ImTab } from "react-icons/im";
+import { getDoc } from "firebase/firestore";
 
 const ProjectDetails = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
@@ -31,7 +32,13 @@ const ProjectDetails = () => {
   console.log(auth);
 
   const location = useLocation();
-  const { item } = location.state || {};
+  const [item, setItem] = useState({})
+
+  useEffect(() => {
+    async function getItem(){
+     
+    }
+  })
 
   const handleBackClick = () => {
     navigate(-1); // This will navigate to the previous page in the history stack
