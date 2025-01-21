@@ -348,3 +348,260 @@
     font-size: 32px;
   }
 }
+
+.review-content-wrap {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  width: 70%;
+}
+
+.review-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.review-profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  object-fit: cover;
+}
+
+.review-details {
+  flex: 1;
+}
+
+.review-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 5px;
+}
+
+.review-text {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.review-stars {
+  display: flex;
+  gap: 4px;
+}
+
+.review-form {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.rating-input {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  resize: none;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #3374ae;
+}
+
+
+.video-upload-container {
+  text-align: center;
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px dashed #3374ae;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+}
+
+.review-content-wrap {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  width: 100%;
+}
+
+.video-upload-container {
+  text-align: center;
+  max-width: 400px; /* Ensure fixed container width */
+  margin: 0 auto; /* Center the container */
+}
+
+.video-upload-container input {
+  margin-bottom: 20px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.video-upload-container p {
+  font-size: 18px;
+  color: #444;
+  margin-bottom: 12px;
+}
+
+.video-upload-container button {
+  background-color: #0056b3; /* Darker blue */
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.video-upload-container button:hover {
+  background-color: #004494; /* Even darker blue */
+  transform: scale(1.05);
+}
+
+.video-upload-container button:active {
+  transform: scale(1);
+}
+
+video {
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Responsive to container */
+  max-width: 400px; /* Limit video width */
+  height: auto; /* Maintain aspect ratio */
+  margin: 20px auto; /* Center the video */
+  display: block;
+}
+
+.video-upload-container video {
+  position: relative; /* Ensure no shifting happens */
+  display: block;
+}
+
+.video-upload-container {
+  overflow: hidden; /* Prevent right-side shifting */
+}
+
+
+.review-content-wrap, .video-upload-container {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.review-list-container {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  position: relative;
+}
+
+.review-list {
+  padding-bottom: 30px;
+}
+
+.show-more-reviews {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+}
+
+.show-more-reviews svg {
+  transition: transform 0.3s ease-in-out;
+}
+
+.show-more-reviews:hover svg {
+  transform: translateY(5px);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.submit-review-btn {
+  background-color: #3374ae;
+  color: #fff;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.submit-review-btn:hover {
+  background-color: #285a8e;
+}
+
+.review-text, .description {
+  word-break: break-all;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+
+.single-courses-tab {
+  border-bottom: 1px solid #e0e0e0; /* Light white line below the tabs */
+  width: 100%; /* Ensure the border spans the entire width */
+  margin-bottom: -1px; /* Adjust positioning to avoid overlap with the active tab line */
+}
+
+.nav-pills .nav-link {
+  border: none; /* Remove any default borders */
+  border-radius: 0; /* No rounded corners for a clean design */
+}
+
+.nav-pills .nav-link.active {
+  border-bottom: 3px solid #007bff; /* Blue line for the active tab */
+  margin-bottom: -2px; /* Ensure active line doesn't shift the layout */
+}
+
+.nav-item {
+  flex-grow: 1; /* Distribute nav items evenly */
+  text-align: center; /* Center-align the text in tabs */
+}
