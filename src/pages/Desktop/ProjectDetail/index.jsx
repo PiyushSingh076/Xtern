@@ -14,7 +14,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import WalletModal from "./WalletModal";
-
+import { Skeleton } from "@mui/material";
 
 const db = getFirestore();
 
@@ -27,13 +27,28 @@ const ProjectDetails = () => {
   const [videoFile, setVideoFile] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [showReviews, setShowReviews] = useState(false);
-  const [uploadMessage, setUploadMessage] = useState('');
+  const [uploadMessage, setUploadMessage] = useState("");
 
   const navigate = useNavigate();
   const { projectId } = useParams();
   const auth = useSelector((state) => state.role.auth);
   const location = useLocation();
-  const { item } = location.state || {};
+  const [pageLoading, setPageLoading] = useState(false);
+  const [item, setItem] = useState({});
+
+  useEffect(() => {
+    const fetchItem = async () => {
+      setPageLoading(true);
+      const serviceSnapshot = await getDoc(doc(db, "services", projectId));
+
+      if (serviceSnapshot.exists()) {
+        console.log("service data", serviceSnapshot.data());
+        setItem(serviceSnapshot.data());
+      }
+      setPageLoading(false);
+    };
+    fetchItem();
+  }, []);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -45,9 +60,9 @@ const ProjectDetails = () => {
 
   useEffect(() => {
     if (videoFile) {
-      setUploadMessage('Video uploaded successfully!');
+      setUploadMessage("Video uploaded successfully!");
       const timer = setTimeout(() => {
-        setUploadMessage('');
+        setUploadMessage("");
       }, 4000);
       return () => clearTimeout(timer);
     }
@@ -77,49 +92,47 @@ const ProjectDetails = () => {
       alert("Please select a file before uploading.");
       return;
     }
-  
+
     const file = selectedFile;
-  
+
     if (file.size > 10 * 1024 * 1024) {
       alert("File size should not exceed 10 MB.");
       return;
     }
-  
+
     try {
       const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
       const storage = getStorage();
       const storageRef = ref(storage, `videos/${sanitizedFileName}`);
       const snapshot = await uploadBytes(storageRef, file);
       const videoURL = await getDownloadURL(snapshot.ref);
-  
+
       const auth = getAuth();
       const currentUser = auth.currentUser;
-  
+
       if (!currentUser) {
         alert("You must be logged in to upload a video.");
         return;
       }
-  
+
       const serviceNameData = {
-        serviceName: item?.serviceName || "Unknown Service", 
-        userId: currentUser.uid, 
+        serviceName: item?.serviceName || "Unknown Service",
+        userId: currentUser.uid,
         videoURL,
         timestamp: new Date(),
       };
-  
+
       const servicesRef = collection(db, "services");
       const docRef = await addDoc(servicesRef, serviceNameData);
-  
+
       setVideoFile(videoURL);
       setSelectedFile(null);
       document.querySelector("input[type='file']").value = "";
-
     } catch (error) {
       console.error("Error uploading video:", error);
       alert("Failed to upload video. Please try again.");
     }
   };
-  
 
   const handleReviewTabClick = () => {
     setShowReviews(true);
@@ -162,7 +175,10 @@ const ProjectDetails = () => {
 
       const reviewId = await saveReview(reviewData);
 
-      setReviews((prevReviews) => [...prevReviews, { id: reviewId, ...reviewData }]);
+      setReviews((prevReviews) => [
+        ...prevReviews,
+        { id: reviewId, ...reviewData },
+      ]);
 
       setReviewText("");
       setRating(0);
@@ -207,34 +223,31 @@ const ProjectDetails = () => {
       <section id="single-description-screen1">
         <div className="des-first-desc-img-sec">
           <div className="hero-img-desc">
-          <div className="d-flex justify-content-center">
-            <div className="video-upload-container">
-              <div className="video-upload-wrapper">
-              
-                <input
-                  type="file"
-                  accept="video/mp4"
-                  onChange={handleFileChange}
-                />
-                {selectedFile && (
-                  <div>
-                    <p>Selected Video: {selectedFile.name}</p>
-                    <button onClick={handleClearVideo}>Clear Video</button>
-                  </div>
-                )}
-                <p>Upload a video of (Max size: 10 MB)</p>
-                <button onClick={handleVideoUpload}>Upload Video</button>
+            <div className="d-flex justify-content-center">
+              <div className="video-upload-container">
+                <div className="video-upload-wrapper">
+                  <input
+                    type="file"
+                    accept="video/mp4"
+                    onChange={handleFileChange}
+                  />
+                  {selectedFile && (
+                    <div>
+                      <p>Selected Video: {selectedFile.name}</p>
+                      <button onClick={handleClearVideo}>Clear Video</button>
+                    </div>
+                  )}
+                  <p>Upload a video of (Max size: 10 MB)</p>
+                  <button onClick={handleVideoUpload}>Upload Video</button>
 
-                {/* Display success message after upload */}
-                {uploadMessage && <p>{uploadMessage}</p>}
-                {videoFile && (
-                  <div>
-                    {/* <p>Video uploaded successfully!</p> */}
-                  </div>
-                )}
+                  {/* Display success message after upload */}
+                  {uploadMessage && <p>{uploadMessage}</p>}
+                  {videoFile && (
+                    <div>{/* <p>Video uploaded successfully!</p> */}</div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
             <div className="single-courses-top">
               <div className="course-back-icon">
                 <svg
@@ -271,8 +284,30 @@ const ProjectDetails = () => {
               <div className="second-decs-sec">
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
-                    <h1 className="second-txt1">{item.serviceName}</h1>
-                    <span className="firs-txt2">₹{item.servicePrice}</span>
+                    {pageLoading == false ? (
+                      <>
+                        <h1 className="second-txt1">{item.serviceName}</h1>
+                      </>
+                    ) : (
+                      <Skeleton
+                        height={40}
+                        width={200}
+                        variant="text"
+                        className=""
+                      ></Skeleton>
+                    )}
+                    {pageLoading == false ? (
+                      <>
+                        <span className="firs-txt2">₹{item.servicePrice}</span>
+                      </>
+                    ) : (
+                      <Skeleton
+                        height={40}
+                        width={80}
+                        variant="text"
+                        className=""
+                      ></Skeleton>
+                    )}
                   </div>
 
                   <div className="second-decs-sec-bottom">
@@ -327,7 +362,19 @@ const ProjectDetails = () => {
                     >
                       <div className="description-content-wrap mt-24">
                         <h3 className="des-con-txt1">Details</h3>
-                        <p className="des-text">{item.serviceDescription}</p>
+                        {pageLoading === true ? (
+                          <Skeleton
+                            variant="text"
+                            width={300}
+                            height={40}
+                          ></Skeleton>
+                        ) : (
+                          <>
+                            <p className="des-text">
+                              {item.serviceDescription}
+                            </p>
+                          </>
+                        )}
                         <div className="des-buy-now-description">
                           {auth ? (
                             <Link
@@ -338,12 +385,12 @@ const ProjectDetails = () => {
                             </Link>
                           ) : (
                             <button
-                            // disabled={pageLoading}
-                            className="buy-now size-full "
-                            onClick={handleBuyNowClick}
-                          >
-                            Buy Now
-                          </button>
+                              disabled={pageLoading}
+                              className="buy-now size-full "
+                              onClick={handleBuyNowClick}
+                            >
+                              Buy Now
+                            </button>
                           )}
                         </div>
                       </div>
@@ -362,7 +409,10 @@ const ProjectDetails = () => {
                           />
                           <div className="rating-input">
                             {Array.from({ length: 5 }).map((_, index) => (
-                              <span key={index} onClick={() => setRating(index + 1)}>
+                              <span
+                                key={index}
+                                onClick={() => setRating(index + 1)}
+                              >
                                 {index < rating ? (
                                   <StarRateIcon sx={{ color: "#0a65fc" }} />
                                 ) : (
@@ -370,7 +420,6 @@ const ProjectDetails = () => {
                                 )}
                               </span>
                             ))}
-                            
                           </div>
                           <button
                             className="submit-review-btn"
@@ -391,18 +440,28 @@ const ProjectDetails = () => {
                                     className="review-profile-pic"
                                   />
                                   <div className="review-details">
-                                    <h4 className="review-name">{review.name}</h4>
-                                    <p className="review-text">{review.review}</p>
+                                    <h4 className="review-name">
+                                      {review.name}
+                                    </h4>
+                                    <p className="review-text">
+                                      {review.review}
+                                    </p>
                                     <div className="review-stars">
-                                      {Array.from({ length: 5 }).map((_, index) => (
-                                        <span key={index}>
-                                          {index < review.rating ? (
-                                            <StarRateIcon sx={{ color: "#0a65fc" }} />
-                                          ) : (
-                                            <StarBorderIcon sx={{ color: "#0a65fc" }} />
-                                          )}
-                                        </span>
-                                      ))}
+                                      {Array.from({ length: 5 }).map(
+                                        (_, index) => (
+                                          <span key={index}>
+                                            {index < review.rating ? (
+                                              <StarRateIcon
+                                                sx={{ color: "#0a65fc" }}
+                                              />
+                                            ) : (
+                                              <StarBorderIcon
+                                                sx={{ color: "#0a65fc" }}
+                                              />
+                                            )}
+                                          </span>
+                                        )
+                                      )}
                                     </div>
                                   </div>
                                 </div>
@@ -430,6 +489,5 @@ const ProjectDetails = () => {
     </div>
   );
 };
-
 
 export default ProjectDetails;
