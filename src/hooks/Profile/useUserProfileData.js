@@ -57,7 +57,12 @@ const useUserProfileData = (uid) => {
           where("userproject", "==", userRef) // Using userRef as the reference to match
         );
         const projectSnapshot = await getDocs(projectQuery);
-        const projectDetails = projectSnapshot.docs.map((doc) => doc.data());
+        const projectDetails = projectSnapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            ...doc.data(),
+          };
+        });
 
         // Fetch service details from `services` collection by querying for the user reference
         const servicesQuery = query(
@@ -65,7 +70,12 @@ const useUserProfileData = (uid) => {
           where("userRef", "==", userRef) // Use the `userRef` document reference
         );
         const servicesSnapshot = await getDocs(servicesQuery);
-        const serviceDetails = servicesSnapshot.docs.map((doc) => doc.data());
+        const serviceDetails = servicesSnapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            ...doc.data(),
+          };
+        });
         // Combine all data into a single object
         const combinedData = {
           ...userData,

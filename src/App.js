@@ -13,6 +13,7 @@ import DesktopHomeScreen from "./pages/Desktop/Homescreen/index.jsx";
 import DesktopLandingPage from "./pages/Desktop/LandingScreen/index";
 import Header from "./pages/Desktop/Header/Header";
 import DesktopProjectDetails from "./pages/Desktop/ProjectDetail";
+import DesktopBuyDetails from "./pages/Desktop/ProjectDetail/Checkout";
 import DesktopCreateProject from "./pages/Desktop/ProjectDetail/ApplyProject";
 import DesktopProfile from "./pages/Desktop/Profile/index.jsx";
 import DesktopPrefferRole from "./pages/Desktop/Prefference/XpertRole.jsx";
@@ -160,7 +161,6 @@ function App() {
 
   // comment
   return (
-
     <AuthProvider>
       <div className="App">
         {!isMobileView && !isVideoCallRoute && <Header />}
@@ -359,9 +359,7 @@ function App() {
           <Route
             path={ROUTES.LANDING_PAGE}
             element={
-              <>
-                {isMobileView ? <HomeScreen /> : <DesktopLandingPage />}
-              </>
+              <>{isMobileView ? <HomeScreen /> : <DesktopLandingPage />}</>
             }
           />
 
@@ -412,6 +410,14 @@ function App() {
               <ProtectedRoute>
                 <DesktopProjectDetails />
                 {/* {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />} */}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.BUY_CARD}
+            element={
+              <ProtectedRoute>
+                <DesktopBuyDetails />
               </ProtectedRoute>
             }
           />
@@ -754,7 +760,6 @@ function App() {
       )} */}
       </div>
     </AuthProvider>
-
   );
 }
 
