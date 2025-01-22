@@ -36,7 +36,7 @@ export function useTransactions() {
     }
   }
 
-  async function verifyPayment(orderId, paymentId, signature) {
+  async function verifyPayment(orderId, paymentId, signature, amount) {
     try {
       const verifyOrder = httpsCallable(functions, "verifyPayment");
       // const result = await verifyOrder({
@@ -51,18 +51,22 @@ export function useTransactions() {
           order_id: orderId,
           payment_id: paymentId,
           signature: signature,
+          amount: amount,
         }
       );
 
       if (result.data.success) {
         console.log("Payment verified successfully:", result.data.message);
         toast.success("Payment verified successfully!");
+        return true;
       } else {
         console.error("Failed to verify payment:", result.data.message);
+        return false;
       }
     } catch (error) {
       toast.error("Error verifying payment.");
       console.error("Error verifying payment:", error);
+      return false;
     }
   }
 
@@ -87,21 +91,25 @@ export function useTransactions() {
       order_id: orderId,
       handler: async function (response) {
         console.log("Payment Successful:", response);
-        await verifyPayment(
+        const success = await verifyPayment(
           orderId,
           response.razorpay_payment_id,
-          response.razorpay_signature
+          response.razorpay_signature,
+          amount
         );
-        await updateDoc(doc(db, "wallet", userId), {
-          amount: increment(amount),
-        });
-        await createTransaction(
-          userId,
-          amount,
-          "CREDIT",
-          "Add Funds to Account"
-        );
-        await handler()
+        if (success) {
+          await createTransaction(
+            userId,
+            amount,
+            "CREDIT",
+            "Add Funds to Account"
+          );
+        }
+        // await updateDoc(doc(db, "wallet", userId), {
+        //   amount: increment(amount),
+        // });
+
+        await handler();
       },
       prefill: {},
       theme: {
