@@ -87,11 +87,11 @@ export function useTransactions() {
       order_id: orderId,
       handler: async function (response) {
         console.log("Payment Successful:", response);
-        // await verifyPayment(
-        //   orderId,
-        //   response.razorpay_payment_id,
-        //   response.razorpay_signature
-        // );
+        await verifyPayment(
+          orderId,
+          response.razorpay_payment_id,
+          response.razorpay_signature
+        );
         await updateDoc(doc(db, "wallet", userId), {
           amount: increment(amount),
         });
