@@ -15,6 +15,7 @@ import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import WalletModal from "./WalletModal";
 import { Skeleton } from "@mui/material";
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 
 const db = getFirestore();
 
@@ -28,6 +29,7 @@ const ProjectDetails = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [showReviews, setShowReviews] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
+  const { userData } = useFetchUserData();
 
   const navigate = useNavigate();
   const { projectId } = useParams();
@@ -394,24 +396,31 @@ const ProjectDetails = () => {
                             </p>
                           </>
                         )}
-                        <div className="des-buy-now-description">
-                          {auth ? (
+
+                        {auth ? (
+                          <div className="des-buy-now-description">
                             <Link
                               className="buy-now"
                               to={`/applyproject/${projectId}`}
                             >
                               Apply Now
                             </Link>
-                          ) : (
-                            <button
-                              disabled={pageLoading}
-                              className="buy-now size-full "
-                              onClick={handleBuyNowClick}
-                            >
-                              Buy Now
-                            </button>
-                          )}
-                        </div>
+                          </div>
+                        ) : (
+                          userData &&
+                          item &&
+                          item.userRef.id !== userData.uid && (
+                            <div className="des-buy-now-description">
+                              <button
+                                disabled={pageLoading}
+                                className="buy-now size-full "
+                                onClick={handleBuyNowClick}
+                              >
+                                Buy Now
+                              </button>
+                            </div>
+                          )
+                        )}
                       </div>
                     </div>
 
