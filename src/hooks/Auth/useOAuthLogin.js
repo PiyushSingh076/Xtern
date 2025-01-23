@@ -24,6 +24,7 @@ const useOAuthLogin = () => {
         const userData = userDoc.data();
         // console.log("User data auth:", userData);
         // Check if the phone number is verified
+        console.log("User data auth:", userData);
         if (!userDoc.exists() || userData?.isPhoneVerified === false || userData?.isPhoneVerified === null) {
           toast("Please verify your phone number", { position: "bottom-left" });
           navigate("/verifyscreen");
@@ -34,7 +35,7 @@ const useOAuthLogin = () => {
             position: "bottom-left",
           });
           navigate("/entrepreneur/"+userData.uid);
-        } else if (userData.typeUser === "Intern") {
+        } else if (userData.typeUser !== null && userData.typeUser !== "entrepreneur") {
           navigate("/profile/"+userData.uid)
         }
       } else {

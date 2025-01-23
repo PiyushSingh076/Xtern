@@ -47,11 +47,17 @@ const SignIn = () => {
       if (user) {
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
+        console.log("email password",userDoc.data(), userDocRef);
   
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          if (userData.isPhoneNumberVerified) {
-            navigate('/homescreen')
+          if (userData.isPhoneVerified) {
+            if(userData.type){
+              navigate('/homescreen')
+            }
+            else{
+              navigate('/choosetype')
+            }
           } else {
             navigate('/verifyscreen')
           }
