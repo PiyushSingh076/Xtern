@@ -153,18 +153,18 @@ export default function HomeScreen() {
             <div
               onClick={() => navigate(`/filterscreen/${category.title}`)}
               key={category.title}
-              className="categories-card"
+              className="categories-card w-[80%] sm:!w-[100%] "
             >
-              <div className="catedories-card-icon-title">
+              <div className="catedories-card-icon-title flex !flex-col !items-center sm:!flex-row !w-full">
                 <img
                   src={category.icon}
                   width={"60px"}
-                  className="xpert-icon"
+                  className="xpert-icon !m-0"
                 />
                 <span className="categories-card-title">{category.title}</span>
               </div>
 
-              <div>
+              <div className="hidden sm:block">
                 <p className="categories-desc">{category.description}</p>
               </div>
             </div>

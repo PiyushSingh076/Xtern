@@ -22,12 +22,15 @@ import AccessTime from '@mui/icons-material/AccessTime';
 import Schedule from '@mui/icons-material/Schedule';
 import { MapPin } from 'lucide-react';
 import { LocationSearchingRounded } from '@mui/icons-material';
+import useFetchUserData from '../../../hooks/Auth/useFetchUserData';
+import toast from 'react-hot-toast';
 
 const SingleJob = () => {
   const { jobId } = useParams();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const {userData} = useFetchUserData();
 
   useEffect(() => {
     const fetchJob = async () => {
@@ -36,7 +39,12 @@ const SingleJob = () => {
       try {
         const jobDoc = await getDoc(doc(db, 'jobPosting', jobId));
         if (jobDoc.exists()) {
+          if(jobDoc.data().createdBy !== userData.uid){
+            toast.error("Page does not exist")
+            navigate('/homescreen');
+          }
           setJob(jobDoc.data());
+          console.log(jobDoc.data());
         } else {
           console.log('No such job!');
         }
@@ -47,8 +55,10 @@ const SingleJob = () => {
       }
     };
 
-    fetchJob();
-  }, [jobId]);
+    if(userData){
+      fetchJob();
+    }
+  }, [jobId, userData]);
 
   if (loading) {
     return (
