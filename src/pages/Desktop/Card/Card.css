@@ -141,13 +141,23 @@
   }
 
   .card-footer {
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row; /* Ensure buttons stay in a row */
+    gap: 8px; /* Adjust spacing between buttons */
+    justify-content: space-around; /* Align buttons evenly */
   }
 
   .card-footer button {
-    width: 100%;
-    font-size: 12px;
+    width: auto; /* Allow buttons to resize based on content */
+    flex-grow: 1; /* Ensure buttons distribute space equally */
+    padding: 6px 12px; /* Reduce padding for smaller screens */
+    font-size: 14px; /* Adjust font size */
+  }
+  .card-footer button .footer-text {
+    display: inline; /* Keep text visible */
+  }
+
+  .card-footer button .footer-icon {
+    display: none; /* Hide icons in tablet view to save space */
   }
 }
 
