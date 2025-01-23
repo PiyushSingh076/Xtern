@@ -119,7 +119,7 @@ export default function SkillSet({ profileData, skillloading }) {
             <div
               key={index}
               className="service-item"
-              onClick={() => handleService(serviceItem)} // Trigger navigation to project
+              onClick={() => navigate('/project/' + serviceItem?.id)} // Trigger navigation to project
             >
               <span className="service-name" style={{ fontSize: "0.8rem" }}>
                 {serviceItem?.serviceName}

@@ -70,7 +70,7 @@ export function useTransactions() {
     }
   }
 
-  async function initiatePayment(userId, amount, handler) {
+  async function initiatePayment(userId, amount, handler, loader) {
     const orderId = await createPaymentOrder(userId, amount, "INR");
 
     console.log("Order iD:", orderId);
@@ -90,7 +90,8 @@ export function useTransactions() {
       description: "Add funds to wallet",
       order_id: orderId,
       handler: async function (response) {
-        console.log("Payment Successful:", response);
+        loader.start()
+        // console.log("Payment Successful:", response);
         const success = await verifyPayment(
           orderId,
           response.razorpay_payment_id,
@@ -105,11 +106,15 @@ export function useTransactions() {
             "Add Funds to Account"
           );
         }
+        else{
+          toast.error("An error occurred during payment.");
+        }
         // await updateDoc(doc(db, "wallet", userId), {
         //   amount: increment(amount),
         // });
 
         await handler();
+        loader.stop()
       },
       prefill: {},
       theme: {
@@ -120,6 +125,10 @@ export function useTransactions() {
     console.log("Razorpay options: ", options);
 
     const rzp = new window.Razorpay(options);
+    rzp.on('payment.failed', function (response) {
+      console.error("Payment Failed:", response);
+      toast.error(`Payment Failed.`);
+    });
     rzp.open();
   }
 

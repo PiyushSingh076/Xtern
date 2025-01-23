@@ -18,9 +18,10 @@ import {
   IconButton,
   CircularProgress,
   Chip,
-  Grid
-} from '@mui/material';
-import { Plus, ArrowDownCircle, X } from 'lucide-react';
+  Grid,
+  Skeleton,
+} from "@mui/material";
+import { Plus, ArrowDownCircle, X } from "lucide-react";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useWallet from "../../../hooks/Wallet/useWallet";
@@ -41,15 +42,14 @@ const WalletPage = () => {
   const { wallet, loaded, getTransactions, getAmountInWallet } = useWallet();
   const [loading, setLoading] = useState(true);
 
-
-  useEffect(( ) => {
-    if(loaded === true){
-      console.log(wallet.amount)
-      setLoading(false)
+  useEffect(() => {
+    if (loaded === true) {
+      console.log(wallet.amount);
+      setLoading(false);
       setBalance(wallet.amount);
     }
-  }, [loaded])
-  
+  }, [loaded]);
+
   const [transactionsData, setTransactionsData] = useState(null);
   const [pageLoading, setPageLoading] = useState(false);
   const fetchTransactions = async (uid) => {
@@ -89,7 +89,10 @@ const WalletPage = () => {
       const addAmount = parseFloat(amount);
       setLoading(true);
       try {
-        await initiatePayment(userData.uid, addAmount, paymentHandler);
+        await initiatePayment(userData.uid, addAmount, paymentHandler, {
+          start: () => setPageLoading(true),
+          stop: () => setPageLoading(false),
+        });
         // console.log("Funds added successfully");
         // const updateAmount = await getAmountInWallet(userData.uid);
         // setBalance(updateAmount)
@@ -160,11 +163,10 @@ const WalletPage = () => {
     const [amount, setAmount] = useState("");
     const [errors, setErrors] = useState({});
 
-
     const remainingBalance = () => {
       const withdrawAmount = parseFloat(amount) || 0;
       const remaining = balance - withdrawAmount;
-      return remaining >= 0 ? remaining.toFixed(2) : '0.00';
+      return remaining >= 0 ? remaining.toFixed(2) : "0.00";
     };
 
     const [loading, setLoading] = useState(false);
@@ -178,7 +180,7 @@ const WalletPage = () => {
       if (!ifscCode.trim()) newErrors.ifscCode = "IFSC code is required.";
       const withdrawAmount = parseFloat(amount);
       console.log(`wa: ${withdrawAmount}, blance: ${balance}`);
-      
+
       if (!amount.trim() || isNaN(withdrawAmount) || withdrawAmount <= 0)
         newErrors.amount = "Enter a valid amount.";
       else if (withdrawAmount > balance)
@@ -257,51 +259,51 @@ const WalletPage = () => {
           />
           {/* Amount Input */}
           <Grid container spacing={2} alignItems="center">
-          <Grid item xs={7}>
-            <TextField
-              fullWidth
-              type="number"
-              label="Amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter amount"
-              error={!!errors.amount}
-              helperText={errors.amount}
-              InputProps={{
-                startAdornment: (
-                  <Typography
-                    sx={{
-                      fontSize: "1rem",
-                      marginRight: "8px",
-                      color: "text.secondary",
-                    }}
-                  >
-                    ₹
-                  </Typography>
-                ),
-              }}
-            />
+            <Grid item xs={7}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount"
+                error={!!errors.amount}
+                helperText={errors.amount}
+                InputProps={{
+                  startAdornment: (
+                    <Typography
+                      sx={{
+                        fontSize: "1rem",
+                        marginRight: "8px",
+                        color: "text.secondary",
+                      }}
+                    >
+                      ₹
+                    </Typography>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={5}>
+              <Box
+                sx={{
+                  backgroundColor: "background.paper",
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: 1,
+                  p: 1,
+                  textAlign: "center",
+                }}
+              >
+                <Typography variant="caption" color="text.secondary">
+                  Remaining Balance
+                </Typography>
+                <Typography variant="h6" color="primary.main" fontWeight="bold">
+                  ₹{remainingBalance()}
+                </Typography>
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item xs={5}>
-            <Box
-              sx={{
-                backgroundColor: "background.paper",
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 1,
-                p: 1,
-                textAlign: "center",
-              }}
-            >
-              <Typography variant="caption" color="text.secondary">
-                Remaining Balance
-              </Typography>
-              <Typography variant="h6" color="primary.main" fontWeight="bold">
-                ₹{remainingBalance()}
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} variant="outlined" color="inherit">
@@ -422,7 +424,9 @@ const WalletPage = () => {
             }}
           >
             {pageLoading ? (
-              <div className="size-[120px] items-center justify-center flex" ><div className="spinner-border"></div></div>
+              <div className="size-[120px] items-center justify-center flex">
+                <div className="spinner-border"></div>
+              </div>
             ) : (
               <>
                 <Box
@@ -491,7 +495,7 @@ const WalletPage = () => {
           {transactionsData && (
             <>
               <TableContainer className="max-h-[400px] ">
-                <Table stickyHeader>
+                <Table stickyHeader className="relative">
                   <TableHead>
                     <TableRow>
                       <TableCell>Amount</TableCell>
@@ -502,37 +506,50 @@ const WalletPage = () => {
                       <TableCell align="center">Type</TableCell>
                     </TableRow>
                   </TableHead>
-                  <TableBody>
-                    {transactionsData.map((transaction, index) => (
-                      <TableRow key={index} hover>
-                        <TableCell>₹{transaction.amount}</TableCell>
-                        <TableCell>{transaction.description}</TableCell>
-                        <TableCell className="!hidden sm:!table-cell" l>
-                          {transaction.date
-                            ? dayjs(
-                                new Timestamp(
-                                  transaction.date.seconds,
-                                  transaction.date.nanoseconds
-                                ).toDate()
-                              ).format("DD-MM-YYYY")
-                            : "N/A"}
-                        </TableCell>
-                        <TableCell align="center">
-                          {transaction.type === "CREDIT" ? (
-                            <Chip label="CREDIT" color="success"></Chip>
-                          ) : transaction.type === "DEBIT" ? (
-                            <>
-                              <Chip label="DEBIT" color="error"></Chip>
-                            </>
-                          ) : (
-                            <>
-                              <Chip label="PENDING" color="info"></Chip>
-                            </>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
+
+                  <>
+                    <TableBody>
+                      {pageLoading && (
+                        <>
+                          <TableRow>
+                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                          </TableRow>
+                        </>
+                      )}
+                      {transactionsData.map((transaction, index) => (
+                        <TableRow key={index} hover>
+                          <TableCell>₹{transaction.amount}</TableCell>
+                          <TableCell>{transaction.description}</TableCell>
+                          <TableCell className="!hidden sm:!table-cell" l>
+                            {transaction.date
+                              ? dayjs(
+                                  new Timestamp(
+                                    transaction.date.seconds,
+                                    transaction.date.nanoseconds
+                                  ).toDate()
+                                ).format("DD-MM-YYYY")
+                              : "N/A"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {transaction.type === "CREDIT" ? (
+                              <Chip label="CREDIT" color="success"></Chip>
+                            ) : transaction.type === "DEBIT" ? (
+                              <>
+                                <Chip label="DEBIT" color="error"></Chip>
+                              </>
+                            ) : (
+                              <>
+                                <Chip label="PENDING" color="info"></Chip>
+                              </>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </>
                 </Table>
               </TableContainer>
             </>
@@ -541,10 +558,20 @@ const WalletPage = () => {
 
         {/* Modals */}
 
-        <AddFundsModal userData={userData} open={showAddModal} onClose={() => setShowAddModal(false)} />
-        <WithdrawFundsModal open={showWithdrawModal} onClose={() => setShowWithdrawModal(false)} balance={balance}/>
-        <RequestWithdrawModal open={showRequestWithdrawModal} onClose={() => setShowRequestWithdrawModal(false)} />
-
+        <AddFundsModal
+          userData={userData}
+          open={showAddModal}
+          onClose={() => setShowAddModal(false)}
+        />
+        <WithdrawFundsModal
+          open={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+          balance={balance}
+        />
+        <RequestWithdrawModal
+          open={showRequestWithdrawModal}
+          onClose={() => setShowRequestWithdrawModal(false)}
+        />
       </Box>
     </Box>
   );
