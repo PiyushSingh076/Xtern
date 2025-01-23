@@ -377,7 +377,7 @@ return (
                 style={{ display: "none" }}
                 id="profile-image-upload"
                 type="file"
-                onChange={handleImageUpload}
+                onChange={(e) => handleImageUpload(e, () => {})}
 
               />
               <label htmlFor="profile-image-upload">

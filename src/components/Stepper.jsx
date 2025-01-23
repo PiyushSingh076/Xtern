@@ -35,11 +35,11 @@ const Stepper = ({ data }) => {
   const [Id, setId] = useState(1);
   const [jobTitle, setJobTitle] = useState(data?.title || "");
   const [companyName, setCompanyName] = useState(data?.companyName || "");
-  const [fileName, setFileName] = useState(data?.file.fileName || "");
+  const [fileName, setFileName] = useState(data?.file || "");
   const [file, setFile] = useState([]);
-  const [fileSize, setFileSize] = useState(data?.file.fileSize || null);
+  const [fileSize, setFileSize] = useState(data?.file || null);
   const [filePreview, setFilePreview] = useState(
-    data?.file.filePreview || null
+    data?.file || null
   );
   const [description, setDescription] = useState(data?.description || "");
   const [location, setLocation] = useState(data?.location || "");
@@ -222,6 +222,20 @@ const Stepper = ({ data }) => {
           toast.error("Failed to update job.");
         }
       } else {
+        console.log({
+          currentUser,
+          jobTitle,
+          companyName,
+          description,
+          location,
+          skills,
+          experienceLevel,
+          assessmentDetail,
+          assessmentDuration,
+          duration,
+          imageURL: imageURL ,
+          file: file_data.fileName ? file_data : null,
+        });
         const isSaved = await saveJob({
           currentUser,
           jobTitle,
@@ -233,14 +247,15 @@ const Stepper = ({ data }) => {
           assessmentDetail,
           assessmentDuration,
           duration,
-          imageURL: imageURL,
-          file: file_data,
+          imageURL: imageURL || null,
+          file: file_data.fileName ? file_data : null,
         });
         if (isSaved) {
           // alert("Job added successfully!");
           setSubmitLoading(false);
           navigate("/viewjob/" + isSaved); // Redirect to home screen
         } else {
+          setSubmitLoading(false);
           toast.error("Failed to add job.");
         }
       }

@@ -104,8 +104,6 @@ import Jobs from "./pages/jobs.jsx";
 import SingleJob from "./pages/SingleJob.jsx";
 import ApplyJob from "./pages/Applyjob.jsx";
 
-
-
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
 
@@ -288,9 +286,23 @@ function App() {
             }
           />
 
-          <Route path={ROUTES.WALLET_SCREEN} element={<WalletScreen />} />
+          <Route
+            path={ROUTES.WALLET_SCREEN}
+            element={
+              <ProtectedRoute>
+                <WalletScreen />
+              </ProtectedRoute>
+            }
+          />
 
-          <Route path={ROUTES.STEPPER_FORM} element={<DesktopStepperForm />} />
+          <Route
+            path={ROUTES.STEPPER_FORM}
+            element={
+              
+                <DesktopStepperForm />
+              
+            }
+          />
 
           <Route
             path={ROUTES.ENTREPRENEURS_FORM}
@@ -329,8 +341,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
-          
 
           <Route
             path={ROUTES.SPEND_LEARNING}
@@ -407,10 +417,10 @@ function App() {
           <Route
             path={ROUTES.SINGLE_COURSE_DESCRIPTION}
             element={
-              <ProtectedRoute>
+              <>
                 <DesktopProjectDetails />
                 {/* {isMobileView ? <ProjectDetails /> : <DesktopProjectDetails />} */}
-              </ProtectedRoute>
+              </>
             }
           />
           <Route
@@ -453,7 +463,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
+
           <Route
             path={ROUTES.CHECKOUT_SCREEN}
             element={
@@ -561,21 +571,21 @@ function App() {
           <Route
             path={ROUTES.PROFILE}
             element={
-              <ProtectedRoute>
+              <>
                 {isMobileView ? <Profile /> : <DesktopProfile />}
-              </ProtectedRoute>
+              </>
             }
           />
           <Route
             path={ROUTES.ENTREPRENEUR}
             element={
-              <ProtectedRoute>
+              <>
                 {isMobileView ? (
                   <EntrepreneurMobile></EntrepreneurMobile>
                 ) : (
                   <Entrepreneur />
                 )}
-              </ProtectedRoute>
+              </>
             }
           />
           <Route
@@ -621,7 +631,7 @@ function App() {
           <Route
             path={ROUTES.EDITJOB}
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["entrepreneur"]}>
                 <EditJob />
               </ProtectedRoute>
             }
@@ -650,7 +660,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path={ROUTES.VIEWJOB} element={<ViewJob></ViewJob>}></Route>
+          <Route
+            path={ROUTES.VIEWJOB}
+            element={
+              <ProtectedRoute allowedRoles={["entrepreneur"]}>
+                <ViewJob></ViewJob>
+              </ProtectedRoute>
+            }
+          ></Route>
           <Route
             path={ROUTES.CURRENCY}
             element={

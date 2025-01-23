@@ -34,7 +34,7 @@ const useSaveJob = () => {
       }
 
       async function addJobToEntrepreneur(jobId) {
-        await updateDoc(doc(db, "users", currentUser.uid), {
+        await setDoc(doc(db, "users", currentUser.uid), {
           jobPostings: arrayUnion({
             title: jobTitle,
             companyName: companyName,
@@ -44,7 +44,7 @@ const useSaveJob = () => {
             skills: skills,
             file: file
           }),
-        });
+        }, {merge: true});
 
         const test = await getDoc(doc(db, "users", currentUser.uid));
         console.log(test.data());

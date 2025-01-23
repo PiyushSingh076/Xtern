@@ -32,6 +32,7 @@ import {
   LocationSearchingRounded,
   WorkspacePremiumRounded,
 } from "@mui/icons-material";
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 
 const JobStats = () => {
   const [showModal, setShowModal] = useState(false);
@@ -39,6 +40,16 @@ const JobStats = () => {
   const { jobId } = useParams();
   const { jobData, loading, fetchApplicantDetails, fetchApplications } =
     useFetchJob(jobId);
+  const {userData} = useFetchUserData();
+
+  useEffect(() => {
+    if(userData && jobData){
+      if(jobData.createdBy !== userData.uid){
+        toast.error("Page does not exist")
+        navigate("/homescreen")
+      }
+    }
+  }, [userData, jobData])
   const [loadingDetails, setLoadingDetails] = useState(false);
   const { toggleSubscribeToXpert, isSubscribed, subLoading } =
     useSubscriptions();
