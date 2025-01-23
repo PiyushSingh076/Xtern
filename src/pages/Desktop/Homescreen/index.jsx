@@ -153,7 +153,7 @@ export default function HomeScreen() {
             <div
               onClick={() => navigate(`/filterscreen/${category.title}`)}
               key={category.title}
-              className="categories-card w-[80%] !h-fit sm:!w-[100%] "
+              className="categories-card !w-[100%]  !h-full !min-h-fit sm:!w-[100%] "
             >
               <div className="catedories-card-icon-title flex !flex-col !items-center sm:!flex-row !w-full">
                 <img
