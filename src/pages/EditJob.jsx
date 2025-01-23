@@ -8,6 +8,8 @@ import Stepper from "../components/Stepper.jsx";
 import useImageUpload from "../hooks/Auth/useImageUpload.js"; // Custom hook for image upload
 import { getAuth } from "firebase/auth";
 import { useFetchJob } from "../hooks/Jobs/useFetchJob.jsx";
+import useFetchUserData from "../hooks/Auth/useFetchUserData.js";
+import toast from "react-hot-toast";
 
 const EditJob = () => {
   const navigate = useNavigate();
@@ -16,10 +18,18 @@ const EditJob = () => {
   console.log(jobId);
 
   const job = useFetchJob(jobId);
+  const {userData} = useFetchUserData()
+
+  
 
   useEffect(() => {
-    console.log(job);
-  }, [job]);
+    if(job.jobData && userData){
+      if(job.jobData.createdBy !== userData.uid){
+        toast.error("Page does not exist")
+        navigate("/homescreen")
+      }
+    }
+  }, [job, userData]);
 
   // useEffect(() => {
   //   async function test(){
