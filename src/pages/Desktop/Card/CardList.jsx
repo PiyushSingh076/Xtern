@@ -100,7 +100,7 @@ const CardList = ({ profession }) => {
             ),
           }}
           sx={{
-            width: { xs: "150px", sm: "250px" },
+            width: { xs: "140px", sm: "250px" },
             "& .MuiOutlinedInput-root": {
               borderRadius: "15px",
             },
