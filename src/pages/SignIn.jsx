@@ -37,13 +37,16 @@ const SignIn = () => {
 
         if (userDoc.exists()) {
           const userData = userDoc.data();
+          if(userData.isPhoneVerified === null || userData.isPhoneVerified === false){
+            navigate("/verifyscreen")
+          }
           // Check if 'preferredLanguage' and 'typeUser' fields exist
-          if (userData.preferredLanguage && userData.typeUser) {
+          if (userData.preferredLanguage && userData.type) {
             // Both fields exist, redirect to home screen
-            navigate(ROUTES.VERIFY_SCREEN); // Adjust the route as necessary
+            navigate("/homescreen"); // Adjust the route as necessary
           } else {
             // One or both fields are missing, redirect to preferred language page
-            navigate(ROUTES.VERIFY_SCREEN);
+            navigate("/choosetype");
           }
         } else {
           console.error("No such user profile!");
