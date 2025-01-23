@@ -120,6 +120,7 @@ export default function StepperForm() {
   const [recommendations, setRecommendation] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const steps = ["Xpert Type", "Profile", "Offering", "Summary"];
+  const [isStep2Complete, setIsStep2Complete] = useState(false);
 
 
   // For LinkedIn fetch
@@ -502,6 +503,13 @@ export default function StepperForm() {
 
   // Step Navigation
   const handleStepClick = (step) => {
+    // Validation logic
+    if (step === 3 && !isStep2Complete) {
+      toast.error("Please submit your profile data before proceeding to the Summary.");
+      return;
+    }
+  
+    // Allow navigation to other steps
     setActiveStep(step);
   };
 
@@ -915,7 +923,7 @@ export default function StepperForm() {
       dispatch(setDetail(data));
       await saveProfileData(data);
 
-      
+      setIsStep2Complete(true)
       setActiveStep(3);
       setTimeout(() => {
         refreshUser();
