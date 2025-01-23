@@ -148,12 +148,12 @@ export default function HomeScreen() {
 
         <div className="explore-all-container"></div>
 
-        <div className="categories-card-container">
+        <div className="categories-card-container ">
           {categories.map((category, index) => (
             <div
               onClick={() => navigate(`/filterscreen/${category.title}`)}
               key={category.title}
-              className="categories-card w-[80%] sm:!w-[100%] "
+              className="categories-card w-[80%] !h-fit sm:!w-[100%] "
             >
               <div className="catedories-card-icon-title flex !flex-col !items-center sm:!flex-row !w-full">
                 <img
@@ -164,7 +164,7 @@ export default function HomeScreen() {
                 <span className="categories-card-title">{category.title}</span>
               </div>
 
-              <div className="hidden sm:block">
+              <div className="block sm:block h-fit !line-clamp-3 ">
                 <p className="categories-desc">{category.description}</p>
               </div>
             </div>
