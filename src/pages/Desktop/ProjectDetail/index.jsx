@@ -28,6 +28,7 @@ const ProjectDetails = () => {
   const [showReviews, setShowReviews] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const { userData } = useFetchUserData();
+  const [canReview, setCanReview] = useState(false);
 
   const navigate = useNavigate();
   const { projectId } = useParams();
@@ -35,6 +36,8 @@ const ProjectDetails = () => {
   const location = useLocation();
   const [pageLoading, setPageLoading] = useState(false);
   const [item, setItem] = useState({});
+
+  
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -58,13 +61,11 @@ const ProjectDetails = () => {
     setIsBookmarked(!isBookmarked);
   };
 
-
   const [showModal, setShowModal] = useState(false);
 
   const handleBuyNowClick = () => {
     setShowModal(true);
   };
-
 
   // const handleVideoUpload = async () => {
   //   if (!selectedFile) {
@@ -153,6 +154,7 @@ const ProjectDetails = () => {
         review: reviewText,
         rating,
         userId: currentUser.uid,
+        serviceId: projectId,
         photoURL: userPhotoURL,
         timestamp: new Date(),
       };
@@ -167,6 +169,7 @@ const ProjectDetails = () => {
       setReviewText("");
       setRating(0);
       setShowReviewForm(false);
+      setCanReview(false)
     } catch (error) {
       console.error("Failed to save review:", error);
     }
@@ -174,23 +177,36 @@ const ProjectDetails = () => {
 
   const fetchReviews = async () => {
     try {
-      const auth = getAuth();
-      const currentUser = auth.currentUser;
+      // const auth = getAuth();
+      // const currentUser = auth.currentUser;
 
-      if (!currentUser) {
-        console.error("User is not logged in.");
-        setReviews([]);
-        return;
-      }
+      // if (!currentUser) {
+      //   console.error("User is not logged in.");
+      //   setReviews([]);
+      //   return;
+      // }
 
       const reviewsRef = collection(db, "reviews");
-      const q = query(reviewsRef, where("userId", "==", currentUser.uid));
+      const q = query(reviewsRef, where("serviceId", "==", projectId));
       const querySnapshot = await getDocs(q);
 
       const userReviews = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+
+      console.log("Reviews",userReviews)
+
+      const counter = 0;
+      userReviews.forEach((review) => {
+        if (review.userId !== userData.uid) {
+          counter++;
+        }
+      });
+      if(counter == userReviews.length){
+        setCanReview(true)
+      }
+      
 
       setReviews(userReviews);
     } catch (error) {
@@ -212,12 +228,14 @@ const ProjectDetails = () => {
                 <div className="w-[400px] h-[300px] relative flex items-center justify-center">
                   <video
                     controls
-                    src={item.serviceVideo }
+                    src={item.serviceVideo}
                     className="absolute size-full object-cover"
                   ></video>
                 </div>
               ) : (
-                <div className="w-[400px] h-[300px] relative flex items-center justify-center">No video available</div>
+                <div className="w-[400px] h-[300px] relative flex items-center justify-center">
+                  No video available
+                </div>
               )}
             </div>
             <div className="single-courses-top">
@@ -284,15 +302,15 @@ const ProjectDetails = () => {
 
                   <div className="second-decs-sec-bottom">
                     <div className="second-decs-sec-bottom-wrap">
-                      <div className="mt-12">
+                      <div className="mt-12 flex items-center gap-2">
                         <GroupIcon sx={{ color: "#0a65fc" }} />
                         <span className="second-txt2">0 Application</span>
                       </div>
-                      <div className="mt-12">
+                      {/* <div className="mt-12">
                         <StarRateIcon sx={{ color: "#0a65fc" }} />
                         <span className="second-txt2">Level: Medium</span>
-                      </div>
-                      <div className="mt-12">
+                      </div> */}
+                      <div className="mt-12 flex items-center gap-2">
                         <AccessTimeFilledIcon sx={{ color: "#0a65fc" }} />
                         <span className="second-txt2">
                           {item.serviceDuration} {item.serviceDurationType}
@@ -343,7 +361,11 @@ const ProjectDetails = () => {
                         ) : (
                           <>
                             <p className="des-text">
-                              <div dangerouslySetInnerHTML={{ __html: item.serviceDescription }} ></div>
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: item.serviceDescription,
+                                }}
+                              ></div>
                             </p>
                           </>
                         )}
@@ -360,7 +382,7 @@ const ProjectDetails = () => {
                         ) : (
                           userData &&
                           item &&
-                          item.userRef.id !== userData.uid && (
+                          item?.userRef?.id !== userData.uid && (
                             <div className="des-buy-now-description">
                               <button
                                 disabled={pageLoading}
@@ -379,36 +401,48 @@ const ProjectDetails = () => {
                       <div className="review-content-wrap mt-24">
                         <h2 className="review-heading">What Our Users Say</h2>
 
-                        <div className="review-form">
-                          <textarea
-                            placeholder="Write your review here..."
-                            value={reviewText}
-                            onChange={(e) => setReviewText(e.target.value)}
-                            className="review-textarea"
-                          />
-                          <div className="rating-input">
-                            {Array.from({ length: 5 }).map((_, index) => (
-                              <span
-                                key={index}
-                                onClick={() => setRating(index + 1)}
-                              >
-                                {index < rating ? (
-                                  <StarRateIcon sx={{ color: "#0a65fc" }} />
-                                ) : (
-                                  <StarBorderIcon sx={{ color: "#0a65fc" }} />
-                                )}
-                              </span>
-                            ))}
-                          </div>
-                          <button
-                            className="submit-review-btn"
-                            onClick={handleReviewSubmit}
-                          >
-                            Submit Review
-                          </button>
-                        </div>
+                        {(item &&
+                          userData &&
+                          item?.userRef?.id !== userData.uid) && canReview && (
+                            <>
+                              <div className="review-form">
+                                <textarea
+                                  placeholder="Write your review here..."
+                                  value={reviewText}
+                                  onChange={(e) =>
+                                    setReviewText(e.target.value)
+                                  }
+                                  className="review-textarea"
+                                />
+                                <div className="rating-input">
+                                  {Array.from({ length: 5 }).map((_, index) => (
+                                    <span
+                                      key={index}
+                                      onClick={() => setRating(index + 1)}
+                                    >
+                                      {index < rating ? (
+                                        <StarRateIcon
+                                          sx={{ color: "#0a65fc" }}
+                                        />
+                                      ) : (
+                                        <StarBorderIcon
+                                          sx={{ color: "#0a65fc" }}
+                                        />
+                                      )}
+                                    </span>
+                                  ))}
+                                </div>
+                                <button
+                                  className="submit-review-btn"
+                                  onClick={handleReviewSubmit}
+                                >
+                                  Submit Review
+                                </button>
+                              </div>
+                            </>
+                          )}
 
-                        {showReviews && reviews.length > 0 && (
+                        {showReviews && reviews.length > 0 ? (
                           <div className="review-list-container">
                             <div className="review-list">
                               {reviews.map((review) => (
@@ -447,7 +481,7 @@ const ProjectDetails = () => {
                               ))}
                             </div>
                           </div>
-                        )}
+                        ) : <div className="w-full py-6 flex items-center justify-center">No reviews yet</div>}
                       </div>
                     </div>
                   </div>

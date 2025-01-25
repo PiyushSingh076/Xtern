@@ -59,6 +59,7 @@ const consultingChargesConfig = {
   lawyer: true,
 };
 
+
 /** For LinkedIn experiences date calculations */
 const calculateExperience = (experiences) => {
   if (!experiences || experiences.length === 0) return "";
@@ -89,6 +90,8 @@ const calculateExperience = (experiences) => {
 };
 
 export default function StepperForm() {
+  const [saving, setSaving] = useState(false)
+
   // Basic personal data
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
@@ -806,6 +809,7 @@ export default function StepperForm() {
 
   // Add or update item in local arrays
   const saveDetail = async (type, dataObj, index) => {
+    setSaving(true)
     const lower = type.toLowerCase();
     if (lower === "education") {
       if (index !== null) {
@@ -874,6 +878,7 @@ export default function StepperForm() {
     } else {
       console.error("Invalid type to save");
     }
+    setSaving(false)
   };
 
   // Delete item
@@ -1851,8 +1856,9 @@ export default function StepperForm() {
           onClose={closeModal}
           fullWidth
           maxWidth="sm"
+          className="!z-[99999999] mt-16"
           PaperProps={{ sx: { borderRadius: 3 } }}
-          className="mt-16"
+         
         >
           <DialogTitle sx={{ m: 0, p: 2 }}>
             {editIndex !== null ? `Edit ${modalType}` : `Add ${modalType}`}
@@ -2397,6 +2403,7 @@ export default function StepperForm() {
 
                       {/* video upload */}
 
+
                       <div className="flex flex-col items-center justify-center w-full h-full mt-10">
                         {!modalFormData.serviceVideo && (
                           <label
@@ -2538,6 +2545,7 @@ export default function StepperForm() {
 
 
                       </div>
+
                     </>
                   )}
                 </Grid>
@@ -2557,12 +2565,12 @@ export default function StepperForm() {
                 color="primary"
                 type="submit"
                 size="large"
-                disabled={loading}
+                disabled={saving}
                 startIcon={
-                  loading && <CircularProgress size={20} color="inherit" />
+                  saving && <CircularProgress size={20} color="inherit" />
                 }
               >
-                {loading ? "Submitting..." : "Save"}
+                {saving ? "Submitting..." : "Save"}
               </Button>
             </DialogActions>
           </form>
