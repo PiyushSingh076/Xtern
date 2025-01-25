@@ -44,6 +44,8 @@ import useSaveProfileData from "../../../hooks/Linkedin/useSaveProfileData";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
 
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; 
+import { storage } from "../../../firebaseConfig";
 // import XpertRole from "../Prefference/XpertRole";
 import SummaryStep from "./SummaryStep";
 import useAuthState from "../../../hooks/Authentication/useAuthState";
@@ -92,7 +94,7 @@ export default function StepperForm() {
   // Basic personal data
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
-  const {setRefreshCount,} = useAuthState()
+  const { setRefreshCount, } = useAuthState()
   const [Xpert, setXpert] = useState("");
   const [Experience, setExperience] = useState(""); // Usually a string or number
   const [profileImg, setProfileImg] = useState(null);
@@ -143,7 +145,7 @@ export default function StepperForm() {
   const navigate = useNavigate();
   const { saveProfileData, loading } = useSaveProfileData();
   const { userData } = useFetchUserData();
-  const {refreshUser} = useAuth()
+  const { refreshUser } = useAuth()
   // If user clicked "edit" with existing profile
   const location = useLocation();
   const { profileData } = location.state || {};
@@ -195,10 +197,10 @@ export default function StepperForm() {
 
 
   const Badges = [
-    {name: 'Top Rated', color: 'success' },
-    { name: 'Certified Expert', color: 'warning'},
+    { name: 'Top Rated', color: 'success' },
+    { name: 'Certified Expert', color: 'warning' },
   ];
-  
+
 
   useEffect(() => {
     const recommendationsConfig = {
@@ -508,7 +510,7 @@ export default function StepperForm() {
       toast.error("Please submit your profile data before proceeding to the Summary.");
       return;
     }
-  
+
     // Allow navigation to other steps
     setActiveStep(step);
   };
@@ -609,6 +611,7 @@ export default function StepperForm() {
           endDate: service.endDate ? service.endDate?.split("T")[0] : "",
           availability: service.availability || "",
           hoursPerDay: service.hoursPerDay || "",
+          serviceVideo: service.serviceVideo || "",
         }));
         setServices(servData);
       }
@@ -663,17 +666,17 @@ export default function StepperForm() {
           college: edu.school || "",
           startDate: edu.starts_at
             ? new Date(
-                edu.starts_at.year,
-                edu.starts_at.month - 1,
-                edu.starts_at.day
-              )
-                .toISOString()
-                ?.split("T")[0]
+              edu.starts_at.year,
+              edu.starts_at.month - 1,
+              edu.starts_at.day
+            )
+              .toISOString()
+              ?.split("T")[0]
             : "",
           endDate: edu.ends_at
             ? new Date(edu.ends_at.year, edu.ends_at.month - 1, edu.ends_at.day)
-                .toISOString()
-                ?.split("T")[0]
+              .toISOString()
+              ?.split("T")[0]
             : "",
           cgpa: edu.grade || "",
         }));
@@ -687,17 +690,17 @@ export default function StepperForm() {
           company: exp.company || "",
           startDate: exp.starts_at
             ? new Date(
-                exp.starts_at.year,
-                exp.starts_at.month - 1,
-                exp.starts_at.day
-              )
-                .toISOString()
-                ?.split("T")[0]
+              exp.starts_at.year,
+              exp.starts_at.month - 1,
+              exp.starts_at.day
+            )
+              .toISOString()
+              ?.split("T")[0]
             : "",
           endDate: exp.ends_at
             ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
-                .toISOString()
-                ?.split("T")[0]
+              .toISOString()
+              ?.split("T")[0]
             : "",
           description: exp.description || "",
         }));
@@ -786,8 +789,10 @@ export default function StepperForm() {
           endDate: itemData.endDate || "",
           availability: itemData.availability || "",
           hoursPerDay: itemData.hoursPerDay || "",
+          serviceVideo: itemData.serviceData || null,
         });
       }
+      
     } else {
       setModalFormData({});
     }
@@ -801,7 +806,7 @@ export default function StepperForm() {
   };
 
   // Add or update item in local arrays
-  const saveDetail = (type, dataObj, index) => {
+  const saveDetail = async (type, dataObj, index) => {
     const lower = type.toLowerCase();
     if (lower === "education") {
       if (index !== null) {
@@ -836,22 +841,26 @@ export default function StepperForm() {
         setProjects([...Projects, dataObj]);
       }
     } else if (lower === "service") {
-      if (Xpert.toLowerCase() === "intern") {
+      try {
+        let videoUrl = dataObj.serviceVideo || "";
+        if (dataObj.serviceVideo) {
+          const storageRef = ref(storage, `videos/${dataObj.serviceVideo.name}`);
+          await uploadBytes(storageRef, dataObj.serviceVideo);
+          videoUrl = await getDownloadURL(storageRef);
+        }
+        const serviceData = {
+          ...dataObj,
+          serviceVideo: videoUrl,
+        };
         if (index !== null) {
           const newArr = [...Services];
-          newArr[index] = dataObj;
+          newArr[index] = serviceData;
           setServices(newArr);
         } else {
-          setServices([dataObj]);
+          setServices([...Services, serviceData]);
         }
-      } else {
-        if (index !== null) {
-          const newArr = [...Services];
-          newArr[index] = dataObj;
-          setServices(newArr);
-        } else {
-          setServices([...Services, dataObj]);
-        }
+      } catch (error) {
+        console.error("Error uploading video:", error);
       }
     } else {
       console.error("Invalid type to save");
@@ -877,12 +886,12 @@ export default function StepperForm() {
   useEffect(() => {
     console.log("Active Step changed to:", activeStep);
   }, [activeStep]);
-  
+
   // Final Submit of the entire form
   const handleSubmitInfo = async (e) => {
     e.preventDefault();
     setLoadingg(true);
-  
+
     const missingFields = [];
     if (!FirstName) missingFields.push("First Name");
     if (!LastName) missingFields.push("Last Name");
@@ -891,13 +900,13 @@ export default function StepperForm() {
     if (!selectedState) missingFields.push("State");
     if (!profileImg) missingFields.push("Profile Image");
     if (!selectedCity) missingFields.push("City");
-  
+
     if (missingFields.length > 0) {
       missingFields.forEach((f) => toast.error(`${f} is required`));
       setLoadingg(false);
       return;
     }
-  
+
     // Gather data
     const data = {
       profileImage: profileImg,
@@ -916,7 +925,7 @@ export default function StepperForm() {
       consultingDuration: ConsultingDuration,
       consultingDurationType: ConsultingDurationType,
     };
-  
+
     console.log("Before setting step:", activeStep);
 
     try {
@@ -1025,7 +1034,7 @@ export default function StepperForm() {
     if (Xpert && typeof Xpert === "string") {
       setRecommendation(
         recommendationsConfig[Xpert.toLowerCase()] ||
-          recommendationsConfig.default
+        recommendationsConfig.default
       );
     } else {
       setRecommendation(recommendationsConfig.default);
@@ -1768,17 +1777,17 @@ export default function StepperForm() {
                   sx={{ mr: 2 }}
                 >
                   Back
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmitInfo}
-                size="large"
-                disabled={loading}
-                startIcon={loading && <CircularProgress size={20} color="inherit" />}
-              >
-                {loading ? "Submitting..." : "Submit"}
-              </Button>
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmitInfo}
+                  size="large"
+                  disabled={loading}
+                  startIcon={loading && <CircularProgress size={20} color="inherit" />}
+                >
+                  {loading ? "Submitting..." : "Submit"}
+                </Button>
               </Box>
             </Grid>
           </Grid>
@@ -2372,6 +2381,52 @@ export default function StepperForm() {
                           </Select>
                         </FormControl>
                       </Grid>
+
+                      {/* video upload */}
+                      <Grid item xs={12}>
+                        <TextField
+                          label="Service Video"
+                          name="serviceVideo"
+                          variant="outlined"
+                          fullWidth
+                          size="small"
+                          type="file"
+                          InputLabelProps={{ shrink: true }}
+                          // value={modalFormData.serviceVideo || ""}
+                          onChange={(e) =>
+                            setModalFormData((prev) => ({
+                              ...prev,
+                              serviceVideo: e.target.files[0],
+                            }))
+                          }
+                        />
+                      </Grid>
+                      {modalFormData.serviceVideo && (
+  <div className="mt-2">
+    <video
+      src={
+        modalFormData.serviceVideo instanceof File
+          ? URL.createObjectURL(modalFormData.serviceVideo)
+          : modalFormData.serviceVideo
+      }
+      controls
+      width="200"
+      height="150"
+    />
+    <Button
+      variant="text"
+      color="error"
+      onClick={() =>
+        setModalFormData((prev) => ({
+          ...prev,
+          serviceVideo: null,
+        }))
+      }
+    >
+      Remove
+    </Button>
+  </div>
+)}
                     </>
                   )}
                 </Grid>

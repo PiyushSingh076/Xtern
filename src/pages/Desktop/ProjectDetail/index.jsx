@@ -25,8 +25,6 @@ const ProjectDetails = () => {
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(0);
   const [reviews, setReviews] = useState([]);
-  const [videoFile, setVideoFile] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
   const [showReviews, setShowReviews] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const { userData } = useFetchUserData();
@@ -60,15 +58,6 @@ const ProjectDetails = () => {
     setIsBookmarked(!isBookmarked);
   };
 
-  useEffect(() => {
-    if (videoFile) {
-      setUploadMessage("Video uploaded successfully!");
-      const timer = setTimeout(() => {
-        setUploadMessage("");
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [videoFile]);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -76,70 +65,58 @@ const ProjectDetails = () => {
     setShowModal(true);
   };
 
-  const handleFileChange = (event) => {
-    if (event.target.files && event.target.files.length > 0) {
-      setSelectedFile(event.target.files[0]);
-      console.log("File selected:", event.target.files[0]);
-    }
-  };
 
-  const handleClearVideo = () => {
-    setSelectedFile(null);
-    setVideoFile(null);
-    document.querySelector("input[type='file']").value = "";
-  };
+  // const handleVideoUpload = async () => {
+  //   if (!selectedFile) {
+  //     alert("Please select a file before uploading.");
+  //     return;
+  //   }
 
-  const handleVideoUpload = async () => {
-    if (!selectedFile) {
-      alert("Please select a file before uploading.");
-      return;
-    }
+  //   const file = selectedFile;
 
-    const file = selectedFile;
+  //   if (file.size > 10 * 1024 * 1024) {
+  //     alert("File size should not exceed 10 MB.");
+  //     return;
+  //   }
 
-    if (file.size > 10 * 1024 * 1024) {
-      alert("File size should not exceed 10 MB.");
-      return;
-    }
+  //   try {
+  //     const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
+  //     const storage = getStorage();
+  //     const storageRef = ref(storage, `videos/${sanitizedFileName}`);
+  //     const snapshot = await uploadBytes(storageRef, file);
+  //     const serviceVideo = await getDownloadURL(snapshot.ref);
 
-    try {
-      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
-      const storage = getStorage();
-      const storageRef = ref(storage, `videos/${sanitizedFileName}`);
-      const snapshot = await uploadBytes(storageRef, file);
-      const videoURL = await getDownloadURL(snapshot.ref);
+  //     const auth = getAuth();
+  //     const currentUser = auth.currentUser;
 
-      const auth = getAuth();
-      const currentUser = auth.currentUser;
+  //     if (!currentUser) {
+  //       alert("You must be logged in to upload a video.");
+  //       return;
+  //     }
 
-      if (!currentUser) {
-        alert("You must be logged in to upload a video.");
-        return;
-      }
+  //     const serviceNameData = {
+  //       serviceName: item?.serviceName || "Unknown Service",
+  //       userId: currentUser.uid,
+  //       serviceVideo,
+  //       timestamp: new Date(),
+  //     };
 
-      const serviceNameData = {
-        serviceName: item?.serviceName || "Unknown Service",
-        userId: currentUser.uid,
-        videoURL,
-        timestamp: new Date(),
-      };
+  //     await setDoc(
+  //       doc(db, "services", projectId),
+  //       {
+  //         serviceVideo: serviceVideo,
+  //       },
+  //       { merge: true }
+  //     );
 
-      await setDoc(
-        doc(db, "services", projectId),
-        {
-          videoUrl: videoURL,
-        },
-        { merge: true }
-      );
-
-      setVideoFile(videoURL);
-      setSelectedFile(null);
-      document.querySelector("input[type='file']").value = "";
-    } catch (error) {
-      console.error("Error uploading video:", error);
-      alert("Failed to upload video. Please try again.");
-    }
-  };
+  //     setVideoFile(serviceVideo);
+  //     setSelectedFile(null);
+  //     document.querySelector("input[type='file']").value = "";
+  //   } catch (error) {
+  //     console.error("Error uploading video:", error);
+  //     alert("Failed to upload video. Please try again.");
+  //   }
+  // };
 
   const handleReviewTabClick = () => {
     setShowReviews(true);
@@ -231,42 +208,16 @@ const ProjectDetails = () => {
         <div className="des-first-desc-img-sec">
           <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
-              {videoFile || item.videoUrl ? (
+              {item.serviceVideo ? (
                 <div className="w-[400px] h-[300px] relative flex items-center justify-center">
                   <video
                     controls
-                    src={item.videoURL || videoFile}
+                    src={item.serviceVideo }
                     className="absolute size-full object-cover"
                   ></video>
                 </div>
               ) : (
-                <>
-                  <div className="video-upload-container">
-                    <div className="video-upload-wrapper">
-                      <input
-                        type="file"
-                        accept="video/mp4"
-                        onChange={handleFileChange}
-                      />
-                      {selectedFile && (
-                        <div>
-                          <p>Selected Video: {selectedFile.name}</p>
-                          <button onClick={handleClearVideo}>
-                            Clear Video
-                          </button>
-                        </div>
-                      )}
-                      <p>Upload a video of (Max size: 10 MB)</p>
-                      <button onClick={handleVideoUpload}>Upload Video</button>
-
-                      {/* Display success message after upload */}
-                      {uploadMessage && <p>{uploadMessage}</p>}
-                      {videoFile && (
-                        <div>{/* <p>Video uploaded successfully!</p> */}</div>
-                      )}
-                    </div>
-                  </div>
-                </>
+                <div className="w-[400px] h-[300px] relative flex items-center justify-center">No video available</div>
               )}
             </div>
             <div className="single-courses-top">

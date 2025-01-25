@@ -200,6 +200,7 @@ const useSaveProfileData = () => {
               servicePrice: srv.servicePrice || "",
               serviceDuration: srv.duration || "",
               serviceDurationType: srv.durationType || "",
+              serviceVideo: srv.serviceVideo || "",
             };
           }
         });
