@@ -43,7 +43,7 @@ import useSaveProfileData from "../../../hooks/Linkedin/useSaveProfileData";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
 
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; 
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../firebaseConfig";
 // import XpertRole from "../Prefference/XpertRole";
 import SummaryStep from "./SummaryStep";
@@ -84,9 +84,8 @@ const calculateExperience = (experiences) => {
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
 
-  return `${years} ${years > 1 ? "Years" : "Year"} ${
-    months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
-  }`;
+  return `${years} ${years > 1 ? "Years" : "Year"} ${months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
+    }`;
 };
 
 export default function StepperForm() {
@@ -416,7 +415,7 @@ export default function StepperForm() {
     if (Xpert && typeof Xpert === "string") {
       setRecommendation(
         recommendationsConfig[Xpert.toLowerCase()] ||
-          recommendationsConfig.default
+        recommendationsConfig.default
       );
     } else {
       setRecommendation(recommendationsConfig.default);
@@ -609,6 +608,7 @@ export default function StepperForm() {
           availability: service.availability || "",
           hoursPerDay: service.hoursPerDay || "",
           serviceVideo: service.serviceVideo || "",
+          images: service.images || "",
         }));
         setServices(servData);
       }
@@ -788,9 +788,10 @@ export default function StepperForm() {
           availability: itemData.availability || "",
           hoursPerDay: itemData.hoursPerDay || "",
           serviceVideo: itemData.serviceVideo || null,
+          images: itemData.images || [],
         });
       }
-      
+
     } else {
       setModalFormData({});
     }
@@ -847,9 +848,17 @@ export default function StepperForm() {
           videoUrl = await getDownloadURL(storageRef);
           console.log("Video URL:", videoUrl);
         }
+        const imageUrls = await Promise.all(
+          dataObj.images.map(async (image) => {
+            const storageRef = ref(storage, `images/${image.name}`);
+            await uploadBytes(storageRef, image);
+            return await getDownloadURL(storageRef);
+          })
+        );
         const serviceData = {
           ...dataObj,
           serviceVideo: videoUrl,
+          images: imageUrls,
         };
         console.log("serviceData", serviceData);
         if (index !== null) {
@@ -906,7 +915,7 @@ export default function StepperForm() {
       setLoadingg(false);
       return;
     }
-    console.log("Services",Services)
+    console.log("Services", Services)
     // Gather data
     const data = {
       profileImage: profileImg,
@@ -1738,8 +1747,8 @@ export default function StepperForm() {
                             Availability:{" "}
                             {item.availability
                               ? item.availability.replace(/^\w/, (c) =>
-                                  c.toUpperCase()
-                                )
+                                c.toUpperCase()
+                              )
                               : "N/A"}
                           </Typography>
                           {item.availability === "part time" && (
@@ -1843,6 +1852,7 @@ export default function StepperForm() {
           fullWidth
           maxWidth="sm"
           PaperProps={{ sx: { borderRadius: 3 } }}
+          className="mt-16"
         >
           <DialogTitle sx={{ m: 0, p: 2 }}>
             {editIndex !== null ? `Edit ${modalType}` : `Add ${modalType}`}
@@ -2386,50 +2396,148 @@ export default function StepperForm() {
                       </Grid>
 
                       {/* video upload */}
-                      <Grid item xs={12}>
-                        <TextField
-                          label="Service Video"
-                          name="serviceVideo"
-                          variant="outlined"
-                          fullWidth
-                          size="small"
-                          type="file"
-                          InputLabelProps={{ shrink: true }}
-                          // value={modalFormData.serviceVideo || ""}
-                          onChange={(e) =>
-                            setModalFormData((prev) => ({
-                              ...prev,
-                              serviceVideo: e.target.files[0],
-                            }))
-                          }
-                        />
-                      </Grid>
-                      {modalFormData.serviceVideo && (
-  <div className="mt-2">
-    <video
-      src={
-        modalFormData.serviceVideo instanceof File
-          ? URL.createObjectURL(modalFormData.serviceVideo)
-          : modalFormData.serviceVideo
-      }
-      controls
-      width="200"
-      height="150"
-    />
-    <Button
-      variant="text"
-      color="error"
-      onClick={() =>
-        setModalFormData((prev) => ({
-          ...prev,
-          serviceVideo: null,
-        }))
-      }
-    >
-      Remove
-    </Button>
-  </div>
-)}
+
+                      <div className="flex flex-col items-center justify-center w-full h-full mt-10">
+                        {!modalFormData.serviceVideo && (
+                          <label
+                            htmlFor="video-upload"
+                            className="border-2 border-dashed border-gray-400 rounded-lg w-80 h-24 flex items-center justify-center cursor-pointer"
+                          >
+                            <div className="flex flex-col items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-gray-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 4v16m8-8H4"
+                                />
+                              </svg>
+                              <span className="text-gray-500 mt-2">Upload Video</span>
+                            </div>
+                            <input
+                              id="video-upload"
+                              type="file"
+                              accept="video/*"
+                              className="hidden"
+                              onChange={(e) =>
+                                setModalFormData((prev) => ({
+                                  ...prev,
+                                  serviceVideo: e.target.files[0],
+                                }))
+                              }
+                            />
+                          </label>
+                        )}
+
+                        {/* video preview */}
+                        {modalFormData.serviceVideo && (
+                          <div className="relative  w-[340px] h-[200px] border rounded-lg overflow-hidden">
+                            <video
+                              src={
+                                modalFormData.serviceVideo instanceof File
+                                  ? URL.createObjectURL(modalFormData.serviceVideo)
+                                  : modalFormData.serviceVideo
+                              }
+                              controls
+                              className="w-full h-full"
+                            />
+                            <button
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                              onClick={() =>
+                                setModalFormData((prev) => ({
+                                  ...prev,
+                                  serviceVideo: null,
+                                }))
+                              }
+                            >
+                              ×
+                            </button>
+                          </div>
+                        )}
+
+                        {/* upload images */}
+
+                        <Grid item xs={12} >
+                          {/* Display "Upload Images" button if there are less than 4 images */}
+                          {modalFormData.images.length < 4 && (
+                            <label
+                              htmlFor="image-upload"
+                              className="border-2 border-dashed border-gray-400 rounded-lg w-full h-24 flex items-center justify-center cursor-pointer mt-6 mb-3 px-20"
+                            >
+                              <div className="flex flex-col items-center">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-6 w-6 text-gray-500"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 4v16m8-8H4"
+                                  />
+                                </svg>
+                                <span className="text-gray-500 mt-2">Upload Images Max-4</span>
+                              </div>
+                              <input
+                                id="image-upload"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                className="hidden"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files).slice(0, 4 - modalFormData.images.length);
+                                  setModalFormData((prev) => ({
+                                    ...prev,
+                                    images: [...prev.images, ...files],
+                                  }));
+                                }}
+                              />
+                            </label>
+                          )}
+                        </Grid>
+
+                        {/* Display images and allow removal */}
+                        {modalFormData.images.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {modalFormData.images.map((image, index) => (
+                              <div key={index} className="relative w-24 h-24 border rounded-lg overflow-hidden">
+                                <img
+                                   src={
+                                    modalFormData.images instanceof File
+                                      ? URL.createObjectURL(modalFormData.images)
+                                      : modalFormData.images
+                                  }
+                                  alt={`Image ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                                <button
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                                  onClick={() =>
+                                    setModalFormData((prev) => ({
+                                      ...prev,
+                                      images: prev.images.filter((_, i) => i !== index),
+                                    }))
+                                  }
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+
+
+                      </div>
                     </>
                   )}
                 </Grid>
