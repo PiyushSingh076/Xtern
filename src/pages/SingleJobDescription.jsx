@@ -156,7 +156,7 @@ const SingleJobDescription = () => {
               </a>
             </div>
           </div>
-          <div className="container">
+          <div className="container !min-w-0">
             <div className="single-courses-description">
               <div className="first-decs-sec mt-16">
                 <div className="first-decs-sec-wrap">

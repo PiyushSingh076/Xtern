@@ -201,6 +201,7 @@ const useSaveProfileData = () => {
               serviceDuration: srv.duration || "",
               serviceDurationType: srv.durationType || "",
               serviceVideo: srv.serviceVideo || "",
+              images: srv.images || [],
             };
           }
         });

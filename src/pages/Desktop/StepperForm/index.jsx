@@ -59,7 +59,6 @@ const consultingChargesConfig = {
   lawyer: true,
 };
 
-
 /** For LinkedIn experiences date calculations */
 const calculateExperience = (experiences) => {
   if (!experiences || experiences.length === 0) return "";
@@ -85,12 +84,13 @@ const calculateExperience = (experiences) => {
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
 
-  return `${years} ${years > 1 ? "Years" : "Year"} ${months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
-    }`;
+  return `${years} ${years > 1 ? "Years" : "Year"} ${
+    months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
+  }`;
 };
 
 export default function StepperForm() {
-  const [saving, setSaving] = useState(false)
+  const [saving, setSaving] = useState(false);
 
   // Basic personal data
   const [FirstName, setFirstName] = useState("");
@@ -198,7 +198,6 @@ export default function StepperForm() {
     { name: "Top Rated", color: "success" },
     { name: "Certified Expert", color: "warning" },
   ];
-
 
   useEffect(() => {
     const recommendationsConfig = {
@@ -418,7 +417,7 @@ export default function StepperForm() {
     if (Xpert && typeof Xpert === "string") {
       setRecommendation(
         recommendationsConfig[Xpert.toLowerCase()] ||
-        recommendationsConfig.default
+          recommendationsConfig.default
       );
     } else {
       setRecommendation(recommendationsConfig.default);
@@ -666,17 +665,17 @@ export default function StepperForm() {
           college: edu.school || "",
           startDate: edu.starts_at
             ? new Date(
-              edu.starts_at.year,
-              edu.starts_at.month - 1,
-              edu.starts_at.day
-            )
-              .toISOString()
-              ?.split("T")[0]
+                edu.starts_at.year,
+                edu.starts_at.month - 1,
+                edu.starts_at.day
+              )
+                .toISOString()
+                ?.split("T")[0]
             : "",
           endDate: edu.ends_at
             ? new Date(edu.ends_at.year, edu.ends_at.month - 1, edu.ends_at.day)
-              .toISOString()
-              ?.split("T")[0]
+                .toISOString()
+                ?.split("T")[0]
             : "",
           cgpa: edu.grade || "",
         }));
@@ -690,17 +689,17 @@ export default function StepperForm() {
           company: exp.company || "",
           startDate: exp.starts_at
             ? new Date(
-              exp.starts_at.year,
-              exp.starts_at.month - 1,
-              exp.starts_at.day
-            )
-              .toISOString()
-              ?.split("T")[0]
+                exp.starts_at.year,
+                exp.starts_at.month - 1,
+                exp.starts_at.day
+              )
+                .toISOString()
+                ?.split("T")[0]
             : "",
           endDate: exp.ends_at
             ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
-              .toISOString()
-              ?.split("T")[0]
+                .toISOString()
+                ?.split("T")[0]
             : "",
           description: exp.description || "",
         }));
@@ -746,7 +745,7 @@ export default function StepperForm() {
     setModalType(type);
     setIsModalOpen(true);
     setEditIndex(index);
-    console.log(itemData)
+    console.log(itemData);
 
     if (itemData && Object.keys(itemData).length > 0) {
       // Prefill modalFormData based on the type
@@ -794,7 +793,6 @@ export default function StepperForm() {
           images: itemData.images || [],
         });
       }
-
     } else {
       setModalFormData({});
     }
@@ -809,7 +807,7 @@ export default function StepperForm() {
 
   // Add or update item in local arrays
   const saveDetail = async (type, dataObj, index) => {
-    setSaving(true)
+    setSaving(true);
     const lower = type.toLowerCase();
     if (lower === "education") {
       if (index !== null) {
@@ -845,23 +843,35 @@ export default function StepperForm() {
       }
     } else if (lower === "service") {
       try {
-        let videoUrl = dataObj.serviceVideo || "";
-        if (dataObj.serviceVideo) {
-          const storageRef = ref(storage, `videos/${dataObj.serviceVideo.name}`);
+        console.log("dataObj", dataObj);
+        let videoUrl = "";
+        if (dataObj.serviceVideo?.name) {
+          const storageRef = ref(
+            storage,
+            `videos/${dataObj.serviceVideo.name}`
+          );
           await uploadBytes(storageRef, dataObj.serviceVideo);
           videoUrl = await getDownloadURL(storageRef);
           console.log("Video URL:", videoUrl);
         }
         const imageUrls = await Promise.all(
           dataObj.images.map(async (image) => {
-            const storageRef = ref(storage, `images/${image.name}`);
-            await uploadBytes(storageRef, image);
-            return await getDownloadURL(storageRef);
+            if (image.name) {
+              const storageRef = ref(storage, `images/${image.name}`);
+              await uploadBytes(storageRef, image);
+              return await getDownloadURL(storageRef);
+            } else {
+              return image;
+            }
           })
         );
+        console.log("Image URLs:", imageUrls);
         const serviceData = {
           ...dataObj,
-          serviceVideo: videoUrl,
+          serviceVideo:
+            dataObj.serviceVideo.name === null
+              ? dataObj.serviceVideo
+              : videoUrl,
           images: imageUrls,
         };
         console.log("serviceData", serviceData);
@@ -878,7 +888,7 @@ export default function StepperForm() {
     } else {
       console.error("Invalid type to save");
     }
-    setSaving(false)
+    setSaving(false);
   };
 
   // Delete item
@@ -920,7 +930,7 @@ export default function StepperForm() {
       setLoadingg(false);
       return;
     }
-    console.log("Services", Services)
+    console.log("Services", Services);
     // Gather data
     const data = {
       profileImage: profileImg,
@@ -1047,7 +1057,7 @@ export default function StepperForm() {
     if (Xpert && typeof Xpert === "string") {
       setRecommendation(
         recommendationsConfig[Xpert.toLowerCase()] ||
-        recommendationsConfig.default
+          recommendationsConfig.default
       );
     } else {
       setRecommendation(recommendationsConfig.default);
@@ -1752,8 +1762,8 @@ export default function StepperForm() {
                             Availability:{" "}
                             {item.availability
                               ? item.availability.replace(/^\w/, (c) =>
-                                c.toUpperCase()
-                              )
+                                  c.toUpperCase()
+                                )
                               : "N/A"}
                           </Typography>
                           {item.availability === "part time" && (
@@ -1795,7 +1805,9 @@ export default function StepperForm() {
                   onClick={handleSubmitInfo}
                   size="large"
                   disabled={loading}
-                  startIcon={loading && <CircularProgress size={20} color="inherit" />}
+                  startIcon={
+                    loading && <CircularProgress size={20} color="inherit" />
+                  }
                 >
                   {loading ? "Submitting..." : "Submit"}
                 </Button>
@@ -1852,13 +1864,13 @@ export default function StepperForm() {
         )}
 
         <Dialog
+          disableEnforceFocus
           open={isModalOpen}
           onClose={closeModal}
           fullWidth
           maxWidth="sm"
-          className="!z-[99999999] mt-16"
+          className="!z-[120]"
           PaperProps={{ sx: { borderRadius: 3 } }}
-         
         >
           <DialogTitle sx={{ m: 0, p: 2 }}>
             {editIndex !== null ? `Edit ${modalType}` : `Add ${modalType}`}
@@ -2403,7 +2415,6 @@ export default function StepperForm() {
 
                       {/* video upload */}
 
-
                       <div className="flex flex-col items-center justify-center w-full h-full mt-10">
                         {!modalFormData.serviceVideo && (
                           <label
@@ -2425,7 +2436,9 @@ export default function StepperForm() {
                                   d="M12 4v16m8-8H4"
                                 />
                               </svg>
-                              <span className="text-gray-500 mt-2">Upload Video</span>
+                              <span className="text-gray-500 mt-2">
+                                Upload Video
+                              </span>
                             </div>
                             <input
                               id="video-upload"
@@ -2448,7 +2461,9 @@ export default function StepperForm() {
                             <video
                               src={
                                 modalFormData.serviceVideo instanceof File
-                                  ? URL.createObjectURL(modalFormData.serviceVideo)
+                                  ? URL.createObjectURL(
+                                      modalFormData.serviceVideo
+                                    )
                                   : modalFormData.serviceVideo
                               }
                               controls
@@ -2470,7 +2485,7 @@ export default function StepperForm() {
 
                         {/* upload images */}
 
-                        <Grid item xs={12} >
+                        <Grid item xs={12}>
                           {/* Display "Upload Images" button if there are less than 4 images */}
                           {modalFormData.images.length < 4 && (
                             <label
@@ -2492,7 +2507,9 @@ export default function StepperForm() {
                                     d="M12 4v16m8-8H4"
                                   />
                                 </svg>
-                                <span className="text-gray-500 mt-2">Upload Images Max-4</span>
+                                <span className="text-gray-500 mt-2">
+                                  Upload Images Max-4
+                                </span>
                               </div>
                               <input
                                 id="image-upload"
@@ -2501,7 +2518,9 @@ export default function StepperForm() {
                                 multiple
                                 className="hidden"
                                 onChange={(e) => {
-                                  const files = Array.from(e.target.files).slice(0, 4 - modalFormData.images.length);
+                                  const files = Array.from(
+                                    e.target.files
+                                  ).slice(0, 4 - modalFormData.images.length);
                                   setModalFormData((prev) => ({
                                     ...prev,
                                     images: [...prev.images, ...files],
@@ -2516,11 +2535,16 @@ export default function StepperForm() {
                         {modalFormData.images.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-2">
                             {modalFormData.images.map((image, index) => (
-                              <div key={index} className="relative w-24 h-24 border rounded-lg overflow-hidden">
+                              <div
+                                key={index}
+                                className="relative w-24 h-24 border rounded-lg overflow-hidden"
+                              >
                                 <img
-                                   src={
+                                  src={
                                     modalFormData.images instanceof File
-                                      ? URL.createObjectURL(modalFormData.images)
+                                      ? URL.createObjectURL(
+                                          modalFormData.images
+                                        )
                                       : modalFormData.images
                                   }
                                   alt={`Image ${index + 1}`}
@@ -2531,7 +2555,9 @@ export default function StepperForm() {
                                   onClick={() =>
                                     setModalFormData((prev) => ({
                                       ...prev,
-                                      images: prev.images.filter((_, i) => i !== index),
+                                      images: prev.images.filter(
+                                        (_, i) => i !== index
+                                      ),
                                     }))
                                   }
                                 >
@@ -2541,11 +2567,7 @@ export default function StepperForm() {
                             ))}
                           </div>
                         )}
-
-
-
                       </div>
-
                     </>
                   )}
                 </Grid>

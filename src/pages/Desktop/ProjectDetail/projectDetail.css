@@ -201,7 +201,7 @@
   margin: 4px 0 0;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 768px) {
   .des-project-detail-container {
     width: 100%;
     padding: 5px;
@@ -322,9 +322,7 @@
     flex-direction: column;
   }
 
-  .des-clearsingle-courses-description {
-    width: 300px;
-  }
+  
 
   .second-decs-sec-bottom-wrap {
     flex-direction: row;
