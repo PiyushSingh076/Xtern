@@ -213,7 +213,7 @@
 //   // Handle Service Click
 //   const handleService = (item) => {
 //     const serializableItem = JSON.parse(JSON.stringify(item));
-//     navigate("/project", { state: { item: serializableItem } });
+//     navigate("/service", { state: { item: serializableItem } });
 //   };
 
 //   // Share Profile
@@ -907,7 +907,7 @@ const MobileSingleMentor = () => {
   // Handle Service Click
   const handleService = (item) => {
     const serializableItem = JSON.parse(JSON.stringify(item));
-    navigate("/project", { state: { item: serializableItem } });
+    navigate("/service", { state: { item: serializableItem } });
   };
 
   // Delete Event

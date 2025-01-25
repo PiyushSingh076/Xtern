@@ -313,11 +313,11 @@ const SingleMentor = () => {
 
   // If user clicks "Service" item
   const handleService = (item) => {
-    console.log("Service:", item)
+    console.log("Service:", item);
     const serializableItem = JSON.parse(JSON.stringify(item));
     serializableItem.uid = uid;
     console.log("displaying si before navigating ", serializableItem);
-    navigate("/project/" + item.id, { state: { item: serializableItem } });
+    navigate("/service/" + item.id, { state: { item: serializableItem } });
   };
   // Show/hide calls
   const openScheduledCallsModal = () => setCallsModalOpen(true);
@@ -574,16 +574,20 @@ const SingleMentor = () => {
                     {/* **Interactive Description with Tooltip** */}
                     <Tooltip
                       title={
-                        item.serviceDescription || "No description available"
+                        item.serviceName
                       }
                       arrow
                       placement="top"
                     >
-                      <p>
-                        {item.serviceDescription?.length > 70
-                          ? `${item.serviceDescription.slice(0, 70)}...`
-                          : item.serviceDescription}
-                      </p>
+                      <div>
+
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: item?.serviceDescription,
+                          }}
+                          className="pointer-events-none saturate-0 no-underline max-h-[70px] overflow-hidden"
+                        ></div>
+                      </div>
                     </Tooltip>
 
                     {profileData?.type?.toLowerCase() === "intern" ? (
@@ -604,7 +608,7 @@ const SingleMentor = () => {
                       />
                     ) : (
                       /* **2. Service Duration and Price for Non-Interns** */
-                      <div className="price-duration-container">
+                      <div className="price-duration-container !mt-auto">
                         {item.serviceDuration && (
                           <span className="service-duration">
                             <FaClock /> {item.serviceDuration}{" "}

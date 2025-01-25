@@ -208,7 +208,7 @@ const Stepper = ({ data }) => {
           assessmentDetail,
           assessmentDuration,
           duration,
-          file: file_data,
+          file: file_data.fileName ? file_data : null,
           imageURL: imageURL || dImage,
         });
 
