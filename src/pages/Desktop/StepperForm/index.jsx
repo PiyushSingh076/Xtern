@@ -1,4 +1,3 @@
-
 // src/Components/Admin/Profile/StepperForm.jsx
 
 import React, { useEffect, useState } from "react";
@@ -50,7 +49,7 @@ import { storage } from "../../../firebaseConfig";
 import SummaryStep from "./SummaryStep";
 import useAuthState from "../../../hooks/Authentication/useAuthState";
 import { useAuth } from "../../../hooks/Auth/useAuth";
-
+import { RichEditor } from "../../../components/RichEditor";
 
 /**
  * Some roles (astrologist, lawyer) have "consulting charges"
@@ -85,16 +84,16 @@ const calculateExperience = (experiences) => {
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
 
-  return `${years} ${years > 1 ? "Years" : "Year"} ${months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
-    }`;
-
+  return `${years} ${years > 1 ? "Years" : "Year"} ${
+    months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
+  }`;
 };
 
 export default function StepperForm() {
   // Basic personal data
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
-  const { setRefreshCount, } = useAuthState()
+  const { setRefreshCount } = useAuthState();
   const [Xpert, setXpert] = useState("");
   const [Experience, setExperience] = useState(""); // Usually a string or number
   const [profileImg, setProfileImg] = useState(null);
@@ -124,7 +123,6 @@ export default function StepperForm() {
   const steps = ["Xpert Type", "Profile", "Offering", "Summary"];
   const [isStep2Complete, setIsStep2Complete] = useState(false);
 
-
   // For LinkedIn fetch
   const [isLinkedInFetched, setIsLinkedInFetched] = useState(false);
 
@@ -139,13 +137,12 @@ export default function StepperForm() {
 
   const [loadingg, setLoadingg] = useState(false);
 
-
   // Redux / Navigation
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { saveProfileData, loading } = useSaveProfileData();
   const { userData } = useFetchUserData();
-  const { refreshUser } = useAuth()
+  const { refreshUser } = useAuth();
   // If user clicked "edit" with existing profile
   const location = useLocation();
   const { profileData } = location.state || {};
@@ -195,10 +192,9 @@ export default function StepperForm() {
     setSelectedCity("");
   };
 
-
   const Badges = [
-    { name: 'Top Rated', color: 'success' },
-    { name: 'Certified Expert', color: 'warning' },
+    { name: "Top Rated", color: "success" },
+    { name: "Certified Expert", color: "warning" },
   ];
 
 
@@ -420,7 +416,7 @@ export default function StepperForm() {
     if (Xpert && typeof Xpert === "string") {
       setRecommendation(
         recommendationsConfig[Xpert.toLowerCase()] ||
-        recommendationsConfig.default
+          recommendationsConfig.default
       );
     } else {
       setRecommendation(recommendationsConfig.default);
@@ -496,7 +492,6 @@ export default function StepperForm() {
       const reader = new FileReader();
       reader.onload = () => setProfileImg(reader.result);
       reader.readAsDataURL(file);
-
     }
   };
   const clearProfileImage = () => {
@@ -507,7 +502,9 @@ export default function StepperForm() {
   const handleStepClick = (step) => {
     // Validation logic
     if (step === 3 && !isStep2Complete) {
-      toast.error("Please submit your profile data before proceeding to the Summary.");
+      toast.error(
+        "Please submit your profile data before proceeding to the Summary."
+      );
       return;
     }
 
@@ -746,6 +743,7 @@ export default function StepperForm() {
     setModalType(type);
     setIsModalOpen(true);
     setEditIndex(index);
+    console.log(itemData)
 
     if (itemData && Object.keys(itemData).length > 0) {
       // Prefill modalFormData based on the type
@@ -789,7 +787,7 @@ export default function StepperForm() {
           endDate: itemData.endDate || "",
           availability: itemData.availability || "",
           hoursPerDay: itemData.hoursPerDay || "",
-          serviceVideo: itemData.serviceData || null,
+          serviceVideo: itemData.serviceVideo || null,
         });
       }
       
@@ -847,11 +845,13 @@ export default function StepperForm() {
           const storageRef = ref(storage, `videos/${dataObj.serviceVideo.name}`);
           await uploadBytes(storageRef, dataObj.serviceVideo);
           videoUrl = await getDownloadURL(storageRef);
+          console.log("Video URL:", videoUrl);
         }
         const serviceData = {
           ...dataObj,
           serviceVideo: videoUrl,
         };
+        console.log("serviceData", serviceData);
         if (index !== null) {
           const newArr = [...Services];
           newArr[index] = serviceData;
@@ -906,7 +906,7 @@ export default function StepperForm() {
       setLoadingg(false);
       return;
     }
-
+    console.log("Services",Services)
     // Gather data
     const data = {
       profileImage: profileImg,
@@ -932,13 +932,12 @@ export default function StepperForm() {
       dispatch(setDetail(data));
       await saveProfileData(data);
 
-      setIsStep2Complete(true)
+      setIsStep2Complete(true);
       setActiveStep(3);
       setTimeout(() => {
         refreshUser();
       }, 200);
       console.log("After setting step:", 3); // Debug log
-
     } catch (err) {
       toast.error(`Error saving data: ${err.message}`);
       console.log(err);
@@ -948,9 +947,9 @@ export default function StepperForm() {
   };
 
   // Submit the modal form
-  const handleModalSubmit = (e) => {
+  const handleModalSubmit = async (e) => {
     e.preventDefault();
-    saveDetail(modalType, modalFormData, editIndex);
+    await saveDetail(modalType, modalFormData, editIndex);
     closeModal();
   };
 
@@ -1091,9 +1090,7 @@ export default function StepperForm() {
 
       {activeStep === 0 && <XpertRole next={() => setActiveStep(1)} />}
 
-
       <Box sx={{ height: "90vh", overflow: "auto", padding: 3 }}>
-
         {activeStep === 1 && (
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
@@ -1513,15 +1510,14 @@ export default function StepperForm() {
             <Grid item xs={12}>
               <Box
                 sx={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
+                  display: "flex",
+                  justifyContent: "flex-end",
                   gap: 2,
                   mt: 3,
-                  mb: 3
+                  mb: 3,
                 }}
               >
                 {activeStep === 1 && (
-
                   <>
                     <Button
                       variant="outlined"
@@ -1538,7 +1534,6 @@ export default function StepperForm() {
                       Next Step
                     </Button>
                   </>
-
                 )}
               </Box>
             </Grid>
@@ -1725,24 +1720,26 @@ export default function StepperForm() {
                         <strong>{item.serviceName}</strong>
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
-                        {item.serviceDescription}
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: item.serviceDescription,
+                          }}
+                        ></div>
                       </Typography>
                       {Xpert.toLowerCase() === "intern" ? (
                         <>
                           <Typography variant="body2" color="textSecondary">
-
                             Internship Start Date: {item.startDate || "Not Set"}
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
                             Internship End Date: {item.endDate || "Not Set"}
-
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
                             Availability:{" "}
                             {item.availability
                               ? item.availability.replace(/^\w/, (c) =>
-                                c.toUpperCase()
-                              )
+                                  c.toUpperCase()
+                                )
                               : "N/A"}
                           </Typography>
                           {item.availability === "part time" && (
@@ -1815,10 +1812,10 @@ export default function StepperForm() {
             <Box
               sx={{
                 display: "flex",
-                justifyContent:
-                  activeStep === 2 ? "space-between" : "flex-end",
+                justifyContent: activeStep === 2 ? "space-between" : "flex-end",
                 mt: 2,
-              }}>
+              }}
+            >
               <Button
                 variant="outlined"
                 color="secondary"
@@ -1838,9 +1835,7 @@ export default function StepperForm() {
               </Button>
             </Box>
           </>
-
         )}
-
 
         <Dialog
           open={isModalOpen}
@@ -1864,10 +1859,8 @@ export default function StepperForm() {
             >
               <CloseIcon />
             </IconButton>
-
-          </DialogTitle >
+          </DialogTitle>
           <form onSubmit={handleModalSubmit}>
-
             <DialogContent dividers>
               {/* Education Form */}
               {modalType === "Education" && (
@@ -2220,7 +2213,7 @@ export default function StepperForm() {
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField
+                    {/* TODO: back <TextField
                       label="Service Description"
                       name="serviceDescription"
                       variant="outlined"
@@ -2236,7 +2229,17 @@ export default function StepperForm() {
                           serviceDescription: e.target.value,
                         }))
                       }
-                    />
+                    /> */}
+                    <RichEditor
+                      onChange={(content) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          serviceDescription: content,
+                        }))
+                      }
+                      value={modalFormData.serviceDescription || ""}
+                      placeholder="Service Description"
+                    ></RichEditor>
                   </Grid>
 
                   {Xpert.toLowerCase() === "intern" ? (
@@ -2460,5 +2463,3 @@ export default function StepperForm() {
     </Box>
   );
 }
-
-

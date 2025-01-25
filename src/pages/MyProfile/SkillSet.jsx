@@ -17,7 +17,7 @@ export default function SkillSet({ profileData, skillloading }) {
       servicePrice: item.servicePrice,
     };
 
-    navigate("/project", { state: { item: serializableItem } });
+    navigate("/service", { state: { item: serializableItem } });
   };
 
   // console.log("skill", profileData);
@@ -63,9 +63,7 @@ export default function SkillSet({ profileData, skillloading }) {
               <div className="profile-details-second-wrap-sec" key={index}>
                 <div
                   className={`mentor-icon ${
-                    ["purple-bg", "green-bg", "pink-bg", "orange-bg"][
-                      index % 4
-                    ]
+                    ["purple-bg", "green-bg", "pink-bg", "orange-bg"][index % 4]
                   }`}
                   style={{
                     position: "relative",
@@ -119,13 +117,19 @@ export default function SkillSet({ profileData, skillloading }) {
             <div
               key={index}
               className="service-item"
-              onClick={() => navigate('/project/' + serviceItem?.id)} // Trigger navigation to project
+              onClick={() => navigate("/service/" + serviceItem?.id)} // Trigger navigation to project
             >
               <span className="service-name" style={{ fontSize: "0.8rem" }}>
                 {serviceItem?.serviceName}
               </span>
               <span className="service-description">
-                {(serviceItem?.serviceDescription).slice(0, 50) + ".."}
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: serviceItem?.serviceDescription,
+                  }}
+                  className="pointer-events-none saturate-0 no-underline"
+                ></div>
+                {/* {(serviceItem?.serviceDescription).slice(0, 50) + ".."} */}
               </span>
               <span className="service-price" style={{ fontSize: "0.7rem" }}>
                 ₹{serviceItem?.servicePrice}

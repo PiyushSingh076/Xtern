@@ -177,7 +177,7 @@ const SingleMentor = () => {
       serviceDurationType: item.serviceDurationType,
       servicePrice: item.servicePrice,
     };
-    navigate("/project", { state: { item: serializableItem } });
+    navigate("/service", { state: { item: serializableItem } });
   };
 
   const toggleBookmark = () => {

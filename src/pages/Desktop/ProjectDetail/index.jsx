@@ -343,7 +343,7 @@ const ProjectDetails = () => {
                         ) : (
                           <>
                             <p className="des-text">
-                              {item.serviceDescription}
+                              <div dangerouslySetInnerHTML={{ __html: item.serviceDescription }} ></div>
                             </p>
                           </>
                         )}

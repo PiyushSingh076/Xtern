@@ -27,7 +27,7 @@ export const ROUTES = {
   NOTIFICATION: "/notification",
   CATEGORY_SCREEN: "/categoryscreen",
   BUSINESS: "/business",
-  SINGLE_COURSE_DESCRIPTION: "/project/:projectId",
+  SINGLE_COURSE_DESCRIPTION: "/service/:projectId",
 
   TRENDING_COURSE: "/trending-course",
   CHECKOUT_SCREEN: "/checkoutscreen",
