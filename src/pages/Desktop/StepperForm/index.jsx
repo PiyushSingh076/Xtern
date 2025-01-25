@@ -59,6 +59,7 @@ const consultingChargesConfig = {
   lawyer: true,
 };
 
+
 /** For LinkedIn experiences date calculations */
 const calculateExperience = (experiences) => {
   if (!experiences || experiences.length === 0) return "";
@@ -90,6 +91,8 @@ const calculateExperience = (experiences) => {
 };
 
 export default function StepperForm() {
+  const [saving, setSaving] = useState(false)
+
   // Basic personal data
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
@@ -805,6 +808,7 @@ export default function StepperForm() {
 
   // Add or update item in local arrays
   const saveDetail = async (type, dataObj, index) => {
+    setSaving(true)
     const lower = type.toLowerCase();
     if (lower === "education") {
       if (index !== null) {
@@ -865,6 +869,7 @@ export default function StepperForm() {
     } else {
       console.error("Invalid type to save");
     }
+    setSaving(false)
   };
 
   // Delete item
@@ -1842,6 +1847,7 @@ export default function StepperForm() {
           onClose={closeModal}
           fullWidth
           maxWidth="sm"
+          className="!z-[99999999]"
           PaperProps={{ sx: { borderRadius: 3 } }}
         >
           <DialogTitle sx={{ m: 0, p: 2 }}>
@@ -2386,7 +2392,7 @@ export default function StepperForm() {
                       </Grid>
 
                       {/* video upload */}
-                      <Grid item xs={12}>
+                      <Grid item sx={{pl: "24px"}} xs={12} spacing={3}>
                         <TextField
                           label="Service Video"
                           name="serviceVideo"
@@ -2405,7 +2411,7 @@ export default function StepperForm() {
                         />
                       </Grid>
                       {modalFormData.serviceVideo && (
-  <div className="mt-2">
+  <Grid item xs={12} className="mt-2 w-full justify-center !flex !flex-col items-center">
     <video
       src={
         modalFormData.serviceVideo instanceof File
@@ -2428,7 +2434,7 @@ export default function StepperForm() {
     >
       Remove
     </Button>
-  </div>
+  </Grid>
 )}
                     </>
                   )}
@@ -2449,12 +2455,12 @@ export default function StepperForm() {
                 color="primary"
                 type="submit"
                 size="large"
-                disabled={loading}
+                disabled={saving}
                 startIcon={
-                  loading && <CircularProgress size={20} color="inherit" />
+                  saving && <CircularProgress size={20} color="inherit" />
                 }
               >
-                {loading ? "Submitting..." : "Save"}
+                {saving ? "Submitting..." : "Save"}
               </Button>
             </DialogActions>
           </form>
