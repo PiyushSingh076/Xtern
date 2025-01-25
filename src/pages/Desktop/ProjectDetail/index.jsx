@@ -221,7 +221,7 @@ const ProjectDetails = () => {
   return (
     <div className="des-project-detail-container">
       <section id="single-description-screen1">
-        <div className="des-first-desc-img-sec">
+        <div className="des-first-desc-img-sec !m-0 !px-4 !flex !flex-col md:!flex-row">
           <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
               {item.serviceVideo ? (
@@ -269,7 +269,7 @@ const ProjectDetails = () => {
             </div>
           </div>
 
-          <div className="desc-container">
+          <div className="desc-container !min-w-0 !w-full !md:w-1/2">
             <div className="des-clearsingle-courses-description">
               <div className="second-decs-sec">
                 <div className="second-decs-sec-wrap">
