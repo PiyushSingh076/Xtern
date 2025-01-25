@@ -14,8 +14,15 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import WalletModal from "./WalletModal";
-import { Skeleton } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Skeleton,
+} from "@mui/material";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
+import Carousel from "react-material-ui-carousel";
 
 const db = getFirestore();
 
@@ -36,9 +43,8 @@ const ProjectDetails = () => {
   const location = useLocation();
   const [pageLoading, setPageLoading] = useState(false);
   const [item, setItem] = useState({});
-
-  
-
+  const [currentMedia, setCurrentMedia] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
   useEffect(() => {
     const fetchItem = async () => {
       setPageLoading(true);
@@ -169,7 +175,7 @@ const ProjectDetails = () => {
       setReviewText("");
       setRating(0);
       setShowReviewForm(false);
-      setCanReview(false)
+      setCanReview(false);
     } catch (error) {
       console.error("Failed to save review:", error);
     }
@@ -195,7 +201,7 @@ const ProjectDetails = () => {
         ...doc.data(),
       }));
 
-      console.log("Reviews",userReviews)
+      console.log("Reviews", userReviews);
 
       const counter = 0;
       userReviews.forEach((review) => {
@@ -203,10 +209,9 @@ const ProjectDetails = () => {
           counter++;
         }
       });
-      if(counter == userReviews.length){
-        setCanReview(true)
+      if (counter == userReviews.length) {
+        setCanReview(true);
       }
-      
 
       setReviews(userReviews);
     } catch (error) {
@@ -218,25 +223,97 @@ const ProjectDetails = () => {
     fetchReviews();
   }, []);
 
+  const [media, setMedia] = useState([]);
+  useEffect(() => {
+    if (item) {
+      const newMedia = [];
+      console.log("item", item);
+      if (item.serviceVideo) {
+        newMedia.push({
+          type: "video",
+          src: item.serviceVideo,
+        });
+      }
+
+      if (item.images && item.images.length > 0) {
+        item.images.forEach((image) => {
+          newMedia.push({
+            type: "image",
+            src: image,
+          });
+        });
+      }
+
+      console.log("newMedia", newMedia);
+      setMedia((prev) => {
+        const combinedMedia = [...prev, ...newMedia];
+        const uniqueMedia = combinedMedia.filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex((t) => t.type === value.type && t.src === value.src)
+        );
+        console.log("uniqueMedia", uniqueMedia);
+        return uniqueMedia;
+      });
+    }
+  }, [item]);
+
   return (
     <div className="des-project-detail-container">
+      <ViewModal
+        open={modalOpen}
+        media={media}
+        onClose={() => setModalOpen(false)}
+        current={currentMedia}
+      ></ViewModal>
       <section id="single-description-screen1">
         <div className="des-first-desc-img-sec !m-0 !px-4 !flex !flex-col md:!flex-row">
           <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
-              {item.serviceVideo ? (
-                <div className="w-[400px] h-[300px] relative flex items-center justify-center">
-                  <video
-                    controls
-                    src={item.serviceVideo}
-                    className="absolute size-full object-cover"
-                  ></video>
-                </div>
-              ) : (
-                <div className="w-[400px] h-[300px] relative flex items-center justify-center">
-                  No video available
-                </div>
-              )}
+              <div className="rounded-md w-[400px] h-fit   overflow-hidden relative">
+                <Carousel
+                  onChange={(e) => setCurrentMedia(e)}
+                  autoPlay={false}
+                  navButtonsAlwaysVisible
+                  animation="slide"
+                  className="w-full md:w-[400px] h-fit rounded-md"
+                >
+                  {Array.isArray(media) &&
+                    media.length > 0 &&
+                    media.map((mediaItem, index) => (
+                      <div
+                        key={`image-slide-${index}`}
+                        className="w-full rounded-md aspect-[16/9] flex items-center justify-center relative overflow-hidden"
+                      >
+                        <div
+                          onClick={() => {
+                            setModalOpen(true);
+                          }}
+                          className="size-full group z-50 bg-black/0 hover:bg-black/20 transition-all text-xl font-medium text-transparent hover:text-white left-0 top-0 flex items-center justify-center cursor-pointer"
+                        >
+                          <div className="">View</div>
+                        </div>
+                        {mediaItem.type === "video" && (
+                          <video
+                            muted
+                            autoPlay
+                            loop
+                            src={mediaItem.src}
+                            className="absolute size-full object-cover left-0 top-0 !m-0"
+                            alt={`Slide ${index + 1}`}
+                          />
+                        )}
+                        {mediaItem.type === "image" && (
+                          <img
+                            src={mediaItem.src}
+                            className="absolute size-full object-cover left-0 top-0"
+                            alt={`Slide ${index + 1}`}
+                          />
+                        )}
+                      </div>
+                    ))}
+                </Carousel>
+              </div>
             </div>
             <div className="single-courses-top">
               <div className="course-back-icon">
@@ -401,9 +478,10 @@ const ProjectDetails = () => {
                       <div className="review-content-wrap mt-24">
                         <h2 className="review-heading">What Our Users Say</h2>
 
-                        {(item &&
+                        {item &&
                           userData &&
-                          item?.userRef?.id !== userData.uid) && canReview && (
+                          item?.userRef?.id !== userData.uid &&
+                          canReview && (
                             <>
                               <div className="review-form">
                                 <textarea
@@ -481,7 +559,11 @@ const ProjectDetails = () => {
                               ))}
                             </div>
                           </div>
-                        ) : <div className="w-full py-6 flex items-center justify-center">No reviews yet</div>}
+                        ) : (
+                          <div className="w-full py-6 flex items-center justify-center">
+                            No reviews yet
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -500,6 +582,66 @@ const ProjectDetails = () => {
         />
       )}
     </div>
+  );
+};
+
+const ViewModal = ({ href, isVideo, open, onClose, media, current }) => {
+  return (
+    <>
+      <Dialog
+        sx={{
+          "& .MuiDialog-container": {
+            "& .MuiPaper-root": {
+              width: "65vw",
+              maxWidth: "100vw", // Set your width here
+            },
+          },
+        }}
+        className="!max-w-[100vw]"
+        open={open}
+        onClose={onClose}
+      >
+        <DialogTitle>View </DialogTitle>
+        <DialogContent className="!max-w-[100vw] flex items-center justify-center">
+          <div className="!w-[60vw]  h-fit min-h-[60vh]">
+            <Carousel
+              index={current}
+              onChange={(e) => console.log(e)}
+              autoPlay={false}
+              navButtonsAlwaysVisible
+              animation="slide"
+              className="w-full  h-fit rounded-md"
+            >
+              {Array.isArray(media) &&
+                media.length > 0 &&
+                media.map((mediaItem, index) => (
+                  <div
+                    key={`image-slide-modal-${index}`}
+                    className="w-full rounded-md aspect-[16/9] flex items-center justify-center relative overflow-hidden"
+                  >
+                    {mediaItem.type === "video" && (
+                      <video
+                        controls
+                        src={mediaItem.src}
+                        
+                         className="!absolute !size-full !object-cover !left-0 !top-0 !m-0"
+                        alt={`Slide ${index + 1}`}
+                      />
+                    )}
+                    {mediaItem.type === "image" && (
+                      <img
+                        src={mediaItem.src}
+                        className="absolute size-full object-cover left-0 top-0"
+                        alt={`Slide ${index + 1}`}
+                      />
+                    )}
+                  </div>
+                ))}
+            </Carousel>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
