@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import Carousel from "react-material-ui-carousel";
+import ReactPlayer from "react-player";
 
 const db = getFirestore();
 
@@ -624,9 +625,10 @@ const ViewModal = ({ href, isVideo, open, onClose, media, current }) => {
                         controls
                         src={mediaItem.src}
                         
-                         className="!absolute !size-full !object-cover !left-0 !top-0 !m-0"
+                         className="!absolute !size-full !object-cover !max-w-[100vw] !left-0 !top-0 !m-0"
                         alt={`Slide ${index + 1}`}
                       />
+                      // <ReactPlayer style={{ width: "100%", height: "100%", margin: 0 }} controls url={mediaItem.src} ></ReactPlayer>
                     )}
                     {mediaItem.type === "image" && (
                       <img
