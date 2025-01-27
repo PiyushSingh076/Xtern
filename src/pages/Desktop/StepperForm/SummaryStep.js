@@ -310,7 +310,7 @@ const SummaryStep = ({
                               )}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                              {project.description}
+                              <div dangerouslySetInnerHTML={{ __html: project.description}} ></div>
                             </Typography>
                           </Box>
                         ))}
@@ -330,7 +330,7 @@ const SummaryStep = ({
                               {service.serviceName}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                              {service.serviceDescription}
+                            <div dangerouslySetInnerHTML={{ __html: service.serviceDescription}} ></div>
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                               Price: ₹{service.servicePrice} | Timeline: {service.duration} {service.durationType}
