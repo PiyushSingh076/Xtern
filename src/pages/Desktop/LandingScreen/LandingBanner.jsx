@@ -56,7 +56,7 @@ export default function LandingBanner({ pop, setRole }) {
             </button>
             <button
               onClick={() => {
-                navigate(ROUTES.SIGN_UP);
+                navigate("/filterscreen/Intern");
               }}
               className="hire-xperts-btn"
             >

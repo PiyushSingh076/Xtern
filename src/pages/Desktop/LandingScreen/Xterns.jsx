@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 export default function Xterns() {
   const navigate = useNavigate();
 
+
+
   const quality = [
     {
       id: 1,

@@ -1,24 +1,18 @@
 import { useState, useEffect } from "react";
 import { gapi } from "gapi-script";
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
 import { db } from "../../firebaseConfig"; // Ensure the path is correct
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import toast from "react-hot-toast";
-import { Email } from "@mui/icons-material";
-const CLIENT_ID =
-  "944126676030-asroeqpq79h6amvfbi6kasd45bi6j84v.apps.googleusercontent.com";
-const API_KEY = "AIzaSyAUxFdxBmlbsrph7bfQuePPooC2s2nVGOE";
-const SCOPES = "https://www.googleapis.com/auth/calendar.events";
 
 const useGoogleCalendar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+
+  const CLIENT_ID =
+    "944126676030-asroeqpq79h6amvfbi6kasd45bi6j84v.apps.googleusercontent.com";
+  const API_KEY = "AIzaSyAUxFdxBmlbsrph7bfQuePPooC2s2nVGOE";
+  const SCOPES = "https://www.googleapis.com/auth/calendar.events";
 
   /**
    * Initialize the Google API client for Calendar
@@ -74,135 +68,62 @@ const useGoogleCalendar = () => {
     setLoading(true);
 
     const event = {
-      summary: eventData.title,
+      title: eventData.title,
       description: eventData.description,
-      start: {
-        dateTime: eventData.startDateTime,
-        timeZone: "Asia/Kolkata",
-      },
-      end: {
-        dateTime: eventData.endDateTime,
-        timeZone: "Asia/Kolkata",
-      },
+      startDateTime: eventData.startDateTime,
+      endDateTime: eventData.endDateTime,
       attendees: eventData.attendees,
-      conferenceData: {
-        createRequest: {
-          requestId: `meet-${Date.now()}`,
-          conferenceSolutionKey: { type: "hangoutsMeet" },
-        },
-      },
-      organizer: {
-        email: "info@xpert.works",
-      },
+      hostUserId: eventData.hostUserId,
+      recipientUserId: eventData.recipientUserId,
+      callId: `call-${Date.now()}`,
+      callType: "video",
     };
 
     try {
-      if (!isInitialized) {
-        throw new Error("Google Calendar API is not initialized.");
-      }
-
-      if (!gapi.client.calendar) {
-        throw new Error("Google Calendar API is not loaded.");
-      }
-
-      console.log("Creating event with conference data:", event);
-      const response = await gapi.client.calendar.events.insert({
-        calendarId: "primary",
-        resource: event,
-        conferenceDataVersion: 1, // Required for creating conference data
-      });
-
-      console.log(
-        "Event with Google Meet link created successfully:",
-        response
+      // Send the event data to your backend API
+      const response = await fetch(
+        "http://localhost:5000/api/calendar/create-event",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(event),
+        }
       );
 
-      const eventId = response.result.id;
-      const eventLink = response.result.htmlLink;
-      const meetLink = response.result.conferenceData?.entryPoints?.[0]?.uri;
+      const data = await response.json();
+      console.log("Event creation response:", data);
 
-      // Create DocumentReferences for the host and recipient users
-      const hostUserRef = doc(db, "users", eventData.hostUserId);
-      const recipientUserRef = doc(db, "users", eventData.recipientUserId);
+      if (data.success) {
+        toast.success("Call scheduled successfully!");
 
-      // Save call details to Firestore
-      const callData = {
-        callId: eventData.callId,
-        hostUserRef,
-        recipientUserRef,
-        hostUserId: eventData.hostUserId,
-        recipientUserId: eventData.recipientUserId,
-        scheduledDateTime: eventData.startDateTime,
-        callType: eventData.callType,
-        eventId,
-        eventLink,
-        meetLink, // Save the Meet link
-        createdAt: serverTimestamp(),
-      };
+        // Save the event details to Firestore
+        const scheduledCallsRef = collection(db, "scheduledCalls");
+        await addDoc(scheduledCallsRef, {
+          callId: event.callId,
+          callType: event.callType,
+          createdAt: serverTimestamp(),
+          eventId: data.eventId,
+          eventLink: data.eventLink,
+          hostUserId: event.hostUserId,
+          hostUserRef: `/users/${event.hostUserId}`,
+          meetLink: data.meetLink,
+          recipientUserId: event.recipientUserId,
+          recipientUserRef: `/users/${event.recipientUserId}`,
+          scheduledDateTime: event.startDateTime,
+        });
 
-      await addDoc(collection(db, "scheduledCalls"), callData);
-      toast.success("Call scheduled successfully!");
-
-      return { success: true, eventId, eventLink, meetLink };
+        console.log("Event saved to Firestore.");
+      } else {
+        toast.error("Error creating event.");
+        console.error("Error creating event:", data.error);
+      }
     } catch (error) {
       toast.error("Error creating event.");
-      console.error("Error creating event with conference data:", error);
-      return { success: false, error };
+      console.error("Error creating event with backend:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  /**
-   * Delete a Google Calendar event and remove its Firestore record
-   * @param {string} eventId - ID of the Google Calendar event
-   * @param {string} callDocId - Document ID of the associated Firestore record
-   */
-  const deleteEvent = async (eventId, callDocId) => {
-    try {
-      if (!isInitialized) {
-        throw new Error("Google Calendar API not initialized.");
-      }
-
-      // Delete from Google Calendar
-      const response = await gapi.client.calendar.events.delete({
-        calendarId: "primary",
-        eventId: eventId,
-      });
-
-      console.log("Google Calendar event deleted:", response);
-
-      // Delete from Firestore
-      await deleteDoc(doc(db, "scheduledCalls", callDocId));
-      console.log("Firestore document deleted:", callDocId);
-
-      toast.success("Event deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting event:", error);
-
-      // Handle specific error for already deleted events
-      if (
-        error.result &&
-        error.result.error &&
-        error.result.error.message === "Resource has been deleted"
-      ) {
-        toast.error("Event has already been deleted.");
-        // Optionally, delete the Firestore document since the event is already gone
-        try {
-          await deleteDoc(doc(db, "scheduledCalls", callDocId));
-          toast.success(" already deleted.");
-        } catch (firestoreError) {
-          console.error("Error deleting Firestore document:", firestoreError);
-          toast.error("Failed to delete the record.");
-        }
-      } else if (error.code === "permission_denied") {
-        // Handle Firestore permission errors
-        toast.error(
-          "Insufficient permissions to delete the Firestore document."
-        );
-      } else {
-        toast.error("Failed to delete the event.");
-      }
     }
   };
 
@@ -211,7 +132,7 @@ const useGoogleCalendar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { signIn, createEvent, deleteEvent, loading, isInitialized };
+  return { signIn, createEvent, loading, isInitialized };
 };
 
 export default useGoogleCalendar;

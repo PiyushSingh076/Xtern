@@ -52,7 +52,7 @@ const VideoCall = () => {
       setIsJoining(true);
 
       const { data: callData } = await axios.post(
-        "http://localhost:5000/getVideoCallId",
+        "https://us-central1-startup-a54cf.cloudfunctions.net/api/getVideoCallId",
         {
           members: [
             { id: userData.uid, name: userData.display_name },
@@ -62,7 +62,7 @@ const VideoCall = () => {
       );
 
       const { data: tokenData } = await axios.post(
-        "http://localhost:5000/getToken",
+        "https://us-central1-startup-a54cf.cloudfunctions.net/api/getToken",
         { userId: userData.uid }
       );
 

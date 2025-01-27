@@ -18,12 +18,10 @@ import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 import { useNavigate } from "react-router-dom";
 
 export default function Homepage() {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [show, setShow] = useState(false);
   const [Role, setRole] = useState("");
-
 
   const { userData, loading, error } = useFetchUserData();
   const { handleLogout, loading: logoutloading } = useOAuthLogout(); // Use the logout hook
@@ -37,14 +35,11 @@ export default function Homepage() {
 
   console.log(Role);
 
-  useEffect(()=>{
-
-    if(userData){
-       navigate('/homescreen')
+  useEffect(() => {
+    if (userData) {
+      navigate("/homescreen");
     }
-
-  },[userData])
-
+  }, [userData]);
 
   return (
     <div className="homescreen-container">
@@ -83,7 +78,7 @@ export default function Homepage() {
               <Xterns />
               <TrustedComoany />
               <ImageBtn />
-              {/* <BlogSection /> */}
+              <BlogSection />
             </div>
           )}
           <Footer />
