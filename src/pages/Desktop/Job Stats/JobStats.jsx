@@ -417,7 +417,7 @@ const JobStats = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="h-fit w-full mt-2 gap-2 text-sm flex">
+                      <div className="h-fit flex sm:hidden w-full mt-2 gap-2 text-sm ">
                           <Button
                             disableElevation
                             onClick={() =>
