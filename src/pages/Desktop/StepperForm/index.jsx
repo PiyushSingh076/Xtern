@@ -84,9 +84,8 @@ const calculateExperience = (experiences) => {
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
 
-  return `${years} ${years > 1 ? "Years" : "Year"} ${
-    months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
-  }`;
+  return `${years} ${years > 1 ? "Years" : "Year"} ${months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
+    }`;
 };
 
 export default function StepperForm() {
@@ -417,7 +416,7 @@ export default function StepperForm() {
     if (Xpert && typeof Xpert === "string") {
       setRecommendation(
         recommendationsConfig[Xpert.toLowerCase()] ||
-          recommendationsConfig.default
+        recommendationsConfig.default
       );
     } else {
       setRecommendation(recommendationsConfig.default);
@@ -665,17 +664,17 @@ export default function StepperForm() {
           college: edu.school || "",
           startDate: edu.starts_at
             ? new Date(
-                edu.starts_at.year,
-                edu.starts_at.month - 1,
-                edu.starts_at.day
-              )
-                .toISOString()
-                ?.split("T")[0]
+              edu.starts_at.year,
+              edu.starts_at.month - 1,
+              edu.starts_at.day
+            )
+              .toISOString()
+              ?.split("T")[0]
             : "",
           endDate: edu.ends_at
             ? new Date(edu.ends_at.year, edu.ends_at.month - 1, edu.ends_at.day)
-                .toISOString()
-                ?.split("T")[0]
+              .toISOString()
+              ?.split("T")[0]
             : "",
           cgpa: edu.grade || "",
         }));
@@ -689,17 +688,17 @@ export default function StepperForm() {
           company: exp.company || "",
           startDate: exp.starts_at
             ? new Date(
-                exp.starts_at.year,
-                exp.starts_at.month - 1,
-                exp.starts_at.day
-              )
-                .toISOString()
-                ?.split("T")[0]
+              exp.starts_at.year,
+              exp.starts_at.month - 1,
+              exp.starts_at.day
+            )
+              .toISOString()
+              ?.split("T")[0]
             : "",
           endDate: exp.ends_at
             ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
-                .toISOString()
-                ?.split("T")[0]
+              .toISOString()
+              ?.split("T")[0]
             : "",
           description: exp.description || "",
         }));
@@ -844,36 +843,57 @@ export default function StepperForm() {
     } else if (lower === "service") {
       try {
         console.log("dataObj", dataObj);
-        let videoUrl = "";
-        if (dataObj.serviceVideo?.name) {
+        let videoUrl = dataObj.serviceVideo;;
+        // Handle video upload only if it's a new file
+        if (dataObj.serviceVideo instanceof File) {
           const storageRef = ref(
             storage,
-            `videos/${dataObj.serviceVideo.name}`
+            `videos/${Date.now()}_${dataObj.serviceVideo.name}`
           );
           await uploadBytes(storageRef, dataObj.serviceVideo);
           videoUrl = await getDownloadURL(storageRef);
           console.log("Video URL:", videoUrl);
-        }
+        } 
+
         const imageUrls = await Promise.all(
           dataObj.images.map(async (image) => {
-            if (image.name) {
-              const storageRef = ref(storage, `images/${image.name}`);
+            // If it's a File object, upload to storage
+            if (image instanceof File) {
+              const storageRef = ref(
+                storage,
+                `images/${Date.now()}_${image.name}`
+              );
               await uploadBytes(storageRef, image);
               return await getDownloadURL(storageRef);
-            } else {
+            }
+            // If it's already a string URL, return as is
+            if (typeof image === 'string') {
               return image;
             }
+            // If it's an object with file and preview, upload the file
+            if (image.file instanceof File) {
+              const storageRef = ref(
+                storage,
+                `images/${Date.now()}_${image.file.name}`
+              );
+              await uploadBytes(storageRef, image.file);
+              return await getDownloadURL(storageRef);
+            }
+            return null;
           })
         );
+        
+        // Filter out any null values
+        const filteredImageUrls = imageUrls.filter(url => url !== null);
+
+   
         console.log("Image URLs:", imageUrls);
         const serviceData = {
           ...dataObj,
-          serviceVideo:
-            dataObj.serviceVideo.name === null
-              ? dataObj.serviceVideo
-              : videoUrl,
+          serviceVideo: videoUrl,
           images: imageUrls,
         };
+
         console.log("serviceData", serviceData);
         if (index !== null) {
           const newArr = [...Services];
@@ -884,11 +904,28 @@ export default function StepperForm() {
         }
       } catch (error) {
         console.error("Error uploading video:", error);
+        toast.error("Failed to save service details");
       }
-    } else {
-      console.error("Invalid type to save");
     }
     setSaving(false);
+  };
+
+  // Modify image preview and upload in the component
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const remainingSlots = 4 - modalFormData.images.length;
+    const filesToAdd = files.slice(0, remainingSlots);
+
+    setModalFormData((prev) => ({
+      ...prev,
+      images: [
+        ...prev.images,
+        ...filesToAdd.map(file => ({
+          file,
+          preview: URL.createObjectURL(file)
+        }))
+      ],
+    }));
   };
 
   // Delete item
@@ -1057,7 +1094,7 @@ export default function StepperForm() {
     if (Xpert && typeof Xpert === "string") {
       setRecommendation(
         recommendationsConfig[Xpert.toLowerCase()] ||
-          recommendationsConfig.default
+        recommendationsConfig.default
       );
     } else {
       setRecommendation(recommendationsConfig.default);
@@ -1762,8 +1799,8 @@ export default function StepperForm() {
                             Availability:{" "}
                             {item.availability
                               ? item.availability.replace(/^\w/, (c) =>
-                                  c.toUpperCase()
-                                )
+                                c.toUpperCase()
+                              )
                               : "N/A"}
                           </Typography>
                           {item.availability === "part time" && (
@@ -2462,8 +2499,8 @@ export default function StepperForm() {
                               src={
                                 modalFormData.serviceVideo instanceof File
                                   ? URL.createObjectURL(
-                                      modalFormData.serviceVideo
-                                    )
+                                    modalFormData.serviceVideo
+                                  )
                                   : modalFormData.serviceVideo
                               }
                               controls
@@ -2517,15 +2554,7 @@ export default function StepperForm() {
                                 accept="image/*"
                                 multiple
                                 className="hidden"
-                                onChange={(e) => {
-                                  const files = Array.from(
-                                    e.target.files
-                                  ).slice(0, 4 - modalFormData.images.length);
-                                  setModalFormData((prev) => ({
-                                    ...prev,
-                                    images: [...prev.images, ...files],
-                                  }));
-                                }}
+                                onChange={handleImageUpload}
                               />
                             </label>
                           )}
@@ -2534,18 +2563,18 @@ export default function StepperForm() {
                         {/* Display images and allow removal */}
                         {modalFormData.images.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-2">
-                            {modalFormData.images.map((image, index) => (
+                            {modalFormData.images.map((imageItem, index) => (
                               <div
                                 key={index}
                                 className="relative w-24 h-24 border rounded-lg overflow-hidden"
                               >
                                 <img
                                   src={
-                                    modalFormData.images instanceof File
-                                      ? URL.createObjectURL(
-                                          modalFormData.images
-                                        )
-                                      : modalFormData.images
+                                    typeof imageItem === 'object' && imageItem.preview
+                                      ? imageItem.preview
+                                      : (typeof imageItem === 'string'
+                                        ? imageItem
+                                        : URL.createObjectURL(imageItem))
                                   }
                                   alt={`Image ${index + 1}`}
                                   className="w-full h-full object-cover"
@@ -2555,9 +2584,7 @@ export default function StepperForm() {
                                   onClick={() =>
                                     setModalFormData((prev) => ({
                                       ...prev,
-                                      images: prev.images.filter(
-                                        (_, i) => i !== index
-                                      ),
+                                      images: prev.images.filter((_, i) => i !== index),
                                     }))
                                   }
                                 >
