@@ -356,7 +356,6 @@ export default function EntrepreneurProfileForm() {
           const userId = await saveEntrepreneurDetails(entrepreneurData);
           toast.success(profileData ? "Profile updated successfully!" : "Profile saved successfully!");
           navigate(`/entrepreneur/${userId}`);
-          navigate(`/entrepreneur/${userId}`);
         } catch (error) {
           toast.error(`Error saving profile: ${error.message || error}`);
           console.error(error);
@@ -364,7 +363,7 @@ export default function EntrepreneurProfileForm() {
           setSubmitting(false); // Set loading state to true
         }
       } else {
-        missingFields.forEach((field) => toast.error(`${field} is required)`));
+        missingFields.forEach((field) => toast.error(`${field} is required`));
         setSubmitting(false); // Set loading state to true
 
       }
@@ -565,7 +564,7 @@ export default function EntrepreneurProfileForm() {
 
           <Card sx={{ mb: 2, boxShadow: 2 }}>
             <CardHeader
-              title="Company Details"
+              title="Company Details *"
               titleTypographyProps={{ variant: "h6" }}
               action={
                 <Button
@@ -674,7 +673,7 @@ export default function EntrepreneurProfileForm() {
             </CardContent>
           </Card>
           <TextField
-            label="Industry"
+            label="Industry *"
             variant="outlined"
             fullWidth
             value={industry}
