@@ -272,16 +272,16 @@ const ProjectDetails = () => {
           <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
               <div className="rounded-md w-[400px] h-fit   overflow-hidden relative">
-                <Carousel
-                  onChange={(e) => setCurrentMedia(e)}
-                  autoPlay={false}
-                  navButtonsAlwaysVisible
-                  animation="slide"
-                  className="w-full md:w-[400px] h-fit rounded-md"
-                >
                   {Array.isArray(media) &&
-                    media.length > 0 &&
-                    media.map((mediaItem, index) => (
+                    media.length > 0 ? (
+                      <Carousel
+                      onChange={(e) => setCurrentMedia(e)}
+                      autoPlay={false}
+                      navButtonsAlwaysVisible
+                      animation="slide"
+                      className="w-full md:w-[400px] h-fit rounded-md"
+                    >
+                    {media.map((mediaItem, index) => (
                       <div
                         key={`image-slide-${index}`}
                         className="w-full rounded-md aspect-[16/9] flex items-center justify-center relative overflow-hidden"
@@ -314,6 +314,11 @@ const ProjectDetails = () => {
                       </div>
                     ))}
                 </Carousel>
+                    ):(
+                      <div className="flex items-center justify-center h-48">
+                      No Video/Images Available
+                    </div>
+                    )}
               </div>
             </div>
             <div className="single-courses-top">

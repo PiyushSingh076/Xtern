@@ -5,7 +5,7 @@ import SkillSet from "./SkillSet";
 import Acadamic from "./Acadamic";
 import MainProfile from "./MainProfile";
 import Skeleton from "@mui/material/Skeleton";
-import { MdChat, MdCalendarToday, MdClose } from "react-icons/md";
+import {MdEdit, MdChat, MdCalendarToday, MdClose } from "react-icons/md";
 import { FaRegClock, FaRegFolderOpen } from "react-icons/fa";
 import {
   Modal,
@@ -239,6 +239,7 @@ const EntrepreneurMobile = () => {
       {/* Main Content Section */}
       <section id="single-mentor-sec" style={styles.container}>
         <div className="single-mentor-sec-wrap">
+            
           {/* Profile Information */}
           {profileLoading ? (
             <Skeleton variant="rounded" width={"100%"} height={"300px"} />
@@ -249,6 +250,7 @@ const EntrepreneurMobile = () => {
                 loading={profileLoading}
                 handleEdit={handleEdit}
                 handleShare={handleShare}
+                editable={editable}
               />
               <div className="w-full flex flex-wrap gap-1">
                 {profileData?.skills?.map((skill, index) => {
