@@ -4,6 +4,8 @@ import {
   AiOutlineWallet,
   AiOutlineQuestionCircle,
   AiOutlineLogout,
+  AiOutlineCalendar,
+  AiOutlineMessage
 } from "react-icons/ai";
 import { FaBriefcase, FaWallet } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";

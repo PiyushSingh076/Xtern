@@ -19,7 +19,7 @@ import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 const apiKey = "3pts2x46x4wy";
 
 const fetchToken = async (userId) => {
-  const response = await fetch("http://localhost:5000/getToken", {
+  const response = await fetch("https://us-central1-startup-a54cf.cloudfunctions.net/api/getToken", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId }),
@@ -31,7 +31,7 @@ const fetchToken = async (userId) => {
 
 const fetchOrCreateChannel = async (user1, user2, createdById) => {
   console.log(user1, user2, createdById);
-  const response = await fetch("http://localhost:5000/getChannel", {
+  const response = await fetch("https://us-central1-startup-a54cf.cloudfunctions.net/api/getChannel", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

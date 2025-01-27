@@ -16,6 +16,24 @@ export default function Categories() {
   const catogories = [
     // Note: 'catogories' is retained as per your original code
     {
+      title: "Phonics English",
+      icon: phonics_english, // Replace this with the correct icon path
+      description:
+        "Dedicated phonics instructors helping learners improve reading, writing, and pronunciation skills through fun and interactive sessions.",
+    },
+    {
+      title: "Dietician",
+      icon: dietician, // Replace this with the correct icon path
+      description:
+        "Certified dieticians offering personalized meal plans and expert advice for achieving health and wellness goals.",
+    },
+    {
+      title: "Yoga",
+      icon: "https://cdn-icons-png.flaticon.com/512/3773/3773928.png",
+      description:
+        "Certified yoga instructors offering personalized sessions for physical fitness, mental well-being, and stress management.",
+    },
+    {
       title: "Developer",
       icon: dev,
       description:

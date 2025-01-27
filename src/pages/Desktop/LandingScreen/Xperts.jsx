@@ -2,10 +2,12 @@ import React from 'react'
 import { useNavigate } from "react-router-dom";
 import './Homescreen.css'
 
-import men from '../../../assets/images/xtern-images/men-01.png'
+import men from "../../../assets/images/xtern-images/men-01.png";
 
 export default function Xperts() {
   const navigate = useNavigate();
+
+  
 
   const quality = [
     { id: 1, name: 'Tech Lead', description: 'Senior Tech Lead who can delivery modeules with a team of TalentedInterns, roughly 6-10 yrs of workexperince.' },
@@ -41,5 +43,5 @@ export default function Xperts() {
         </button> 
        </div>
     </div>
-  )
+  );
 }

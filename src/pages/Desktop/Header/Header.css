@@ -20,8 +20,7 @@
 
 }
 
-
-.profile-container{
+.profile-container {
   width: fit-content;
   height: 45px;
   border: 1px solid #ccc;
@@ -51,151 +50,134 @@
   gap: 10px;
 }
 
-.logo{
-    font-size: 30px;
-    font-weight: 500;
-    color: black;
+.logo {
+  font-size: 30px;
+  font-weight: 500;
+  color: black;
 }
 
-.logo:hover{
+.logo:hover {
   cursor: pointer;
 }
 
 .input-search-wrap-container {
-    position: relative;
-    display: flex;
-    align-items: center;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .search-input {
-    width: 200px;
-    padding: 10px 10px 10px 35px; /* Adjusting left padding for the icon */
-    height: 35px;
-    border: 1px rgb(226, 226, 226) solid;
-    border-radius: 20px;
-    font-size: 14px;
-    outline: none;
+  width: 200px;
+  padding: 10px 10px 10px 35px; /* Adjusting left padding for the icon */
+  height: 35px;
+  border: 1px rgb(226, 226, 226) solid;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
 }
 
 .search-icon {
-    position: absolute;
-    left: 10px; /* Positioning the icon inside the input */
-    font-size: 18px;
-    color: rgb(150, 150, 150);
+  position: absolute;
+  left: 10px; /* Positioning the icon inside the input */
+  font-size: 18px;
+  color: rgb(150, 150, 150);
 }
 
-.internships-jobs-option-container{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+.internships-jobs-option-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
-.options-list{
-    list-style-type: none;
-    display: flex;
-    align-items: center;
-    gap: 5px; /* Adjust spacing between items */
-    justify-content: flex-end; /* Align items to the right */
-    margin: 5px;
-    padding: 0;
-    
-  }
-  
-  .option-item{
-    display: inline-block;
-    font-size: 16px; 
-    padding: 10px;
-    font-weight: 400;
-  }
+.options-list {
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Adjust spacing between items */
+  justify-content: flex-end; /* Align items to the right */
+  margin: 5px;
+  padding: 0;
+}
 
-.option-item.active{
-  
-    border: 1px #3374AE solid;
-    border-radius: 25px;
-    background-color: transparent;
-    color: #3374AE;
-    font-weight: 600;
-  }
-  
-  .option-item:hover{
-    color: #0A65FC;
+.option-item {
+  display: inline-block;
+  font-size: 16px;
+  padding: 10px;
+  font-weight: 400;
+}
+
+.option-item.active {
+  border: 1px #3374ae solid;
+  border-radius: 25px;
+  background-color: transparent;
+  color: #3374ae;
+  font-weight: 600;
+}
+
+.option-item:hover {
+  color: #0a65fc;
+  cursor: pointer;
+}
+
+.option-button-login {
+  background-color: #3374ae;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 38px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: ease-in-out 0.5s;
+}
+
+.option-button-login:hover {
+  background-color: #013881;
+  transition: ease-in-out 0.5s;
+}
+
+.option-button-host {
+  gap: 2px;
+  width: 75px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background-color: transparent;
+  border: 1px black solid;
+  font-weight: 500;
+}
+
+.profile-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #3374ae;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-left: 40px;
+
+  :hover {
     cursor: pointer;
   }
+}
 
-  .option-button-login {
-    background-color: #3374AE; 
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 70px;
-    height: 38px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 20px;
-    transition: ease-in-out .5s;
-    
+.profile-icon:hover {
+  cursor: pointer;
+}
 
-  }
-  
-  .option-button-login:hover {
-    background-color: #013881; 
-    transition: ease-in-out .5s;
-  }
-
-
-  
-  
-
-
-  .option-button-host{
-    gap: 2px;
-    width: 75px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 20px;
-    background-color: transparent;
-    border: 1px  black solid;
-    font-weight: 500;
-  }
-
-
-  .profile-icon{
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: #3374AE;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    margin-left: 40px;
-
-    :hover {
-      cursor: pointer;
-    }
-
-
-
-  }
-
-
- 
-
-  .profile-icon:hover{
-    cursor: pointer;
-
-  }
-
-  .hire-btns{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 5px;
-  }
+.hire-btns {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
 
   .hire-xtern-btn , .hire-xpert-btn{
     width: 150px;
@@ -209,19 +191,17 @@
     font-size: 12px;
 }
 
+.hire-xpert-btn {
+  background-color: #0a65fc;
+  border: none;
+  color: white;
+}
 
-  .hire-xpert-btn{
-    background-color: #0A65FC;
-    border: none;
-    color: white;
-
- }
-
-  .hire-xtern-btn{
-    border: 2px #0A65FC solid;
-    color: #0A65FC;
-    background-color: transparent;
-  }
+.hire-xtern-btn {
+  border: 2px #0a65fc solid;
+  color: #0a65fc;
+  background-color: transparent;
+}
 
   .dropdown-menu {
     position: absolute;
@@ -262,13 +242,12 @@
     color: #0d6efd;
   }
 
-
-  .header-wallet-container{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 30px;
-    gap: 10px;
-  }
+.header-wallet-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  gap: 10px;
+}
