@@ -4,6 +4,7 @@ import image1 from "../../assets/images/homescreen/Aman1.png";
 import image2 from "../../assets/images/homescreen/Aman2.png";
 import { useNavigate } from "react-router-dom";
 
+
 export default function ImageBtn() {
   const navigate = useNavigate();
 
@@ -18,9 +19,7 @@ export default function ImageBtn() {
               Seasoned Professional looking to help Organization across the
               globe
             </span>
-            <button onClick={() => navigate("/signup")}>
-              Become Xpert Now
-            </button>
+            <button onClick={() => navigate("/signup")}>Become Xpert Now</button>
           </div>
         </div>
       </div>
@@ -36,7 +35,7 @@ export default function ImageBtn() {
             <button onClick={() => navigate("/filterscreen/Intern")}>
               Hire Xpert Now
             </button>
-          </div>
+            </div>
         </div>
       </div>
     </div>

@@ -1,91 +1,321 @@
-// Import necessary dependencies and components
 import React, { useEffect, useState } from "react";
 import BookmarkSvg from "../../../assets/svg/white-bookmark.svg";
-import PlayIcon from "../../../assets/images/single-courses/play-icon.svg";
-import HeaderImg from "../../../assets/images/single-courses/header-img.png";
-import FillStar from "../../../assets/images/single-courses/orange-fill-star.svg";
-import StudentIcon from "../../../assets/images/single-courses/student-icon.svg";
-import TimeIcon from "../../../assets/images/single-courses/time-icon.svg";
-import LockIconSvg from "../../../assets/images/single-courses/lock-icon.svg";
-import DisableLockSvg from "../../../assets/images/single-courses/disable-lock.svg";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
+import StarRateIcon from "@mui/icons-material/StarRate";
+import GroupIcon from "@mui/icons-material/Group";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import Loading from "../../../components/Loading";
-import useFetchProjectData from "../../../hooks/Auth/useFetchProjectData";
-import "./projectDetail.css";
-import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import { useSelector } from "react-redux";
-import { ImTab } from "react-icons/im";
+import "./projectDetail.css";
+import { saveReview } from "./firestoreHelpers";
+import { getAuth } from "firebase/auth";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { toast } from "react-hot-toast";
+import WalletModal from "./WalletModal";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Skeleton,
+} from "@mui/material";
+import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
+import Carousel from "react-material-ui-carousel";
+import ReactPlayer from "react-player";
 
-// Define the ProjectDetails component
+const db = getFirestore();
+
 const ProjectDetails = () => {
-  // State variables
   const [isBookmarked, setIsBookmarked] = useState(true);
-  const [isBookmarkIcon, setIsBookmarkIcon] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewText, setReviewText] = useState("");
+  const [rating, setRating] = useState(0);
+  const [reviews, setReviews] = useState([]);
+  const [showReviews, setShowReviews] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const { userData } = useFetchUserData();
+  const [canReview, setCanReview] = useState(false);
 
-  // Hooks
   const navigate = useNavigate();
   const { projectId } = useParams();
-
-  // Get authentication state from Redux store
   const auth = useSelector((state) => state.role.auth);
-
   const location = useLocation();
-  const { item } = location.state || {};
+  const [pageLoading, setPageLoading] = useState(false);
+  const [item, setItem] = useState({});
+  const [currentMedia, setCurrentMedia] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  useEffect(() => {
+    const fetchItem = async () => {
+      setPageLoading(true);
+      const serviceSnapshot = await getDoc(doc(db, "services", projectId));
 
-  console.log(item, "service");
+      if (serviceSnapshot.exists()) {
+        console.log("service data", serviceSnapshot.data());
+        setItem(serviceSnapshot.data());
+      }
+      setPageLoading(false);
+    };
+    fetchItem();
+  }, []);
 
-  // Navigation function
   const handleBackClick = () => {
-    navigate(-1); // Navigate to the previous page in the history stack
+    navigate(-1);
   };
 
-  // Toggle bookmark functions
   const toggleBookmark = () => {
     setIsBookmarked(!isBookmarked);
   };
 
-  const toggleBookmarkIcon = () => {
-    setIsBookmarkIcon(!isBookmarkIcon);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleBuyNowClick = () => {
+    setShowModal(true);
   };
 
-  // Slider settings (not used in this component)
-  const settings = {
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    swipeToSlide: true,
-    infinite: true,
-    variableWidth: true,
-    autoplaySpeed: 2000,
-    dots: false,
-    arrows: false,
+  // const handleVideoUpload = async () => {
+  //   if (!selectedFile) {
+  //     alert("Please select a file before uploading.");
+  //     return;
+  //   }
+
+  //   const file = selectedFile;
+
+  //   if (file.size > 10 * 1024 * 1024) {
+  //     alert("File size should not exceed 10 MB.");
+  //     return;
+  //   }
+
+  //   try {
+  //     const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
+  //     const storage = getStorage();
+  //     const storageRef = ref(storage, `videos/${sanitizedFileName}`);
+  //     const snapshot = await uploadBytes(storageRef, file);
+  //     const serviceVideo = await getDownloadURL(snapshot.ref);
+
+  //     const auth = getAuth();
+  //     const currentUser = auth.currentUser;
+
+  //     if (!currentUser) {
+  //       alert("You must be logged in to upload a video.");
+  //       return;
+  //     }
+
+  //     const serviceNameData = {
+  //       serviceName: item?.serviceName || "Unknown Service",
+  //       userId: currentUser.uid,
+  //       serviceVideo,
+  //       timestamp: new Date(),
+  //     };
+
+  //     await setDoc(
+  //       doc(db, "services", projectId),
+  //       {
+  //         serviceVideo: serviceVideo,
+  //       },
+  //       { merge: true }
+  //     );
+
+  //     setVideoFile(serviceVideo);
+  //     setSelectedFile(null);
+  //     document.querySelector("input[type='file']").value = "";
+  //   } catch (error) {
+  //     console.error("Error uploading video:", error);
+  //     alert("Failed to upload video. Please try again.");
+  //   }
+  // };
+
+  const handleReviewTabClick = () => {
+    setShowReviews(true);
+    fetchReviews();
   };
 
-  // Show loading component while data is being fetched
+  const handleReviewSubmit = async () => {
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
 
-  // Render the component
+      if (!currentUser) {
+        alert("You must be logged in to submit a review.");
+        return;
+      }
+
+      const userRef = doc(db, "users", currentUser.uid);
+      const userDoc = await getDoc(userRef);
+
+      let userPhotoURL = "";
+      if (userDoc.exists()) {
+        userPhotoURL = userDoc.data().photo_url;
+      }
+
+      let userName = "";
+      if (userDoc.exists()) {
+        userName = userDoc.data().display_name || userDoc.data().email;
+      } else {
+        userName = currentUser.display_name || currentUser.email;
+      }
+
+      const reviewData = {
+        name: userName,
+        review: reviewText,
+        rating,
+        userId: currentUser.uid,
+        serviceId: projectId,
+        photoURL: userPhotoURL,
+        timestamp: new Date(),
+      };
+
+      const reviewId = await saveReview(reviewData);
+
+      setReviews((prevReviews) => [
+        ...prevReviews,
+        { id: reviewId, ...reviewData },
+      ]);
+
+      setReviewText("");
+      setRating(0);
+      setShowReviewForm(false);
+      setCanReview(false);
+    } catch (error) {
+      console.error("Failed to save review:", error);
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      // const auth = getAuth();
+      // const currentUser = auth.currentUser;
+
+      // if (!currentUser) {
+      //   console.error("User is not logged in.");
+      //   setReviews([]);
+      //   return;
+      // }
+
+      const reviewsRef = collection(db, "reviews");
+      const q = query(reviewsRef, where("serviceId", "==", projectId));
+      const querySnapshot = await getDocs(q);
+
+      const userReviews = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      console.log("Reviews", userReviews);
+
+      const counter = 0;
+      userReviews.forEach((review) => {
+        if (review.userId !== userData.uid) {
+          counter++;
+        }
+      });
+      if (counter == userReviews.length) {
+        setCanReview(true);
+      }
+
+      setReviews(userReviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const [media, setMedia] = useState([]);
+  useEffect(() => {
+    if (item) {
+      const newMedia = [];
+      console.log("item", item);
+      if (item.serviceVideo) {
+        newMedia.push({
+          type: "video",
+          src: item.serviceVideo,
+        });
+      }
+
+      if (item.images && item.images.length > 0) {
+        item.images.forEach((image) => {
+          newMedia.push({
+            type: "image",
+            src: image,
+          });
+        });
+      }
+
+      console.log("newMedia", newMedia);
+      setMedia((prev) => {
+        const combinedMedia = [...prev, ...newMedia];
+        const uniqueMedia = combinedMedia.filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex((t) => t.type === value.type && t.src === value.src)
+        );
+        console.log("uniqueMedia", uniqueMedia);
+        return uniqueMedia;
+      });
+    }
+  }, [item]);
+
   return (
     <div className="des-project-detail-container">
-      {/* Single description section start */}
-      <section id="single-description-screen">
-        <div className="des-first-desc-img-sec">
-          {/* Project image */}
+      <ViewModal
+        open={modalOpen}
+        media={media}
+        onClose={() => setModalOpen(false)}
+        current={currentMedia}
+      ></ViewModal>
+      <section id="single-description-screen1">
+        <div className="des-first-desc-img-sec !m-0 !px-4 !flex !flex-col md:!flex-row">
           <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
-              <img
-                src={HeaderImg}
-                alt="social-media-img"
-                height="400"
-                width="400"
-                className="des-img-fluid"
-              />
+              <div className="rounded-md w-[400px] h-fit   overflow-hidden relative">
+                <Carousel
+                  onChange={(e) => setCurrentMedia(e)}
+                  autoPlay={false}
+                  navButtonsAlwaysVisible
+                  animation="slide"
+                  className="w-full md:w-[400px] h-fit rounded-md"
+                >
+                  {Array.isArray(media) &&
+                    media.length > 0 &&
+                    media.map((mediaItem, index) => (
+                      <div
+                        key={`image-slide-${index}`}
+                        className="w-full rounded-md aspect-[16/9] flex items-center justify-center relative overflow-hidden"
+                      >
+                        <div
+                          onClick={() => {
+                            setModalOpen(true);
+                          }}
+                          className="size-full group z-50 bg-black/0 hover:bg-black/20 transition-all text-xl font-medium text-transparent hover:text-white left-0 top-0 flex items-center justify-center cursor-pointer"
+                        >
+                          <div className="">View</div>
+                        </div>
+                        {mediaItem.type === "video" && (
+                          <video
+                            muted
+                            autoPlay
+                            loop
+                            src={mediaItem.src}
+                            className="absolute size-full object-cover left-0 top-0 !m-0"
+                            alt={`Slide ${index + 1}`}
+                          />
+                        )}
+                        {mediaItem.type === "image" && (
+                          <img
+                            src={mediaItem.src}
+                            className="absolute size-full object-cover left-0 top-0"
+                            alt={`Slide ${index + 1}`}
+                          />
+                        )}
+                      </div>
+                    ))}
+                </Carousel>
+              </div>
             </div>
-
-            {/* Back button and bookmark icon */}
             <div className="single-courses-top">
               <div className="course-back-icon">
                 <svg
@@ -96,336 +326,245 @@ const ProjectDetails = () => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <mask
-                    id="mask0_330_7385"
-                    style={{ maskType: "alpha" }}
-                    maskUnits="userSpaceOnUse"
-                    x="0"
-                    y="0"
-                    width="24"
-                    height="24"
-                  >
-                    <rect width="24" height="24" fill="black" />
-                  </mask>
-                  <g mask="url(#mask0_330_7385)">
-                    <path
-                      d="M15 18L9 12L15 6"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </g>
+                  <path
+                    d="M15 18L9 12L15 6"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
               <div className="single-courses-bookmark-icon">
                 <a
-                  href=""
+                  href="#"
                   className={`item-bookmark ${isBookmarked ? "active" : ""}`}
                   onClick={toggleBookmark}
-                  tabIndex="0"
                 >
                   <img src={BookmarkSvg} alt="bookmark-icon" />
                 </a>
               </div>
             </div>
-            {/* Play button */}
-            <div className="cousr-play-btn">
-              <a
-                href="#"
-                data-bs-toggle="modal"
-                data-bs-target="#review-video-modal"
-              >
-                <img src={PlayIcon} alt="play-icon" />
-              </a>
-            </div>
           </div>
-          {/* Project details */}
-          <div className="desc-container">
-            <div className="des-clearsingle-courses-description">
-              {/* Skills and price */}
-              <div className="first-decs-sec mt-16">
-                <div className="first-decs-sec-wrap">
-                  <div className="skills-left-sec">
-                    {/* <div className="first-left-sec">
-                      <div> {"Design"}</div>
-                    </div>
-                    <div className="first-left-sec">
-                      <div> {"UI/UX"}</div>
-                    </div>
-                    <div className="first-left-sec">
-                      <div> {"Figma"}</div>
-                    </div> */}
-                  </div>
 
-                  <div className="first-right-sec">
-                    <div>
-                      <span className="firs-txt2">₹{item.servicePrice}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* Project title and details */}
-              <div className="second-decs-sec mt-16">
+          <div className="desc-container !min-w-0 !w-full !md:w-1/2">
+            <div className="des-clearsingle-courses-description">
+              <div className="second-decs-sec">
                 <div className="second-decs-sec-wrap">
                   <div className="second-decs-sec-top">
-                    <h1 className="second-txt1">{item.serviceName}</h1>
+                    {pageLoading == false ? (
+                      <>
+                        <h1 className="second-txt1">{item.serviceName}</h1>
+                      </>
+                    ) : (
+                      <Skeleton
+                        height={40}
+                        width={200}
+                        variant="text"
+                        className=""
+                      ></Skeleton>
+                    )}
+                    {pageLoading == false ? (
+                      <>
+                        <span className="firs-txt2">₹{item.servicePrice}</span>
+                      </>
+                    ) : (
+                      <Skeleton
+                        height={40}
+                        width={80}
+                        variant="text"
+                        className=""
+                      ></Skeleton>
+                    )}
                   </div>
+
                   <div className="second-decs-sec-bottom">
                     <div className="second-decs-sec-bottom-wrap">
-                      <div className="mt-12">
-                        <span className="student-img mr-8">
-                          <img src={StudentIcon} alt="student-icon" />
-                        </span>
+                      <div className="mt-12 flex items-center gap-2">
+                        <GroupIcon sx={{ color: "#0a65fc" }} />
                         <span className="second-txt2">0 Application</span>
                       </div>
-                      <div className="mt-12">
-                        <span className="student-img mr-8 fillStar">
-                          <img src={FillStar} alt="student-icon" />
-                        </span>
+                      {/* <div className="mt-12">
+                        <StarRateIcon sx={{ color: "#0a65fc" }} />
                         <span className="second-txt2">Level: Medium</span>
-                      </div>
-                      <div className="mt-12">
-                        <span className="student-img mr-8">
-                          <img src={TimeIcon} alt="student-icon" />
-                        </span>
+                      </div> */}
+                      <div className="mt-12 flex items-center gap-2">
+                        <AccessTimeFilledIcon sx={{ color: "#0a65fc" }} />
                         <span className="second-txt2">
-                          {item.serviceDuration} {item.serviceDurationType}s
+                          {item.serviceDuration} {item.serviceDurationType}
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              {/* Description tabs */}
+
               <div className="fifth-decs-sec mt-32">
                 <div className="fifth-decs-sec-wrap">
-                  <ul
-                    className="nav nav-pills single-courses-tab"
-                    id="description-tab"
-                    role="tablist"
-                  >
-                    <li className="nav-item" role="presentation">
+                  <ul className="nav nav-pills single-courses-tab">
+                    <li className="nav-item">
                       <button
                         className="nav-link active"
-                        id="description-tab-btn"
                         data-bs-toggle="pill"
                         data-bs-target="#description-content"
-                        type="button"
-                        role="tab"
-                        aria-selected="true"
                       >
                         Description
                       </button>
                     </li>
-                    <li className="nav-item" role="presentation">
-                      {/* <button
+                    <li className="nav-item">
+                      <button
                         className="nav-link"
-                        id="lessons-tab-btn"
+                        onClick={handleReviewTabClick}
                         data-bs-toggle="pill"
-                        data-bs-target="#lesson-content"
-                        type="button"
-                        role="tab"
-                        aria-selected="false"
+                        data-bs-target="#review-content"
                       >
-                        Assessment
-                      </button> */}
+                        Review
+                      </button>
                     </li>
-                    <li className="nav-item" role="presentation"></li>
                   </ul>
-                  {/* Description content */}
-                  <div className="tab-content" id="description-tabContent">
+
+                  <div className="tab-content">
                     <div
                       className="tab-pane fade show active"
                       id="description-content"
-                      role="tabpanel"
-                      tabIndex="0"
                     >
                       <div className="description-content-wrap mt-24">
-                        <div className="description-first-content">
-                          <h3 className="des-con-txt1">Details</h3>
-                          <div
-                            style={{ marginTop: "10px", marginBottom: "10px" }}
-                          >
-                            {item.serviceDescription}
-                          </div>
-                          {/* Apply Now button */}
+                        <h3 className="des-con-txt1">Details</h3>
+                        {pageLoading === true ? (
+                          <Skeleton
+                            variant="text"
+                            width={300}
+                            height={40}
+                          ></Skeleton>
+                        ) : (
+                          <>
+                            <p className="des-text">
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: item.serviceDescription,
+                                }}
+                              ></div>
+                            </p>
+                          </>
+                        )}
+
+                        {auth ? (
                           <div className="des-buy-now-description">
-                            {auth ? (
-                              <Link
-                                className="buy-now"
-                                to={`/applyproject/${projectId}`}
-                              >
-                                Apply Now
-                              </Link>
-                            ) : (
-                              <Link className="buy-now" to={`/signin`}>
-                                Buy Now{" "}
-                              </Link>
-                            )}
+                            <Link
+                              className="buy-now"
+                              to={`/applyproject/${projectId}`}
+                            >
+                              Apply Now
+                            </Link>
                           </div>
-                        </div>
+                        ) : (
+                          userData &&
+                          item &&
+                          item?.userRef?.id !== userData.uid && (
+                            <div className="des-buy-now-description">
+                              <button
+                                disabled={pageLoading}
+                                className="buy-now size-full "
+                                onClick={handleBuyNowClick}
+                              >
+                                Buy Now
+                              </button>
+                            </div>
+                          )
+                        )}
                       </div>
                     </div>
-                  </div>
-                  {/* Assessment content */}
-                  <div className="tab-content" id="lessons-tabContent">
-                    <div
-                      className="tab-pane fade show"
-                      id="lesson-content"
-                      role="tabpanel"
-                      tabIndex="0"
-                    >
-                      <div className="lesson-content-wrap mt-24">
-                        <div className="lesson-first-content">
-                          <div className="lesson-first-content-top">
-                            <div className="lesson-first-content-wrap">
-                              <div className="lesson-course">
-                                <h3 className="des-con-txt1">Course content</h3>
-                              </div>
-                              <div className="lesson-expand">
-                                <p className="lesson-txt1">Expand Sections</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {/* Accordion for course content */}
-                        <div className="lesson-second-content">
-                          <div className="lesson-second-content-bottom">
-                            <div className="accordion" id="lesson-introduction">
-                              {/* Introduction section */}
-                              <div className="accordion-item mt-16">
-                                <h2
-                                  className="accordion-header"
-                                  id="lesson-title1"
-                                >
-                                  <button
-                                    className="accordion-button lesson-custom-btn"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapse1"
-                                    aria-expanded="true"
-                                  >
-                                    <span className="lesson-title">
-                                      Introduction
+
+                    <div className="tab-pane fade" id="review-content">
+                      <div className="review-content-wrap mt-24">
+                        <h2 className="review-heading">What Our Users Say</h2>
+
+                        {item &&
+                          userData &&
+                          item?.userRef?.id !== userData.uid &&
+                          canReview && (
+                            <>
+                              <div className="review-form">
+                                <textarea
+                                  placeholder="Write your review here..."
+                                  value={reviewText}
+                                  onChange={(e) =>
+                                    setReviewText(e.target.value)
+                                  }
+                                  className="review-textarea"
+                                />
+                                <div className="rating-input">
+                                  {Array.from({ length: 5 }).map((_, index) => (
+                                    <span
+                                      key={index}
+                                      onClick={() => setRating(index + 1)}
+                                    >
+                                      {index < rating ? (
+                                        <StarRateIcon
+                                          sx={{ color: "#0a65fc" }}
+                                        />
+                                      ) : (
+                                        <StarBorderIcon
+                                          sx={{ color: "#0a65fc" }}
+                                        />
+                                      )}
                                     </span>
-                                    <span className="lesson-custom-time">
-                                      5 min
-                                    </span>
-                                  </button>
-                                </h2>
-                                <div
-                                  id="collapse1"
-                                  className="accordion-collapse collapse show"
-                                  data-bs-parent="#lesson-introduction"
+                                  ))}
+                                </div>
+                                <button
+                                  className="submit-review-btn"
+                                  onClick={handleReviewSubmit}
                                 >
-                                  <div className="accordion-body">
-                                    <div className="lesson-intro-content mt-12">
-                                      <div className="lesson-intro-content-wrap">
-                                        <span className="lesson-txt2">
-                                          Promotion
-                                        </span>
-                                        <span className="lesson-lock-img">
-                                          <img
-                                            src={LockIconSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
-                                      <div className="lesson-intro-content-wrap mt-12">
-                                        <span className="lesson-txt2">
-                                          Introduction
-                                        </span>
-                                        <span className="lesson-lock-img">
-                                          <img
-                                            src={LockIconSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
-                                      <div className="lesson-intro-content-wrap mt-12">
-                                        <span className="lesson-txt2 color-grey">
-                                          Course Material
-                                        </span>
-                                        <span className="lesson-lock-img color-grey">
-                                          <img
-                                            src={DisableLockSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
+                                  Submit Review
+                                </button>
+                              </div>
+                            </>
+                          )}
+
+                        {showReviews && reviews.length > 0 ? (
+                          <div className="review-list-container">
+                            <div className="review-list">
+                              {reviews.map((review) => (
+                                <div className="review-item" key={review.id}>
+                                  <img
+                                    src={review.photoURL}
+                                    alt={`${review.name}'s profile`}
+                                    className="review-profile-pic"
+                                  />
+                                  <div className="review-details">
+                                    <h4 className="review-name">
+                                      {review.name}
+                                    </h4>
+                                    <p className="review-text">
+                                      {review.review}
+                                    </p>
+                                    <div className="review-stars">
+                                      {Array.from({ length: 5 }).map(
+                                        (_, index) => (
+                                          <span key={index}>
+                                            {index < review.rating ? (
+                                              <StarRateIcon
+                                                sx={{ color: "#0a65fc" }}
+                                              />
+                                            ) : (
+                                              <StarBorderIcon
+                                                sx={{ color: "#0a65fc" }}
+                                              />
+                                            )}
+                                          </span>
+                                        )
+                                      )}
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                              {/* How Grids Work section */}
-                              <div className="accordion-item mt-16">
-                                <h2
-                                  className="accordion-header"
-                                  id="lesson-title2"
-                                >
-                                  <button
-                                    className="accordion-button lesson-custom-btn"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapse2"
-                                    aria-expanded="true"
-                                  >
-                                    <span className="lesson-title">
-                                      How Grids Work
-                                    </span>
-                                    <span className="lesson-custom-time">
-                                      21 min
-                                    </span>
-                                  </button>
-                                </h2>
-                                <div
-                                  id="collapse2"
-                                  className="accordion-collapse collapse"
-                                  data-bs-parent="#lesson-introduction"
-                                >
-                                  <div className="accordion-body">
-                                    <div className="lesson-intro-content mt-12">
-                                      <div className="lesson-intro-content-wrap">
-                                        <span className="lesson-txt2">
-                                          Promotion
-                                        </span>
-                                        <span className="lesson-lock-img">
-                                          <img
-                                            src={LockIconSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
-                                      <div className="lesson-intro-content-wrap mt-12">
-                                        <span className="lesson-txt2">
-                                          Introduction
-                                        </span>
-                                        <span className="lesson-lock-img">
-                                          <img
-                                            src={LockIconSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
-                                      <div className="lesson-intro-content-wrap mt-12">
-                                        <span className="lesson-txt2 color-grey">
-                                          Course Material
-                                        </span>
-                                        <span className="lesson-lock-img color-grey">
-                                          <img
-                                            src={DisableLockSvg}
-                                            alt="lock-icon"
-                                          />
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+                              ))}
                             </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="w-full py-6 flex items-center justify-center">
+                            No reviews yet
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -435,37 +574,76 @@ const ProjectDetails = () => {
           </div>
         </div>
       </section>
-      {/* Single description section end */}
-      {/* Video modal start */}
-      <div
-        className="modal"
-        id="review-video-modal"
-        tabIndex="-1"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <iframe
-                src="https://www.youtube.com/embed/1SZle1skb84?si=2wmkzqF3sKhSy3xH"
-                title="YouTube video player"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen=""
-              ></iframe>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Video modal end */}
+      {showModal && (
+        <WalletModal
+          service={item}
+          serviceName={item.serviceName}
+          servicePrice={item.servicePrice}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
+  );
+};
+
+const ViewModal = ({ href, isVideo, open, onClose, media, current }) => {
+  return (
+    <>
+      <Dialog
+        sx={{
+          "& .MuiDialog-container": {
+            "& .MuiPaper-root": {
+              width: "65vw",
+              maxWidth: "100vw", // Set your width here
+            },
+          },
+        }}
+        className="!max-w-[100vw]"
+        open={open}
+        onClose={onClose}
+      >
+        <DialogTitle>View </DialogTitle>
+        <DialogContent className="!max-w-[100vw] flex items-center justify-center">
+          <div className="!w-[60vw]  h-fit min-h-[60vh]">
+            <Carousel
+              index={current}
+              onChange={(e) => console.log(e)}
+              autoPlay={false}
+              navButtonsAlwaysVisible
+              animation="slide"
+              className="w-full  h-fit rounded-md"
+            >
+              {Array.isArray(media) &&
+                media.length > 0 &&
+                media.map((mediaItem, index) => (
+                  <div
+                    key={`image-slide-modal-${index}`}
+                    className="w-full rounded-md aspect-[16/9] flex items-center justify-center relative overflow-hidden"
+                  >
+                    {mediaItem.type === "video" && (
+                      <video
+                        controls
+                        src={mediaItem.src}
+                        
+                         className="!absolute !size-full !object-cover !max-w-[100vw] !left-0 !top-0 !m-0"
+                        alt={`Slide ${index + 1}`}
+                      />
+                      // <ReactPlayer style={{ width: "100%", height: "100%", margin: 0 }} controls url={mediaItem.src} ></ReactPlayer>
+                    )}
+                    {mediaItem.type === "image" && (
+                      <img
+                        src={mediaItem.src}
+                        className="absolute size-full object-cover left-0 top-0"
+                        alt={`Slide ${index + 1}`}
+                      />
+                    )}
+                  </div>
+                ))}
+            </Carousel>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

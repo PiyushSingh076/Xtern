@@ -3,6 +3,7 @@ import "./MobHomeScreen.css";
 import men from "../../assets/images/xtern-images/men-01.png";
 import { useNavigate } from "react-router-dom";
 
+
 export default function Xpert() {
   const navigate = useNavigate();
 
@@ -53,10 +54,8 @@ export default function Xpert() {
           onClick={() => navigate("/filterscreen/Intern")}
         >
           <h4 className="hire-xpert-title">Hire Xpert</h4>
-          <span className="hire-xpert-subtitle">
-            Industry Expert Consultants
-          </span>
-        </button>
+          <span className="hire-xpert-subtitle">Industry Expert Consultants</span>
+        </button> 
       </div>
     </div>
   );

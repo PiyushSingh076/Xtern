@@ -7,8 +7,8 @@ import ui_dev from "../../../assets/svg/ui.png";
 import project_manager from "../../../assets/svg/closure.png";
 import product_manager from "../../../assets/svg/owner.png";
 import intern from "../../../assets/svg/internship.png";
-import dietician from "../../../assets/images/homescreen/diet.png";
-import phonics_english from "../../../assets/images/homescreen/book.png";
+import dietician from "../../../assets/images/homescreen/diet.png"
+import phonics_english from "../../../assets/images/homescreen/book.png"
 
 export default function Categories() {
   const navigate = useNavigate(); // Initialize useNavigate
@@ -51,7 +51,24 @@ export default function Categories() {
       description:
         "Expert UI, UX, Visual, and Interaction designers as well as a wide range of illustrators, animators, and more.",
     },
-
+    {
+      title: "Phonics English",
+      icon: phonics_english, // Replace this with the correct icon path
+      description:
+        "Dedicated phonics instructors helping learners improve reading, writing, and pronunciation skills through fun and interactive sessions.",
+    },
+    {
+      title: "Dietician",
+      icon: dietician, // Replace this with the correct icon path
+      description:
+        "Certified dieticians offering personalized meal plans and expert advice for achieving health and wellness goals.",
+    },
+    {
+      title: "Yoga",
+      icon: "https://cdn-icons-png.flaticon.com/512/3773/3773928.png",
+      description:
+        "Certified yoga instructors offering personalized sessions for physical fitness, mental well-being, and stress management.",
+    },
     {
       title: "Project Manager",
       icon: project_manager,

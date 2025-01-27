@@ -200,6 +200,8 @@ const useSaveProfileData = () => {
               servicePrice: srv.servicePrice || "",
               serviceDuration: srv.duration || "",
               serviceDurationType: srv.durationType || "",
+              serviceVideo: srv.serviceVideo || "",
+              images: srv.images || [],
             };
           }
         });
@@ -207,7 +209,6 @@ const useSaveProfileData = () => {
       }
 
       toast.success("Data saved successfully!");
-      navigate(`/profile/${user.uid}`);
     } catch (err) {
       setError(err.message);
       console.error("Error saving profile data:", err);

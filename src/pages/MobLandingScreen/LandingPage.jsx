@@ -80,7 +80,7 @@ export default function LandingPage() {
           }}
           className="hire-xperts-btn"
         >
-          <h4 className="hire-xpert-title">Get Started</h4>{" "}
+          <h4 className="hire-xpert-title">Hire Expert</h4>{" "}
           <span className="hire-xpert-subtitle">Top Quality Xperts</span>
         </button>
 

@@ -43,6 +43,14 @@ import useSaveProfileData from "../../../hooks/Linkedin/useSaveProfileData";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
 
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../../firebaseConfig";
+// import XpertRole from "../Prefference/XpertRole";
+import SummaryStep from "./SummaryStep";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
+import { useAuth } from "../../../hooks/Auth/useAuth";
+import { RichEditor } from "../../../components/RichEditor";
+
 /**
  * Some roles (astrologist, lawyer) have "consulting charges"
  */
@@ -75,15 +83,18 @@ const calculateExperience = (experiences) => {
 
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
-  return `${years} ${years > 1 ? "Years" : "Year"}${
-    months > 0 ? ` ${months} ${months > 1 ? "Months" : "Month"}` : ""
-  }`;
+
+  return `${years} ${years > 1 ? "Years" : "Year"} ${months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
+    }`;
 };
 
 export default function StepperForm() {
+  const [saving, setSaving] = useState(false);
+
   // Basic personal data
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
+  const { setRefreshCount } = useAuthState();
   const [Xpert, setXpert] = useState("");
   const [Experience, setExperience] = useState(""); // Usually a string or number
   const [profileImg, setProfileImg] = useState(null);
@@ -107,14 +118,17 @@ export default function StepperForm() {
   const [ConsultingDuration, setConsultingDuration] = useState("");
   const [ConsultingDurationType, setConsultingDurationType] = useState("");
 
-  // Steps
-  const steps = ["Xpert Type", "Profile", "Offering"];
+  const [serviceData, setServiceData] = useState({});
+  const [recommendations, setRecommendation] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
+  const steps = ["Xpert Type", "Profile", "Offering", "Summary"];
+  const [isStep2Complete, setIsStep2Complete] = useState(false);
 
   // For LinkedIn fetch
   const [isLinkedInFetched, setIsLinkedInFetched] = useState(false);
 
   // For editing items in modals
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [editIndex, setEditIndex] = useState(null);
@@ -122,12 +136,14 @@ export default function StepperForm() {
   // Single object that holds form data for the modal
   const [modalFormData, setModalFormData] = useState({});
 
+  const [loadingg, setLoadingg] = useState(false);
+
   // Redux / Navigation
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { saveProfileData, loading } = useSaveProfileData();
   const { userData } = useFetchUserData();
-
+  const { refreshUser } = useAuth();
   // If user clicked "edit" with existing profile
   const location = useLocation();
   const { profileData } = location.state || {};
@@ -177,6 +193,298 @@ export default function StepperForm() {
     setSelectedCity("");
   };
 
+  const Badges = [
+    { name: "Top Rated", color: "success" },
+    { name: "Certified Expert", color: "warning" },
+  ];
+
+  useEffect(() => {
+    const recommendationsConfig = {
+      developer: [
+        {
+          title: "Web Development",
+          description: "Build responsive and robust websites.",
+        },
+        {
+          title: "App Development",
+          description: "Create high-performance mobile applications.",
+        },
+        {
+          title: "Backend Development",
+          description: "Develop server-side applications and APIs.",
+        },
+        {
+          title: "Database Management",
+          description: "Design and maintain scalable databases.",
+        },
+      ],
+      designer: [
+        {
+          title: "Graphic Design",
+          description: "Craft stunning visuals for branding.",
+        },
+        {
+          title: "UI/UX Design",
+          description: "Design user-friendly interfaces and experiences.",
+        },
+        {
+          title: "Branding",
+          description: "Develop brand identities and guidelines.",
+        },
+        {
+          title: "Packaging Design",
+          description: "Create attractive packaging designs for products.",
+        },
+      ],
+      "cloud devops": [
+        {
+          title: "Cloud Setup",
+          description: "Set up scalable cloud infrastructure.",
+        },
+        {
+          title: "DevOps Automation",
+          description: "Streamline CI/CD pipelines and processes.",
+        },
+        {
+          title: "Server Management",
+          description: "Manage and maintain cloud-based servers.",
+        },
+        {
+          title: "Cloud Security",
+          description: "Ensure secure and compliant cloud environments.",
+        },
+      ],
+      "content creator": [
+        {
+          title: "Blog Writing",
+          description: "Produce engaging and SEO-friendly articles.",
+        },
+        {
+          title: "Video Production",
+          description: "Create high-quality video content for platforms.",
+        },
+        {
+          title: "Podcasting",
+          description: "Create and produce engaging podcasts.",
+        },
+        {
+          title: "Social Media Content",
+          description: "Develop content for various social media platforms.",
+        },
+      ],
+      "digital marketing": [
+        {
+          title: "SEO Optimization",
+          description: "Improve website ranking on search engines.",
+        },
+        {
+          title: "Social Media Campaigns",
+          description: "Run targeted campaigns to grow audience.",
+        },
+        {
+          title: "Email Marketing",
+          description: "Create effective email campaigns to engage customers.",
+        },
+        {
+          title: "Pay-Per-Click (PPC)",
+          description: "Run paid search advertising campaigns for businesses.",
+        },
+      ],
+      lawyer: [
+        {
+          title: "Legal Advice",
+          description: "Provide expert legal consultations.",
+        },
+        {
+          title: "Contract Drafting",
+          description: "Draft comprehensive legal agreements.",
+        },
+        {
+          title: "Business Law",
+          description: "Assist with business-related legal matters.",
+        },
+        {
+          title: "Intellectual Property",
+          description: "Help protect intellectual property rights.",
+        },
+        {
+          title: "Family Law",
+          description: "Assist with legal issues related to family matters.",
+        },
+        {
+          title: "Criminal Defense",
+          description: "Provide defense for individuals accused of crimes.",
+        },
+        {
+          title: "Real Estate Law",
+          description: "Assist with property and real estate legal matters.",
+        },
+        {
+          title: "Employment Law",
+          description: "Help resolve employment-related legal disputes.",
+        },
+        {
+          title: "Immigration Law",
+          description:
+            "Provide legal services for immigration-related matters.",
+        },
+        {
+          title: "Mergers & Acquisitions",
+          description:
+            "Assist with mergers, acquisitions, and corporate restructuring.",
+        },
+      ],
+      hr: [
+        {
+          title: "Recruitment Services",
+          description: "Find the right talent for your team.",
+        },
+        {
+          title: "Employee Onboarding",
+          description: "Streamline the onboarding process.",
+        },
+        {
+          title: "Employee Training",
+          description: "Develop training programs for employees.",
+        },
+        {
+          title: "HR Consulting",
+          description: "Provide HR strategy and compliance consulting.",
+        },
+      ],
+      accountant: [
+        {
+          title: "Tax Filing",
+          description: "Ensure compliance with tax regulations.",
+        },
+        {
+          title: "Financial Planning",
+          description: "Help plan and manage your finances effectively.",
+        },
+        {
+          title: "Bookkeeping",
+          description: "Maintain accurate financial records.",
+        },
+        {
+          title: "Investment Advisory",
+          description: "Advise on personal and business investments.",
+        },
+      ],
+      astrologist: [
+        {
+          title: "Personal Astrology",
+          description: "Provide personalized astrological readings.",
+        },
+        {
+          title: "Business Astrology",
+          description: "Offer astrological insights for business decisions.",
+        },
+        {
+          title: "Horoscope Creation",
+          description: "Create detailed horoscopes for clients.",
+        },
+        {
+          title: "Astrological Counseling",
+          description: "Provide guidance based on astrological analysis.",
+        },
+      ],
+      default: [
+        {
+          title: "General Service",
+          description: "Offer a range of customizable services.",
+        },
+      ],
+      intern: [
+        {
+          title: "Internship",
+          description:
+            "A temporary position offering hands-on experience, typically for students or recent graduates, to gain industry skills.",
+        },
+        {
+          title: "Full-Time",
+          description:
+            "A long-term, permanent employment position with fixed working hours and responsibilities.",
+        },
+        {
+          title: "Project-Basis",
+          description:
+            "A short-term contract role focused on completing specific projects or tasks within a set timeframe.",
+        },
+      ],
+    };
+
+    if (Xpert && typeof Xpert === "string") {
+      setRecommendation(
+        recommendationsConfig[Xpert.toLowerCase()] ||
+        recommendationsConfig.default
+      );
+    } else {
+      setRecommendation(recommendationsConfig.default);
+    }
+  }, [Xpert]);
+
+  // const handleRecommendationClick = (rec) => {
+  //   const serviceData = {
+  //     serviceName: rec.title,
+  //     serviceDescription: rec.description,
+  //     servicePrice: "",
+  //     duration: "",
+  //     durationType: "",
+  //     // Add intern-specific fields if Xpert is intern
+  //     ...(Xpert.toLowerCase() === "intern" && {
+  //       startDate: "",
+  //       endDate: "",
+  //       availability: "full time",
+  //       hoursPerDay: "",
+  //     }),
+  //   };
+  //   setServiceData(serviceData);
+  //   openModal("Service");
+  // };
+
+  // const saveDetail = (type, data) => {
+  //   switch (type.toLowerCase()) {
+  //     case "education":
+  //       setEducation([...Education, data]);
+  //       break;
+  //     case "work":
+  //       setWork([...Work, data]);
+  //       break;
+  //     case "skill":
+  //       setSkills([...Skills, data]);
+  //       break;
+  //     case "project":
+  //       setProjects([...Projects, data]);
+  //       break;
+  //     case "service":
+  //       setServices([...Services, data]);
+  //       break;
+  //     default:
+  //       console.error("Invalid type");
+  //   }
+  // };
+
+  // const deleteDetail = (type, index) => {
+  //   switch (type.toLowerCase()) {
+  //     case "education":
+  //       setEducation(Education.filter((_, i) => i !== index));
+  //       break;
+  //     case "work":
+  //       setWork(Work.filter((_, i) => i !== index));
+  //       break;
+  //     case "skill":
+  //       setSkills(Skills.filter((_, i) => i !== index));
+  //       break;
+  //     case "project":
+  //       setProjects(Projects.filter((_, i) => i !== index));
+  //       break;
+  //     case "service":
+  //       setServices(Services.filter((_, i) => i !== index));
+  //       break;
+  //     default:
+  //       console.error("Invalid type");
+  //   }
+  // }
   // Profile image
   const handleProfileImage = (e) => {
     const file = e.target.files[0];
@@ -192,6 +500,15 @@ export default function StepperForm() {
 
   // Step Navigation
   const handleStepClick = (step) => {
+    // Validation logic
+    if (step === 3 && !isStep2Complete) {
+      toast.error(
+        "Please submit your profile data before proceeding to the Summary."
+      );
+      return;
+    }
+
+    // Allow navigation to other steps
     setActiveStep(step);
   };
 
@@ -267,7 +584,9 @@ export default function StepperForm() {
       ) {
         const projData = profileData.projectDetails.map((proj) => ({
           projectName: proj.projectName || "",
+
           duration: proj.duration || "",
+
           liveLink: proj.liveDemo || "",
           description: proj.description || "",
         }));
@@ -289,6 +608,8 @@ export default function StepperForm() {
           endDate: service.endDate ? service.endDate?.split("T")[0] : "",
           availability: service.availability || "",
           hoursPerDay: service.hoursPerDay || "",
+          serviceVideo: service.serviceVideo || "",
+          images: service.images || "",
         }));
         setServices(servData);
       }
@@ -343,17 +664,17 @@ export default function StepperForm() {
           college: edu.school || "",
           startDate: edu.starts_at
             ? new Date(
-                edu.starts_at.year,
-                edu.starts_at.month - 1,
-                edu.starts_at.day
-              )
-                .toISOString()
-                ?.split("T")[0]
+              edu.starts_at.year,
+              edu.starts_at.month - 1,
+              edu.starts_at.day
+            )
+              .toISOString()
+              ?.split("T")[0]
             : "",
           endDate: edu.ends_at
             ? new Date(edu.ends_at.year, edu.ends_at.month - 1, edu.ends_at.day)
-                .toISOString()
-                ?.split("T")[0]
+              .toISOString()
+              ?.split("T")[0]
             : "",
           cgpa: edu.grade || "",
         }));
@@ -367,17 +688,17 @@ export default function StepperForm() {
           company: exp.company || "",
           startDate: exp.starts_at
             ? new Date(
-                exp.starts_at.year,
-                exp.starts_at.month - 1,
-                exp.starts_at.day
-              )
-                .toISOString()
-                ?.split("T")[0]
+              exp.starts_at.year,
+              exp.starts_at.month - 1,
+              exp.starts_at.day
+            )
+              .toISOString()
+              ?.split("T")[0]
             : "",
           endDate: exp.ends_at
             ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
-                .toISOString()
-                ?.split("T")[0]
+              .toISOString()
+              ?.split("T")[0]
             : "",
           description: exp.description || "",
         }));
@@ -391,7 +712,9 @@ export default function StepperForm() {
       ) {
         const pData = data.accomplishment_projects.map((proj) => ({
           projectName: proj.title || "",
+
           duration: "", // We'll store actual dates in the future
+
           liveLink: proj.url || "",
           description: proj.description || "",
         }));
@@ -421,6 +744,7 @@ export default function StepperForm() {
     setModalType(type);
     setIsModalOpen(true);
     setEditIndex(index);
+    console.log(itemData);
 
     if (itemData && Object.keys(itemData).length > 0) {
       // Prefill modalFormData based on the type
@@ -464,6 +788,8 @@ export default function StepperForm() {
           endDate: itemData.endDate || "",
           availability: itemData.availability || "",
           hoursPerDay: itemData.hoursPerDay || "",
+          serviceVideo: itemData.serviceVideo || null,
+          images: itemData.images || [],
         });
       }
     } else {
@@ -479,7 +805,8 @@ export default function StepperForm() {
   };
 
   // Add or update item in local arrays
-  const saveDetail = (type, dataObj, index) => {
+  const saveDetail = async (type, dataObj, index) => {
+    setSaving(true);
     const lower = type.toLowerCase();
     if (lower === "education") {
       if (index !== null) {
@@ -514,26 +841,91 @@ export default function StepperForm() {
         setProjects([...Projects, dataObj]);
       }
     } else if (lower === "service") {
-      if (Xpert.toLowerCase() === "intern") {
+      try {
+        console.log("dataObj", dataObj);
+        let videoUrl = dataObj.serviceVideo;;
+        // Handle video upload only if it's a new file
+        if (dataObj.serviceVideo instanceof File) {
+          const storageRef = ref(
+            storage,
+            `videos/${Date.now()}_${dataObj.serviceVideo.name}`
+          );
+          await uploadBytes(storageRef, dataObj.serviceVideo);
+          videoUrl = await getDownloadURL(storageRef);
+          console.log("Video URL:", videoUrl);
+        } 
+
+        const imageUrls = await Promise.all(
+          dataObj.images.map(async (image) => {
+            // If it's a File object, upload to storage
+            if (image instanceof File) {
+              const storageRef = ref(
+                storage,
+                `images/${Date.now()}_${image.name}`
+              );
+              await uploadBytes(storageRef, image);
+              return await getDownloadURL(storageRef);
+            }
+            // If it's already a string URL, return as is
+            if (typeof image === 'string') {
+              return image;
+            }
+            // If it's an object with file and preview, upload the file
+            if (image.file instanceof File) {
+              const storageRef = ref(
+                storage,
+                `images/${Date.now()}_${image.file.name}`
+              );
+              await uploadBytes(storageRef, image.file);
+              return await getDownloadURL(storageRef);
+            }
+            return null;
+          })
+        );
+        
+        // Filter out any null values
+        const filteredImageUrls = imageUrls.filter(url => url !== null);
+
+   
+        console.log("Image URLs:", imageUrls);
+        const serviceData = {
+          ...dataObj,
+          serviceVideo: videoUrl,
+          images: imageUrls,
+        };
+
+        console.log("serviceData", serviceData);
         if (index !== null) {
           const newArr = [...Services];
-          newArr[index] = dataObj;
+          newArr[index] = serviceData;
           setServices(newArr);
         } else {
-          setServices([dataObj]);
+          setServices([...Services, serviceData]);
         }
-      } else {
-        if (index !== null) {
-          const newArr = [...Services];
-          newArr[index] = dataObj;
-          setServices(newArr);
-        } else {
-          setServices([...Services, dataObj]);
-        }
+      } catch (error) {
+        console.error("Error uploading video:", error);
+        toast.error("Failed to save service details");
       }
-    } else {
-      console.error("Invalid type to save");
     }
+    setSaving(false);
+  };
+
+  // Modify image preview and upload in the component
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const remainingSlots = 4 - modalFormData.images.length;
+    const filesToAdd = files.slice(0, remainingSlots);
+
+    setModalFormData((prev) => ({
+      ...prev,
+      images: [
+        ...prev.images,
+        ...filesToAdd.map(file => ({
+          file,
+          preview: URL.createObjectURL(file)
+        }))
+      ],
+    }));
   };
 
   // Delete item
@@ -552,9 +944,14 @@ export default function StepperForm() {
     }
   };
 
+  useEffect(() => {
+    console.log("Active Step changed to:", activeStep);
+  }, [activeStep]);
+
   // Final Submit of the entire form
   const handleSubmitInfo = async (e) => {
     e.preventDefault();
+    setLoadingg(true);
 
     const missingFields = [];
     if (!FirstName) missingFields.push("First Name");
@@ -567,9 +964,10 @@ export default function StepperForm() {
 
     if (missingFields.length > 0) {
       missingFields.forEach((f) => toast.error(`${f} is required`));
+      setLoadingg(false);
       return;
     }
-
+    console.log("Services", Services);
     // Gather data
     const data = {
       profileImage: profileImg,
@@ -589,25 +987,34 @@ export default function StepperForm() {
       consultingDurationType: ConsultingDurationType,
     };
 
-    dispatch(setDetail(data));
+    console.log("Before setting step:", activeStep);
+
     try {
+      dispatch(setDetail(data));
       await saveProfileData(data);
-      navigate(`/profile/${userData?.uid}`);
+
+      setIsStep2Complete(true);
+      setActiveStep(3);
+      setTimeout(() => {
+        refreshUser();
+      }, 200);
+      console.log("After setting step:", 3); // Debug log
     } catch (err) {
       toast.error(`Error saving data: ${err.message}`);
       console.log(err);
+    } finally {
+      setLoadingg(false);
     }
   };
 
   // Submit the modal form
-  const handleModalSubmit = (e) => {
+  const handleModalSubmit = async (e) => {
     e.preventDefault();
-    saveDetail(modalType, modalFormData, editIndex);
+    await saveDetail(modalType, modalFormData, editIndex);
     closeModal();
   };
 
   // Load recommended services based on Xpert role
-  const [recommendations, setRecommendation] = useState([]);
   useEffect(() => {
     const recommendationsConfig = {
       developer: [
@@ -687,7 +1094,7 @@ export default function StepperForm() {
     if (Xpert && typeof Xpert === "string") {
       setRecommendation(
         recommendationsConfig[Xpert.toLowerCase()] ||
-          recommendationsConfig.default
+        recommendationsConfig.default
       );
     } else {
       setRecommendation(recommendationsConfig.default);
@@ -744,8 +1151,7 @@ export default function StepperForm() {
 
       {activeStep === 0 && <XpertRole next={() => setActiveStep(1)} />}
 
-      <Box sx={{ height: "80vh", overflow: "auto" }}>
-        {/* Step 1: Profile */}
+      <Box sx={{ height: "90vh", overflow: "auto", padding: 3 }}>
         {activeStep === 1 && (
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
@@ -1166,30 +1572,29 @@ export default function StepperForm() {
               <Box
                 sx={{
                   display: "flex",
-                  justifyContent:
-                    activeStep === 1 ? "space-between" : "flex-end",
-                  mt: 2,
+                  justifyContent: "flex-end",
+                  gap: 2,
+                  mt: 3,
+                  mb: 3,
                 }}
               >
                 {activeStep === 1 && (
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => setActiveStep(0)}
-                    size="large"
-                  >
-                    Back
-                  </Button>
-                )}
-                {activeStep === 1 && (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setActiveStep(2)}
-                    size="large"
-                  >
-                    Next Step
-                  </Button>
+                  <>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setActiveStep(0)}
+                      size="large"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => setActiveStep(2)}
+                      size="large"
+                    >
+                      Next Step
+                    </Button>
+                  </>
                 )}
               </Box>
             </Grid>
@@ -1376,7 +1781,11 @@ export default function StepperForm() {
                         <strong>{item.serviceName}</strong>
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
-                        {item.serviceDescription}
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: item.serviceDescription,
+                          }}
+                        ></div>
                       </Typography>
                       {Xpert.toLowerCase() === "intern" ? (
                         <>
@@ -1390,8 +1799,8 @@ export default function StepperForm() {
                             Availability:{" "}
                             {item.availability
                               ? item.availability.replace(/^\w/, (c) =>
-                                  c.toUpperCase()
-                                )
+                                c.toUpperCase()
+                              )
                               : "N/A"}
                           </Typography>
                           {item.availability === "part time" && (
@@ -1445,17 +1854,59 @@ export default function StepperForm() {
         )}
 
         {activeStep === 3 && (
-          <Typography variant="h6" align="center" sx={{ mt: 4 }}>
-            Profile successfully submitted!
-          </Typography>
+          <>
+            <SummaryStep
+              FirstName={FirstName}
+              LastName={LastName}
+              Xpert={Xpert}
+              Experience={Experience}
+              profileImg={profileImg}
+              selectedCity={selectedCity}
+              selectedState={selectedState}
+              Education={Education}
+              Work={Work}
+              Skills={Skills}
+              Projects={Projects}
+              Services={Services}
+              ConsultingPrice={ConsultingPrice}
+              Badges={Badges} // Add badges as a prop
+            />
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: activeStep === 2 ? "space-between" : "flex-end",
+                mt: 2,
+              }}
+            >
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => setActiveStep(2)}
+                size="large"
+                sx={{ mr: 2 }}
+              >
+                Back
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate(`/profile/${userData?.uid}`)}
+                size="large"
+              >
+                Profile
+              </Button>
+            </Box>
+          </>
         )}
 
-        {/* Modal for adding/editing Skills, Education, Work, Projects, Services */}
         <Dialog
+          disableEnforceFocus
           open={isModalOpen}
           onClose={closeModal}
           fullWidth
           maxWidth="sm"
+          className="!z-[120]"
           PaperProps={{ sx: { borderRadius: 3 } }}
         >
           <DialogTitle sx={{ m: 0, p: 2 }}>
@@ -1827,7 +2278,7 @@ export default function StepperForm() {
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField
+                    {/* TODO: back <TextField
                       label="Service Description"
                       name="serviceDescription"
                       variant="outlined"
@@ -1843,7 +2294,17 @@ export default function StepperForm() {
                           serviceDescription: e.target.value,
                         }))
                       }
-                    />
+                    /> */}
+                    <RichEditor
+                      onChange={(content) =>
+                        setModalFormData((prev) => ({
+                          ...prev,
+                          serviceDescription: content,
+                        }))
+                      }
+                      value={modalFormData.serviceDescription || ""}
+                      placeholder="Service Description"
+                    ></RichEditor>
                   </Grid>
 
                   {Xpert.toLowerCase() === "intern" ? (
@@ -1988,6 +2449,152 @@ export default function StepperForm() {
                           </Select>
                         </FormControl>
                       </Grid>
+
+                      {/* video upload */}
+
+                      <div className="flex flex-col items-center justify-center w-full h-full mt-10">
+                        {!modalFormData.serviceVideo && (
+                          <label
+                            htmlFor="video-upload"
+                            className="border-2 border-dashed border-gray-400 rounded-lg w-80 h-24 flex items-center justify-center cursor-pointer"
+                          >
+                            <div className="flex flex-col items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-gray-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 4v16m8-8H4"
+                                />
+                              </svg>
+                              <span className="text-gray-500 mt-2">
+                                Upload Video
+                              </span>
+                            </div>
+                            <input
+                              id="video-upload"
+                              type="file"
+                              accept="video/*"
+                              className="hidden"
+                              onChange={(e) =>
+                                setModalFormData((prev) => ({
+                                  ...prev,
+                                  serviceVideo: e.target.files[0],
+                                }))
+                              }
+                            />
+                          </label>
+                        )}
+
+                        {/* video preview */}
+                        {modalFormData.serviceVideo && (
+                          <div className="relative  w-[340px] h-[200px] border rounded-lg overflow-hidden">
+                            <video
+                              src={
+                                modalFormData.serviceVideo instanceof File
+                                  ? URL.createObjectURL(
+                                    modalFormData.serviceVideo
+                                  )
+                                  : modalFormData.serviceVideo
+                              }
+                              controls
+                              className="w-full h-full"
+                            />
+                            <button
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                              onClick={() =>
+                                setModalFormData((prev) => ({
+                                  ...prev,
+                                  serviceVideo: null,
+                                }))
+                              }
+                            >
+                              ×
+                            </button>
+                          </div>
+                        )}
+
+                        {/* upload images */}
+
+                        <Grid item xs={12}>
+                          {/* Display "Upload Images" button if there are less than 4 images */}
+                          {modalFormData.images.length < 4 && (
+                            <label
+                              htmlFor="image-upload"
+                              className="border-2 border-dashed border-gray-400 rounded-lg w-full h-24 flex items-center justify-center cursor-pointer mt-6 mb-3 px-20"
+                            >
+                              <div className="flex flex-col items-center">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-6 w-6 text-gray-500"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 4v16m8-8H4"
+                                  />
+                                </svg>
+                                <span className="text-gray-500 mt-2">
+                                  Upload Images Max-4
+                                </span>
+                              </div>
+                              <input
+                                id="image-upload"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                className="hidden"
+                                onChange={handleImageUpload}
+                              />
+                            </label>
+                          )}
+                        </Grid>
+
+                        {/* Display images and allow removal */}
+                        {modalFormData.images.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {modalFormData.images.map((imageItem, index) => (
+                              <div
+                                key={index}
+                                className="relative w-24 h-24 border rounded-lg overflow-hidden"
+                              >
+                                <img
+                                  src={
+                                    typeof imageItem === 'object' && imageItem.preview
+                                      ? imageItem.preview
+                                      : (typeof imageItem === 'string'
+                                        ? imageItem
+                                        : URL.createObjectURL(imageItem))
+                                  }
+                                  alt={`Image ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                                <button
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                                  onClick={() =>
+                                    setModalFormData((prev) => ({
+                                      ...prev,
+                                      images: prev.images.filter((_, i) => i !== index),
+                                    }))
+                                  }
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </>
                   )}
                 </Grid>
@@ -2007,12 +2614,12 @@ export default function StepperForm() {
                 color="primary"
                 type="submit"
                 size="large"
-                disabled={loading}
+                disabled={saving}
                 startIcon={
-                  loading && <CircularProgress size={20} color="inherit" />
+                  saving && <CircularProgress size={20} color="inherit" />
                 }
               >
-                {loading ? "Submitting..." : "Save"}
+                {saving ? "Submitting..." : "Save"}
               </Button>
             </DialogActions>
           </form>

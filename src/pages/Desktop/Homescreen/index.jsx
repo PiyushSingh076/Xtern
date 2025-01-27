@@ -18,14 +18,18 @@ import financial from "../../../assets/images/homescreen/financial.png";
 import astrologist from "../../../assets/images/homescreen/star.png";
 import dietician from "../../../assets/images/homescreen/diet.png";
 import phonics_english from "../../../assets/images/homescreen/book.png";
+
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
 
 export default function HomeScreen() {
   const { userData } = useFetchUserData();
+  const { user, loading } = useAuthState();
 
   const categories = [
     {
       title: "Yoga",
+      icon: "https://cdn-icons-png.flaticon.com/512/3773/3773928.png",
       icon: "https://cdn-icons-png.flaticon.com/512/3773/3773928.png",
       description:
         "Certified yoga instructors offering personalized sessions for physical fitness, mental well-being, and stress management.",
@@ -41,6 +45,7 @@ export default function HomeScreen() {
       icon: devops,
       description:
         "Expert cloud architects to help you scale & optimize costs & performance.",
+        
     },
     {
       title: "Product Manager",
@@ -108,12 +113,36 @@ export default function HomeScreen() {
       description:
         "Professional astrologists offering insights and guidance based on astrological charts and cosmic alignment.",
     },
+    {
+      title: "Phonics English",
+      icon: phonics_english, // Replace this with the correct icon path
+      description:
+        "Dedicated phonics instructors helping learners improve reading, writing, and pronunciation skills through fun and interactive sessions.",
+    },
+    {
+      title: "Dietician",
+      icon: dietician, // Replace this with the correct icon path
+      description:
+        "Certified dieticians offering personalized meal plans and expert advice for achieving health and wellness goals.",
+    },
+    {
+      title: "Financial Analyst",
+      icon: financial, // Replace this with the correct icon path
+      description:
+        "Financial analysts providing insights, forecasting, and data-driven strategies for informed financial decision-making.",
+    },
+    {
+      title: "Astrologist",
+      icon: astrologist, // Replace this with the correct icon path
+      description:
+        "Professional astrologists offering insights and guidance based on astrological charts and cosmic alignment.",
+    },
   ];
 
   const navigate = useNavigate();
   return (
     <div className="main-Home-Screen-container">
-      {!userData?.linkedInProfile && (
+      {!userData?.linkedInProfile && !user && (
         <>
           <div
             onClick={() => navigate("/userdetail")}
@@ -127,16 +156,14 @@ export default function HomeScreen() {
             </p>
           </div>
           {/* <div
-          onClick={() => navigate("/entrepreneurdetails")}
-          className="become-xpert-banner"
-        >
-          <h1 className="title">
-            Hire <span className="domains-title">Xpert</span>
-          </h1>
-          <p className="subtitle">
-            Hire a world-class professional
-          </p>
-        </div> */}
+            onClick={() => navigate("/entrepreneurdetails")}
+            className="become-xpert-banner"
+          >
+            <h1 className="title">
+              Hire <span className="domains-title">Xpert</span>
+            </h1>
+            <p className="subtitle">Hire a world-class professional</p>
+          </div> */}
         </>
       )}
 
@@ -148,23 +175,23 @@ export default function HomeScreen() {
 
         <div className="explore-all-container"></div>
 
-        <div className="categories-card-container">
+        <div className="categories-card-container ">
           {categories.map((category, index) => (
             <div
               onClick={() => navigate(`/filterscreen/${category.title}`)}
               key={category.title}
-              className="categories-card"
+              className="categories-card !w-[100%]  !h-full !min-h-fit sm:!w-[100%] "
             >
-              <div className="catedories-card-icon-title">
+              <div className="catedories-card-icon-title flex !flex-col !items-center sm:!flex-row !w-full">
                 <img
                   src={category.icon}
                   width={"60px"}
-                  className="xpert-icon"
+                  className="xpert-icon !m-0"
                 />
                 <span className="categories-card-title">{category.title}</span>
               </div>
 
-              <div>
+              <div className="block sm:block h-fit !line-clamp-3 ">
                 <p className="categories-desc">{category.description}</p>
               </div>
             </div>

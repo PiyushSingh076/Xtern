@@ -18,9 +18,7 @@ export default function ImageBtn() {
               Seasoned Professional looking to help organizations across the
               globe
             </span>
-            <button onClick={() => navigate("/signup")}>
-              Become Xpert Now
-            </button>
+            <button onClick={() => navigate("/signup")}>Become Xpert Now</button>
           </div>
         </div>
       </div>

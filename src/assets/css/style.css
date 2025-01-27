@@ -295,8 +295,8 @@ textarea {
   top: 0%;
   box-shadow: 0 0 22px -4px rgb(0 0 0 / 17%);
   box-shadow: 0 0 22px -4px rgb(0 0 0 / 17%);
-  animation: fixedheader 600ms ease 0ms 1 forwards;
-  animation: fixedheader 600ms ease 0ms 1 forwards;
+  /* animation: fixedheader 600ms ease 0ms 1 forwards;
+  animation: fixedheader 600ms ease 0ms 1 forwards; */
 }
 
 .desk-main-container {
@@ -696,6 +696,7 @@ textarea {
 
 .sign-in-custom-input {
   border: none;
+  border-radius: 0;
   background: transparent;
   width: 100%;
   padding-left: 12px;
@@ -704,7 +705,7 @@ textarea {
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
-  line-height: 24px;
+  line-height: 22px;
 }
 
 .intl-tel-input.allow-dropdown input {
@@ -2115,19 +2116,19 @@ ul.desc-learn-sec {
   width: 80%;
 }
 
-.buy-now-description {
-  background: var(--background-color);
-  box-shadow: 0 -4px 4px 0 rgb(0 0 0 / 4%);
-  padding: 16px;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  left: 0;
-  z-index: 2;
-  max-width: 600px;
-  right: 0;
-  margin: 0 auto;
-}
+  .buy-now-description {
+    background: var(--background-color);
+    box-shadow: 0 -4px 4px 0 rgb(0 0 0 / 4%);
+    padding: 16px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    z-index: 2;
+    max-width: 600px;
+    right: 0;
+    margin: 0 auto;
+  }
 
 #single-description-screen {
   margin-bottom: 112px;
@@ -6156,15 +6157,6 @@ body::-webkit-scrollbar {
   }
 }
 
-@keyframes fixedheader {
-  from {
-    transform: translateY(-100%);
-  }
-
-  to {
-    transform: translateY(0);
-  }
-}
 
 @keyframes before {
   0% {

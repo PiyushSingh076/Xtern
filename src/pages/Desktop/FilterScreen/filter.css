@@ -1,46 +1,69 @@
-/* src/Components/Filter/filter.css */
-
-/* Main container for the profile grid */
 .filter-container {
-  padding: 1rem;
+  padding: 0.5rem 0.5rem 0rem 0.5rem;
   background-color: #f4f4f4;
   font-family: "Roboto", sans-serif;
   min-height: 90vh;
   height: auto;
 }
 
-/* Profession cards container */
 .profession-cards {
   width: 100%;
   display: flex;
   flex-wrap: nowrap;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 0.5rem;
   flex-direction: row;
-  overflow-x: auto; /* Make the container scrollable */
-  padding: 1rem 0;
+  align-items: center;
+  overflow-x: auto;  /* Changed from hidden to auto */
+  padding: 0.5rem 0.5rem;  /* Added horizontal padding */
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;  /* Smooth scrolling on iOS */
+  scrollbar-width: none;  /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none;  /* Hide scrollbar for IE/Edge */
+}
+
+/* Hide scrollbar for Chrome/Safari */
+.profession-cards::-webkit-scrollbar {
+  display: none;
+}
+
+/* Add these to ensure cards are properly spaced */
+.profession-cards::after {
+  content: '';
+  padding-right: 0.5rem;  /* Add some padding at the end */
+  flex: 0 0 auto;
 }
 
 .profession-cards .card {
   border: 1px solid #0a65fc;
-  border-radius: 8px;
+  border-radius: 50px;
   background-color: white;
-  text-align: center;
-  padding: 1rem;
-  /* min-width: 150px; Ensure cards are a consistent size */
-  /* height: 150px; */
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: auto;
+  height: auto;
+  font-size: 0.8rem;
   cursor: pointer;
-  transition: transform 0.2s, background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 2px;  /* Ensure some space between cards */
 }
 
 .profession-cards .card h3 {
-  font-size: 1rem; /* Adjust font size for smaller screens */
-  margin: 0.5rem 0;
+  font-size: 0.8rem;
 }
 
 .profession-cards .card:hover {
-  transform: scale(1.05);
+  background-color: #0a65fc;
+  color: white;
+}
+
+.profession-cards .card:hover .icon {
+  color: white;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .profession-cards .card.selected {
@@ -48,27 +71,29 @@
   color: white;
 }
 
+.profession-cards .card.selected .icon {
+  background-color: #0a65fc;
+  color: white;
+}
+
 .profession-cards .card .icon {
-  font-size: 2.5rem; /* Adjust icon size */
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  color: #0a65fc;
 }
 
 @media (max-width: 480px) {
-  .filter-container {
-    padding: 0.5rem;
-  }
-
   .profession-cards .card {
-    min-width: 120px; /* Narrower cards for smaller screens */
-    height: 100px;
-    padding: 0.5rem;
-  }
-
-  .profession-cards .card h3 {
-    font-size: 0.9rem; /* Smaller font size for mobile */
+    padding: 0.7rem 2rem;
+    font-size: 0.7rem;
+    display: inline-flex;
+    width: auto;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
   }
 
   .profession-cards .card .icon {
-    font-size: 1.9rem; /* Smaller icon size for mobile */
+    display: none;
   }
 }

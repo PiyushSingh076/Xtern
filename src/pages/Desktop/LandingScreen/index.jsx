@@ -78,6 +78,7 @@ export default function Homepage() {
               <Xterns />
               <TrustedComoany />
               <ImageBtn />
+              <BlogSection />
             </div>
           )}
           <Footer />

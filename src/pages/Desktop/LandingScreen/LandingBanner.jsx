@@ -44,7 +44,9 @@ export default function LandingBanner({ pop, setRole }) {
 
           <div className="hire-btns-container">
             <button
-              onClick={() => navigate("/signup")}
+              onClick={() => {
+                navigate(ROUTES.SIGN_UP);
+              }}
               className="become-xpert-btn"
             >
               <h4 className="become-xpert-title">Become Xpert</h4>{" "}
@@ -58,10 +60,12 @@ export default function LandingBanner({ pop, setRole }) {
               }}
               className="hire-xperts-btn"
             >
-              <h4 className="hire-xpert-title">Hire Expert </h4>{" "}
+              <h4 className="hire-xpert-title">Hire Expert</h4>{" "}
               <span className="hire-xpert-subtitle">Top Quality Xperts</span>
             </button>
-          </div>
+
+          </div> 
+
 
           <span className="xpert-count">
             Over 3000+ Xpert are waiting for you

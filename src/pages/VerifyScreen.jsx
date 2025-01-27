@@ -9,6 +9,7 @@ import { toast, Toaster } from "react-hot-toast";
 import useSendOtp from "../hooks/Auth/useSendOtp";
 import useVerifyOtp from "../hooks/Auth/useVerifyOtp";
 import useRecaptcha from "../hooks/Auth/useRecaptcha";
+import { useAuth } from "../hooks/Auth/useAuth";
 
 const VerifyScreen = () => {
   const [seconds, setSeconds] = useState(50); // Timer for OTP resend
@@ -17,6 +18,9 @@ const VerifyScreen = () => {
   const [showOTP, setShowOTP] = useState(false); // Toggle to show OTP input
   const [error, setError] = useState(""); // Error state
   const navigate = useNavigate();
+  const {verifyPhone} = useAuth()
+
+  
 
   // Initialize Recaptcha hook
   const { resetRecaptcha, initRecaptchaVerifier } = useRecaptcha();
@@ -32,24 +36,26 @@ const VerifyScreen = () => {
     }
   }, [seconds, showOTP]);
 
-  const handlePhoneNumberSubmit = async (e) => {
-    e.preventDefault();
-    if (!ph || ph.length < 10) {
-      setError("Please enter a valid phone number");
-      toast.error("Please enter a valid phone number");
-      return;
-    }
+  // Change this part in VerifyScreen.js
+const handlePhoneNumberSubmit = async (e) => {
+  e.preventDefault();
+  if (!ph || ph.length < 10) {
+    setError("Please enter a valid phone number");
+    toast.error("Please enter a valid phone number");
+    return;
+  }
 
-    try {
-      await initRecaptchaVerifier(); // Initialize Recaptcha
-      console.log("reCAPTCHA initialized successfully");
-      await sendOtp(ph, setShowOTP, setError); // Send OTP
-    } catch (err) {
-      console.error("Error during OTP sending:", err);
-      setError("Failed to send OTP. Please try again.");
-      toast.error("Failed to send OTP. Please try again.");
-    }
-  };
+  try {
+    // Remove this line since reCAPTCHA is already initialized in useRecaptcha hook
+    await initRecaptchaVerifier(); 
+    
+    await sendOtp(ph, setShowOTP, setError);
+  } catch (err) {
+    console.error("Error during OTP sending:", err);
+    setError("Failed to send OTP. Please try again.");
+    toast.error("Failed to send OTP. Please try again.");
+  }
+};
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
@@ -171,18 +177,7 @@ const VerifyScreen = () => {
                         margin: "0 auto",
                       }}
                     />
-                    {error && (
-                      <p
-                        style={{
-                          color: "red",
-                          fontSize: "14px",
-                          marginTop: "5px",
-                          paddingLeft: "65px",
-                        }}
-                      >
-                        {error}
-                      </p>
-                    )}
+                    
                     <div id="recaptcha-container"></div>
                     <div className="verify-btn mt-32">
                       <button
@@ -193,13 +188,26 @@ const VerifyScreen = () => {
                         {sendingOtp ? (
                           <span>
                             <CgSpinner size={20} className="animate-spin" />{" "}
-                            Sending...
+                            
                           </span>
                         ) : (
                           "Send OTP"
                         )}
                       </button>
                     </div>
+                    {error && (
+                      <div
+                        style={{
+                          color: "red",
+                          fontSize: "14px",
+                          marginTop: "15px",
+                          
+                        }}
+                        className="w-full text-center"
+                      >
+                        {error}
+                      </div>
+                    )}
                   </form>
                 </>
               )}

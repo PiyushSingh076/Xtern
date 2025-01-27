@@ -4,12 +4,14 @@ import {
   linkWithCredential,
   updatePhoneNumber,
 } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { auth, db } from "../../firebaseConfig";
+import { useAuth } from "./useAuth";
 
 const useVerifyOtp = () => {
   const [loading, setLoading] = useState(false);
+  const {refreshUser, verifyPhone} = useAuth()
 
   /**
    * Verifies OTP and links phone number to the current authenticated user.
@@ -53,13 +55,32 @@ const useVerifyOtp = () => {
 
       // Update Firestore with the verified phone number
       const userDocRef = doc(db, "users", user.uid);
-      await updateDoc(userDocRef, {
+      await setDoc(userDocRef, {
         phone_number: phoneCredential.phoneNumber || user.phoneNumber,
         isPhoneVerified: true,
-      });
+      }, {merge: true});
 
       toast.success("Phone number verified and linked successfully!");
-      navigate("/homescreen"); // Redirect to dashboard or home page
+      verifyPhone()
+      const userSnapshot = await getDoc(userDocRef);
+          console.log("userSnapshot", userSnapshot.data());
+      const userData = userSnapshot.data();
+      if(userData.type == null){
+        navigate("/choosetype");
+      }
+      
+
+      else if(userData.type == "entrepreneur"){
+        navigate("/entrepreneur/"+userDocRef.id);
+      }
+      else{
+        navigate("/profile/"+userDocRef.id);
+      }
+      refreshUser()
+
+
+
+          navigate("/choosetype"); // Redirect to dashboard or home page
     } catch (error) {
       console.error("Error verifying OTP:", error);
 
@@ -92,6 +113,12 @@ const useVerifyOtp = () => {
           toast.success(
             "Phone number provider already linked. Firestore updated successfully!"
           );
+          verifyPhone()
+
+          const userSnapshot = await getDoc(userDocRef);
+          console.log("userSnapshot", userSnapshot.data());
+
+
           navigate("/homescreen"); // Redirect to dashboard or home page
         } catch (firestoreError) {
           console.error("Error updating Firestore:", firestoreError);

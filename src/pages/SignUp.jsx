@@ -31,6 +31,7 @@ const SignUp = () => {
   const togglePasswordVisible = () => {
     setShowPassword(!showPassword);
   };
+  const [loading, setLoading] = useState(false)
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -39,7 +40,7 @@ const SignUp = () => {
       setError("Passwords do not match!");
       return;
     }
-
+    setLoading(true)
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -58,7 +59,7 @@ const SignUp = () => {
 
       await setDoc(doc(db, "users", user.uid), userData);
 
-      navigate("/signin"); // Redirect to sign-in page after successful signup
+      navigate("/verifyscreen"); // Redirect to sign-in page after successful signup
     } catch (error) {
       // Check for specific error codes
       if (error.code === "auth/email-already-in-use") {
@@ -70,6 +71,9 @@ const SignUp = () => {
       } else {
         setError("An unexpected error occurred: " + error.message);
       }
+    }
+    finally{
+      setLoading(false)
     }
   };
 
@@ -364,9 +368,15 @@ const SignUp = () => {
                 </div>
               </div>
               <div className="sign-up-btn mt-32 ">
-                <button type="submit">Sign Up</button>
+                <button type="submit">
+                  {loading ? (
+                    <div className="spinner-border spinner-border-sm"></div>
+                  ) : (
+                    "Sign Up"
+                  )}
+                </button>
               </div>
-              {error && <p className="error-message">{error}</p>}
+              {error && <div className="error-message w-full text-red-500 text-center">{error}</div>}
               <div className="or-section mt-32">
                 <p>or continue with</p>
               </div>

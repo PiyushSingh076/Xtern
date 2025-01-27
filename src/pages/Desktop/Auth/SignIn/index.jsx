@@ -22,9 +22,9 @@ const SignIn = () => {
 
   const { userData, isLoading, error: fetchError } = useFetchUserData();
 
-if (userData ) {
-  navigate('/homescreen')
-}
+// if (userData ) {
+//   navigate('/homescreen')
+// }
   
 
   const handleBackClick = () => {
@@ -39,24 +39,31 @@ if (userData ) {
 
   const handleSignIn = async (event) => {
     event.preventDefault();
-
+    setLoading(true)
+  
     try {
       await signInWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
       if (user) {
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
-
+        console.log("email password",userDoc.data(), userDocRef);
+  
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          // Check if 'preferredLanguage' and 'typeUser' fields exist
-
-            // One or both fields are missing, redirect to preferred language page
-            navigate('/');
-          
+          if (userData.isPhoneVerified) {
+            if(userData.type){
+              navigate('/homescreen')
+            }
+            else{
+              navigate('/choosetype')
+            }
+          } else {
+            navigate('/verifyscreen')
+          }
         } else {
           console.error("No such user profile!");
-          // Handle the case where the user document doesn't exist
+          // Handle the case where the user document doesn't exist--
           // You might want to redirect to a registration page or show an error
         }
       } else {
@@ -65,6 +72,9 @@ if (userData ) {
       }
     } catch (err) {
       setError(err.message); // Handle errors, such as incorrect credentials
+    }
+    finally{
+      setLoading(false)
     }
   };
 
@@ -83,7 +93,7 @@ if (userData ) {
   //     });
   //   };
   // }, []);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // useEffect(() => {
   //   setTimeout(() => setLoading(false), 500); // Simulate loading time
@@ -226,7 +236,7 @@ if (userData ) {
               </div>
               {error && <p className="error-message">{error}</p>}
               <div className="sign-in-btn mt-32 ">
-                <button type="submit">Sign In</button>
+                <button type="submit">{loading ? <div className="spinner-border spinner-border-sm"></div> : "Sign In"}</button>
               </div>
             </form>
           </div>

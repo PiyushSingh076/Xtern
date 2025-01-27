@@ -15,31 +15,28 @@ const useOAuthLogin = () => {
       // Sign in with the selected provider
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
+      
       // Reference to the user's document in Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
         const userData = userDoc.data();
-
+        // console.log("User data auth:", userData);
         // Check if the phone number is verified
-        if (!userData.phone_number || !userData.isPhoneVerified) {
+        console.log("User data auth:", userData);
+        if (!userDoc.exists() || userData?.isPhoneVerified === false || userData?.isPhoneVerified === null) {
           toast("Please verify your phone number", { position: "bottom-left" });
           navigate("/verifyscreen");
-        } else if (!userData.typeUser) {
-          // navigate("/roleselect");
-        } else if (userData.typeUser === "entrepreneur") {
+        } else if (!userData.type) {
+          navigate("/choosetype");
+        } else if (userData.type === "entrepreneur") {
           toast.success("Welcome back, Entrepreneur!", {
             position: "bottom-left",
           });
-          navigate("/verifyscreen");
-        } else if (userData.typeUser === "Intern") {
-          if (!userData.skillSet || userData.skillSet.length === 0) {
-            // navigate("/select-skills");
-          } else {
-            navigate("/verifyscreen");
-          }
+          navigate("/entrepreneur/"+userData.uid);
+        } else if (userData.typeUser !== null && userData.typeUser !== "entrepreneur") {
+          navigate("/profile/"+userData.uid)
         }
       } else {
         const newUserData = {

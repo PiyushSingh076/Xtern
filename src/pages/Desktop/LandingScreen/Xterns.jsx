@@ -4,8 +4,11 @@ import rectangle from "../../../assets/images/homescreen/Rectangle-3586-min.png"
 import mask from "../../../assets/images/homescreen/Mask-group-1-min-1.png";
 import { useNavigate } from "react-router-dom";
 
+
 export default function Xterns() {
   const navigate = useNavigate();
+
+
 
   const quality = [
     {
@@ -54,11 +57,13 @@ export default function Xterns() {
           <img className="xtern-vector" src={rectangle} />
           <img className="xtern-img" src={mask} />
         </div>
-        <button className="hire-xterns-btn" onClick={() => navigate("/signup")}>
+        <button
+          className="hire-xterns-btn"
+          onClick={() => navigate("/signup")}
+          
+        >
           <h4 className="hire-xpert-title">Become Xpert</h4>
-          <span className="hire-xpert-subtitle">
-            Industry Expert Consultants
-          </span>
+          <span className="hire-xpert-subtitle">Industry Expert Consultants</span>
         </button>
       </div>
     </div>

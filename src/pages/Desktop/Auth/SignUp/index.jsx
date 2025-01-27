@@ -21,14 +21,13 @@ const SignUp = () => {
   const [phone, setPhone] = useState(""); // Added state for PhoneInput
   const [error, setError] = useState(""); // State to handle errors
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
+  const { userData, isLoading, error: fetchError } = useFetchUserData();
 
-    const { userData, isLoading, error: fetchError } = useFetchUserData();
-
-if (userData ) {
-  navigate('/homescreen')
-}
-  
+  // if (userData ) {
+  //   navigate('/homescreen')
+  // }
 
   const handleBackClick = () => {
     navigate(-1); // Navigate to the previous page in the history stack
@@ -49,7 +48,7 @@ if (userData ) {
       setError("Passwords do not match!");
       return;
     }
-
+    setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -68,7 +67,7 @@ if (userData ) {
 
       await setDoc(doc(db, "users", user.uid), userData);
 
-      navigate("/signin"); // Redirect to sign-in page after successful signup
+      navigate("/verifyscreen"); // Redirect to sign-in page after successful signup
     } catch (error) {
       // Check for specific error codes
       if (error.code === "auth/email-already-in-use") {
@@ -80,6 +79,8 @@ if (userData ) {
       } else {
         setError("An unexpected error occurred: " + error.message);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -338,7 +339,13 @@ if (userData ) {
                 </div>
               </div>
               <div className="sign-up-btn mt-32 ">
-                <button type="submit">Sign Up</button>
+                <button type="submit">
+                  {loading ? (
+                    <div className="spinner-border spinner-border-sm"></div>
+                  ) : (
+                    "Sign Up"
+                  )}
+                </button>
               </div>
               {error && <p className="error-message">{error}</p>}
               <div className="or-section mt-32">

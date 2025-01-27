@@ -4,9 +4,10 @@ import rectangle from "../../assets/images/homescreen/Rectangle-3586-min.png";
 import mask from "../../assets/images/homescreen/Mask-group-1-min-1.png";
 import { useNavigate } from "react-router-dom";
 
-export default function Xtern() {
-  const navigate = useNavigate();
 
+export default function Xtern() {
+    const navigate = useNavigate();
+  
   const quality = [
     {
       id: 1,

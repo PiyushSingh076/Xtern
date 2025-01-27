@@ -27,7 +27,7 @@ const SignIn = () => {
 
   const handleSignIn = async (event) => {
     event.preventDefault();
-
+    setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
@@ -37,13 +37,16 @@ const SignIn = () => {
 
         if (userDoc.exists()) {
           const userData = userDoc.data();
+          if(userData.isPhoneVerified === null || userData.isPhoneVerified === false){
+            navigate("/verifyscreen")
+          }
           // Check if 'preferredLanguage' and 'typeUser' fields exist
-          if (userData.preferredLanguage && userData.typeUser) {
+          if (userData.preferredLanguage && userData.type) {
             // Both fields exist, redirect to home screen
-            navigate(ROUTES.VERIFY_SCREEN); // Adjust the route as necessary
+            navigate("/homescreen"); // Adjust the route as necessary
           } else {
             // One or both fields are missing, redirect to preferred language page
-            navigate(ROUTES.VERIFY_SCREEN);
+            navigate("/choosetype");
           }
         } else {
           console.error("No such user profile!");
@@ -56,6 +59,8 @@ const SignIn = () => {
       }
     } catch (err) {
       setError(err.message); // Handle errors, such as incorrect credentials
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,7 +79,7 @@ const SignIn = () => {
   //     });
   //   };
   // }, []);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // useEffect(() => {
   //   setTimeout(() => setLoading(false), 500); // Simulate loading time
@@ -253,7 +258,15 @@ const SignIn = () => {
               </div>
               {error && <p className="error-message">{error}</p>}
               <div className="sign-in-btn mt-32 ">
-                <button type="submit">Sign In</button>
+                <button type="submit">
+                  {loading ? (
+                    <>
+                      <div className="spinner-border spinner-border-sm"></div>
+                    </>
+                  ) : (
+                    "Sign In"
+                  )}
+                </button>
               </div>
             </form>
           </div>

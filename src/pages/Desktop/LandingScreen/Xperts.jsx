@@ -1,38 +1,20 @@
-import React from "react";
+import React from 'react'
 import { useNavigate } from "react-router-dom";
-import "./Homescreen.css";
+import './Homescreen.css'
 
 import men from "../../../assets/images/xtern-images/men-01.png";
 
 export default function Xperts() {
   const navigate = useNavigate();
 
+  
+
   const quality = [
-    {
-      id: 1,
-      name: "Tech Lead",
-      description:
-        "Senior Tech Lead who can delivery modeules with a team of TalentedInterns, roughly 6-10 yrs of workexperince.",
-    },
-    {
-      id: 2,
-      name: "Handled Scale",
-      description:
-        "Rimberio specializes in resilient strategies, tackling difficulties with tenacity and flexiblity. ",
-    },
-    {
-      id: 3,
-      name: "Ownership",
-      description:
-        "An Xpert would ensure end to end dilevery & own up quality & timely release.",
-    },
-    {
-      id: 4,
-      name: "Fractional Cost",
-      description:
-        "To Further optimise cost an Xpert, Platform may be at max provided project to Xpert, Ensuring alldeliverabls are met successfully.",
-    },
-  ];
+    { id: 1, name: 'Tech Lead', description: 'Senior Tech Lead who can delivery modeules with a team of TalentedInterns, roughly 6-10 yrs of workexperince.' },
+    { id: 2, name: 'Handled Scale', description: 'Rimberio specializes in resilient strategies, tackling difficulties with tenacity and flexiblity. ' },
+    { id: 3, name: 'Ownership', description: 'An Xpert would ensure end to end dilevery & own up quality & timely release.' },
+    { id: 4, name: 'Fractional Cost', description: 'To Further optimise cost an Xpert, Platform may be at max provided project to Xpert, Ensuring alldeliverabls are met successfully.' }
+  ]
 
   return (
     <div className="Xperts-container">
@@ -51,17 +33,15 @@ export default function Xperts() {
         </div>
       </div>
       <div className="Xpert-img-section">
-        <img className="xpert-img" src={men} />
+        <img className='xpert-img' src={men} />
         <button
           className="hire-xperts-btn"
           onClick={() => navigate("/filterscreen/Intern")}
         >
           <h4 className="hire-xpert-title">Hire Xpert</h4>
-          <span className="hire-xpert-subtitle">
-            Industry Expert Consultants
-          </span>
-        </button>
-      </div>
+          <span className="hire-xpert-subtitle">Industry Expert Consultants</span>
+        </button> 
+       </div>
     </div>
   );
 }
