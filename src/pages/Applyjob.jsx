@@ -15,7 +15,7 @@ import {
   Alert,
 } from '@mui/material';
 import { Link as MuiLink, Description, GitHub, VideoCall, ArrowBack } from '@mui/icons-material';
-import { collection, doc, getDoc, addDoc, serverTimestamp, updateDoc, arrayUnion } from 'firebase/firestore';
+import { collection, doc, getDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { getAuth } from 'firebase/auth';
 
@@ -42,6 +42,7 @@ const ApplyJob = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [urlError, setUrlError] = useState({ deploymentUrl: false, githubUrl: false, videoDemoUrl: false });
   const { userData } = useFetchUserData();
 
 
@@ -70,12 +71,12 @@ const ApplyJob = () => {
   }, [jobId]);
 
   const validateUrl = (url) => {
-    const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    const urlPattern = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
     return urlPattern.test(url);
   };
 
   const validateGithubUrl = (url) => {
-    const githubPattern = /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/;
+    const githubPattern = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
     return githubPattern.test(url);
   };
 
@@ -83,11 +84,24 @@ const ApplyJob = () => {
     e.preventDefault();
     setFormError(null);
     setSubmitting(true);
+    setUrlError({ deploymentUrl: false, githubUrl: false, videoDemoUrl: false });
 
     try {
         if (!deploymentUrl) throw new Error('Please fill in the Deployment URL');
+        if (!validateUrl(deploymentUrl)) {
+          setUrlError((prev) => ({ ...prev, deploymentUrl: true }));
+          throw new Error('Invalid Deployment URL');
+        }
         if (!githubUrl) throw new Error('Please fill in the GitHub Repository URL');
+        if (!validateGithubUrl(githubUrl)) {
+          setUrlError((prev) => ({ ...prev, githubUrl: true }));
+          throw new Error('Invalid GitHub Repository URL');
+        }
         if (!videoDemoUrl) throw new Error('Please fill in the Video Demo URL');
+        if (!validateUrl(videoDemoUrl)) {
+          setUrlError((prev) => ({ ...prev, videoDemoUrl: true }));
+          throw new Error('Invalid Video Demo URL');
+        }
         if (!description.trim()) throw new Error('Please provide a project description');
 
       const currentUser = auth.currentUser;
@@ -134,7 +148,10 @@ const ApplyJob = () => {
       // Add to appliedJobs collection
       const applicationRef = await addDoc(collection(db, 'RealWorldSubmissions'), applicationData);
       const jobRef = await getDoc(doc(collection(db, 'jobPosting'), jobId));
-      await updateDoc(jobRef.ref, { applicants: arrayUnion(applicationRef.id) });
+      await updateDoc(jobRef.ref, { applicants: arrayUnion({
+        uid: currentUser.uid,
+        applicationId: applicationRef.id,
+      }) });
 
       setSubmitSuccess(true);
       // Navigate after successful submission
@@ -255,6 +272,8 @@ const ApplyJob = () => {
                 }}
                 required
                 disabled={submitting}
+                error={urlError.deploymentUrl}
+                helperText={urlError.deploymentUrl ? 'Invalid Deployment URL' : ''}
               />
               <TextField
                 fullWidth
@@ -267,6 +286,8 @@ const ApplyJob = () => {
                 }}
                 required
                 disabled={submitting}
+                error={urlError.githubUrl}
+                helperText={urlError.githubUrl ? 'Invalid GitHub Repository URL' : ''}
               />
               <TextField
                 fullWidth
@@ -279,6 +300,8 @@ const ApplyJob = () => {
                 }}
                 required
                 disabled={submitting}
+                error={urlError.videoDemoUrl}
+                helperText={urlError.videoDemoUrl ? 'Invalid Video Demo URL' : ''}
               />
               <TextField
                 fullWidth

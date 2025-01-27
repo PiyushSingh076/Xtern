@@ -129,7 +129,7 @@ const SingleJob = () => {
         <div className="container">
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
-              <div className="hero-img-desc">
+              <div className="hero-img-desc !w-full md:!w-fit !flex-row !flex !justify-center">
                 <img
                   src={job.image || HeaderImg}
                   alt="social-media-img"
@@ -141,7 +141,7 @@ const SingleJob = () => {
             </Grid>
             <Grid item xs={12} md={8}>
               <div className="single-courses-description">
-                <div className="first-decs-sec mt-16">
+                <div className="first-decs-sec mt-1  sm:mt-16">
                   <div className="first-decs-sec-wrap">
                     <div className="skills-left-sec">
                       {job.skills && job.skills.length > 0 ? (
@@ -156,7 +156,7 @@ const SingleJob = () => {
                     </div>
                   </div>
                 </div>
-                <div className="second-decs-sec mt-16">
+                <div className="second-decs-sec mt-2 sm:mt-16">
                   <div className="second-decs-sec-wrap">
                     <div className="second-decs-sec-top">
                       <h1 className="second-txt1">
@@ -165,12 +165,12 @@ const SingleJob = () => {
                     </div>
 
                     <div className="second-decs-sec-bottom">
-                      <div className="second-decs-sec-bottom-wrap">
+                      <div className="second-decs-sec-bottom-wrap flex ">
                         <div className="mt-12 flex items-center">
                           <span className="student-img mr-8">
                             <img  src={StudentIcon} alt="student-icon" />
                           </span>
-                          <span className="second-txt2">{job.applicants.length} Applicants</span>
+                          <span className="second-txt2">{job.applicants.length} <span className='hidden sm:inline' >Applicants</span></span>
                         </div>
                         <div className="mt-12 flex items-center">
                           <span className="student-img mr-8 fillStar">
@@ -204,14 +204,14 @@ const SingleJob = () => {
                   <div className="third-decs-sec-wrap"></div>
                 </div>
 
-                <div className="fifth-decs-sec mt-32">
+                <div className="fifth-decs-sec mt-32 min-h-[50vh]">
                   <div className="fifth-decs-sec-wrap">
                     <ul
                       className="nav nav-pills single-courses-tab"
                       id="description-tab"
                       role="tablist"
                     >
-                      <li className="nav-item" role="presentation">
+                      <li className="nav-item !w-1/2" role="presentation">
                         <button
                           className="nav-link active"
                           id="description-tab-btn"
@@ -224,7 +224,7 @@ const SingleJob = () => {
                           Description
                         </button>
                       </li>
-                      <li className="nav-item" role="presentation">
+                      <li className="nav-item !w-1/2" role="presentation">
                         <button
                           className="nav-link"
                           id="lessons-tab-btn"
