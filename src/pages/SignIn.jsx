@@ -31,17 +31,19 @@ const SignIn = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
+      
       if (user) {
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
 
         if (userDoc.exists()) {
           const userData = userDoc.data();
+          console.log("Sign in: ",userData);
           if(userData.isPhoneVerified === null || userData.isPhoneVerified === false){
             navigate("/verifyscreen")
           }
           // Check if 'preferredLanguage' and 'typeUser' fields exist
-          if (userData.preferredLanguage && userData.type) {
+          if (userData.type) {
             // Both fields exist, redirect to home screen
             navigate("/homescreen"); // Adjust the route as necessary
           } else {
