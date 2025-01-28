@@ -83,8 +83,8 @@ const SingleJob = () => {
     <>
       
 
-      <section id="single-description-screen">
-        <div className="container">
+      <section id="single-description-screen" className="!shadow-none">
+        <div className="container !shadow-none !border-none !bg-white ">
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
               <div className="hero-img-desc !w-full md:!w-fit !flex-row !flex !justify-center">
