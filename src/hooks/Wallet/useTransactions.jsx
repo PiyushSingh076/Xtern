@@ -5,10 +5,12 @@ import axios from "axios";
 import useWallet from "./useWallet";
 import { doc, increment, updateDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import { useEffect } from "react";
 
 export function useTransactions() {
   const functions = getFunctions();
   const { createTransaction } = useWallet();
+
 
   async function createPaymentOrder(userId, amount, currency) {
     try {
@@ -82,8 +84,8 @@ export function useTransactions() {
     }
 
     const options = {
-      key_id: "rzp_test_w4aQ5dhNg17Owa",
-      key_secret: "2W2tU9jVcJGNvQKXYdUr7pUQ",
+      key_id: process.env.REACT_APP_RAZORPAY_KEY_SECRET,
+      key_secret: process.env.REACT_APP_RAZORPAY_KEY_SECRET,
       amount: amount * 100,
       currency: "INR",
       name: "Optacloud",

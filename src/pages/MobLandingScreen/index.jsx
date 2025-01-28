@@ -11,6 +11,7 @@ import useFetchUserData from "../../hooks/Auth/useFetchUserData";
 import Dashboard from "./Dashboard";
 import { useNavigate } from "react-router-dom";
 import Footer from "../Desktop/Footer/Footer";
+import Jobs from "./Jobs";
 
 export default function MobHomeScreen() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function MobHomeScreen() {
       {userData && <Dashboard />}
       {!userData && <LandingPage />}
       {!userData && <Categories />}
+      {!userData && <Jobs />}
       {!userData && <Xpert />}
       {!userData && <Xtern />}
       {!userData && <TrustedComp />}

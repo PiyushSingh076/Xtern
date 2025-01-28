@@ -120,7 +120,7 @@ const VerifyScreen = () => {
                     <div className="verify-btn mt-32">
                       <button
                         type="submit"
-                        className="btn"
+                        className="btn !flex !gap-1"
                         disabled={verifyingOtp}
                       >
                         {verifyingOtp ? (

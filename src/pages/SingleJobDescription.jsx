@@ -246,7 +246,7 @@ const SingleJobDescription = () => {
                     id="description-tab"
                     role="tablist"
                   >
-                    <li className="nav-item" role="presentation">
+                    <li className="nav-item !w-full" role="presentation">
                       <button
                         className="nav-link active"
                         id="description-tab-btn"

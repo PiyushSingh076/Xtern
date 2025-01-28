@@ -1,3 +1,6 @@
+require('react-scripts/config/env');
+
+
 module.exports = {
   // ...
   webpack: {
@@ -5,9 +8,7 @@ module.exports = {
       /* ... */
     },
     plugins: {
-      add: [
-        /* ... */
-      ],
+      add: [/* ... */ ],
       remove: [
         /* ... */
       ],
@@ -16,14 +17,16 @@ module.exports = {
       /* ... */
       resolve: {
         fallback: {
-            crypto: require.resolve("crypto-browserify"),
-        }
-      }
+          crypto: require.resolve("crypto-browserify"),
+        },
+      },
     },
     configure: (webpackConfig, { env, paths }) => {
-        webpackConfig.resolve.fallback = {}
-      webpackConfig.resolve.fallback.crypto = require.resolve("crypto-browserify");
-      webpackConfig.resolve.fallback.stream = require.resolve("stream-browserify");
+      webpackConfig.resolve.fallback = {};
+      webpackConfig.resolve.fallback.crypto =
+        require.resolve("crypto-browserify");
+      webpackConfig.resolve.fallback.stream =
+        require.resolve("stream-browserify");
       webpackConfig.resolve.fallback.vm = require.resolve("vm-browserify");
       return webpackConfig;
     },
