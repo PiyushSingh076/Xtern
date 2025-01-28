@@ -1010,7 +1010,7 @@ const MobileSingleMentor = () => {
                   size="small"
                   style={{ ...styles.consultingButton }}
                 >
-                  <FaRegClock size={16} /> Upcoming Meets
+                  <FaRegClock size={20}  /> Upcoming Meets
                 </Button>
               </div>
             </div>
@@ -1319,18 +1319,23 @@ const styles = {
     justifyContent: "space-between", // Distribute buttons evenly
     alignItems: "center", // Center items vertically
     gap: "10px", // Add space between buttons
+    flexWrap: "wrap", // Allow buttons to wrap on small screens
     marginBottom: "10px",
   },
   consultingButton: {
     flex: "1 1 auto", // Allow buttons to grow/shrink as needed
     textAlign: "center",
-    padding: "10px 15px",
-    minWidth: "120px", // Ensure buttons have a minimum width
-    display: "flex", // Use flex for button content
+    padding: "8px 12px", // Adjust padding for balanced spacing
+    minWidth: "120px", // Maintain minimum width
+    display: "flex", // Use flexbox for proper alignment
     alignItems: "center", // Center icon and text vertically
     justifyContent: "center", // Center content horizontally
-    gap: "5px", // Add space between the icon and text
+    gap: "8px", // Add clear space between icon and text
+    overflow: "hidden", // Prevent content overflow
+    whiteSpace: "nowrap", // Prevent wrapping of text
+    textOverflow: "ellipsis", // Show ellipsis if text overflows
   },
+  
   modalHeader: {
     backgroundColor: "#007bff",
     color: "#fff",
