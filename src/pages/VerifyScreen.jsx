@@ -18,9 +18,9 @@ const VerifyScreen = () => {
   const [showOTP, setShowOTP] = useState(false); // Toggle to show OTP input
   const [error, setError] = useState(""); // Error state
   const navigate = useNavigate();
-  const {verifyPhone} = useAuth()
+  const { verifyPhone } = useAuth()
 
-  
+
 
   // Initialize Recaptcha hook
   const { resetRecaptcha, initRecaptchaVerifier } = useRecaptcha();
@@ -37,25 +37,25 @@ const VerifyScreen = () => {
   }, [seconds, showOTP]);
 
   // Change this part in VerifyScreen.js
-const handlePhoneNumberSubmit = async (e) => {
-  e.preventDefault();
-  if (!ph || ph.length < 10) {
-    setError("Please enter a valid phone number");
-    toast.error("Please enter a valid phone number");
-    return;
-  }
+  const handlePhoneNumberSubmit = async (e) => {
+    e.preventDefault();
+    if (!ph || ph.length < 10) {
+      setError("Please enter a valid phone number");
+      toast.error("Please enter a valid phone number");
+      return;
+    }
 
-  try {
-    // Remove this line since reCAPTCHA is already initialized in useRecaptcha hook
-    await initRecaptchaVerifier(); 
-    
-    await sendOtp(ph, setShowOTP, setError);
-  } catch (err) {
-    console.error("Error during OTP sending:", err);
-    setError("Failed to send OTP. Please try again.");
-    toast.error("Failed to send OTP. Please try again.");
-  }
-};
+    try {
+      // Remove this line since reCAPTCHA is already initialized in useRecaptcha hook
+      await initRecaptchaVerifier();
+
+      await sendOtp(ph, setShowOTP, setError);
+    } catch (err) {
+      console.error("Error during OTP sending:", err);
+      setError("Failed to send OTP. Please try again.");
+      toast.error("Failed to send OTP. Please try again.");
+    }
+  };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
@@ -66,7 +66,7 @@ const handlePhoneNumberSubmit = async (e) => {
     }
 
     // Verify OTP
- await verifyOtp(otp, ph, setError, navigate);
+    await verifyOtp(otp, ph, setError, navigate);
   };
 
   const handleResendOtp = async () => {
@@ -74,7 +74,7 @@ const handlePhoneNumberSubmit = async (e) => {
     setOtp("");
     setError("");
     await resetRecaptcha(); // Reset Recaptcha before resending OTP
-      await sendOtp(ph, setShowOTP, navigate, setError, navigate);  // Resend OTP
+    await sendOtp(ph, setShowOTP, navigate, setError, navigate);  // Resend OTP
   };
 
   const handleBackClick = () => {
@@ -124,10 +124,11 @@ const handlePhoneNumberSubmit = async (e) => {
                         disabled={verifyingOtp}
                       >
                         {verifyingOtp ? (
-                          <span>
-                            <CgSpinner size={20} className="animate-spin" />{" "}
-                            Verifying...
+                          <span className="flex items-center space-x-2">
+                            <CgSpinner size={20} className="animate-spin" />
+                            <span>Verifying...</span>
                           </span>
+
                         ) : (
                           "Verify"
                         )}
@@ -177,7 +178,7 @@ const handlePhoneNumberSubmit = async (e) => {
                         margin: "0 auto",
                       }}
                     />
-                    
+
                     <div id="recaptcha-container"></div>
                     <div className="verify-btn mt-32">
                       <button
@@ -188,7 +189,7 @@ const handlePhoneNumberSubmit = async (e) => {
                         {sendingOtp ? (
                           <span>
                             <CgSpinner size={20} className="animate-spin" />{" "}
-                            
+
                           </span>
                         ) : (
                           "Send OTP"
@@ -201,7 +202,7 @@ const handlePhoneNumberSubmit = async (e) => {
                           color: "red",
                           fontSize: "14px",
                           marginTop: "15px",
-                          
+
                         }}
                         className="w-full text-center"
                       >
