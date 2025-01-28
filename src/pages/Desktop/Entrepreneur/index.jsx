@@ -13,6 +13,7 @@ import {
   Chip,
   IconButton,
 } from "@mui/material";
+import ShareIcon from "@mui/icons-material/Share";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -216,6 +217,15 @@ const SingleMentor = () => {
     }
   };
 
+   // "Share" functionality
+   const handleShare = () => {
+    const url = window.location.href;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => toast.success("Profile link copied!"))
+      .catch(() => toast.error("Failed to copy link."));
+  };
+
   const handleEdit = () => {
     if (profileData?.type) {
       const sanitized = JSON.parse(JSON.stringify(profileData));
@@ -257,7 +267,25 @@ const SingleMentor = () => {
               )}
 
               <div className="profile-img-info-container">
-                <div className="mentor-img-sec">
+                <div className="mentor-img-sec"
+                                  style={{ position: "relative" }}
+                                  >
+                <Tooltip title="Share Profile" arrow>
+                    <IconButton
+                      onClick={handleShare}
+                      sx={{
+                        position: "absolute",
+                        top: 5,
+                        left: 5,
+                        backgroundColor: "#007bff",
+                        color: "#fff",
+                        "&:hover": { backgroundColor: "#0056b3" },
+                      }}
+                      size="small"
+                    >
+                      <ShareIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                   {profileLoading ? (
                     <Skeleton
                       variant="circular"
@@ -266,11 +294,11 @@ const SingleMentor = () => {
                       animation="wave"
                     />
                   ) : (
-                    <div className="size-[150px] relative">
+                    <div className="size-[150px] ">
                       <img
                         src={profileData?.photo_url || "/default-profile.png"}
                         alt={`${profileData?.firstName} ${profileData?.lastName}`}
-                        className="size-full absolute left-0 top-0 object-cover"
+                        className="size-full  left-0 top-0 object-cover"
                         onError={(e) => (e.target.src = "/default-profile.png")}
                       />
                     </div>
