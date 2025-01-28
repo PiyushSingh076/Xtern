@@ -41,7 +41,7 @@ export default function MobHeader() {
   return (
     <div
       className="mob-header-container !z-[100]"
-      // style={{ border: isOpen && "none" }}
+    // style={{ border: isOpen && "none" }}
     >
       <div className="menu-btn-container">
         <button className="menu-btn flex items-center" onClick={handleMenuClick}>
@@ -82,16 +82,23 @@ export default function MobHeader() {
           <div
             className="dropdown-item"
             onClick={() => {
-              if(userData?.type === "entrepreneur") {
+              if (userData?.type === "entrepreneur") {
                 handleMenuOptionClick(`entrepreneur/${userData?.uid}`)
               }
-              else{
+              else {
                 handleMenuOptionClick(`profile/${userData?.uid}`)
               }
             }}
           >
             <AiOutlineUser className="menu-icon" />
             Profile
+          </div>
+          <div
+            className="dropdown-item"
+            onClick={() => handleMenuOptionClick("/jobs")}
+          >
+            <FaBriefcase className="menu-icon" />
+            Jobs
           </div>
           <div
             className="dropdown-item"
