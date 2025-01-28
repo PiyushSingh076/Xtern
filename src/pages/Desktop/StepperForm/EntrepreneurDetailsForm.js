@@ -141,10 +141,9 @@ export default function EntrepreneurProfileForm() {
       setFirstName(data.first_name || "");
       setLastName(data.last_name || "");
       setProfileImg(data.profile_pic_url || "");
-
-
-
       setIndustry(data.industry || "");
+      setIsLinkedInFetched(true); // Set to true after successful fetch
+
 
     }
     if (data.state && data.city) {
@@ -330,6 +329,7 @@ export default function EntrepreneurProfileForm() {
       if (!city) missingFields.push("City");
       if (!companyDetails.name) missingFields.push("Company Name");
       if (!companyDetails.startDate) missingFields.push("Company Start Date");
+      if (!companyDetails.logo) missingFields.push("Company logo");
       if (!experience) missingFields.push("Years in Experience");
       if (!industry) missingFields.push("Industry");
 
