@@ -3,8 +3,9 @@ import { collection, getDocs } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
-import { db } from "../../../firebaseConfig";
+import { db } from "../../firebaseConfig";
 import { Building } from "lucide-react";
+import Carousel from "react-material-ui-carousel";
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -14,8 +15,8 @@ const Jobs = () => {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToShow: 2,
+    slidesToScroll: 2,
   };
 
   useEffect(() => {
@@ -35,7 +36,7 @@ const Jobs = () => {
     fetchJobs();
   }, []);
   return (
-    <div className="h-[80vh]  mt-2 items-start justify-start shrink-0 w-full flex flex-col ">
+    <div className="h-[50vh]  mt-2 items-start justify-start shrink-0 w-full flex flex-col ">
       <div className="w-full h-fit flex">
         <div className="h-fit w-1/2 px-12 flex items-center justify-start">
           <div className="w-fit flex flex-col  size-full">
@@ -59,11 +60,11 @@ const Jobs = () => {
           <></>
         ) : (
           <>
-            <Slider className="my-auto" gap {...settings}>
+            <Slider {...settings}>
               {jobs &&
                 jobs.map((job) => {
                   return (
-                    <div  className="h-[50vh] p-2">
+                    <div  className="h-[30vh] p-2">
                       <div className="rounded-lg size-full overflow-hidden border border-black/20 flex flex-col">
                         <div className="relative h-1/2 w-full ">
                           <img
@@ -72,12 +73,12 @@ const Jobs = () => {
                             alt=""
                           />
                         </div>
-                        <div className="flex flex-col p-4 gap-1" >
+                        <div className="flex flex-col p-4 gap-1 h-full" >
                           <h1 className="font-bold text-lg">{job.title}</h1>
                           
                           <h5 className="font-normal flex gap-1 items-center text-sm"> {job.companyName}</h5>
                           <h5 className="font-normal text-sm">{job.location}</h5>
-                          <Button variant="contained" onClick={() => navigate(`/jobs/${job.jobId}`)} >View</Button>
+                          <Button variant="contained" className="mt-auto" onClick={() => navigate(`/jobs/${job.jobId}`)} >View</Button>
                         </div>
                       </div>
                     </div>
