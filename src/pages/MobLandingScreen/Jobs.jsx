@@ -36,15 +36,12 @@ const Jobs = () => {
     fetchJobs();
   }, []);
   return (
-    <div className="h-[50vh]  mt-2 items-start justify-start shrink-0 w-full flex flex-col ">
+    <div className="h-[70vh]  mt-2 items-start justify-start shrink-0 w-full flex flex-col ">
       <div className="w-full h-fit flex">
-        <div className="h-fit w-1/2 px-12 flex items-center justify-start">
-          <div className="w-fit flex flex-col  size-full">
+        
+        <div className="w-full gap-2 px-12  flex justify-between items-center shrink-0">
             <h1>Opportunities</h1>
-            {/* <h5 className="font-normal">Jobs for you</h5> */}
-          </div>
-        </div>
-        <div className="ml-auto px-12 w-1/2 flex justify-end items-center shrink-0">
+            {/* <h5 className="font-normal" ></h5> */}
           <Button
             onClick={() => navigate("/jobs")}
             sx={{ borderRadius: "50px" }}
@@ -64,7 +61,7 @@ const Jobs = () => {
               {jobs &&
                 jobs.map((job) => {
                   return (
-                    <div  className="h-[30vh] p-2">
+                    <div  className="h-[40vh] p-2">
                       <div className="rounded-lg size-full overflow-hidden border border-black/20 flex flex-col">
                         <div className="relative h-1/2 w-full ">
                           <img
