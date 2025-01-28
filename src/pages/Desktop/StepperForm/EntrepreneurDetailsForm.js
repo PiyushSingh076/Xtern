@@ -328,7 +328,8 @@ export default function EntrepreneurProfileForm() {
       if (!lastName) missingFields.push("Last Name");
       if (!state) missingFields.push("State");
       if (!city) missingFields.push("City");
-      if (!companyDetails) missingFields.push("Company Details");
+      if (!companyDetails.name) missingFields.push("Company Name");
+      if (!companyDetails.startDate) missingFields.push("Company Start Date");
       if (!experience) missingFields.push("Years in Experience");
       if (!industry) missingFields.push("Industry");
 

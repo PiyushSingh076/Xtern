@@ -149,11 +149,35 @@ export default function Acadamic({ profileData }) {
                             ))}
                           </div>
                         )}
-                        <Tooltip title={project.description || "No description available"} arrow>
-                          <Button onClick={() => toggleProjectDesc(index)} style={styles.descButton}>
-                            {projectOpen[index] ? "Hide Description" : "View Description"}
-                          </Button>
-                        </Tooltip>
+
+                        <div style={styles.descViewBtnContainer}>
+                          {/* Tooltip for Live Link */}
+                          {project?.liveDemo && (
+                            <Tooltip
+                              title={project.liveDemo}
+                              arrow
+                              placement="top"
+                            >
+                              <a
+                                href={project.liveDemo}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="link-btn"
+                                style={{
+                                  marginRight: "10px", // Add spacing between link and description
+                                }}
+                              >
+                                Live Link
+                              </a>
+                            </Tooltip>
+                          )}
+                          
+                          <Tooltip title={project.description || "No description available"} arrow>
+                            <Button onClick={() => toggleProjectDesc(index)} style={styles.descButton}>
+                              {projectOpen[index] ? "Hide Description" : "View Description"}
+                            </Button>
+                          </Tooltip>
+                        </div>
                         {projectOpen[index] && (
                           <div style={styles.description}>{project?.description || "No description available"}</div>
                         )}
@@ -192,4 +216,9 @@ const styles = {
   descButton: { color: "#007bff", textTransform: "none", fontSize: "0.9rem" },
   description: { marginTop: "10px", padding: "15px", backgroundColor: "#f9f9f9", borderRadius: "8px" },
   noDataContainer: { textAlign: "center", marginTop: "20px" },
+  descViewBtnContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "start",
+  }
 };

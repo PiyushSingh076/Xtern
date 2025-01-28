@@ -353,12 +353,11 @@ const Stepper = ({ data }) => {
       </div>
       <div className="mt-4">
         {Id === 1 && (
-          <div className="flex md:justify-evenly md:items-start md:flex-row flex-col gap-3 justify-center items-center">
-            {/* First Column */}
-            <div className="flex flex-col w-[50vw] h-auto gap-2">
-              <div className="mb-4" style={{ width: "36vw", margin: "0 auto" }}>
-                {/* <Toaster /> */}
-                <label
+           <div className="flex md:justify-evenly md:items-start md:flex-row flex-col gap-3 justify-center items-center w-full px-4">
+           {/* First Column */}
+           <div className="flex flex-col w-full md:w-[50vw] h-auto gap-2">
+             <div className="mb-4 w-full md:w-[36vw] mx-auto">
+               <label
                   htmlFor="projectImage"
                   className="drag-drop-label"
                   style={{
@@ -366,7 +365,7 @@ const Stepper = ({ data }) => {
                       pImageError ? "2px dashed red" : "2px dashed black"
                     }`,
                     height: "36vh",
-                    width: "36vw",
+                    width: "100%",
                     borderRadius: "8px",
                     display: "flex",
                     alignItems: "center",
@@ -479,7 +478,7 @@ const Stepper = ({ data }) => {
                 />
               </div>
               <TextField
-                className="w-[40vw]"
+                className="w-full md:w-[40vw] mx-auto"
                 style={{ margin: "0 auto" }}
                 label="Company Name"
                 required
@@ -500,9 +499,9 @@ const Stepper = ({ data }) => {
               />
             </div>
             {/* Second Column */}
-            <div className="flex flex-col w-[50vw] md:gap-2 gap-3">
+            <div className="flex flex-col w-full md:w-[50vw] md:gap-2 gap-3">
               <TextField
-                className="w-[40vw]"
+                 className="w-full md:w-[40vw] mx-auto"
                 style={{ margin: "0 auto" }}
                 label="Job Title"
                 required
@@ -527,7 +526,7 @@ const Stepper = ({ data }) => {
               <TextField
                 label="Skills (e.g., PHP, Laravel, MySQL)"
                 required
-                className="w-[40vw]"
+                 className="w-full md:w-[40vw] mx-auto"
                 style={{ margin: "0 auto" }}
                 value={skillInput}
                 onKeyPress={handleSkillKeyPress}
@@ -586,7 +585,7 @@ const Stepper = ({ data }) => {
               <TextField
                 label="Experience Level (e.g., Beginner, Intermediate, Advanced)"
                 required
-                className="w-[40vw]"
+                 className="w-full md:w-[40vw] mx-auto"
                 style={{ margin: "0 auto" }}
                 value={experienceLevel}
                 onChange={(e) => {
@@ -607,7 +606,7 @@ const Stepper = ({ data }) => {
               <TextField
                 placeholder="Job Description *"
                 required
-                className="w-[40vw]"
+                 className="w-full md:w-[40vw] mx-auto"
                 style={{ margin: "0 auto" }}
                 multiline
                 rows={4} // Adjust rows for multiline input
@@ -650,7 +649,7 @@ const Stepper = ({ data }) => {
               <TextField
                 label="Job Location"
                 required
-                className="w-[40vw]"
+                 className="w-full md:w-[40vw] mx-auto"
                 style={{ margin: "0 auto" }}
                 value={location}
                 onChange={(e) => {
@@ -699,12 +698,12 @@ const Stepper = ({ data }) => {
           </div>
         )}
         {Id === 2 && (
-          <div className="flex md:flex-row flex-col gap-2 md:items-start justify-center items-center">
+          <div className="flex md:flex-row flex-col gap-2 md:items-start justify-center items-center px-4">
             {/* Assessment Detail */}
-            <div>
+            <div className="w-full md:w-[50vw]">
               <TextField
                 placeholder="Assessment Detail *"
-                className="w-[45vw]"
+                 className="w-full md:w-[45vw]"
                 required
                 multiline
                 rows={10} // Adjust rows for multiline input
@@ -744,11 +743,10 @@ const Stepper = ({ data }) => {
                 }}
               />
             </div>
-            <div className="w-[50vw] flex flex-col items-center gap-3">
-              {/* Assessment Duration */}
+            <div className="w-full md:w-[50vw] flex flex-col items-center gap-3">              {/* Assessment Duration */}
               <TextField
                 type="number"
-                className="w-[45vw]"
+                className="w-full md:w-[45vw]"
                 style={{ margin: "0 auto" }}
                 label="Assessment Duration (e.g., 2 days)"
                 required
@@ -769,7 +767,7 @@ const Stepper = ({ data }) => {
               />
               {/* Job Duration */}
               <TextField
-                className="w-[45vw]"
+                className="w-full md:w-[45vw]"
                 type="number"
                 style={{ margin: "0 auto" }}
                 label="Job Duration (e.g., 6 Months)"
@@ -789,10 +787,8 @@ const Stepper = ({ data }) => {
                 }}
                 variant="outlined"
               />
-              <div
-                className="flex flex-col items-center justify-center h-auto w-[45vw] bg-gray p-4 rounded-md cursor-pointer"
-                style={{ margin: "0 auto", border: "2px dashed black" }}
-              >
+                            <div className="w-full md:w-[45vw] flex flex-col items-center justify-center h-auto bg-gray p-4 rounded-md cursor-pointer mx-auto" style={{ border: "2px dashed black" }}>
+
                 {/* <Toaster /> */}
                 <label htmlFor="file-upload" className="cursor-pointer">
                   <CloudUploadIcon size={24} className="mr-2" />

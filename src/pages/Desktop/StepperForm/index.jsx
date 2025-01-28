@@ -853,7 +853,7 @@ export default function StepperForm() {
           await uploadBytes(storageRef, dataObj.serviceVideo);
           videoUrl = await getDownloadURL(storageRef);
           console.log("Video URL:", videoUrl);
-        } 
+        }
 
         const imageUrls = await Promise.all(
           dataObj.images.map(async (image) => {
@@ -882,11 +882,11 @@ export default function StepperForm() {
             return null;
           })
         );
-        
+
         // Filter out any null values
         const filteredImageUrls = imageUrls.filter(url => url !== null);
 
-   
+
         console.log("Image URLs:", imageUrls);
         const serviceData = {
           ...dataObj,
@@ -1151,7 +1151,7 @@ export default function StepperForm() {
 
       {activeStep === 0 && <XpertRole next={() => setActiveStep(1)} />}
 
-      <Box sx={{ height: "90vh", overflow: "auto", padding: 3 }}>
+      <Box sx={{ height: "90vh", overflow: "auto", padding: 1 }}>
         {activeStep === 1 && (
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
@@ -1433,9 +1433,18 @@ export default function StepperForm() {
                         <FiTrash color="red" size={16} />
                       </IconButton>
                       <Box>
-                        <Typography variant="subtitle1">
+                        <Typography
+                          variant="subtitle1"
+                          sx={{
+                            fontSize: {
+                              xs: "0.8rem", // Smaller font size for extra-small screens (mobile)
+                              sm: "1rem",   // Default font size for small screens and above
+                            },
+                          }}
+                        >
                           <strong>{item.degree}</strong> in {item.stream}
                         </Typography>
+
                         <Typography variant="body2">{item.college}</Typography>
                         <Typography variant="body2">
                           {item.startDate} - {item.endDate || "Present"}
@@ -1453,13 +1462,31 @@ export default function StepperForm() {
               <Card sx={{ mb: 2, boxShadow: 2 }}>
                 <CardHeader
                   title="Work Experience"
-                  titleTypographyProps={{ variant: "h6" }}
+                  titleTypographyProps={{
+                    variant: "h6",
+                    sx: {
+                      fontSize: {
+                        xs: "1rem", // Smaller font size for mobile
+                        sm: "1.25rem", // Default font size for small screens and above
+                      },
+                    },
+                  }}
                   action={
                     <Button
                       variant="contained"
                       startIcon={<AddCircleOutlineIcon />}
                       onClick={() => openModal("Work")}
                       size="small"
+                      sx={{
+                        fontSize: {
+                          xs: "0.6rem", // Smaller font size for mobile
+                          sm: "1rem", // Default font size for small screens and above
+                        },
+                        padding: {
+                          xs: "6px 12px", // Smaller padding for mobile
+                          sm: "8px 16px", // Default padding for small screens and above
+                        },
+                      }}
                     >
                       Add Experience
                     </Button>
@@ -1506,16 +1533,35 @@ export default function StepperForm() {
               <Card sx={{ mb: 2, boxShadow: 2 }}>
                 <CardHeader
                   title="Projects/Assignments"
-                  titleTypographyProps={{ variant: "h6" }}
+                  titleTypographyProps={{
+                    variant: "h6",
+                    sx: {
+                      fontSize: {
+                        xs: "1rem", // Smaller font size for mobile
+                        sm: "1.25rem", // Default font size for small screens and above
+                      },
+                    },
+                  }}
                   action={
                     <Button
                       variant="contained"
                       startIcon={<AddCircleOutlineIcon />}
                       onClick={() => openModal("Project")}
                       size="small"
+                      sx={{
+                        fontSize: {
+                          xs: "0.6rem", // Smaller font size for mobile
+                          sm: "1rem", // Default font size for small screens and above
+                        },
+                        padding: {
+                          xs: "6px 12px", // Smaller padding for mobile
+                          sm: "8px 16px", // Default padding for small screens and above
+                        },
+                      }}
                     >
                       Add Project
                     </Button>
+
                   }
                   sx={{ padding: 2 }}
                 />
@@ -2456,7 +2502,7 @@ export default function StepperForm() {
                         {!modalFormData.serviceVideo && (
                           <label
                             htmlFor="video-upload"
-                            className="border-2 border-dashed border-gray-400 rounded-lg w-80 h-24 flex items-center justify-center cursor-pointer"
+                            className="border-2 border-dashed border-gray-400 rounded-lg w-72 h-24 flex items-center justify-center cursor-pointer"
                           >
                             <div className="flex flex-col items-center">
                               <svg
@@ -2494,7 +2540,7 @@ export default function StepperForm() {
 
                         {/* video preview */}
                         {modalFormData.serviceVideo && (
-                          <div className="relative  w-[340px] h-[200px] border rounded-lg overflow-hidden">
+                          <div className="relative mx-auto  w-[290px] h-[200px] border rounded-lg overflow-hidden sm:w-[340px]">
                             <video
                               src={
                                 modalFormData.serviceVideo instanceof File
