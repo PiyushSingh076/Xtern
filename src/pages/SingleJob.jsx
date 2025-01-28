@@ -95,10 +95,10 @@ const SingleJob = () => {
   return (
     <>
       <section id="single-description-screen">
-        <div className="container !shadow-none !border-none !bg-white !max-w-full mx-8" >
+        <div className="container !shadow-none !border-none !bg-white !max-w-full mx-8">
           <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
-              <div className="hero-img-desc !w-full md:!w-fit !flex-row !flex !justify-center">
+            <div className="flex flex-col px-4 !items-center">
+              <div className="hero-img-desc !w-full md:!w-fit !flex-row !flex !items-center !justify-center">
                 <img
                   src={job.image || HeaderImg}
                   alt="social-media-img"
@@ -107,13 +107,42 @@ const SingleJob = () => {
                   className="img-fluid"
                 />
               </div>
-            </Grid>
+              <div className="second-decs-sec-bottom-wrap !grid !grid-cols-2 w-full">
+                <div className="mt-12 flex items-center">
+                  <span className="student-img mr-8">
+                    <img src={StudentIcon} alt="student-icon" />
+                  </span>
+                  <span className="second-txt2">
+                    {job.applicants.length}{" "}
+                    <span className="hidden sm:inline">Applicants</span>
+                  </span>
+                </div>
+                <div className="mt-12 flex items-center">
+                  <span className="student-img mr-8 fillStar">
+                    <LocationSearchingRounded fontSize="small"></LocationSearchingRounded>
+                  </span>
+                  <span className="second-txt2">{job.location}</span>
+                </div>
+                <div className="mt-12 flex items-center">
+                  <span className="student-img mr-8">
+                    <img src={TimeIcon} alt="student-icon" />
+                  </span>
+                  <span className="second-txt2">
+                    Assessment: {job.assessmentDuration} days
+                  </span>
+                </div>
+                <div className="mt-12 flex items-center">
+                  <span className="student-img mr-8">
+                    <img src={TimeIcon} alt="student-icon" />
+                  </span>
+                  <span className="second-txt2">Duration: {job.duration} months</span>
+                </div>
+              </div>
+            </div>
             <Grid item xs={12} md={8}>
               <div className="single-courses-description">
                 <div className="first-decs-sec mt-1  sm:mt-16">
-                  <div className="first-decs-sec-wrap">
-                    
-                  </div>
+                  <div className="first-decs-sec-wrap"></div>
                 </div>
                 <div className="second-decs-sec mt-2 sm:mt-16">
                   <div className="second-decs-sec-wrap">
@@ -137,43 +166,8 @@ const SingleJob = () => {
                       )}
                     </div>
 
-                    <div className="second-decs-sec-bottom">
-                      <div className="second-decs-sec-bottom-wrap flex ">
-                        <div className="mt-12 flex items-center">
-                          <span className="student-img mr-8">
-                            <img src={StudentIcon} alt="student-icon" />
-                          </span>
-                          <span className="second-txt2">
-                            {job.applicants.length}{" "}
-                            <span className="hidden sm:inline">Applicants</span>
-                          </span>
-                        </div>
-                        <div className="mt-12 flex items-center">
-                          <span className="student-img mr-8 fillStar">
-                            <LocationSearchingRounded fontSize="small"></LocationSearchingRounded>
-                          </span>
-                          <span className="second-txt2">{job.location}</span>
-                        </div>
-                        <div className="mt-12 flex items-center">
-                          <span className="student-img mr-8">
-                            <img src={TimeIcon} alt="student-icon" />
-                          </span>
-                          <span className="second-txt2">
-                            Assessment: {job.assessmentDuration}
-                          </span>
-                        </div>
-                        <div className="mt-12 flex items-center">
-                          <span className="student-img mr-8">
-                            <img src={TimeIcon} alt="student-icon" />
-                          </span>
-                          <span className="second-txt2">
-                            Duration: {job.duration}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    <div className="second-decs-sec-bottom"></div>
                   </div>
-                  
                 </div>
                 <div className="third-decs-sec mt-32">
                   <div className="third-decs-sec-wrap"></div>
@@ -294,13 +288,12 @@ const SingleJob = () => {
             </>
           ) : (
             <Button
-                variant="contained"
-                
-                color="primary"
-                onClick={() => navigate(`/signin/`)}
-              >
-                Sign in to apply
-              </Button>
+              variant="contained"
+              color="primary"
+              onClick={() => navigate(`/signin/`)}
+            >
+              Sign in to apply
+            </Button>
           )}
         </div>
       </section>

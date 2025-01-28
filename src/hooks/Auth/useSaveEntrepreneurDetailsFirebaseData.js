@@ -49,7 +49,7 @@ const useSaveEntrepreneurDetails = () => {
       // Save or overwrite the document in Firestore
       console.log("Saving entrepreneur details...");
       try {
-        await setDoc(userRef, normalizedData);
+        await setDoc(userRef, normalizedData, { merge: true });
         auth2.setRegistrationStatus("logged_in");
         
         console.log("Data successfully saved to Firestore.");
