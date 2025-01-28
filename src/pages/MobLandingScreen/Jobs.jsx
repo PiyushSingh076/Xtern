@@ -6,13 +6,13 @@ import Slider from "react-slick";
 import { db } from "../../firebaseConfig";
 import { Building } from "lucide-react";
 import Carousel from "react-material-ui-carousel";
+import { ArrowBack, ArrowForward } from "@mui/icons-material";
 
 const Jobs = () => {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState();
   const [loading, setLoading] = useState();
   const settings = {
-    dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 2,
@@ -22,29 +22,27 @@ const Jobs = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
-      const jobs = await getDocs(collection(db, "jobPosting"), { limit: 20 });
+      const jobs = await getDocs(collection(db, "jobPosting"), { limit: 10 });
       const jobData = jobs.docs.map((doc) => doc.data());
       console.log(jobData);
-      setJobs(jobs.docs.map((doc) => {
-        return {
-          ...doc.data(),
-          jobId: doc.id
-        }
-      }));
+      setJobs(
+        jobs.docs.map((doc) => {
+          return {
+            ...doc.data(),
+            jobId: doc.id,
+          };
+        })
+      );
       setLoading(false);
     };
     fetchJobs();
   }, []);
   return (
-    <div className="h-[50vh]  mt-2 items-start justify-start shrink-0 w-full flex flex-col ">
+    <div className="h-fit  mt-2 items-start justify-start shrink-0 w-full flex flex-col ">
       <div className="w-full h-fit flex">
-        <div className="h-fit w-1/2 px-12 flex items-center justify-start">
-          <div className="w-fit flex flex-col  size-full">
-            <h1>Opportunities</h1>
-            {/* <h5 className="font-normal">Jobs for you</h5> */}
-          </div>
-        </div>
-        <div className="ml-auto px-12 w-1/2 flex justify-end items-center shrink-0">
+        <div className="w-full gap-2 px-12  flex justify-between items-center shrink-0">
+          <h1>Opportunities</h1>
+          {/* <h5 className="font-normal" ></h5> */}
           <Button
             onClick={() => navigate("/jobs")}
             sx={{ borderRadius: "50px" }}
@@ -55,16 +53,27 @@ const Jobs = () => {
           </Button>
         </div>
       </div>
-      <div className=" w-full h-full px-12 py-6">
+      <div className=" w-full h-fit px-12 py-6">
         {loading ? (
           <></>
         ) : (
           <>
-            <Slider {...settings}>
+            <Slider
+              arrows
+              prevArrow={<ArrowBack sx={{ fill: "black" }}></ArrowBack>}
+              nextArrow={
+                <ArrowForward
+                  sx={{ fill: "black" }}
+                  color="black"
+                ></ArrowForward>
+              }
+              autoplay
+              {...settings}
+            >
               {jobs &&
                 jobs.map((job) => {
                   return (
-                    <div  className="h-[30vh] p-2">
+                    <div className="h-[40vh] p-2">
                       <div className="rounded-lg size-full overflow-hidden border border-black/20 flex flex-col">
                         <div className="relative h-1/2 w-full ">
                           <img
@@ -73,12 +82,23 @@ const Jobs = () => {
                             alt=""
                           />
                         </div>
-                        <div className="flex flex-col p-4 gap-1 h-full" >
+                        <div className="flex flex-col p-4 gap-1 h-full">
                           <h1 className="font-bold text-lg">{job.title}</h1>
-                          
-                          <h5 className="font-normal flex gap-1 items-center text-sm"> {job.companyName}</h5>
-                          <h5 className="font-normal text-sm">{job.location}</h5>
-                          <Button variant="contained" className="mt-auto" onClick={() => navigate(`/jobs/${job.jobId}`)} >View</Button>
+
+                          <h5 className="font-normal flex gap-1 items-center text-sm">
+                            {" "}
+                            {job.companyName}
+                          </h5>
+                          <h5 className="font-normal text-sm">
+                            {job.location}
+                          </h5>
+                          <Button
+                            variant="contained"
+                            className="mt-auto"
+                            onClick={() => navigate(`/jobs/${job.jobId}`)}
+                          >
+                            View
+                          </Button>
                         </div>
                       </div>
                     </div>
