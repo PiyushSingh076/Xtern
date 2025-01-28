@@ -64,68 +64,66 @@ const useGoogleCalendar = () => {
    * @param {Object} eventData - Data required to create and store the event
    */
   const createEvent = async (eventData) => {
-    console.log("Attempting to create event with Google Meet:", eventData);
     setLoading(true);
-
+  
     const event = {
-      title: eventData.title,
+      summary: eventData.title,
       description: eventData.description,
-      startDateTime: eventData.startDateTime,
-      endDateTime: eventData.endDateTime,
-      attendees: eventData.attendees,
-      hostUserId: eventData.hostUserId,
-      recipientUserId: eventData.recipientUserId,
-      callId: `call-${Date.now()}`,
-      callType: "video",
+      start: {
+        dateTime: eventData.startDateTime,
+        timeZone: "Asia/Kolkata",
+      },
+      end: {
+        dateTime: eventData.endDateTime,
+        timeZone: "Asia/Kolkata",
+      },
+      attendees: eventData.attendees
+        .filter((attendee) => attendee && attendee.email)
+        .map((attendee) => ({ email: attendee.email })),
+      conferenceData: {
+        createRequest: {
+          requestId: `call-${Date.now()}`,
+          conferenceSolutionKey: { type: "hangoutsMeet" },
+        },
+      },
     };
-
+  
     try {
-      // Send the event data to your backend API
-      const response = await fetch(
-        "http://localhost:5000/api/calendar/create-event",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(event),
-        }
-      );
+      const response = await gapi.client.calendar.events.insert({
+        calendarId: "primary",
+        resource: event,
+        conferenceDataVersion: 1,
+      });
+  
+      const createdEvent = response.result;
+      toast.success("Call scheduled successfully!");
+  
+      const scheduledCallsRef = collection(db, "scheduledCalls");
+      await addDoc(scheduledCallsRef, {
+        callId: `call-${Date.now()}`,
+        callType: "video",
+        createdAt: serverTimestamp(),
+        eventId: createdEvent.id,
+        eventLink: `https://calendar.google.com/calendar/event?eid=${createdEvent.id}`,
+        hostUserId: eventData.hostUserId,
+        hostUserRef: `/users/${eventData.hostUserId}`,
+        meetLink: createdEvent.hangoutLink,
+        recipientUserId: eventData.recipientUserId,
+        recipientUserRef: `/users/${eventData.recipientUserId}`,
+        scheduledDateTime: eventData.startDateTime,
+      });
 
-      const data = await response.json();
-      console.log("Event creation response:", data);
-
-      if (data.success) {
-        toast.success("Call scheduled successfully!");
-
-        // Save the event details to Firestore
-        const scheduledCallsRef = collection(db, "scheduledCalls");
-        await addDoc(scheduledCallsRef, {
-          callId: event.callId,
-          callType: event.callType,
-          createdAt: serverTimestamp(),
-          eventId: data.eventId,
-          eventLink: data.eventLink,
-          hostUserId: event.hostUserId,
-          hostUserRef: `/users/${event.hostUserId}`,
-          meetLink: data.meetLink,
-          recipientUserId: event.recipientUserId,
-          recipientUserRef: `/users/${event.recipientUserId}`,
-          scheduledDateTime: event.startDateTime,
-        });
-
-        console.log("Event saved to Firestore.");
-      } else {
-        toast.error("Error creating event.");
-        console.error("Error creating event:", data.error);
-      }
+      return { success: true, eventLink: createdEvent.htmlLink };
     } catch (error) {
       toast.error("Error creating event.");
-      console.error("Error creating event with backend:", error);
+      console.error("Error creating event with Google Calendar:", error);
+      return { success: false, error, eventLink: null };
     } finally {
       setLoading(false);
     }
   };
+  
+  
 
   useEffect(() => {
     initClient();

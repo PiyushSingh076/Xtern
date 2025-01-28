@@ -158,27 +158,24 @@ const SingleMentor = () => {
         endDateTime,
         attendees: [
           { email: currentUser?.email },
-          { email: profileData?.email }
+          { email: profileData?.email },
         ],
         callId: `meet-${Date.now()}`,
         hostUserId: currentUser?.uid,
         recipientUserId: profileData?.uid,
         callType: "video",
-        location: "Online"
+        location: "Online",
       };
 
       const response = await createEvent(eventData);
-      if (response.success) {
-        setCurrentMeetStep(1);
-        setMeetDate(dayjs());
-        setMeetTime(dayjs());
-        setMeetDescription("");
-        setMeetScheduled(false);
-        window.open(response.eventLink, "_blank");
-        toast.success("Meet scheduled and event opened.");
-      } else {
-        toast.error("Failed to schedule. Try again.");
-      }
+
+      setCurrentMeetStep(1);
+      setMeetDate(dayjs());
+      setMeetTime(dayjs());
+      setMeetDescription("");
+      setMeetScheduled(false);
+      window.open(response.eventLink, "_blank");
+      toast.success("Meet scheduled and event opened.");
     } catch (err) {
       console.error(err);
       toast.error("Error scheduling meet.");
@@ -271,8 +268,9 @@ const SingleMentor = () => {
       const eventData = {
         title: "XTERN Mentorship Call",
         description: `
-          Mentorship Call with ${profileData?.firstName} ${profileData?.lastName
-          }
+          Mentorship Call with ${profileData?.firstName} ${
+          profileData?.lastName
+        }
           Host: ${currentUser?.firstName} ${currentUser?.lastName}
           Date: ${interviewDate.format("D MMM YYYY")}
           Time: ${interviewTime.format("h:mm A")}
@@ -525,7 +523,6 @@ const SingleMentor = () => {
                   >
                     <MdCalendarToday /> Meet
                   </button>
-
                 </div>
               )}
               {profileData?.consultingPrice && (
@@ -533,7 +530,6 @@ const SingleMentor = () => {
                   ₹{profileData.consultingPrice}/minute
                 </span>
               )}
-
             </div>
             <div className="upcoming-meets-container">
               <Tooltip title="View Previous Calls" arrow>
@@ -572,15 +568,8 @@ const SingleMentor = () => {
                     <span className="service-name">{item.serviceName}</span>
 
                     {/* **Interactive Description with Tooltip** */}
-                    <Tooltip
-                      title={
-                        item.serviceName
-                      }
-                      arrow
-                      placement="top"
-                    >
+                    <Tooltip title={item.serviceName} arrow placement="top">
                       <div>
-
                         <div
                           dangerouslySetInnerHTML={{
                             __html: item?.serviceDescription,
@@ -593,10 +582,11 @@ const SingleMentor = () => {
                     {profileData?.type?.toLowerCase() === "intern" ? (
                       /* **1. Compact Badge for Interns** */
                       <Chip
-                        label={`Avail: ${item.availability}, ${item.hoursPerDay
-                          }h/day | ${formatDateGeneric(
-                            item.startDate
-                          )}, ${formatDateGeneric(item.endDate)}`}
+                        label={`Avail: ${item.availability}, ${
+                          item.hoursPerDay
+                        }h/day | ${formatDateGeneric(
+                          item.startDate
+                        )}, ${formatDateGeneric(item.endDate)}`}
                         size="small"
                         color="primary"
                         sx={{
@@ -1175,15 +1165,14 @@ const SingleMentor = () => {
               setMeetDescription("");
             }}
             style={{ color: "white", textDecoration: "none" }}
-          >
-          </Button>
+          ></Button>
         </Modal.Header>
         <Modal.Body className="bg-white">
           <Container
             fluid
             style={{
               padding: 10, // Removes internal padding
-              margin: 0,  // Removes external margin
+              margin: 0, // Removes external margin
             }}
             className="border" // Ensure border class is applied if needed
           >
@@ -1250,9 +1239,15 @@ const SingleMentor = () => {
                     <h5>Confirm Details</h5>
                     <Container>
                       <Row className="mb-3">
-                        <Col xs={12} md={6} className="d-flex align-items-center">
+                        <Col
+                          xs={12}
+                          md={6}
+                          className="d-flex align-items-center"
+                        >
                           <Image
-                            src={currentUser?.photo_url || "/default-profile.png"}
+                            src={
+                              currentUser?.photo_url || "/default-profile.png"
+                            }
                             roundedCircle
                             alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
                             className="me-3 img-fluid d-block"
@@ -1268,9 +1263,15 @@ const SingleMentor = () => {
                             </a>
                           </div>
                         </Col>
-                        <Col xs={12} md={6} className="d-flex align-items-center">
+                        <Col
+                          xs={12}
+                          md={6}
+                          className="d-flex align-items-center"
+                        >
                           <Image
-                            src={profileData?.photo_url || "/default-profile.png"}
+                            src={
+                              profileData?.photo_url || "/default-profile.png"
+                            }
                             roundedCircle
                             width={50}
                             height={50}
@@ -1291,13 +1292,15 @@ const SingleMentor = () => {
                       <Row>
                         <Col>
                           <p>
-                            <strong>Date:</strong> {meetDate.format("D MMM YYYY")}
+                            <strong>Date:</strong>{" "}
+                            {meetDate.format("D MMM YYYY")}
                           </p>
                           <p>
                             <strong>Time:</strong> {meetTime.format("h:mm A")}
                           </p>
                           <p>
-                            <strong>Description:</strong> {meetDescription || "N/A"}
+                            <strong>Description:</strong>{" "}
+                            {meetDescription || "N/A"}
                           </p>
                         </Col>
                       </Row>
@@ -1311,9 +1314,9 @@ const SingleMentor = () => {
         <Modal.Footer
           className="bg-white"
           style={{
-            padding: '5px',
-            margin: '0',
-            borderTop: 'none'
+            padding: "5px",
+            margin: "0",
+            borderTop: "none",
           }}
         >
           <Container fluid>
@@ -1375,12 +1378,8 @@ const SingleMentor = () => {
             </Row>
           </Container>
         </Modal.Footer>
-
       </Modal>
-
     </div>
-
-
   );
 };
 
