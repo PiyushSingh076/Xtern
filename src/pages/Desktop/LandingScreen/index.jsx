@@ -16,6 +16,7 @@ import useUserProfileData from "../../../hooks/Profile/useUserProfileData";
 import Loading from "../../../components/Loading";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 import { useNavigate } from "react-router-dom";
+import Jobs from "./Jobs";
 
 export default function Homepage() {
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ export default function Homepage() {
           {!userData && (
             <div>
               <Categories />
+              <Jobs />
               <Xperts />
               <Xterns />
               <TrustedComoany />

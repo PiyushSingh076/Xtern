@@ -319,18 +319,18 @@ function App() {
           <Route
             path={ROUTES.JOBS}
             element={
-              <ProtectedRoute>
+              
                 <Jobs />
-              </ProtectedRoute>
+              
             }
           />
 
           <Route
             path={ROUTES.JOBS + "/:jobId"}
             element={
-              <ProtectedRoute>
+              
                 <SingleJob />
-              </ProtectedRoute>
+              
             }
           />
           <Route
