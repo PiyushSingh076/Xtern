@@ -187,7 +187,7 @@ const ProjectDetails = () => {
       }
 
       let userName = userDoc.data().firstName;
-      
+
 
       const reviewData = {
         name: userName,
@@ -237,7 +237,7 @@ const ProjectDetails = () => {
         ...doc.data(),
       }));
 
-      
+
 
       console.log("Reviews", userReviews);
 
@@ -313,9 +313,8 @@ const ProjectDetails = () => {
         <div className="des-first-desc-img-sec !m-0 !px-4 !flex !flex-col md:!flex-row">
           <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
-              <div className="rounded-md w-[400px] h-fit   overflow-hidden relative">
-                {Array.isArray(media) &&
-                  media.length > 0 ? (
+              <div className="rounded-md w-[400px] h-fit overflow-hidden relative">
+                {Array.isArray(media) && media.length > 0 ? (
                   <Carousel
                     onChange={(e) => setCurrentMedia(e)}
                     autoPlay={false}
@@ -329,14 +328,12 @@ const ProjectDetails = () => {
                         className="w-full rounded-md aspect-[16/9] flex items-center justify-center relative overflow-hidden"
                       >
                         <div
-                          onClick={() => {
-                            setModalOpen(true);
-                          }}
+                          onClick={() => setModalOpen(true)}
                           className="size-full group z-50 bg-black/0 hover:bg-black/20 transition-all text-xl font-medium text-transparent hover:text-white left-0 top-0 flex items-center justify-center cursor-pointer"
                         >
                           <div className="">View</div>
                         </div>
-                        {mediaItem.type === "video" && (
+                        {mediaItem.type === "video" ? (
                           <video
                             muted
                             autoPlay
@@ -345,8 +342,7 @@ const ProjectDetails = () => {
                             className="absolute size-full object-cover left-0 top-0 !m-0"
                             alt={`Slide ${index + 1}`}
                           />
-                        )}
-                        {mediaItem.type === "image" && (
+                        ) : (
                           <img
                             src={mediaItem.src}
                             className="absolute size-full object-cover left-0 top-0"
@@ -363,6 +359,42 @@ const ProjectDetails = () => {
                 )}
               </div>
             </div>
+
+            {/* Service Provider Card Below Media */}
+            {serviceProvider && (
+              <div className="mt-4 p-4 border rounded-lg bg-gray-50 shadow-md">
+                <Typography variant="h6" className="font-medium text-center mb-4">
+                  Service Provider
+                </Typography>
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+                    {serviceProvider.photo_url ? (
+                      <img
+                        src={serviceProvider.photo_url || "/placeholder.svg"}
+                        alt={serviceProvider.display_name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <PersonIcon className="text-gray-400" fontSize="large" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <Typography variant="subtitle1" className="font-medium">
+                      {serviceProvider.display_name}
+                    </Typography>
+                    <div className="flex items-center gap-1 text-gray-600 mt-1">
+                      <LocationOnIcon fontSize="small" />
+                      <Typography variant="body2">
+                        {serviceProvider.state || "Location not specified"}, {serviceProvider.city}
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="single-courses-top">
               <div className="course-back-icon">
                 <svg
@@ -394,45 +426,44 @@ const ProjectDetails = () => {
             </div>
           </div>
 
+
+
+
           <div className="desc-container !min-w-0 !w-full !md:w-1/2">
             <Grid container spacing={3}>
-              {/* Left side - Service details */}
-              <Grid item xs={12} md={8}>
+              <Grid item xs={12}>
                 <div className="relative mb-4">
                   {pageLoading ? (
                     <Skeleton height={40} width={200} variant="text" />
                   ) : (
                     <Box>
-                      <div className="relative mb-2">
-                        <Typography
-                          variant="h4"
-                          component="h1"
-                          className="pr-10"
-                          sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 3 }}
-                        >
-                          {item.serviceName}
-                          <span style={{ color: "#0a65fc" , fontSize: "1.7rem",  fontWeight: "600" }}>
-                            (₹{item.servicePrice})
-                          </span>
-                          {userData && item && userData.uid === item.userRef?.id && (
-                            <IconButton
-                              onClick={handleEditClick}
-                              className="absolute -top-2 right-0 text-blue-500 hover:text-blue-700"
-                              size="small"
-                            >
-                              <FiEdit color="blue" size={20} />
-                            </IconButton>
-                          )}
-                        </Typography>
+                      <div className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap">
+                        {/* Service Name and Edit Button */}
+                        <div className="relative mb-2 flex-grow">
+                          <Typography variant="h4" component="h1" className="pr-10 font-bold">
+                            {item.serviceName}
+                            {userData && item && userData.uid === item.userRef?.id && (
+                              <IconButton
+                                onClick={handleEditClick}
+                                className="absolute -top-2 right-0 text-blue-500 hover:text-blue-700"
+                                size="small"
+                              >
+                                <FiEdit color="blue" size={20} />
+                              </IconButton>
+                            )}
+                          </Typography>
+                        </div>
+
+                        {/* Price - Now aligned to the right */}
+                        <div className="w-full md:w-auto">
+                          <Typography variant="h5" className="text-primary font-bold">
+                            ₹{item.servicePrice}
+                          </Typography>
+                        </div>
                       </div>
 
-
-
-                      {/* <Typography variant="h5" className="text-primary font-bold mt-2">
-                        ₹{item.servicePrice}
-                      </Typography> */}
-
-                      <div className="flex items-center gap-4 mt-4">
+                      {/* Stats row - Full width on mobile, aligned below title and price */}
+                      <div className="flex items-center gap-4 mt-4 flex-wrap">
                         <div className="flex items-center gap-2">
                           <GroupIcon sx={{ color: "#0a65fc" }} />
                           <Typography variant="body2">0 Application</Typography>
@@ -448,47 +479,9 @@ const ProjectDetails = () => {
                   )}
                 </div>
               </Grid>
-
-              {/* Right side - Service Provider Card */}
-              <Grid item xs={12} md={4}>
-                <Card className="bg-gray-50">
-                  <CardContent>
-                    {/* <Typography variant="h6" className="font-medium text-center mb-4">
-                      Service Provider
-                    </Typography> */}
-                    {serviceProvider && (
-                      <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
-                          {serviceProvider.photo_url ? (
-                            <img
-                              src={serviceProvider.photo_url || "/placeholder.svg"}
-                              alt={serviceProvider.display_name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                              <PersonIcon className="text-gray-400" fontSize="large" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex flex-col">
-                          <Typography variant="subtitle1" className="font-medium">
-                            {serviceProvider.display_name}
-                          </Typography>
-                          <div className="flex items-center gap-1 text-gray-600 mt-1">
-                            <LocationOnIcon fontSize="small" />
-                            <Typography variant="body2">
-                              {serviceProvider.state || "Location not specified"},
-                              {serviceProvider.city}
-                            </Typography>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </Grid>
             </Grid>
+
+
 
             <div className="fifth-decs-sec mt-32">
               <div className="fifth-decs-sec-wrap">
