@@ -149,22 +149,20 @@ const ProjectDetails = () => {
         userPhotoURL = userDoc.data().photo_url;
       }
 
-      let userName = "";
-      if (userDoc.exists()) {
-        userName = userDoc.data().display_name || userDoc.data().email;
-      } else {
-        userName = currentUser.display_name || currentUser.email;
-      }
+      let userName = userDoc.data().firstName;
+      
 
       const reviewData = {
         name: userName,
         review: reviewText,
         rating,
-        userId: currentUser.uid,
+        userId: userData.uid,
         serviceId: projectId,
         photoURL: userPhotoURL,
         timestamp: new Date(),
       };
+
+      console.log("Submitting review:", reviewData);
 
       const reviewId = await saveReview(reviewData);
 
@@ -202,14 +200,18 @@ const ProjectDetails = () => {
         ...doc.data(),
       }));
 
+      
+
       console.log("Reviews", userReviews);
 
-      const counter = 0;
+      let counter = 0;
       userReviews.forEach((review) => {
+        console.log(review.userId, userData.uid);
         if (review.userId !== userData.uid) {
           counter++;
         }
       });
+      console.log("Counter", counter, userReviews.length);
       if (counter == userReviews.length) {
         setCanReview(true);
       }
