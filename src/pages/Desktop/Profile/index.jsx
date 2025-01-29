@@ -268,9 +268,8 @@ const SingleMentor = () => {
       const eventData = {
         title: "XTERN Mentorship Call",
         description: `
-          Mentorship Call with ${profileData?.firstName} ${
-          profileData?.lastName
-        }
+          Mentorship Call with ${profileData?.firstName} ${profileData?.lastName
+          }
           Host: ${currentUser?.firstName} ${currentUser?.lastName}
           Date: ${interviewDate.format("D MMM YYYY")}
           Time: ${interviewTime.format("h:mm A")}
@@ -338,6 +337,12 @@ const SingleMentor = () => {
       .writeText(url)
       .then(() => toast.success("Profile link copied!"))
       .catch(() => toast.error("Failed to copy link."));
+  };
+
+  // Config object to control clickability based on user type
+  const SERVICE_CLICK_RESTRICTIONS = {
+    intern: true, // Interns cannot click
+    // Add more user types here as needed
   };
 
   return (
@@ -553,67 +558,70 @@ const SingleMentor = () => {
             <h4>Service</h4>
             {profileData?.serviceDetails?.length ? (
               <div className="service-list">
-                {profileData.serviceDetails.map((item, index) => (
-                  <div
-                    onClick={() => handleService(item)}
-                    className="service-item"
-                    key={index}
-                    style={{
-                      cursor: "pointer",
-                      padding: "10px",
-                      border: "1px solid #ddd",
-                      transition: "box-shadow 0.3s, background-color 0.3s",
-                    }}
-                  >
-                    <span className="service-name">{item.serviceName}</span>
+                {profileData.serviceDetails.map((item, index) => {
+                  const isRestricted = SERVICE_CLICK_RESTRICTIONS[profileData?.type?.toLowerCase()];
+                
+                  return (
+                <div
+                  onClick={() => !isRestricted && handleService(item)} // Prevent click if restricted
+                  className="service-item"
+                  key={index}
+                  style={{
+                    cursor: isRestricted ? "not-allowed" : "pointer",
+                    padding: "10px",
+                    border: "1px solid #ddd",
+                    transition: "box-shadow 0.3s, background-color 0.3s",
+                  }}
+                >
+                  <span className="service-name">{item.serviceName}</span>
 
-                    {/* **Interactive Description with Tooltip** */}
-                    <Tooltip title={item.serviceName} arrow placement="top">
-                      <div>
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: item?.serviceDescription,
-                          }}
-                          className="pointer-events-none saturate-0 no-underline max-h-[70px] overflow-hidden"
-                        ></div>
-                      </div>
-                    </Tooltip>
+                  {/* **Interactive Description with Tooltip** */}
+                  <Tooltip title={item.serviceName} arrow placement="top">
+                    <div>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: item?.serviceDescription,
+                        }}
+                        className="pointer-events-none saturate-0 no-underline max-h-[70px] overflow-hidden"
+                      ></div>
+                    </div>
+                  </Tooltip>
 
-                    {profileData?.type?.toLowerCase() === "intern" ? (
-                      /* **1. Compact Badge for Interns** */
-                      <Chip
-                        label={`Avail: ${item.availability}, ${
-                          item.hoursPerDay
+                  {profileData?.type?.toLowerCase() === "intern" ? (
+                    /* **1. Compact Badge for Interns** */
+                    <Chip
+                      label={`Avail: ${item.availability}, ${item.hoursPerDay
                         }h/day | ${formatDateGeneric(
                           item.startDate
                         )}, ${formatDateGeneric(item.endDate)}`}
-                        size="small"
-                        color="primary"
-                        sx={{
-                          marginTop: 1,
-                          backgroundColor: "#f5f5f5", // Lighter background
-                          border: "1px solid #424242", // Dark border
-                          color: "#424242", // Dark text for contrast
-                        }}
-                      />
-                    ) : (
-                      /* **2. Service Duration and Price for Non-Interns** */
-                      <div className="price-duration-container !mt-auto">
-                        {item.serviceDuration && (
-                          <span className="service-duration">
-                            <FaClock /> {item.serviceDuration}{" "}
-                            {item.serviceDurationType}
-                          </span>
-                        )}
-                        {item.servicePrice && (
-                          <span className="service-price">
-                            ₹{item.servicePrice}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      size="small"
+                      color="primary"
+                      sx={{
+                        marginTop: 1,
+                        backgroundColor: "#f5f5f5", // Lighter background
+                        border: "1px solid #424242", // Dark border
+                        color: "#424242", // Dark text for contrast
+                      }}
+                    />
+                  ) : (
+                    /* **2. Service Duration and Price for Non-Interns** */
+                    <div className="price-duration-container !mt-auto">
+                      {item.serviceDuration && (
+                        <span className="service-duration">
+                          <FaClock /> {item.serviceDuration}{" "}
+                          {item.serviceDurationType}
+                        </span>
+                      )}
+                      {item.servicePrice && (
+                        <span className="service-price">
+                          ₹{item.servicePrice}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                );
+              })}
               </div>
             ) : (
               <div style={{ textAlign: "center", marginTop: "20px" }}>
