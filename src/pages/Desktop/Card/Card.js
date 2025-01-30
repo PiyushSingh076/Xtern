@@ -1,12 +1,86 @@
 import React from "react";
 import "./Card.css";
 import { useNavigate } from "react-router-dom";
-import { Chip, Stack, Tooltip } from "@mui/material";
+import { Chip, Stack, Tooltip, Skeleton  } from "@mui/material";
 
 import CallIcon from "@mui/icons-material/Call";
 import ChatIcon from "@mui/icons-material/Chat";
 import InfoIcon from "@mui/icons-material/Info";
 import WorkIcon from "@mui/icons-material/Work";
+
+// ShimmerCard component
+export const ShimmerCard = () => (
+  <div className="card">
+    {/* Profile Image Shimmer */}
+    <div
+      style={{
+        width: "75px",
+        height: "75px",
+        margin: "0 auto",
+      }}
+    >
+      <Skeleton variant="circular" width={75} height={75} animation="wave" />
+    </div>
+
+    {/* Name Shimmer */}
+    <Skeleton
+      variant="text"
+      width={110}
+      height={20}
+      animation="wave"
+      style={{ margin: "8px auto" }}
+    />
+
+    {/* Experience Shimmer */}
+    <Skeleton
+      variant="text"
+      width={90}
+      height={18}
+      animation="wave"
+      style={{ margin: "8px auto" }}
+    />
+
+    {/* Price Shimmer */}
+    <Skeleton
+      variant="text"
+      width={70}
+      height={18}
+      animation="wave"
+      style={{ margin: "8px auto" }}
+    />
+
+    {/* Skills Shimmer */}
+    <div
+      style={{
+        marginTop: "8px",
+        display: "flex",
+        justifyContent: "center",
+        gap: "6px",
+      }}
+    >
+      <Skeleton variant="rounded" width={55} height={22} animation="wave" />
+      <Skeleton variant="rounded" width={55} height={22} animation="wave" />
+      <Skeleton variant="rounded" width={55} height={22} animation="wave" />
+    </div>
+
+    {/* Location Shimmer */}
+    <Skeleton
+      variant="text"
+      width={130}
+      height={18}
+      animation="wave"
+      style={{ margin: "8px auto" }}
+    />
+
+    {/* Footer Buttons Shimmer */}
+    <div className="card-footer" style={{ marginTop: "12px" }}>
+      <Skeleton variant="rounded" width={75} height={34} animation="wave" />
+      <Skeleton variant="rounded" width={75} height={34} animation="wave" />
+      <Skeleton variant="rounded" width={75} height={34} animation="wave" />
+    </div>
+  </div>
+);
+
 
 const consultingChargesConfig = {
   astrologist: true,

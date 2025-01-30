@@ -104,6 +104,8 @@ const WalletPage = () => {
       }
     };
 
+    
+
     return (
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
         <DialogTitle>Add Funds</DialogTitle>
@@ -396,6 +398,8 @@ const WalletPage = () => {
       </Box>
     );
   }
+
+  
 
   return (
     <Box
