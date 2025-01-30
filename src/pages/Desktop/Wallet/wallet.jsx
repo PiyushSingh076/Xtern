@@ -28,7 +28,9 @@ import useWallet from "../../../hooks/Wallet/useWallet";
 import { useTransactions } from "../../../hooks/Wallet/useTransactions";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
+import WalletPageSkeleton from './WalletPageSkeleton';
 import Layout from "../../../components/SEO/Layout";
+
 
 const WalletPage = () => {
   const { userData } = useFetchUserData();
@@ -388,19 +390,7 @@ const WalletPage = () => {
   };
 
   if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          bgcolor: "#f5f5f5",
-        }}
-      >
-        <CircularProgress size={50} />
-      </Box>
-    );
+    return <WalletPageSkeleton />;
   }
 
   
