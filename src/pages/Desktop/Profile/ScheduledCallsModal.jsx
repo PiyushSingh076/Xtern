@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import { styled } from "@mui/material/styles";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
+import { useNavigate } from "react-router-dom";
 
 // Styled Components
 const ModalContainer = styled(Box)(({ theme }) => ({
@@ -120,6 +121,7 @@ const ScheduledCallsModal = ({
       setDeletingEventIds((prev) => prev.filter((id) => id !== call.eventId));
     }
   };
+  const navigate = useNavigate();
 
   return (
     <Modal
@@ -176,15 +178,20 @@ const ScheduledCallsModal = ({
                       }}
                     >
                       {/* Header: Call ID and Delete Button */}
-                      
 
                       {/* Recipient Details */}
                       <Box
+                      className="!cursor-pointer hover:!underline"
                         sx={{
                           display: "flex",
                           alignItems: "center",
                           width: "100%",
                           marginBottom: 1,
+                          pointer: "cursor",
+                        }}
+                        onClick={() => {
+                          navigate("/profile/" + call?.recipientUserId);
+                          onClose()
                         }}
                       >
                         <ListItemAvatar>
@@ -242,7 +249,9 @@ const ScheduledCallsModal = ({
                             )}
                           </IconButton>
                         </Tooltip>
-                        <div className="ml-auto text-base font-medium text-black/50" >Call Id: {call.callId.substring(5)}</div>
+                        <div className="ml-auto text-base font-medium text-black/50">
+                          Call Id: {call.callId.substring(5)}
+                        </div>
                       </div>
 
                       {/* Open Event Button */}
