@@ -346,10 +346,10 @@ const SingleMentor = () => {
     <>
     <Layout
       title={profileData?.firstName ? profileData.firstName : "User Profile"} 
-      keywords={"user profile, account, settings, personal details, dashboard"} 
       description={profileData?.firstName ? 
         `Profile page of ${profileData.firstName}, view and manage account details.` : 
         "User profile page to view and manage account details."} 
+      keywords={"user profile, account, settings, personal details, dashboard"}
     />
     <div className="desktop-profile-container">
       <section id="profile-details-section">

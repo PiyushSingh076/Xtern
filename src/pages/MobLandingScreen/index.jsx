@@ -12,6 +12,7 @@ import Dashboard from "./Dashboard";
 import { useNavigate } from "react-router-dom";
 import Footer from "../Desktop/Footer/Footer";
 import Jobs from "./Jobs";
+import Layout from "../../components/SEO/Layout";
 
 export default function MobHomeScreen() {
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ export default function MobHomeScreen() {
   // }
 
   return (
+    <>
+    <Layout title={"Xtern-Hire or become an expert"}
+        description={"Connect with experts in every field to navigate your path to a dream career"}
+        keywords={"Xtern,career,guide"}/>
     <div className="MobHomeScreen-container">
       {userData && <Dashboard />}
       {!userData && <LandingPage />}
@@ -33,5 +38,6 @@ export default function MobHomeScreen() {
       {!userData && <ImageBtn />}
       {!userData && <Footer />}
     </div>
+    </>
   );
 }
