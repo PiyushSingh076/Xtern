@@ -18,6 +18,11 @@ import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
 import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../../hooks/Profile/useScheduledCallsForUser";
 import toast from "react-hot-toast";
+import ScheduledCallsModal from "./ScheduledCallsModal";
+import { Box, Tooltip, IconButton, Chip } from "@mui/material";
+import ShareIcon from "@mui/icons-material/Share";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
+import Layout from "../../../components/SEO/Layout";
 import {
   Modal,
   Button,
@@ -28,10 +33,7 @@ import {
   Image,
   ProgressBar,
 } from "react-bootstrap";
-import ScheduledCallsModal from "./ScheduledCallsModal";
-import { Box, Tooltip, IconButton, Chip } from "@mui/material";
-import ShareIcon from "@mui/icons-material/Share";
-import useAuthState from "../../../hooks/Authentication/useAuthState";
+
 
 /**
  * Utility to safely format Firestore Timestamp or "Present"/string.
@@ -341,6 +343,14 @@ const SingleMentor = () => {
   };
 
   return (
+    <>
+    <Layout
+      title={profileData?.firstName ? profileData.firstName : "User Profile"} 
+      keywords={"user profile, account, settings, personal details, dashboard"} 
+      description={profileData?.firstName ? 
+        `Profile page of ${profileData.firstName}, view and manage account details.` : 
+        "User profile page to view and manage account details."} 
+    />
     <div className="desktop-profile-container">
       <section id="profile-details-section">
         <div className="profile-details">
@@ -1380,6 +1390,7 @@ const SingleMentor = () => {
         </Modal.Footer>
       </Modal>
     </div>
+    </>
   );
 };
 

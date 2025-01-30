@@ -81,11 +81,13 @@ const ScheduledCallsModal = ({
 }) => {
   const [callsWithRecipients, setCallsWithRecipients] = useState([]);
   const [deletingEventIds, setDeletingEventIds] = useState([]);
+  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
     const fetchRecipients = async () => {
       if (!calls || calls.length === 0) {
         setCallsWithRecipients([]);
+        setIsFetching(false);
         return;
       }
 
@@ -102,10 +104,16 @@ const ScheduledCallsModal = ({
         }
       }
       setCallsWithRecipients(updatedCalls);
+      setIsFetching(false); 
     };
 
+    if (open) {
+      setIsFetching(true);
+      fetchRecipients();
+    }
+
     fetchRecipients();
-  }, [calls]);
+  }, [calls,open]);
 
   const handleDelete = async (call) => {
     try {
@@ -117,6 +125,8 @@ const ScheduledCallsModal = ({
       setDeletingEventIds((prev) => prev.filter((id) => id !== call.eventId));
     }
   };
+
+  
 
   return (
     <Modal

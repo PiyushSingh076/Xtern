@@ -745,6 +745,7 @@ import useFetchUserData from "../../hooks/Auth/useFetchUserData";
 import useGoogleCalendar from "../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../hooks/Profile/useScheduledCallsForUser";
 import ScheduledCallsModal from "../Desktop/Profile/ScheduledCallsModal";
+import Layout from "../../components/SEO/Layout";
 
 const MobileSingleMentor = () => {
   const navigate = useNavigate();
@@ -945,6 +946,9 @@ const MobileSingleMentor = () => {
 
   return (
     <>
+      <Layout description="this is the user's page" title={profileData.firstName==null?"Viewing profile":profileData.firstName} />
+
+
       {/* Main Content Section */}
       <section id="single-mentor-sec" style={styles.container}>
         <div className="single-mentor-sec-wrap">
