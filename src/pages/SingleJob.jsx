@@ -75,6 +75,7 @@ const SingleJob = () => {
 
   if (loading) {
     return (
+      
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
         <Skeleton variant="rectangular" width="100%" height={200} />
         <Skeleton variant="text" sx={{ mt: 2 }} />

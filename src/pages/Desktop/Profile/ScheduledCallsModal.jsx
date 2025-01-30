@@ -19,7 +19,8 @@ import {
 import { MdClose, MdDelete } from "react-icons/md";
 import dayjs from "dayjs";
 import { styled } from "@mui/material/styles";
-import { getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 // Styled Components
 const ModalContainer = styled(Box)(({ theme }) => ({
@@ -92,7 +93,7 @@ const ScheduledCallsModal = ({
       const updatedCalls = [];
       for (const call of calls) {
         if (call.recipientUserRef) {
-          const recipientSnap = await getDoc(call.recipientUserRef);
+          const recipientSnap = await getDoc(doc(db, "users", call.recipientUserId));
           const recipientData = recipientSnap.exists()
             ? recipientSnap.data()
             : null;
