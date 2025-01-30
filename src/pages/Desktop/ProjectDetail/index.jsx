@@ -302,26 +302,32 @@ const ProjectDetails = () => {
 
 
   return (
-    <div className="des-project-detail-container">
+    <div className="des-project-detail-container max-h-screen overflow-y-auto">
       <ViewModal
         open={modalOpen}
         media={media}
         onClose={() => setModalOpen(false)}
         current={currentMedia}
-      ></ViewModal>
+      />
+      
       <section id="single-description-screen1">
-        <div className="des-first-desc-img-sec !m-0 !px-4 !flex !flex-col md:!flex-row">
-          <div className="hero-img-desc">
+        <div className="des-first-desc-img-sec !m-0 !px-4 !flex !flex-col md:!flex-row gap-6">
+          
+          {/* Left Column - Media and Service Provider */}
+          <div className="hero-img-desc w-full md:w-1/2">
             <div className="d-flex justify-content-center">
-              <div className="rounded-md w-[400px] h-fit overflow-hidden relative">
-                {Array.isArray(media) && media.length > 0 ? (
-                  <Carousel
-                    onChange={(e) => setCurrentMedia(e)}
-                    autoPlay={false}
-                    navButtonsAlwaysVisible
-                    animation="slide"
-                    className="w-full md:w-[400px] h-fit rounded-md"
-                  >
+              <div className="rounded-md w-full md:w-[400px] h-fit overflow-hidden relative">
+                {pageLoading ? (
+                  <Skeleton variant="rectangular" width="100%" height={225} className="rounded-md" />
+                ) : (
+                  Array.isArray(media) && media.length > 0 ? (
+                    <Carousel
+                      onChange={(e) => setCurrentMedia(e)}
+                      autoPlay={false}
+                      navButtonsAlwaysVisible
+                      animation="slide"
+                      className="w-full md:w-[400px] h-fit rounded-md"
+                    >
                     {media.map((mediaItem, index) => (
                       <div
                         key={`image-slide-${index}`}
@@ -356,12 +362,24 @@ const ProjectDetails = () => {
                   <div className="flex items-center justify-center h-48">
                     No Video/Images Available
                   </div>
+                )
                 )}
               </div>
             </div>
 
             {/* Service Provider Card Below Media */}
-            {serviceProvider && (
+            {pageLoading ? (
+              <div className="mt-4 p-4 border rounded-lg bg-gray-50 shadow-md">
+                <Skeleton variant="text" width={150} height={32} className="mx-auto mb-4" />
+                <div className="flex items-start gap-4">
+                  <Skeleton variant="circular" width={64} height={64} />
+                  <div className="flex flex-col flex-grow">
+                    <Skeleton variant="text" width={150} height={24} />
+                    <Skeleton variant="text" width={200} height={20} />
+                  </div>
+                </div>
+              </div>
+            ) : serviceProvider && (
               <div className="mt-4 p-4 border rounded-lg bg-gray-50 shadow-md">
                 <Typography variant="h6" className="font-medium text-center mb-4">
                   Service Provider
@@ -429,12 +447,26 @@ const ProjectDetails = () => {
 
 
 
-          <div className="desc-container !min-w-0 !w-full !md:w-1/2">
+           {/* Right Column - Description */}
+           <div className="desc-container !min-w-0 !w-full md:w-1/2">
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <div className="relative mb-4">
                   {pageLoading ? (
-                    <Skeleton height={40} width={200} variant="text" />
+                    <Box>
+                      <div className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap">
+                        <div className="flex-grow">
+                          <Skeleton variant="text" width={300} height={48} />
+                        </div>
+                        <div className="w-full md:w-auto">
+                          <Skeleton variant="text" width={100} height={40} />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 mt-4">
+                        <Skeleton variant="text" width={120} height={24} />
+                        <Skeleton variant="text" width={120} height={24} />
+                      </div>
+                    </Box>
                   ) : (
                     <Box>
                       <div className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap">
@@ -483,7 +515,14 @@ const ProjectDetails = () => {
 
 
 
-            <div className="fifth-decs-sec mt-32">
+             {/* Description Tabs */}
+            {pageLoading ? (
+              <div className="mt-8">
+                <Skeleton variant="text" width={200} height={32} />
+                <Skeleton variant="rectangular" height={200} className="mt-4" />
+              </div>
+            ) : (
+              <div className="fifth-decs-sec mt-8">
               <div className="fifth-decs-sec-wrap">
                 <ul className="nav nav-pills single-courses-tab">
                   <li className="nav-item">
@@ -654,6 +693,7 @@ const ProjectDetails = () => {
                 </div>
               </div>
             </div>
+            )}
           </div>
 
         </div>
