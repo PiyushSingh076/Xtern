@@ -18,6 +18,7 @@ import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
 import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../../hooks/Profile/useScheduledCallsForUser";
 import toast from "react-hot-toast";
+import { Button as ButtonM } from "@mui/material";
 import {
   Modal,
   Button,
@@ -96,6 +97,8 @@ const SingleMentor = () => {
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(uid);
+
+  
 
   useEffect(() => {
     if (profileData) {
@@ -190,7 +193,7 @@ const SingleMentor = () => {
   } = useFetchUsersByType("Developer");
 
   // Current user
-  const { userData: currentUser } = useFetchUserData();
+  const { userData: currentUser, loading: currentUserLoading } = useFetchUserData();
 
   // Google Calendar
   const {
@@ -206,7 +209,7 @@ const SingleMentor = () => {
     calls,
     loading: callsLoading,
     error: callsError,
-  } = useScheduledCallsForUser(currentUser?.uid);
+  } = useScheduledCallsForUser(uid);
 
   // If the user is viewing their own profile, let them edit
   const [editable, setEditable] = useState(false);
@@ -268,8 +271,9 @@ const SingleMentor = () => {
       const eventData = {
         title: "XTERN Mentorship Call",
         description: `
-          Mentorship Call with ${profileData?.firstName} ${profileData?.lastName
-          }
+          Mentorship Call with ${profileData?.firstName} ${
+          profileData?.lastName
+        }
           Host: ${currentUser?.firstName} ${currentUser?.lastName}
           Date: ${interviewDate.format("D MMM YYYY")}
           Time: ${interviewTime.format("h:mm A")}
@@ -346,7 +350,7 @@ const SingleMentor = () => {
   };
 
   return (
-    <div className="desktop-profile-container">
+    <div key={uid} className="desktop-profile-container">
       <section id="profile-details-section">
         <div className="profile-details">
           <div className="profile-details-wrap">
@@ -491,6 +495,54 @@ const SingleMentor = () => {
                 )}
               </div>
             )}
+            { profileLoading === false && currentUserLoading == false &&  currentUser?.uid === uid  &&
+              <>{callsLoading ? (
+                <Skeleton variant="rectangular" sx={{ width: "100%", height: "350px", marginTop: "20px" }} ></Skeleton>
+              ) : (
+                <>
+                  {" "}
+                  <div className="flex flex-col gap-2 rounded-[10px] border border-[#e5e5e5] mt-[20px] p-[10px]">
+                    <div className="font-normal text-2xl  flex items-start justify-center ">
+                      <div >Upcoming meets</div>
+                    </div>
+  
+                    {calls.slice(0, 3).map((call) => {
+                      const dateTime = dayjs(call.scheduledDateTime);
+                      return (
+                        <div onClick={() => window.open(call.eventLink, "_blank")}
+                          className="flex cursor-pointer hover:bg-black/10 gap-2 min-h-[50px] items-stretch w-full border-none p-1 h-fit  border-[#e5e5e5] rounded-[10px]"
+                          key={call.callId}
+                        >
+                          <div className="size-[50px] shrink-0 relative flex items-center justify-center rounded-full overflow-hidden">
+                            <img
+                              src={call.recipient.photo_url}
+                              className="absolute left-0 top-0 size-full object-cover"
+                              alt=""
+                            />
+                          </div>
+                          <div className="w-full flex flex-col items-start">
+                            <div className="text-left">
+                              {call.recipient.firstName} {call.recipient.lastName}{" "}
+                              <span className="text-black/70 ">
+                                | {call.recipient.type}
+                              </span>
+                            </div>
+                            <div className="text-left">{dateTime.format(" h:mm A, MMMM D, YYYY")}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+  
+                    <ButtonM
+                      variant="contained"
+                      onClick={() => setCallsModalOpen(true)}
+                    >
+                      View all
+                    </ButtonM>
+                  </div>
+                </>
+              )}</>
+            }
           </div>
         </div>
       </section>
@@ -559,69 +611,73 @@ const SingleMentor = () => {
             {profileData?.serviceDetails?.length ? (
               <div className="service-list">
                 {profileData.serviceDetails.map((item, index) => {
-                  const isRestricted = SERVICE_CLICK_RESTRICTIONS[profileData?.type?.toLowerCase()];
-                
+                  const isRestricted =
+                    SERVICE_CLICK_RESTRICTIONS[
+                      profileData?.type?.toLowerCase()
+                    ];
+
                   return (
-                <div
-                  onClick={() => !isRestricted && handleService(item)} // Prevent click if restricted
-                  className="service-item"
-                  key={index}
-                  style={{
-                    cursor: isRestricted ? "not-allowed" : "pointer",
-                    padding: "10px",
-                    border: "1px solid #ddd",
-                    transition: "box-shadow 0.3s, background-color 0.3s",
-                  }}
-                >
-                  <span className="service-name">{item.serviceName}</span>
-
-                  {/* **Interactive Description with Tooltip** */}
-                  <Tooltip title={item.serviceName} arrow placement="top">
-                    <div>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: item?.serviceDescription,
-                        }}
-                        className="pointer-events-none saturate-0 no-underline max-h-[70px] overflow-hidden"
-                      ></div>
-                    </div>
-                  </Tooltip>
-
-                  {profileData?.type?.toLowerCase() === "intern" ? (
-                    /* **1. Compact Badge for Interns** */
-                    <Chip
-                      label={`Avail: ${item.availability}, ${item.hoursPerDay
-                        }h/day | ${formatDateGeneric(
-                          item.startDate
-                        )}, ${formatDateGeneric(item.endDate)}`}
-                      size="small"
-                      color="primary"
-                      sx={{
-                        marginTop: 1,
-                        backgroundColor: "#f5f5f5", // Lighter background
-                        border: "1px solid #424242", // Dark border
-                        color: "#424242", // Dark text for contrast
+                    <div
+                      onClick={() => !isRestricted && handleService(item)} // Prevent click if restricted
+                      className="service-item"
+                      key={index}
+                      style={{
+                        cursor: isRestricted ? "not-allowed" : "pointer",
+                        padding: "10px",
+                        border: "1px solid #ddd",
+                        transition: "box-shadow 0.3s, background-color 0.3s",
                       }}
-                    />
-                  ) : (
-                    /* **2. Service Duration and Price for Non-Interns** */
-                    <div className="price-duration-container !mt-auto">
-                      {item.serviceDuration && (
-                        <span className="service-duration">
-                          <FaClock /> {item.serviceDuration}{" "}
-                          {item.serviceDurationType}
-                        </span>
-                      )}
-                      {item.servicePrice && (
-                        <span className="service-price">
-                          ₹{item.servicePrice}
-                        </span>
+                    >
+                      <span className="service-name">{item.serviceName}</span>
+
+                      {/* **Interactive Description with Tooltip** */}
+                      <Tooltip title={item.serviceName} arrow placement="top">
+                        <div>
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: item?.serviceDescription,
+                            }}
+                            className="pointer-events-none saturate-0 no-underline max-h-[70px] overflow-hidden"
+                          ></div>
+                        </div>
+                      </Tooltip>
+
+                      {profileData?.type?.toLowerCase() === "intern" ? (
+                        /* **1. Compact Badge for Interns** */
+                        <Chip
+                          label={`Avail: ${item.availability}, ${
+                            item.hoursPerDay
+                          }h/day | ${formatDateGeneric(
+                            item.startDate
+                          )}, ${formatDateGeneric(item.endDate)}`}
+                          size="small"
+                          color="primary"
+                          sx={{
+                            marginTop: 1,
+                            backgroundColor: "#f5f5f5", // Lighter background
+                            border: "1px solid #424242", // Dark border
+                            color: "#424242", // Dark text for contrast
+                          }}
+                        />
+                      ) : (
+                        /* **2. Service Duration and Price for Non-Interns** */
+                        <div className="price-duration-container !mt-auto">
+                          {item.serviceDuration && (
+                            <span className="service-duration">
+                              <FaClock /> {item.serviceDuration}{" "}
+                              {item.serviceDurationType}
+                            </span>
+                          )}
+                          {item.servicePrice && (
+                            <span className="service-price">
+                              ₹{item.servicePrice}
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
-                  )}
-                </div>
-                );
-              })}
+                  );
+                })}
               </div>
             ) : (
               <div style={{ textAlign: "center", marginTop: "20px" }}>

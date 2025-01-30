@@ -6,6 +6,7 @@ import {
   where,
   onSnapshot,
   getDoc,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import useFetchUserData from "../Auth/useFetchUserData";
@@ -20,21 +21,18 @@ const useScheduledCallsForUser = (userId) => {
   const [calls, setCalls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {userData} = useFetchUserData()
+  // const {userData} = useFetchUserData()
 
   useEffect(() => {
-    if (!userData) {
-      setCalls([]);
-      setLoading(false);
-      return;
-    }
+    
+    console.log("userData", userId);
   
     setLoading(true);
     setError(null);
   
     const q = query(
       collection(db, "scheduledCalls"),
-      where("hostUserId", "==", userData.uid)
+      where("hostUserId", "==", userId), orderBy("scheduledDateTime", "desc")
     );
   
     const unsubscribe = onSnapshot(
@@ -75,7 +73,7 @@ const useScheduledCallsForUser = (userId) => {
     );
   
     return () => unsubscribe();
-  }, [userData]);;
+  }, [userId]);;
   
 
   return { calls, loading, error };
