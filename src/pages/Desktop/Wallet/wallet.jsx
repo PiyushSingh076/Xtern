@@ -105,6 +105,8 @@ const WalletPage = () => {
       }
     };
 
+    
+
     return (
       <>
         <Layout title="Wallet" description="This is the wallet page, here you can add funds and withdraw funds" keywords="Add Funds, Withdraw Funds" ></Layout>
@@ -400,6 +402,8 @@ const WalletPage = () => {
       </Box>
     );
   }
+
+  
 
   return (
     <Box
