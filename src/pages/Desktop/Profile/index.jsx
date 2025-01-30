@@ -98,6 +98,8 @@ const SingleMentor = () => {
     error: profileError,
   } = useUserProfileData(uid);
 
+  
+
   useEffect(() => {
     if (profileData) {
       console.log(profileData);
@@ -191,7 +193,7 @@ const SingleMentor = () => {
   } = useFetchUsersByType("Developer");
 
   // Current user
-  const { userData: currentUser } = useFetchUserData();
+  const { userData: currentUser, loading: currentUserLoading } = useFetchUserData();
 
   // Google Calendar
   const {
@@ -493,52 +495,54 @@ const SingleMentor = () => {
                 )}
               </div>
             )}
-            {callsLoading ? (
-              <Skeleton variant="rectangular" sx={{ width: "100%", height: "350px", marginTop: "20px" }} ></Skeleton>
-            ) : (
-              <>
-                {" "}
-                <div className="flex flex-col gap-2 rounded-[10px] border border-[#e5e5e5] mt-[20px] p-[10px]">
-                  <div className="font-normal text-2xl  flex items-start justify-center ">
-                    <div v>Upcoming meets</div>
-                  </div>
-
-                  {calls.slice(0, 3).map((call) => {
-                    const dateTime = dayjs(call.scheduledDateTime);
-                    return (
-                      <div onClick={() => window.open(call.eventLink, "_blank")}
-                        className="flex cursor-pointer hover:bg-black/10 gap-2 min-h-[50px] items-stretch w-full border-none p-1 h-fit  border-[#e5e5e5] rounded-[10px]"
-                        key={call.callId}
-                      >
-                        <div className="size-[50px] shrink-0 relative flex items-center justify-center rounded-full overflow-hidden">
-                          <img
-                            src={call.recipient.photo_url}
-                            className="absolute left-0 top-0 size-full object-cover"
-                            alt=""
-                          />
-                        </div>
-                        <div className="w-full flex flex-col items-start">
-                          <div className="text-left">
-                            {call.recipient.firstName} {call.recipient.lastName}{" "}
-                            <span className="text-black/70 ">
-                              | {call.recipient.type}
-                            </span>
+            { profileLoading === false && currentUserLoading == false &&  currentUser?.uid === uid  &&
+              <>{callsLoading ? (
+                <Skeleton variant="rectangular" sx={{ width: "100%", height: "350px", marginTop: "20px" }} ></Skeleton>
+              ) : (
+                <>
+                  {" "}
+                  <div className="flex flex-col gap-2 rounded-[10px] border border-[#e5e5e5] mt-[20px] p-[10px]">
+                    <div className="font-normal text-2xl  flex items-start justify-center ">
+                      <div >Upcoming meets</div>
+                    </div>
+  
+                    {calls.slice(0, 3).map((call) => {
+                      const dateTime = dayjs(call.scheduledDateTime);
+                      return (
+                        <div onClick={() => window.open(call.eventLink, "_blank")}
+                          className="flex cursor-pointer hover:bg-black/10 gap-2 min-h-[50px] items-stretch w-full border-none p-1 h-fit  border-[#e5e5e5] rounded-[10px]"
+                          key={call.callId}
+                        >
+                          <div className="size-[50px] shrink-0 relative flex items-center justify-center rounded-full overflow-hidden">
+                            <img
+                              src={call.recipient.photo_url}
+                              className="absolute left-0 top-0 size-full object-cover"
+                              alt=""
+                            />
                           </div>
-                          <div className="text-left">{dateTime.format(" h:mm A, MMMM D, YYYY")}</div>
+                          <div className="w-full flex flex-col items-start">
+                            <div className="text-left">
+                              {call.recipient.firstName} {call.recipient.lastName}{" "}
+                              <span className="text-black/70 ">
+                                | {call.recipient.type}
+                              </span>
+                            </div>
+                            <div className="text-left">{dateTime.format(" h:mm A, MMMM D, YYYY")}</div>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-
-                  <ButtonM
-                    variant="contained"
-                    onClick={() => setCallsModalOpen(true)}
-                  >
-                    View all
-                  </ButtonM>
-                </div>
-              </>
-            )}
+                      );
+                    })}
+  
+                    <ButtonM
+                      variant="contained"
+                      onClick={() => setCallsModalOpen(true)}
+                    >
+                      View all
+                    </ButtonM>
+                  </div>
+                </>
+              )}</>
+            }
           </div>
         </div>
       </section>
