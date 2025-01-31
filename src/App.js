@@ -120,6 +120,7 @@ import EditJob from "./pages/EditJob.jsx";
 import { AuthProvider } from "./hooks/Auth/useAuth.jsx";
 import EntrepreneurMobile from "./pages/MyProfile/EntrepreneurMobile.jsx";
 
+
 function App() {
   const location = useLocation(); // Get the current location
 

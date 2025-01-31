@@ -21,7 +21,8 @@ import {
   Grid,
   Skeleton,
 } from "@mui/material";
-import { Plus, ArrowDownCircle, X } from "lucide-react";
+import { Plus, ArrowDownCircle, X,  } from "lucide-react";
+import Layout from "../../../components/SEO/Layout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useWallet from "../../../hooks/Wallet/useWallet";
@@ -29,7 +30,7 @@ import { useTransactions } from "../../../hooks/Wallet/useTransactions";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import WalletPageSkeleton from './WalletPageSkeleton';
-import Layout from "../../../components/SEO/Layout";
+
 
 
 const WalletPage = () => {
@@ -111,55 +112,58 @@ const WalletPage = () => {
 
     return (
       <>
-        <Layout title="Wallet" description="This is the wallet page, here you can add funds and withdraw funds" keywords="Add Funds, Withdraw Funds" ></Layout>
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-          <DialogTitle>Add Funds</DialogTitle>
-          <DialogContent>
-            <Box sx={{ position: "relative", mt: 2 }}>
-              <Typography
-                sx={{
-                  position: "absolute",
-                  left: "14px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: "text.secondary",
-                }}
-              >
-                ₹
-              </Typography>
-              <TextField
-                fullWidth
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Enter amount"
-                InputProps={{
-                  sx: { paddingLeft: "24px" },
-                }}
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={onClose} variant="outlined" color="inherit">
-              Cancel
-            </Button>
-            <Button
-              onClick={handleAddFunds}
-              variant="contained"
-              className="flex gap-2"
-              color="primary"
+      <Layout 
+         title={"Wallet"}
+         description={"Add Funds to your Wallet and Withdraw Funds Securly"}
+         keywords={"Withdraw,Add Funds,Transactions"}/>
+      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Add Funds</DialogTitle>
+        <DialogContent>
+          <Box sx={{ position: "relative", mt: 2 }}>
+            <Typography
+              sx={{
+                position: "absolute",
+                left: "14px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "text.secondary",
+              }}
             >
-              {loading ? (
-                <>
-                  Please Wait
-                  <div className="spinner-border-sm spinner-border"></div>
-                </>
-              ) : (
-                "Add Funds"
-              )}
-            </Button>
-          </DialogActions>
-        </Dialog>
+              ₹
+            </Typography>
+            <TextField
+              fullWidth
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Enter amount"
+              InputProps={{
+                sx: { paddingLeft: "24px" },
+              }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} variant="outlined" color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAddFunds}
+            variant="contained"
+            className="flex gap-2"
+            color="primary"
+          >
+            {loading ? (
+              <>
+                Please Wait
+                <div className="spinner-border-sm spinner-border"></div>
+              </>
+            ) : (
+              "Add Funds"
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
       </>
     );
   };
