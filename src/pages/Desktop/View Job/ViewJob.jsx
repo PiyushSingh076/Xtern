@@ -81,7 +81,7 @@ const SingleJob = () => {
   return (
     <>
     <Layout
-     title={"View Job Opportunities"}
+     title={"Viewjob"}
          description={"Browse and Explore Job Opportunities"}
          keywords={"View Jobs, Job Listings, Career Opportunities, Employment, Hiring"}/>
       <section id="single-description-screen">
