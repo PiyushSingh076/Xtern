@@ -503,7 +503,7 @@ const SingleMentor = () => {
                       variant="rectangular"
                       sx={{ width: "100%", height: "350px", marginTop: "20px" }}
                     ></Skeleton>
-                  ) : (
+                  ) : ( calls.length > 0 && 
                     <>
                       {" "}
                       <div className="flex flex-col gap-2 rounded-[10px] border border-[#e5e5e5] mt-[20px] p-[10px]">
