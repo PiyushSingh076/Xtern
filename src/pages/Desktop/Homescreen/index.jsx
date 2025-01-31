@@ -142,8 +142,13 @@ export default function HomeScreen() {
 
   const navigate = useNavigate();
   return (
+    <>
     <div className="main-Home-Screen-container">
-      {/* <Layout title={"This is a test"} keywords={"test"} description={"homescreen page"} ></Layout> */}
+    <Layout 
+        title={"Home-Xpert"} 
+        keywords={"Home-Xpert,dashboard, main page, user interface, homepage, navigation, start screen"} 
+        description={"This is the home page of Xtern"} 
+      />
       {!userData?.linkedInProfile && !user && (
         <>
           <div
@@ -201,5 +206,6 @@ export default function HomeScreen() {
         </div>
       </div>
     </div>
+    </>
   );
 }

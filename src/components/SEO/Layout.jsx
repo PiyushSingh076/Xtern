@@ -1,18 +1,19 @@
 import React from "react";
-import { Helmet } from "react-helmet";
+
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 const Layout = ({ title, description, keywords }) => {
+  console.log("SEO Description:", description);
   return (
-    <div>
+    <HelmetProvider>
       <Helmet>
         <meta charSet="utf-8" />
         <meta name="description" content={description} />
         <meta name="keywords" content={keywords} />
-        <meta name="author" content={"Optacloud"} />
+        <meta name="author" content="Optacloud" />
         <title>{title}</title>
       </Helmet>
-      
-    </div>
+    </HelmetProvider>
   );
 };
 
