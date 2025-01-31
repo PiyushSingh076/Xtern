@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
-
+import Layout from "../../../components/SEO/Layout";
 import HeaderImg from "../../../assets/images/single-courses/header-img.png";
 
 import StudentIcon from "../../../assets/images/single-courses/student-icon.svg";
@@ -20,7 +20,6 @@ import TimeIcon from "../../../assets/images/single-courses/time-icon.svg";
 
 import AccessTime from "@mui/icons-material/AccessTime";
 import Schedule from "@mui/icons-material/Schedule";
-import { MapPin } from "lucide-react";
 import { LocationSearchingRounded } from "@mui/icons-material";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
@@ -81,6 +80,10 @@ const SingleJob = () => {
 
   return (
     <>
+    <Layout
+     title={"View Job Opportunities"}
+         description={"Browse and Explore Job Opportunities"}
+         keywords={"View Jobs, Job Listings, Career Opportunities, Employment, Hiring"}/>
       <section id="single-description-screen">
         <div className="container !shadow-none !border-none !bg-white !max-w-full mx-8">
           <Grid container spacing={2}>
