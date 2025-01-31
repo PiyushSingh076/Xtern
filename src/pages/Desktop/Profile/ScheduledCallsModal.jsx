@@ -126,30 +126,6 @@ const ScheduledCallsModal = ({
     }
   };
   
-  {isFetching ? (
-    <Typography align="center">Fetching scheduled calls...</Typography>
-  ) : (
-    <>
-      {!loading && !error && callsWithRecipients.length === 0 && (
-        <Typography>No previously scheduled calls found.</Typography>
-      )}
-  
-      {!loading && !error && callsWithRecipients.length > 0 && (
-        <ListContainer>
-          <List>
-            {callsWithRecipients.map((call, index) => (
-              <React.Fragment key={call.id}>
-                {/* Existing call rendering logic */}
-              </React.Fragment>
-            ))}
-          </List>
-        </ListContainer>
-      )}
-    </>
-  )}
-  
-  
-
   return (
     <Modal
       open={open}
