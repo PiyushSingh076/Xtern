@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Layout from "../../../../components/SEO/Layout";
 
 import Footer from "../../../../components/Footer";
 import { Link, useNavigate } from "react-router-dom";
@@ -105,6 +106,10 @@ const SignIn = () => {
 
   return (
     <>
+     <Layout
+    title={"Sign In to Your Account"}
+        description={"Sign in to your account to access job listings and manage your profil"}
+        keywords={"Sign In, Login, Account, Access, Job Portal, User Login"}/>
       {/* <!-- Preloader start --> */}
       {/* {loading && (
         <div className="loader-mask">

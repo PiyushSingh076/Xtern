@@ -21,13 +21,17 @@ import {
   Grid,
   Skeleton,
 } from "@mui/material";
-import { Plus, ArrowDownCircle, X } from "lucide-react";
+import { Plus, ArrowDownCircle, X,  } from "lucide-react";
+import Layout from "../../../components/SEO/Layout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useWallet from "../../../hooks/Wallet/useWallet";
 import { useTransactions } from "../../../hooks/Wallet/useTransactions";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
+import WalletPageSkeleton from './WalletPageSkeleton';
+
+
 
 const WalletPage = () => {
   const { userData } = useFetchUserData();
@@ -104,7 +108,14 @@ const WalletPage = () => {
       }
     };
 
+    
+
     return (
+      <>
+      <Layout 
+         title={"Wallet"}
+         description={"Add Funds to your Wallet and Withdraw Funds Securly"}
+         keywords={"Withdraw,Add Funds,Transactions"}/>
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
         <DialogTitle>Add Funds</DialogTitle>
         <DialogContent>
@@ -153,6 +164,7 @@ const WalletPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      </>
     );
   };
 
@@ -382,20 +394,10 @@ const WalletPage = () => {
   };
 
   if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          bgcolor: "#f5f5f5",
-        }}
-      >
-        <CircularProgress size={50} />
-      </Box>
-    );
+    return <WalletPageSkeleton />;
   }
+
+  
 
   return (
     <Box

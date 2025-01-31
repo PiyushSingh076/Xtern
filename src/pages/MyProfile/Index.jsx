@@ -800,7 +800,7 @@ const MobileSingleMentor = () => {
     calls,
     loading: callsLoading,
     error: callsError,
-  } = useScheduledCallsForUser(currentUser?.uid);
+  } = useScheduledCallsForUser(uid);
 
   // Editable state
   const [editable, setEditable] = useState(false);
