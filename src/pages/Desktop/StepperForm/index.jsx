@@ -1113,9 +1113,29 @@ export default function StepperForm() {
       endDate: "",
       availability: "",
       hoursPerDay: "",
+      serviceVideo: null,
+      images: []
     };
     openModal("Service", null, newServiceData);
   };
+
+    // If user clicks on add service
+    const handleAddService = () => {
+      const newServiceData = {
+        serviceName: "",
+        serviceDescription: "",
+        servicePrice: "",
+        duration: "",
+        durationType: "",
+        startDate: "",
+        endDate: "",
+        availability: "",
+        hoursPerDay: "",
+        serviceVideo: null,
+        images: []
+      };
+      openModal("Service", null, newServiceData);
+    };
 
   return (
     <Box sx={{ width: "100%", padding: 4, overflow: "hidden" }}>
@@ -1797,7 +1817,7 @@ export default function StepperForm() {
                     <Button
                       variant="contained"
                       startIcon={<AddCircleOutlineIcon />}
-                      onClick={() => openModal("Service")}
+                      onClick={() => handleAddService()}
                       size="small"
                     >
                       Add Service

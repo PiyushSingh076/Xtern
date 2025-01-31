@@ -299,8 +299,9 @@ function App() {
           <Route
             path={ROUTES.STEPPER_FORM}
             element={
-              
+              <ProtectedRoute>
                 <DesktopStepperForm />
+                </ProtectedRoute>
               
             }
           />
