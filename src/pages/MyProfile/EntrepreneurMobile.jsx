@@ -74,11 +74,11 @@ const EntrepreneurMobile = () => {
     isInitialized,
   } = useGoogleCalendar();
 
-  const {
-    calls,
-    loading: callsLoading,
-    error: callsError,
-  } = useScheduledCallsForUser(currentUser?.uid);
+  // const {
+  //   calls,
+  //   loading: callsLoading,
+  //   error: callsError,
+  // } = useScheduledCallsForUser(currentUser?.uid);
 
   // Editable state
   const [editable, setEditable] = useState(false);
@@ -696,14 +696,7 @@ const EntrepreneurMobile = () => {
       </Modal>
 
       {/* Scheduled Calls Modal */}
-      <ScheduledCallsModal
-        open={callsModalOpen}
-        onClose={closeScheduledCallsModal}
-        loading={callsLoading}
-        calls={calls}
-        error={callsError}
-        onDeleteEvent={handleDeleteEvent}
-      />
+      
     </>
   );
 };

@@ -93,7 +93,7 @@ export function useTransactions() {
       order_id: orderId,
       handler: async function (response) {
         loader.start()
-        // console.log("Payment Successful:", response);
+        console.log("Payment Successful:", response);
         const success = await verifyPayment(
           orderId,
           response.razorpay_payment_id,
