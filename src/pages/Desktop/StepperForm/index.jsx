@@ -60,12 +60,41 @@ const consultingChargesConfig = {
 };
 
 /** For LinkedIn experiences date calculations */
+// const calculateExperience = (experiences) => {
+//   if (!experiences || experiences.length === 0) return "";
+//   const currentDate = new Date();
+//   let totalMonths = 0;
+
+//   experiences.forEach((exp) => {
+//     const start = new Date(
+//       exp.starts_at.year,
+//       exp.starts_at.month - 1,
+//       exp.starts_at.day
+//     );
+//     const end = exp.ends_at
+//       ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
+//       : currentDate;
+
+//     const months =
+//       (end.getFullYear() - start.getFullYear()) * 12 +
+//       (end.getMonth() - start.getMonth());
+//     totalMonths += months;
+//   });
+
+//   const years = Math.floor(totalMonths / 12);
+//   const months = totalMonths % 12;
+
+//   return `${years} ${years > 1 ? "Years" : "Year"} ${months > 0 ? `${months} ${months > 1 ? "Months" : "Month"}` : ""
+//     }`;
+// };
+
+
 const calculateExperience = (experiences) => {
   if (!experiences || experiences.length === 0) return "";
   const currentDate = new Date();
   let totalMonths = 0;
 
-  experiences.forEach((exp) => {
+  for (const exp of experiences) {
     const start = new Date(
       exp.starts_at.year,
       exp.starts_at.month - 1,
@@ -75,11 +104,16 @@ const calculateExperience = (experiences) => {
       ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
       : currentDate;
 
+    // Validate that the start date is not after the end date
+    if (start > end) {
+      return "Invalid date range";
+    }
+
     const months =
       (end.getFullYear() - start.getFullYear()) * 12 +
       (end.getMonth() - start.getMonth());
     totalMonths += months;
-  });
+  }
 
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
@@ -96,7 +130,7 @@ export default function StepperForm() {
   const [LastName, setLastName] = useState("");
   const { setRefreshCount } = useAuthState();
   const [Xpert, setXpert] = useState("");
-  const [Experience, setExperience] = useState(""); // Usually a string or number
+  const [Experience, setExperience] = useState(""); 
   const [profileImg, setProfileImg] = useState(null);
 
   // Location
@@ -110,6 +144,8 @@ export default function StepperForm() {
   const [Skills, setSkills] = useState([]);
   const [Projects, setProjects] = useState([]);
   const [Services, setServices] = useState([]);
+  const [dateError, setDateError] = useState("");
+
 
   // Consulting
   const [ConsultingPrice, setConsultingPrice] = useState("");
@@ -184,6 +220,8 @@ export default function StepperForm() {
   const indiaStates = State.getAllStates().filter(
     (item) => item.countryCode === "IN"
   );
+
+  
 
   // Changing the state -> load city list
   const handleStateChange = (stateCode) => {
@@ -1113,29 +1151,9 @@ export default function StepperForm() {
       endDate: "",
       availability: "",
       hoursPerDay: "",
-      serviceVideo: null,
-      images: []
     };
     openModal("Service", null, newServiceData);
   };
-
-    // If user clicks on add service
-    const handleAddService = () => {
-      const newServiceData = {
-        serviceName: "",
-        serviceDescription: "",
-        servicePrice: "",
-        duration: "",
-        durationType: "",
-        startDate: "",
-        endDate: "",
-        availability: "",
-        hoursPerDay: "",
-        serviceVideo: null,
-        images: []
-      };
-      openModal("Service", null, newServiceData);
-    };
 
   return (
     <Box sx={{ width: "100%", padding: 4, overflow: "hidden" }}>
@@ -1419,135 +1437,160 @@ export default function StepperForm() {
 
               {/* Education */}
               <Card sx={{ mb: 2, boxShadow: 2 }}>
-                <CardHeader
-                  title="Education"
-                  titleTypographyProps={{ variant: "h6" }}
-                  action={
-                    <Button
-                      variant="contained"
-                      startIcon={<AddCircleOutlineIcon />}
-                      onClick={() => openModal("Education")}
-                      size="small"
-                    >
-                      Add Education
-                    </Button>
-                  }
-                  sx={{ padding: 2 }}
-                />
-                <Divider />
-                <CardContent sx={{ padding: 2 }}>
-                  {Education.map((item, index) => (
-                    <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                      <IconButton
-                        size="small"
-                        sx={{ position: "absolute", top: 0, right: 30 }}
-                        onClick={() => openModal("Education", index, item)}
-                      >
-                        <FiEdit color="blue" size={16} />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        sx={{ position: "absolute", top: 0, right: 0 }}
-                        onClick={() => deleteDetail("education", index)}
-                      >
-                        <FiTrash color="red" size={16} />
-                      </IconButton>
-                      <Box>
-                        <Typography
-                          variant="subtitle1"
-                          sx={{
-                            fontSize: {
-                              xs: "0.8rem", // Smaller font size for extra-small screens (mobile)
-                              sm: "1rem",   // Default font size for small screens and above
-                            },
-                          }}
-                        >
-                          <strong>{item.degree}</strong> in {item.stream}
-                        </Typography>
+  <CardHeader
+    title="Education"
+    titleTypographyProps={{ variant: "h6" }}
+    action={
+      <Button
+        variant="contained"
+        startIcon={<AddCircleOutlineIcon />}
+        onClick={() => openModal("Education")}
+        size="small"
+      >
+        Add Education
+      </Button>
+    }
+    sx={{ padding: 2 }}
+  />
+  <Divider />
+  <CardContent sx={{ padding: 2 }}>
+    {Education.map((item, index) => {
+      const isInvalidDate =
+        item.endDate && new Date(item.endDate) < new Date(item.startDate);
 
-                        <Typography variant="body2">{item.college}</Typography>
-                        <Typography variant="body2">
-                          {item.startDate} - {item.endDate || "Present"}
-                        </Typography>
-                        <Typography variant="body2">
-                          CGPA: {item.cgpa}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  ))}
-                </CardContent>
-              </Card>
+      return (
+        <Box key={index} sx={{ mb: 3, position: "relative" }}>
+          <IconButton
+            size="small"
+            sx={{ position: "absolute", top: 0, right: 30 }}
+            onClick={() => openModal("Education", index, item)}
+          >
+            <FiEdit color="blue" size={16} />
+          </IconButton>
+          <IconButton
+            size="small"
+            sx={{ position: "absolute", top: 0, right: 0 }}
+            onClick={() => deleteDetail("education", index)}
+          >
+            <FiTrash color="red" size={16} />
+          </IconButton>
+          <Box>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontSize: {
+                  xs: "0.8rem", // Smaller font size for extra-small screens (mobile)
+                  sm: "1rem",   // Default font size for small screens and above
+                },
+              }}
+            >
+              <strong>{item.degree}</strong> in {item.stream}
+            </Typography>
+
+            <Typography variant="body2">{item.college}</Typography>
+            <Typography variant="body2">
+              {item.startDate} - {item.endDate || "Present"}
+            </Typography>
+
+            {/* Error Message for Invalid Dates */}
+            {isInvalidDate && (
+              <Typography color="error" sx={{ mt: 1 }}>
+                End date cannot be earlier than the start date.
+              </Typography>
+            )}
+
+            <Typography variant="body2">CGPA: {item.cgpa}</Typography>
+          </Box>
+        </Box>
+      );
+    })}
+  </CardContent>
+</Card>
+
 
               {/* Work */}
               <Card sx={{ mb: 2, boxShadow: 2 }}>
-                <CardHeader
-                  title="Work Experience"
-                  titleTypographyProps={{
-                    variant: "h6",
-                    sx: {
-                      fontSize: {
-                        xs: "1rem", // Smaller font size for mobile
-                        sm: "1.25rem", // Default font size for small screens and above
-                      },
-                    },
-                  }}
-                  action={
-                    <Button
-                      variant="contained"
-                      startIcon={<AddCircleOutlineIcon />}
-                      onClick={() => openModal("Work")}
-                      size="small"
-                      sx={{
-                        fontSize: {
-                          xs: "0.6rem", // Smaller font size for mobile
-                          sm: "1rem", // Default font size for small screens and above
-                        },
-                        padding: {
-                          xs: "6px 12px", // Smaller padding for mobile
-                          sm: "8px 16px", // Default padding for small screens and above
-                        },
-                      }}
-                    >
-                      Add Experience
-                    </Button>
-                  }
-                  sx={{ padding: 2 }}
-                />
-                <Divider />
-                <CardContent sx={{ padding: 2 }}>
-                  {Work.map((item, index) => (
-                    <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                      <IconButton
-                        size="small"
-                        sx={{ position: "absolute", top: 0, right: 30 }}
-                        onClick={() => openModal("Work", index, item)}
-                      >
-                        <FiEdit color="blue" size={16} />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        sx={{ position: "absolute", top: 0, right: 0 }}
-                        onClick={() => deleteDetail("work", index)}
-                      >
-                        <FiTrash color="red" size={16} />
-                      </IconButton>
-                      <Box>
-                        <Typography variant="subtitle1">
-                          <strong>{item.position}</strong> at {item.company}
-                        </Typography>
-                        <Typography variant="body2">
-                          {item.startDate} - {item.endDate || "Present"}
-                        </Typography>
-                        {item.description && (
-                          <Typography variant="body2" sx={{ mt: 1 }}>
-                            {item.description}
-                          </Typography>
-                        )}
-                      </Box>
-                    </Box>
-                  ))}
-                </CardContent>
-              </Card>
+  <CardHeader
+    title="Work Experience"
+    titleTypographyProps={{
+      variant: "h6",
+      sx: {
+        fontSize: {
+          xs: "1rem", // Smaller font size for mobile
+          sm: "1.25rem", // Default font size for small screens and above
+        },
+      },
+    }}
+    action={
+      <Button
+        variant="contained"
+        startIcon={<AddCircleOutlineIcon />}
+        onClick={() => openModal("Work")}
+        size="small"
+        sx={{
+          fontSize: {
+            xs: "0.6rem", // Smaller font size for mobile
+            sm: "1rem", // Default font size for small screens and above
+          },
+          padding: {
+            xs: "6px 12px", // Smaller padding for mobile
+            sm: "8px 16px", // Default padding for small screens and above
+          },
+        }}
+      >
+        Add Experience
+      </Button>
+    }
+    sx={{ padding: 2 }}
+  />
+  <Divider />
+  <CardContent sx={{ padding: 2 }}>
+    {Work.map((item, index) => {
+      const isInvalidDate =
+        item.endDate && new Date(item.endDate) < new Date(item.startDate);
+
+      return (
+        <Box key={index} sx={{ mb: 3, position: "relative" }}>
+          <IconButton
+            size="small"
+            sx={{ position: "absolute", top: 0, right: 30 }}
+            onClick={() => openModal("Work", index, item)}
+          >
+            <FiEdit color="blue" size={16} />
+          </IconButton>
+          <IconButton
+            size="small"
+            sx={{ position: "absolute", top: 0, right: 0 }}
+            onClick={() => deleteDetail("work", index)}
+          >
+            <FiTrash color="red" size={16} />
+          </IconButton>
+          <Box>
+            <Typography variant="subtitle1">
+              <strong>{item.position}</strong> at {item.company}
+            </Typography>
+            <Typography variant="body2">
+              {item.startDate} - {item.endDate || "Present"}
+            </Typography>
+
+            {/* Error Message for Invalid Dates */}
+            {isInvalidDate && (
+              <Typography color="error" sx={{ mt: 1 }}>
+                End date cannot be earlier than the start date.
+              </Typography>
+            )}
+
+            {item.description && (
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                {item.description}
+              </Typography>
+            )}
+          </Box>
+        </Box>
+      );
+    })}
+  </CardContent>
+</Card>
 
               {/* Projects */}
               <Card sx={{ mb: 2, boxShadow: 2 }}>
@@ -1817,7 +1860,7 @@ export default function StepperForm() {
                     <Button
                       variant="contained"
                       startIcon={<AddCircleOutlineIcon />}
-                      onClick={() => handleAddService()}
+                      onClick={() => openModal("Service")}
                       size="small"
                     >
                       Add Service
@@ -2062,6 +2105,10 @@ export default function StepperForm() {
                         setModalFormData((prev) => ({
                           ...prev,
                           startDate: e.target.value,
+                          endDate:
+                            prev.endDate && new Date(e.target.value) > new Date(prev.endDate)
+                              ? "" // Reset end date if start date is changed to a later date
+                              : prev.endDate,
                         }))
                       }
                     />
@@ -2077,13 +2124,24 @@ export default function StepperForm() {
                       size="small"
                       InputLabelProps={{ shrink: true }}
                       value={modalFormData.endDate || ""}
-                      onChange={(e) =>
-                        setModalFormData((prev) => ({
-                          ...prev,
-                          endDate: e.target.value,
-                        }))
-                      }
+                      onChange={(e) => {
+                        const newEndDate = e.target.value;
+                        if (new Date(newEndDate) < new Date(modalFormData.startDate)) {
+                          setModalFormData((prev) => ({
+                            ...prev,
+                            endDate: newEndDate,
+                          }));
+                          setDateError("⚠️ End date cannot be earlier than start date.");
+                        } else {
+                          setDateError("");  // Clear error message if valid
+                          setModalFormData((prev) => ({
+                            ...prev,
+                            endDate: newEndDate,
+                          }));
+                        }
+                      }}
                     />
+                    {dateError && <p style={{ color: 'red', fontSize: '0.8rem' }}>{dateError}</p>}
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
@@ -2106,7 +2164,6 @@ export default function StepperForm() {
                   </Grid>
                 </Grid>
               )}
-
               {/* Skill Form */}
               {modalType === "Skill" && (
                 <Grid container spacing={3}>
@@ -2200,12 +2257,15 @@ export default function StepperForm() {
                       size="small"
                       InputLabelProps={{ shrink: true }}
                       value={modalFormData.startDate || ""}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const newStartDate = e.target.value;
                         setModalFormData((prev) => ({
                           ...prev,
-                          startDate: e.target.value,
-                        }))
-                      }
+                          startDate: newStartDate,
+                          // Reset end date if it's earlier than start date
+                          endDate: new Date(newStartDate) > new Date(prev.endDate) ? "" : prev.endDate,
+                        }));
+                      }}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -2219,13 +2279,24 @@ export default function StepperForm() {
                       size="small"
                       InputLabelProps={{ shrink: true }}
                       value={modalFormData.endDate || ""}
-                      onChange={(e) =>
-                        setModalFormData((prev) => ({
-                          ...prev,
-                          endDate: e.target.value,
-                        }))
-                      }
+                      onChange={(e) => {
+                        const newEndDate = e.target.value;
+                        if (new Date(newEndDate) < new Date(modalFormData.startDate)) {
+                          setModalFormData((prev) => ({
+                            ...prev,
+                            endDate: newEndDate,
+                          }));
+                          setDateError("⚠️ End date cannot be earlier than start date.");
+                        } else {
+                          setDateError("");  // Clear error message if valid
+                          setModalFormData((prev) => ({
+                            ...prev,
+                            endDate: newEndDate,
+                          }));
+                        }
+                      }}
                     />
+                    {dateError && <p style={{ color: 'red', fontSize: '0.8rem' }}>{dateError}</p>} 
                   </Grid>
                   <Grid item xs={12}>
                     <TextField

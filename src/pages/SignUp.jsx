@@ -385,7 +385,7 @@ const SignUp = () => {
           </div>
         </div>
       </section>
-      <Footer link="/signin" />
+      <Footer link="/signin" type="signup"/>
     </>
   );
 };
