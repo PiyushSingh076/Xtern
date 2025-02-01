@@ -24,6 +24,7 @@ import {
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import Carousel from "react-material-ui-carousel";
 import ReactPlayer from "react-player";
+import Layout from "../../../components/SEO/Layout";
 
 const db = getFirestore();
 
@@ -260,6 +261,9 @@ const ProjectDetails = () => {
   }, [item]);
 
   return (
+    <>
+    <Layout title={userData.service} />
+
     <div className="des-project-detail-container">
       <ViewModal
         open={modalOpen}
@@ -588,6 +592,7 @@ const ProjectDetails = () => {
         />
       )}
     </div>
+    </>
   );
 };
 
