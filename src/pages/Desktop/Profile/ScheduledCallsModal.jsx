@@ -19,7 +19,9 @@ import {
 import { MdClose, MdDelete } from "react-icons/md";
 import dayjs from "dayjs";
 import { styled } from "@mui/material/styles";
-import { getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
+import { useNavigate } from "react-router-dom";
 
 // Styled Components
 const ModalContainer = styled(Box)(({ theme }) => ({
@@ -94,7 +96,9 @@ const ScheduledCallsModal = ({
       const updatedCalls = [];
       for (const call of calls) {
         if (call.recipientUserRef) {
-          const recipientSnap = await getDoc(call.recipientUserRef);
+          const recipientSnap = await getDoc(
+            doc(db, "users", call.recipientUserId)
+          );
           const recipientData = recipientSnap.exists()
             ? recipientSnap.data()
             : null;
@@ -125,7 +129,9 @@ const ScheduledCallsModal = ({
       setDeletingEventIds((prev) => prev.filter((id) => id !== call.eventId));
     }
   };
-  
+
+  const navigate = useNavigate();
+
   return (
     <Modal
       open={open}
@@ -134,10 +140,12 @@ const ScheduledCallsModal = ({
       aria-describedby="scheduled-calls-list"
     >
       <ModalContainer>
-        <Header>
-          <Title id="scheduled-calls-modal">Previously Scheduled Calls</Title>
-          <CloseIcon onClick={onClose} />
-        </Header>
+        <h1 className="flex justify-between items-center !text-black">
+          <div className="!text-2xl">Scheduled Calls</div>
+          <IconButton onClick={onClose} className="shrink-0 size-[50px]">
+            <CloseIcon color="black" />
+          </IconButton>
+        </h1>
 
         {loading && (
           <Box
@@ -173,43 +181,26 @@ const ScheduledCallsModal = ({
                         display: "flex",
                         flexDirection: "column",
                         paddingY: 2,
+                        "&:hover": {
+                          backgroundColor: "#f5f5f5",
+                        },
                       }}
                     >
                       {/* Header: Call ID and Delete Button */}
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          width: "100%",
-                          alignItems: "center",
-                          marginBottom: 1,
-                        }}
-                      >
-                        <Typography variant="h6" color="text.primary">
-                          {call.callId}
-                        </Typography>
-                        <Tooltip title="Delete Event">
-                          <IconButton
-                            onClick={() => handleDelete(call)}
-                            disabled={isDeleting}
-                            size="small"
-                          >
-                            {isDeleting ? (
-                              <CircularProgress size={20} />
-                            ) : (
-                              <MdDelete color="#d32f2f" />
-                            )}
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
 
                       {/* Recipient Details */}
                       <Box
+                      className="!cursor-pointer hover:!underline"
                         sx={{
                           display: "flex",
                           alignItems: "center",
                           width: "100%",
                           marginBottom: 1,
+                          pointer: "cursor",
+                        }}
+                        onClick={() => {
+                          navigate("/profile/" + call?.recipientUserId);
+                          onClose()
                         }}
                       >
                         <ListItemAvatar>
@@ -233,27 +224,46 @@ const ScheduledCallsModal = ({
 
                       {/* Call Details */}
                       <Box sx={{ width: "100%", marginBottom: 1 }}>
-                        <Typography variant="body2" color="text.secondary">
+                        {/* <Typography variant="body2" color="text.secondary">
                           <strong>Type:</strong> {call.callType}
-                        </Typography>
+                        </Typography> */}
                         <Typography variant="body2" color="text.secondary">
                           <strong>Date:</strong>{" "}
                           {dateTime.format("D MMM YYYY, h:mm A")}
                         </Typography>
                       </Box>
+                      <div className="flex gap-1 w-full">
+                        {call.eventLink && (
+                          <StyledButton
+                            variant="contained"
+                            href={call.eventLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{ alignSelf: "flex-start", flexShrink: 0 }}
+                          >
+                            Open Event
+                          </StyledButton>
+                        )}
+                        <Tooltip title="Delete Event">
+                          <IconButton
+                            onClick={() => handleDelete(call)}
+                            disabled={isDeleting}
+                            size="small"
+                            className="shrink-0 aspect-square"
+                          >
+                            {isDeleting ? (
+                              <CircularProgress size={20} />
+                            ) : (
+                              <MdDelete color="#d32f2f" />
+                            )}
+                          </IconButton>
+                        </Tooltip>
+                        <div className="ml-auto text-base font-medium text-black/50">
+                          Call Id: {call.callId.substring(5)}
+                        </div>
+                      </div>
 
                       {/* Open Event Button */}
-                      {call.eventLink && (
-                        <StyledButton
-                          variant="contained"
-                          href={call.eventLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          sx={{ alignSelf: "flex-start" }}
-                        >
-                          Open Event
-                        </StyledButton>
-                      )}
                     </ListItem>
                     {index < callsWithRecipients.length - 1 && <Divider />}
                   </React.Fragment>

@@ -17,6 +17,7 @@ import {
   styled,
 } from '@mui/material';
 import { collection, query, getDocs, doc, getDoc, where } from 'firebase/firestore';
+import Layout from '../../../components/SEO/Layout';
 import { db } from '../../../firebaseConfig';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import useFetchUserData from '../../../hooks/Auth/useFetchUserData';
@@ -94,6 +95,11 @@ const Jobs = () => {
   }, [searchTerm, filter, jobs]);
 
   return (
+    <>
+     <Layout
+     title={"Your jobs"}
+         description={"Post Job Listings and Hire Qualified Candidates"}
+         keywords={"Job Posting, Hiring, Recruitment, Employer, Talent Acquisition"}/>
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4, pt: 3, pb: 6, backgroundColor: '#fafafa', borderRadius: '16px' }}>
       <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#1a1a1a', mb: 4, mt: 2 }}>
         Job Listings
@@ -168,6 +174,7 @@ const Jobs = () => {
         ))}
       </Grid>
     </Container>
+    </>
   );
 };
 

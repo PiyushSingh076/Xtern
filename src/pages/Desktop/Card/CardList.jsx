@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
 import CreateJobCard from "./CreateJobCard";
+import { ShimmerCard } from "./Card"; // Import ShimmerCard
 import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
 import { State, City } from "country-state-city";
 import {
@@ -200,15 +201,20 @@ const CardList = ({ profession }) => {
       <Box>
         {loading ? (
           <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "200px",
-            }}
-          >
-            <CircularProgress />
-          </Box>
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "repeat(auto-fill, minmax(150px, 1fr))",
+              sm: "repeat(auto-fill, minmax(300px, 1fr))",
+            },
+            gap: 3,
+          }}
+        >
+          {/* Show 6 shimmer cards while loading */}
+          {[...Array(6)].map((_, index) => (
+            <ShimmerCard key={`shimmer-${index}`} />
+          ))}
+        </Box>
         ) : filteredUsers?.length > 0 ? (
           <Box
             sx={{
