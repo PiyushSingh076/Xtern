@@ -17,6 +17,7 @@ import Loading from "../../../components/Loading";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 import { useNavigate } from "react-router-dom";
 import Jobs from "./Jobs";
+import Layout from "../../../components/SEO/Layout";
 
 export default function Homepage() {
   const navigate = useNavigate();
@@ -43,6 +44,13 @@ export default function Homepage() {
   }, [userData]);
 
   return (
+    <>
+    <Layout 
+      title={"Xpert - Hire or Become an Expert"} 
+      keywords={"expert marketplace, hire experts, freelance services, professional skills, expert hiring platform" }
+      description={"Find top experts in various fields or offer your expertise to clients. Xpert connects professionals with opportunities." }
+    />
+
     <div className="homescreen-container">
       {!userData && <LandingBanner pop={setShow} setRole={setRole} />}
       {profileData?.organization ? (
@@ -94,5 +102,6 @@ export default function Homepage() {
         </div>
       )}
     </div>
+    </>
   );
 }

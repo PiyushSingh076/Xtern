@@ -18,7 +18,15 @@ import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
 import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../../hooks/Profile/useScheduledCallsForUser";
 import toast from "react-hot-toast";
+
+import ScheduledCallsModal from "./ScheduledCallsModal";
+import { Box, Tooltip, IconButton, Chip } from "@mui/material";
+import ShareIcon from "@mui/icons-material/Share";
+import useAuthState from "../../../hooks/Authentication/useAuthState";
+import Layout from "../../../components/SEO/Layout";
+
 import { Button as ButtonM } from "@mui/material";
+
 import {
   Modal,
   Button,
@@ -29,10 +37,7 @@ import {
   Image,
   ProgressBar,
 } from "react-bootstrap";
-import ScheduledCallsModal from "./ScheduledCallsModal";
-import { Box, Tooltip, IconButton, Chip } from "@mui/material";
-import ShareIcon from "@mui/icons-material/Share";
-import useAuthState from "../../../hooks/Authentication/useAuthState";
+
 
 /**
  * Utility to safely format Firestore Timestamp or "Present"/string.
@@ -349,7 +354,18 @@ const SingleMentor = () => {
   };
 
   return (
+
+    <>
+    <Layout
+      title={profileData?.firstName ? profileData.firstName : "User Profile"} 
+      description={profileData?.firstName ? 
+        `Profile page of ${profileData.firstName}, view and manage account details.` : 
+        "User profile page to view and manage account details."} 
+      keywords={"user profile, account, settings, personal details, dashboard"}
+    />
+  
     <div key={uid} className="desktop-profile-container">
+
       <section id="profile-details-section">
         <div className="profile-details">
           <div className="profile-details-wrap">
@@ -503,7 +519,7 @@ const SingleMentor = () => {
                       variant="rectangular"
                       sx={{ width: "100%", height: "350px", marginTop: "20px" }}
                     ></Skeleton>
-                  ) : (
+                  ) : ( calls.length > 0 && 
                     <>
                       {" "}
                       <div className="flex flex-col gap-2 rounded-[10px] border border-[#e5e5e5] mt-[20px] p-[10px]">
@@ -1463,6 +1479,7 @@ const SingleMentor = () => {
         </Modal.Footer>
       </Modal>
     </div>
+    </>
   );
 };
 

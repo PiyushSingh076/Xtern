@@ -27,6 +27,7 @@ import PersonIcon from "@mui/icons-material/Person"
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import Carousel from "react-material-ui-carousel";
 import ReactPlayer from "react-player";
+import Layout from "../../../components/SEO/Layout";
 import EditServiceModal from './EditServiceModal';
 
 const db = getFirestore();
@@ -302,6 +303,8 @@ const ProjectDetails = () => {
 
 
   return (
+    <>
+    <Layout title={item?.serviceName? item.serviceName : "User Service"} />
     <div className="des-project-detail-container max-h-screen overflow-y-auto">
       <ViewModal
         open={modalOpen}
@@ -717,6 +720,7 @@ const ProjectDetails = () => {
         onSaveSuccess={handleSaveSuccess}
       />
     </div>
+    </>
   );
 };
 

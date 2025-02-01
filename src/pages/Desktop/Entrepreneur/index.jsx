@@ -44,6 +44,7 @@ import { addDoc, collection, getDocs, Timestamp } from "firebase/firestore";
 import { auth, db } from "../../../firebaseConfig";
 import { useEntrepreneurDetails } from "../../../hooks/Entrepreneur/useEntrepreneurDetails";
 import { LinkedIn } from "@mui/icons-material";
+import Layout from "../../../components/SEO/Layout";
 
 const SingleMentor = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -236,6 +237,13 @@ const SingleMentor = () => {
   };
 
   return (
+    <>
+    <Layout 
+      title={profileData?.firstName? profileData.firstName : "Entrepreneur's Profile"} 
+      keywords={"entrepreneur,user profile, account, settings, entrepreneurdetails, dashboard"} 
+      description={`Profile page of ${profileData.firstName}, view and manage account details.`} 
+    />
+
     <div className="desktop-profile-container">
       {/* Profile details section */}
       <section id="profile-details-section">
@@ -854,6 +862,7 @@ const SingleMentor = () => {
         onDeleteEvent={handleDeleteEvent}
       /> */}
     </div>
+    </>
   );
 };
 
