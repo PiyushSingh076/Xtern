@@ -262,7 +262,7 @@ const ProjectDetails = () => {
 
   return (
     <>
-    <Layout title={userData.service} />
+    <Layout title={userData?.service?userData.service : "User Service"} />
 
     <div className="des-project-detail-container">
       <ViewModal
