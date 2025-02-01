@@ -59,7 +59,7 @@ const WalletPage = () => {
   const fetchTransactions = async (uid) => {
     const data = await getTransactions(uid);
     setTransactionsData(data);
-    console.log(data);
+    console.log("Transactions",data);
   };
   useEffect(() => {
     if (userData) {
@@ -202,7 +202,7 @@ const WalletPage = () => {
     };
 
     const handleWithdrawFunds = async () => {
-      setPageLoading(true);
+      // setPageLoading(true);
       setLoading(true);
       if (validateFields()) {
         await requestWithdraw(userData.uid, amount, {
@@ -210,24 +210,24 @@ const WalletPage = () => {
           bankName,
           ifscCode,
         });
-        await fetchTransactions(userData.uid);
-        const updateAmount = await getAmountInWallet(userData.uid);
-        setBalance(updateAmount);
         // Logic for withdrawal (e.g., API call)
+        onClose();
         console.log({
           accountNumber,
           bankName,
           ifscCode,
           amount: parseFloat(amount),
         });
-        // Clear fields and close modal
-        setAccountNumber("");
-        setBankName("");
-        setIfscCode("");
-        setAmount("");
-        setErrors({});
-        onClose();
+        // setAccountNumber("");
+        // setBankName("");
+        // setIfscCode("");
+        // setAmount("");
+        // setErrors({});
       }
+      setPageLoading(true)
+      const updateAmount = await getAmountInWallet(userData.uid);
+      setBalance(updateAmount);
+      await fetchTransactions(userData.uid);
       setLoading(false);
       setPageLoading(false);
     };
@@ -325,8 +325,9 @@ const WalletPage = () => {
             onClick={handleWithdrawFunds}
             variant="contained"
             color="primary"
+            disabled={loading}
           >
-            Withdraw
+            {loading ? <>Withdrawing...</> : <>Withdraw</>}
           </Button>
         </DialogActions>
       </Dialog>
@@ -505,6 +506,7 @@ const WalletPage = () => {
                       <TableCell className="!hidden sm:!table-cell">
                         Date
                       </TableCell>
+                      <TableCell align="center">Transaction ID</TableCell>
                       <TableCell align="center">Type</TableCell>
                     </TableRow>
                   </TableHead>
@@ -535,6 +537,7 @@ const WalletPage = () => {
                                 ).format("DD-MM-YYYY")
                               : "N/A"}
                           </TableCell>
+                          <TableCell align="center">{transaction.id}</TableCell>
                           <TableCell align="center">
                             {transaction.type === "CREDIT" ? (
                               <Chip label="CREDIT" color="success"></Chip>
