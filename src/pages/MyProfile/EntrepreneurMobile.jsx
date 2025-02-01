@@ -696,14 +696,7 @@ const EntrepreneurMobile = () => {
       </Modal>
 
       {/* Scheduled Calls Modal */}
-      <ScheduledCallsModal
-        open={callsModalOpen}
-        onClose={closeScheduledCallsModal}
-        loading={callsLoading}
-        calls={calls}
-        error={callsError}
-        onDeleteEvent={handleDeleteEvent}
-      />
+      
     </>
   );
 };
