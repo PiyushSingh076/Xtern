@@ -81,11 +81,11 @@ const SingleMentor = () => {
     loading: scheduleLoading,
     isInitialized,
   } = useGoogleCalendar();
-  const {
-    calls,
-    loading: callsLoading,
-    error: callsError,
-  } = useScheduledCallsForUser(currentUser?.uid);
+  // const {
+  //   calls,
+  //   loading: callsLoading,
+  //   error: callsError,
+  // } = useScheduledCallsForUser(currentUser?.uid);
   const handleDateChange = (date) => {
     setInterviewDate(date);
     setCurrentStep(2);
@@ -239,9 +239,9 @@ const SingleMentor = () => {
   return (
     <>
     <Layout 
-      title={profileData?.firstName? profileData.firstName : "Entrepreneur's Profile"} 
+      title={profileData?.firstName ? profileData.firstName : "Entrepreneur's Profile"} 
       keywords={"entrepreneur,user profile, account, settings, entrepreneurdetails, dashboard"} 
-      description={`Profile page of ${profileData.firstName}, view and manage account details.`} 
+      description={`Profile page of ${profileData?.firstName}, view and manage account details.`} 
     />
 
     <div className="desktop-profile-container">

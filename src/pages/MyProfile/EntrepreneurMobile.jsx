@@ -74,11 +74,11 @@ const EntrepreneurMobile = () => {
     isInitialized,
   } = useGoogleCalendar();
 
-  const {
-    calls,
-    loading: callsLoading,
-    error: callsError,
-  } = useScheduledCallsForUser(currentUser?.uid);
+  // const {
+  //   calls,
+  //   loading: callsLoading,
+  //   error: callsError,
+  // } = useScheduledCallsForUser(currentUser?.uid);
 
   // Editable state
   const [editable, setEditable] = useState(false);
