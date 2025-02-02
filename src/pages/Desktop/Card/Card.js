@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import "./Card.css";
 import { useNavigate } from "react-router-dom";
 import { Chip, Stack, Tooltip, Skeleton  } from "@mui/material";
@@ -7,6 +7,8 @@ import CallIcon from "@mui/icons-material/Call";
 import ChatIcon from "@mui/icons-material/Chat";
 import InfoIcon from "@mui/icons-material/Info";
 import WorkIcon from "@mui/icons-material/Work";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle"
+import CancelIcon from "@mui/icons-material/Cancel"
 
 // ShimmerCard component
 export const ShimmerCard = () => (
@@ -93,7 +95,8 @@ const formatName = (name) => {
 };
 
 const Card = ({ data }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const [isHovered, setIsHovered] = useState(false)
 
   const handleChatClick = (event) => {
     event.stopPropagation();
@@ -118,154 +121,142 @@ const Card = ({ data }) => {
   };
 
   const {
-    photo_url,
     firstName,
     lastName,
+    photo_url,
     experience,
     consultingPrice,
-    phone_number,
     type,
     skillSet,
-    city,
     state,
+    city,
+    phone_number,
     uid,
+    isPhoneVerified,
   } = data;
 
   const MAX_VISIBLE_SKILLS = 3;
 
   const renderSkills = (skills) => {
     if (!skills || skills.length === 0) {
-      return (
-        <Chip
-          label="No Skills Added"
-          color="default"
-          variant="outlined"
-          size="small"
-        />
-      );
+      return <Chip label="No Skills Added" color="default" variant="outlined" size="small" />
     }
 
-    // Check if screen width is less than 480px
-    const isSmallScreen = window.innerWidth < 480;
-
-    // Display only the first skill on small screens
-    const visibleSkills = isSmallScreen
-      ? [skills[0]]
-      : skills.slice(0, MAX_VISIBLE_SKILLS);
-    const extraSkills =
-      skills.length > MAX_VISIBLE_SKILLS
-        ? skills.slice(MAX_VISIBLE_SKILLS)
-        : [];
+    // Show all skills when hovered, otherwise show limited skills
+    const visibleSkills = isHovered
+      ? skills
+      : window.innerWidth < 480
+        ? [skills[0]]
+        : skills.slice(0, MAX_VISIBLE_SKILLS)
+    const extraSkills = !isHovered && skills.length > MAX_VISIBLE_SKILLS ? skills.slice(MAX_VISIBLE_SKILLS) : []
 
     return (
-      <Stack direction="row" spacing={1}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          flexWrap: "wrap",
+          gap: "4px",
+          justifyContent: "center",
+        }}
+      >
         {visibleSkills.map((skillObj) => (
-          <Tooltip
-            title={`Rating: ${skillObj.skillRating}/5`}
-            key={skillObj.skill}
-          >
-            <Chip
-              label={skillObj.skill}
-              color="primary"
-              variant="outlined"
-              size="small"
-            />
+          <Tooltip title={`Rating: ${skillObj.skillRating}/5`} key={skillObj.skill}>
+            <Chip label={skillObj.skill} color="primary" variant="outlined" size="small" />
           </Tooltip>
         ))}
 
-        {extraSkills.length > 0 && (
+        {!isHovered && extraSkills.length > 0 && (
           <Tooltip
-            title={extraSkills
-              .map(
-                (skillObj) =>
-                  `${skillObj.skill} (Rating: ${skillObj.skillRating}/5)`
-              )
-              .join(", ")}
+            title={extraSkills.map((skillObj) => `${skillObj.skill} (Rating: ${skillObj.skillRating}/5)`).join(", ")}
           >
-            <Chip
-              label={`+${extraSkills.length}`}
-              color="primary"
-              variant="outlined"
-              size="small"
-            />
+            <Chip label={`+${extraSkills.length}`} color="primary" variant="outlined" size="small" />
           </Tooltip>
         )}
       </Stack>
-    );
-  };
+    )
+  }
 
   return (
     <div
-      className="card"
+      className={`card ${isHovered ? "card-hovered" : ""}`}
       onClick={handleCardClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{ cursor: "pointer" }}
     >
-      <div
-        className="profile-image"
-        style={{
-          width: "85px",
-          height: "85px",
-          borderRadius: "50%",
-          overflow: "hidden",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          border: "1px solid #ccc",
-        }}
-      >
-        <img
-          src={
-            photo_url
-              ? photo_url
-              : "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg"
-          }
-          alt={`${firstName} ${lastName}`}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
-      </div>
+      <div className="card-content">
+        <div className="profile-image">
+          <img
+            src={
+              data.photo_url ||
+              "https://static.vecteezy.com/system/resources/previews/020/213/738/non_2x/add-profile-picture-icon-upload-photo-of-social-media-user-vector.jpg" ||
+              "/placeholder.svg"
+            }
+            alt={`${data.firstName} ${data.lastName}`}
+          />
+        </div>
 
-      {/* format the name if it is entered in all caps or the length of 
-      the name in the card overflow then display the first name only */}
-      <span className="filter-card-name">
-        {`${formatName(firstName)}${
-          `${firstName} ${lastName}`.length > 12
-            ? ""
-            : ` ${formatName(lastName)}`
-        }`}
-      </span>
-      {/* <span>Experience: {experience}</span> */}
-      <span>
-        {window.innerWidth < 480 ? (
-          <WorkIcon sx={{ color: "#0a65fc" }} />
-        ) : (
-          "Experience:"
-        )}{" "}
-        {experience} {experience === 1 ? "Year" : "Years"}
-      </span>
-
-      {consultingChargesConfig[type?.toLowerCase()] && consultingPrice && (
-        <span>
-          <span style={{ color: "#009DED" }}>&#8377;{consultingPrice}/min</span>
+        <span className="filter-card-name">
+          {`${formatName(data.firstName)}${`${data.firstName} ${data.lastName}`.length > 12 ? "" : ` ${formatName(data.lastName)}`}`}
         </span>
-      )}
 
-      {(type === "Developer" || type === "Intern") && (
-        <div style={{ marginTop: "10px" }}>{renderSkills(skillSet)}</div>
-      )}
+        <span className="experience">
+          {window.innerWidth < 480 ? <WorkIcon sx={{ color: "#0a65fc" }} /> : "Experience:"} {data.experience}{" "}
+          {data.experience === 1 ? "Year" : "Years"}
+        </span>
 
-      <div
-        className="location-details"
-        style={{ marginTop: "10px", color: "#777" }}
-      >
-        {state && <span>📍 {state}</span>}
-        {city && <span style={{ marginRight: "10px" }}>, {city}</span>}
+        {consultingChargesConfig[data.type?.toLowerCase()] && data.consultingPrice && (
+          <span className="price">
+            <span>&#8377;{data.consultingPrice}/min</span>
+          </span>
+        )}
+
+        {(data.type === "Developer" || data.type === "Intern") && (
+          <div className="skills-container">{renderSkills(data.skillSet)}</div>
+        )}
+
+        <div className="location-details">
+          {data.state && <span>📍 {data.state}</span>}
+          {data.city && <span>, {data.city}</span>}
+        </div>
+
+        {/* Netflix-style expanded content */}
+        <div className={`expanded-content ${isHovered ? "show" : ""}`}>
+          {data.email && (
+            <div className="info-row">
+              <span className="info-label">Email:</span>
+              <span className="info-value">{data.email}</span>
+            </div>
+          )}
+          {data.phone_number && (
+            <div className="info-row">
+              <span className="info-label">Phone:</span>
+              <span className="info-value">{data.phone_number}</span>
+            </div>
+          )}
+          {data.type && (
+            <div className="info-row">
+              <span className="info-label">Type:</span>
+              <span className="info-value">{data.type}</span>
+            </div>
+          )}
+          {data.consultingDuration && (
+            <div className="info-row">
+              <span className="info-label">Duration:</span>
+              <span className="info-value">{`${data.consultingDuration} ${data.consultingDurationType || ""}`}</span>
+            </div>
+          )}
+          <div className="info-row">
+            <span className="info-label">Verified:</span>
+            <span className="info-value">
+              {data.isPhoneVerified ? <CheckCircleIcon color="primary" /> : <CancelIcon color="error" />}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="card-footer" style={{ marginTop: "15px" }}>
+      <div className="card-footer">
         <button onClick={handleCallClick}>
           <span className="footer-text">Call</span>
           <CallIcon className="footer-icon" />
@@ -275,9 +266,9 @@ const Card = ({ data }) => {
           <ChatIcon className="footer-icon" />
         </button>
         <button
-          onClick={(event) => {
-            event.stopPropagation();
-            navigate(`/profile/${uid}`);
+          onClick={(e) => {
+            e.stopPropagation()
+            navigate(`/profile/${data.uid}`)
           }}
         >
           <span className="footer-text">Details</span>
@@ -285,7 +276,8 @@ const Card = ({ data }) => {
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Card;
+export default Card
+

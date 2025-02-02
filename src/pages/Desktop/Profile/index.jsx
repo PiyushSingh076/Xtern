@@ -352,9 +352,8 @@ const SingleMentor = () => {
     intern: true, // Interns cannot click
     // Add more user types here as needed
   };
-
   return (
-
+    
     <>
     <Layout
       title={profileData?.firstName ? profileData.firstName : "User Profile"} 
@@ -715,7 +714,7 @@ const SingleMentor = () => {
                 })}
               </div>
             ) : (
-              <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <div style={{ textAlign: "center", marginTop: "20px" }} className="No-work">
                 <FaRegFolderOpen size={50} color="#ccc" />
                 <p>No services available</p>
               </div>
@@ -794,10 +793,10 @@ const SingleMentor = () => {
                       >
                         <div className="work-logo-container">
                           <img
-                            src="https://cdn-icons-png.flaticon.com/512/10655/10655913.png"
+                            src={work?.companyLogo || "https://cdn-icons-png.flaticon.com/512/10655/10655913.png"}
                             className="educ-logo"
                             alt="Company Logo"
-                            style={{ width: "100px", height: "100px" }}
+                            
                           />
                         </div>
                         <div className="experience-info">
@@ -807,7 +806,7 @@ const SingleMentor = () => {
                             {formatDateGeneric(work?.startDate)} -{" "}
                             {formatDateGeneric(work?.endDate)}
                           </p>
-                          <Tooltip
+                          <Button className="view-description"
                             title={
                               work.description || "No description available"
                             }
@@ -818,16 +817,15 @@ const SingleMentor = () => {
                               className="desc-toggle-text"
                               onClick={() => toggleWorkDesc(index)}
                               style={{
-                                color: "blue",
                                 cursor: "pointer",
-                                textDecoration: "underline",
+                    
                               }}
                             >
                               {workOpen[index]
                                 ? "Hide Description"
                                 : "View Description"}
                             </span>
-                          </Tooltip>
+                          </Button>
                           {workOpen[index] && (
                             <div style={{ marginTop: 5 }}>
                               {work?.description || "No description available"}
@@ -837,7 +835,7 @@ const SingleMentor = () => {
                       </div>
                     ))
                   ) : (
-                    <div style={{ textAlign: "center", marginTop: "20px" }}>
+                    <div className="No-work" style={{ textAlign: "center", marginTop: "20px" }}>
                       <FaRegFolderOpen size={50} color="#ccc" />
                       <p>No work experience found</p>
                     </div>
@@ -885,7 +883,7 @@ const SingleMentor = () => {
                       </div>
                     ))
                   ) : (
-                    <div style={{ textAlign: "center", marginTop: "20px" }}>
+                    <div className="No-work" style={{ textAlign: "center", marginTop: "20px" }}>
                       <FaRegFolderOpen size={50} color="#ccc" />
                       <p>No education details found</p>
                     </div>
@@ -915,14 +913,14 @@ const SingleMentor = () => {
                       >
                         <div className="work-logo-container">
                           <img
-                            src="https://static.vecteezy.com/system/resources/previews/027/269/443/original/color-icon-for-project-vector.jpg"
+                            src={project?.projectLogo || "https://cdn-icons-png.flaticon.com/512/1087/1087815.png"}
                             className="educ-logo"
                             alt="Project Logo"
                             style={{ width: "100px", height: "100px" }}
                           />
                         </div>
                         <div className="experience-info">
-                          <h4>{project?.projectName}</h4>
+                          <h3>{project?.projectName}</h3>
                           {project?.duration && <h6>{project?.duration}</h6>}
                           {project?.techstack &&
                             project?.techstack.length > 0 && (
@@ -938,29 +936,9 @@ const SingleMentor = () => {
                               </div>
                             )}
                           <div className="desc-view-btn-container">
-                            {/* Tooltip for Live Link */}
-                            {project?.liveDemo && (
-                              <Tooltip
-                                title={project.liveDemo}
-                                arrow
-                                placement="top"
-                              >
-                                <a
-                                  href={project.liveDemo}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="link-btn"
-                                  style={{
-                                    marginRight: "10px", // Add spacing between link and description
-                                  }}
-                                >
-                                  Live Link
-                                </a>
-                              </Tooltip>
-                            )}
-
+                          
                             {/* Tooltip for View Description */}
-                            <Tooltip
+                            <Button className="project-des"
                               title={
                                 project.description ||
                                 "No description available"
@@ -972,16 +950,18 @@ const SingleMentor = () => {
                                 className="desc-toggle-text"
                                 onClick={() => toggleProjectDesc(index)}
                                 style={{
-                                  color: "blue",
+                                  color: "white",
                                   cursor: "pointer",
-                                  textDecoration: "underline",
+                                  
                                 }}
                               >
                                 {projectOpen[index]
                                   ? "Hide Description"
                                   : "View Description"}
                               </span>
-                            </Tooltip>
+                            </Button>
+                            
+
                           </div>
 
                           {projectOpen[index] && (
@@ -989,12 +969,33 @@ const SingleMentor = () => {
                               {project?.description ||
                                 "No description available"}
                             </div>
+                    
                           )}
+                          {project?.liveDemo && (
+                              <Tooltip 
+                                title={project.liveDemo}
+                                arrow
+                                placement="top"
+                              >
+                                <Button
+                                  href={project.liveDemo}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="live-link-button"
+                                  style={{
+                                    marginRight: "10px", // Add spacing between link and description
+                                  }}
+                                >
+                                  Live Link
+                                </Button>
+                              </Tooltip>
+                            )}
                         </div>
+                        
                       </div>
                     ))
                   ) : (
-                    <div style={{ textAlign: "center", marginTop: "20px" }}>
+                    <div style={{ textAlign: "center", marginTop: "20px" }} className="No-work">
                       <FaRegFolderOpen size={50} color="#ccc" />
                       <p>No projects found</p>
                     </div>
