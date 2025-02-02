@@ -21,7 +21,7 @@ import {
   Grid,
   Skeleton,
 } from "@mui/material";
-import { Plus, ArrowDownCircle, X,  } from "lucide-react";
+import { Plus, ArrowDownCircle, X } from "lucide-react";
 import Layout from "../../../components/SEO/Layout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
@@ -29,9 +29,7 @@ import useWallet from "../../../hooks/Wallet/useWallet";
 import { useTransactions } from "../../../hooks/Wallet/useTransactions";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import WalletPageSkeleton from './WalletPageSkeleton';
-
-
+import WalletPageSkeleton from "./WalletPageSkeleton";
 
 const WalletPage = () => {
   const { userData } = useFetchUserData();
@@ -45,6 +43,7 @@ const WalletPage = () => {
   const [balance, setBalance] = useState(10);
   const { wallet, loaded, getTransactions, getAmountInWallet } = useWallet();
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState(0);
 
   useEffect(() => {
     if (loaded === true) {
@@ -59,7 +58,7 @@ const WalletPage = () => {
   const fetchTransactions = async (uid) => {
     const data = await getTransactions(uid);
     setTransactionsData(data);
-    console.log("Transactions",data);
+    console.log("Transactions", data);
   };
   useEffect(() => {
     if (userData) {
@@ -108,62 +107,61 @@ const WalletPage = () => {
       }
     };
 
-    
-
     return (
       <>
-      <Layout 
-         title={"Wallet"}
-         description={"Add Funds to your Wallet and Withdraw Funds Securly"}
-         keywords={"Withdraw,Add Funds,Transactions"}/>
-      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Add Funds</DialogTitle>
-        <DialogContent>
-          <Box sx={{ position: "relative", mt: 2 }}>
-            <Typography
-              sx={{
-                position: "absolute",
-                left: "14px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "text.secondary",
-              }}
+        <Layout
+          title={"Wallet"}
+          description={"Add Funds to your Wallet and Withdraw Funds Securly"}
+          keywords={"Withdraw,Add Funds,Transactions"}
+        />
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+          <DialogTitle>Add Funds</DialogTitle>
+          <DialogContent>
+            <Box sx={{ position: "relative", mt: 2 }}>
+              <Typography
+                sx={{
+                  position: "absolute",
+                  left: "14px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "text.secondary",
+                }}
+              >
+                ₹
+              </Typography>
+              <TextField
+                fullWidth
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount"
+                InputProps={{
+                  sx: { paddingLeft: "24px" },
+                }}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onClose} variant="outlined" color="inherit">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddFunds}
+              variant="contained"
+              className="flex gap-2"
+              color="primary"
             >
-              ₹
-            </Typography>
-            <TextField
-              fullWidth
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter amount"
-              InputProps={{
-                sx: { paddingLeft: "24px" },
-              }}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} variant="outlined" color="inherit">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleAddFunds}
-            variant="contained"
-            className="flex gap-2"
-            color="primary"
-          >
-            {loading ? (
-              <>
-                Please Wait
-                <div className="spinner-border-sm spinner-border"></div>
-              </>
-            ) : (
-              "Add Funds"
-            )}
-          </Button>
-        </DialogActions>
-      </Dialog>
+              {loading ? (
+                <>
+                  Please Wait
+                  <div className="spinner-border-sm spinner-border"></div>
+                </>
+              ) : (
+                "Add Funds"
+              )}
+            </Button>
+          </DialogActions>
+        </Dialog>
       </>
     );
   };
@@ -224,7 +222,7 @@ const WalletPage = () => {
         // setAmount("");
         // setErrors({});
       }
-      setPageLoading(true)
+      setPageLoading(true);
       const updateAmount = await getAmountInWallet(userData.uid);
       setBalance(updateAmount);
       await fetchTransactions(userData.uid);
@@ -398,8 +396,6 @@ const WalletPage = () => {
     return <WalletPageSkeleton />;
   }
 
-  
-
   return (
     <Box
       sx={{ p: 3, bgcolor: "#f5f5f5" }}
@@ -490,73 +486,168 @@ const WalletPage = () => {
         </Paper>
 
         {/* Right Section */}
-        <Paper sx={{ flex: 1, p: 3, borderRadius: 2 }}>
-          <Typography variant="h6" fontWeight="medium" sx={{ mb: 3 }}>
-            Transaction History
-          </Typography>
-
-          {transactionsData && (
+        <Paper className="h-[80vh]" sx={{ flex: 1, p: 3, borderRadius: 2 }}>
+          <div className="flex w-full ">
+            <button
+              onClick={() => setTab(0)}
+              className={`px-4 py-2 shrink-0 text-black/60 transition-all hover:text-blue-500 border-b-2 ${
+                tab == 0 && "border-blue-500 text-blue-500"
+              } font-bold`}
+            >
+              Transactions
+            </button>
+            <button
+              onClick={() => setTab(1)}
+              className={`px-4 py-2 shrink-0 hover:text-blue-500 transition-all  text-black/60 border-b-2 ${
+                tab == 1 && "border-blue-500 text-blue-500"
+              } font-bold`}
+            >
+              Order History
+            </button>
+            <div className="w-full border-b-2 border-gray-200"></div>
+          </div>
+          {tab == 0 ? (
             <>
-              <TableContainer className="max-h-[400px] ">
-                <Table stickyHeader className="relative">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Amount</TableCell>
-                      <TableCell>Description</TableCell>
-                      <TableCell className="!hidden sm:!table-cell">
-                        Date
-                      </TableCell>
-                      <TableCell align="center">Transaction ID</TableCell>
-                      <TableCell align="center">Type</TableCell>
-                    </TableRow>
-                  </TableHead>
-
+              <div id="transaction-history" className="">
+                {transactionsData && (
                   <>
-                    <TableBody>
-                      {pageLoading && (
-                        <>
+                    <TableContainer className="max-h-[400px] ">
+                      <Table stickyHeader className="relative">
+                        <TableHead>
                           <TableRow>
-                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
-                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
-                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
-                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                            <TableCell>Amount</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell className="!hidden sm:!table-cell">
+                              Date
+                            </TableCell>
+                            <TableCell align="center">Transaction ID</TableCell>
+                            <TableCell align="center">Type</TableCell>
                           </TableRow>
-                        </>
-                      )}
-                      {transactionsData.map((transaction, index) => (
-                        <TableRow key={index} hover>
-                          <TableCell>₹{transaction.amount}</TableCell>
-                          <TableCell>{transaction.description}</TableCell>
-                          <TableCell className="!hidden sm:!table-cell" l>
-                            {transaction.date
-                              ? dayjs(
-                                  new Timestamp(
-                                    transaction.date.seconds,
-                                    transaction.date.nanoseconds
-                                  ).toDate()
-                                ).format("DD-MM-YYYY")
-                              : "N/A"}
-                          </TableCell>
-                          <TableCell align="center">{transaction.id}</TableCell>
-                          <TableCell align="center">
-                            {transaction.type === "CREDIT" ? (
-                              <Chip label="CREDIT" color="success"></Chip>
-                            ) : transaction.type === "DEBIT" ? (
+                        </TableHead>
+
+                        <>
+                          <TableBody>
+                            {pageLoading && (
                               <>
-                                <Chip label="DEBIT" color="error"></Chip>
-                              </>
-                            ) : (
-                              <>
-                                <Chip label="PENDING" color="info"></Chip>
+                                <TableRow>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                </TableRow>
                               </>
                             )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
+                            {transactionsData.map((transaction, index) => (
+                              <TableRow key={index} hover>
+                                <TableCell>₹{transaction.amount}</TableCell>
+                                <TableCell>{transaction.description}</TableCell>
+                                <TableCell className="!hidden sm:!table-cell" l>
+                                  {transaction.date
+                                    ? dayjs(
+                                        new Timestamp(
+                                          transaction.date.seconds,
+                                          transaction.date.nanoseconds
+                                        ).toDate()
+                                      ).format("DD-MM-YYYY")
+                                    : "N/A"}
+                                </TableCell>
+                                <TableCell align="center">
+                                  {transaction.id}
+                                </TableCell>
+                                <TableCell align="center">
+                                  {transaction.type === "CREDIT" ? (
+                                    <Chip label="CREDIT" color="success"></Chip>
+                                  ) : transaction.type === "DEBIT" ? (
+                                    <>
+                                      <Chip label="DEBIT" color="error"></Chip>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Chip label="PENDING" color="info"></Chip>
+                                    </>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </>
+                      </Table>
+                    </TableContainer>
                   </>
-                </Table>
-              </TableContainer>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <div id="order-history" className="">
+                {transactionsData && (
+                  <>
+                    <TableContainer className="max-h-[400px] ">
+                      <Table stickyHeader className="relative">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Amount</TableCell>
+
+                            <TableCell className="!hidden sm:!table-cell">
+                              Date
+                            </TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell align="center">Transaction ID</TableCell>
+                          </TableRow>
+                        </TableHead>
+
+                        <>
+                          <TableBody>
+                            {pageLoading && (
+                              <>
+                                <TableRow>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                </TableRow>
+                              </>
+                            )}
+                            {transactionsData.map((transaction, index) => {
+                              if (transaction.type === "DEBIT") {
+                                return (
+                                  <>
+                                    <TableRow key={index} hover>
+                                      <TableCell>
+                                        ₹{transaction.amount}
+                                      </TableCell>
+
+                                      <TableCell
+                                        className="!hidden sm:!table-cell"
+                                        l
+                                      >
+                                        {transaction.date
+                                          ? dayjs(
+                                              new Timestamp(
+                                                transaction.date.seconds,
+                                                transaction.date.nanoseconds
+                                              ).toDate()
+                                            ).format("DD-MM-YYYY")
+                                          : "N/A"}
+                                      </TableCell>
+                                      <TableCell>
+                                        {transaction.description}
+                                      </TableCell>
+                                      <TableCell align="center">
+                                        {transaction.id}
+                                      </TableCell>
+                                    </TableRow>
+                                  </>
+                                );
+                              }
+                            })}
+                          </TableBody>
+                        </>
+                      </Table>
+                    </TableContainer>
+                  </>
+                )}
+              </div>
             </>
           )}
         </Paper>
