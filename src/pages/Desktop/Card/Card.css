@@ -3,25 +3,72 @@
 /* Card List Container */
 /* Flex container for all cards */
 .card-list {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 32px;
-  justify-content: center;
-  flex-wrap: wrap; /* Allows cards to wrap if there isn't enough space */
-  padding-top: 2rem;
+  padding: 2rem;
+  position: relative;
 }
 
-/* Individual card styling */
+/* Card wrapper styles */
+.card-wrapper {
+  position: relative;
+  z-index: 1;
+  transition: z-index 0s 0.3s;
+}
+
+/* Card base styles */
 .card {
-  width: 300px;
-  height: auto; /* Ensure it adjusts based on content */
+  width: 100%;
+  height: 100%;
   border-radius: 20px;
   padding: 16px;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
-  flex-direction: column; /* Makes sure the content inside the card flows vertically */
+  flex-direction: column;
   align-items: center;
-  /* margin-bottom: 10px;  Space between cards */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Expanded content styles */
+.expanded-content {
+  max-height: 0;
+  opacity: 0;
+  width: 100%;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: white;
+  border-radius: 12px;
+  margin-top: 0;
+}
+
+/* Desktop hover effects */
+@media (min-width: 1024px) {
+  .card-wrapper:hover {
+    z-index: 100;
+    transition: z-index 0s;
+  }
+
+  .card-wrapper:hover .card {
+    transform: scale(1.1);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  }
+
+  .card-wrapper:hover .expanded-content {
+    max-height: 300px;
+    opacity: 1;
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid #eee;
+  }
+}
+
+/* Keep existing mobile styles */
+@media (max-width: 1023px) {
+  .card-wrapper:hover .card {
+    transform: scale(1.05);
+  }
 }
 /* Card Header (Profile Picture) */
 .card .profile-image img {
@@ -106,6 +153,81 @@
   outline: none;
   box-shadow: 0 0 0 2px #0056b3; /* Focused state */
 }
+.card-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-image {
+  width: 85px;
+  height: 85px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.expanded-content {
+  max-height: 0;
+  opacity: 0;
+  width: 100%;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: white;
+  border-radius: 12px;
+  margin-top: 0;
+}
+
+.expanded-content.show {
+  max-height: 300px;
+  opacity: 1;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #eee;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.skills-container {
+  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
 
 /* Media Queries for responsiveness */
 @media (max-width: 768px) {
@@ -159,13 +281,22 @@
   .card-footer button .footer-icon {
     display: none; /* Hide icons in tablet view to save space */
   }
+  
 }
 
 @media (max-width: 480px) {
   .card {
     max-width: 220px;
-    padding: 5px;
-    height: auto;
+    padding: 8px;
+  }
+
+  .hover-content {
+    padding: 0 8px;
+  }
+
+  .hover-item {
+    padding: 6px 0;
+    font-size: 12px;
   }
 
   .card .profile-image img {
