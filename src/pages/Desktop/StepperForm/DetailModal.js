@@ -111,6 +111,12 @@ const DetailModal = ({ modalType, handleSubmit, closeModal }) => {
                 placeholder="Company Name"
                 required
               />
+              <label>Company Logo:</label>
+              <input type="file" 
+                      name="companyLogo" 
+                      accept="image/*" 
+                      onChange={handleFileChange} />
+
               <div className="main-date-container">
                 <div className="date-container">
                   <span>Start</span>
