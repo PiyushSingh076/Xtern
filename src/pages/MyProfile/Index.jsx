@@ -948,6 +948,12 @@ const MobileSingleMentor = () => {
     <>
       <Layout description="this is the user's page" title={profileData?.firstName? "Viewing profile":profileData.firstName} />
 
+
+      <Layout description="this is the user's page" title={profileData?.firstName==null?"Viewing profile":profileData.firstName} />
+
+
+
+
       {/* Main Content Section */}
       <section id="single-mentor-sec" style={styles.container}>
         <div className="single-mentor-sec-wrap">

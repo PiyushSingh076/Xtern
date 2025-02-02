@@ -57,7 +57,7 @@ const useFetchUserData = () => {
       }
     
     onAuthStateChanged(auth, (userData) => {
-      console.log("User Data",userData)
+      // console.log("User Data",userData)
       if (userData) {
         fetchUserData();
       } else {

@@ -1,7 +1,34 @@
-// src/components/StepperForm/DetailModal.js
-import React from "react";
+import React, { useState } from "react";
 
 const DetailModal = ({ modalType, handleSubmit, closeModal }) => {
+  const [modalFormData, setModalFormData] = useState({
+    startDate: "",
+    endDate: "",
+  });
+  const [dateError, setDateError] = useState("");
+
+  const handleStartDateChange = (e) => {
+    const newStartDate = e.target.value;
+    setModalFormData((prev) => ({
+      ...prev,
+      startDate: newStartDate,
+      endDate: prev.endDate && new Date(newStartDate) > new Date(prev.endDate) ? "" : prev.endDate, // Reset invalid end date
+    }));
+  };
+
+  const handleEndDateChange = (e) => {
+    const newEndDate = e.target.value;
+    if (new Date(newEndDate) < new Date(modalFormData.startDate)) {
+      setDateError("⚠️ Please select a correct date.");
+    } else {
+      setDateError("");
+    }
+    setModalFormData((prev) => ({
+      ...prev,
+      endDate: newEndDate,
+    }));
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-container">
@@ -29,6 +56,8 @@ const DetailModal = ({ modalType, handleSubmit, closeModal }) => {
                     name="startDate"
                     className="input-date"
                     required
+                    value={modalFormData.startDate}
+                    onChange={handleStartDateChange}
                   />
                 </div>
                 <div className="date-container">
@@ -36,9 +65,14 @@ const DetailModal = ({ modalType, handleSubmit, closeModal }) => {
                   <input
                     type="date"
                     name="endDate"
-                    className="input-date"
+                    className={`input-date ${dateError ? "error" : ""}`}
                     required
+                    value={modalFormData.endDate}
+                    onChange={handleEndDateChange}
                   />
+                  {dateError && (
+                    <p className="error-message">{dateError}</p>
+                  )}
                 </div>
               </div>
               <label>CGPA:</label>
@@ -91,6 +125,8 @@ const DetailModal = ({ modalType, handleSubmit, closeModal }) => {
                     name="startDate"
                     className="input-date"
                     required
+                    value={modalFormData.startDate}
+                    onChange={handleStartDateChange}
                   />
                 </div>
                 <div className="date-container">
@@ -98,9 +134,14 @@ const DetailModal = ({ modalType, handleSubmit, closeModal }) => {
                   <input
                     type="date"
                     name="endDate"
-                    className="input-date"
+                    className={`input-date ${dateError ? "error" : ""}`}
                     required
+                    value={modalFormData.endDate}
+                    onChange={handleEndDateChange}
                   />
+                  {dateError && (
+                    <p className="error-message">{dateError}</p>
+                  )}
                 </div>
               </div>
             </>
@@ -156,7 +197,9 @@ const DetailModal = ({ modalType, handleSubmit, closeModal }) => {
             </>
           )}
           <div className="modal-buttons">
-            <button type="submit">Save</button>
+            <button type="submit" disabled={dateError}>
+              Save
+            </button>
             <button type="button" onClick={closeModal}>
               Cancel
             </button>
