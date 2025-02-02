@@ -217,6 +217,7 @@ const CardList = ({ profession }) => {
         </Box>
         ) : filteredUsers?.length > 0 ? (
           <Box
+          classNam="card-list"
             sx={{
               display: "grid",
               gridTemplateColumns: {
@@ -224,24 +225,20 @@ const CardList = ({ profession }) => {
                 sm: "repeat(auto-fill, minmax(300px, 1fr))",
               },
               gap: 3,
+               position: "relative",
+        padding: 4,
             }}
           >
             {/* this card is displayed only for users whose role is entrepreneur */}
             {(userData?.type ?? "") === ENTREPRENEUR_ROLE && <CreateJobCard />}
 
-            {filteredUsers.map((data, index) => (
-              <Box
-                key={index}
-                onMouseEnter={() => setHoveredCardId(data.uid)}
-                onMouseLeave={() => setHoveredCardId(null)}
-                sx={{ position: "relative", display: "inline-block" }}
-              >
-                <Card data={data} />
-
-                {/* Show PopupDetails when a card is hovered */}
-                {hoveredCardId === data.uid && <PopupDetails data={data} />}
-              </Box>
-            ))}
+            {/* <div className="card-list"> */}
+      {users?.map((data, index) => (
+        <div className="card-wrapper" key={index}>
+          <Card data={data} />
+        </div>
+      ))}
+    {/* </div> */}
           </Box>
         ) : (
           <Box
