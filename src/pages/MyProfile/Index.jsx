@@ -946,9 +946,11 @@ const MobileSingleMentor = () => {
 
   return (
     <>
-      <Layout description="this is the user's page" 
-          title={profileData && profileData.firstName ? profileData.firstName : "Viewing profile"} 
-        />
+
+
+      <Layout description="this is the user's page" title={profileData?.firstName==null?"Viewing profile":profileData.firstName} />
+
+
 
 
       {/* Main Content Section */}
