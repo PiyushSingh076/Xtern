@@ -11,6 +11,7 @@ import TimeIcon from "../assets/images/single-courses/time-icon.svg";
 import LockIconSvg from "../assets/images/single-courses/lock-icon.svg";
 import DisableLockSvg from "../assets/images/single-courses/disable-lock.svg";
 import Loading from "../components/Loading";
+import Layout from "../components/SEO/Layout";
 const SingleJobDescription = () => {
   const [isBookmarked, setIsBookmarked] = useState(true);
 
@@ -46,6 +47,11 @@ const SingleJobDescription = () => {
 
   return (
     <>
+    <Layout
+        title={"viewjobs"}
+        description={"Browse and Explore Job Opportunities"}
+        keywords={"View Jobs, Job Listings, Career Opportunities, Employment, Hiring"}
+      />
       {/* <!-- Header start --> */}
       <header id="top-navbar" className="top-navbar">
         <div className="container">
