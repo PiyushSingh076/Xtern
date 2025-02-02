@@ -800,7 +800,7 @@ const MobileSingleMentor = () => {
     calls,
     loading: callsLoading,
     error: callsError,
-  } = useScheduledCallsForUser(uid);
+  } = useScheduledCallsForUser(currentUser?.uid);
 
   // Editable state
   const [editable, setEditable] = useState(false);
@@ -946,8 +946,11 @@ const MobileSingleMentor = () => {
 
   return (
     <>
+      <Layout description="this is the user's page" title={profileData?.firstName? "Viewing profile":profileData.firstName} />
+
 
       <Layout description="this is the user's page" title={profileData?.firstName==null?"Viewing profile":profileData.firstName} />
+
 
 
 

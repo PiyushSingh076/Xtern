@@ -28,6 +28,7 @@ import {
   Chip,
   Rating,
 } from "@mui/material";
+import "./Form.css"
 import { FiTrash, FiEdit } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { setDetail } from "../../../Store/Slice/UserDetail";
@@ -622,9 +623,8 @@ export default function StepperForm() {
       ) {
         const projData = profileData.projectDetails.map((proj) => ({
           projectName: proj.projectName || "",
-
           duration: proj.duration || "",
-
+          projectLogo:proj.projectLogo || "",
           liveLink: proj.liveDemo || "",
           description: proj.description || "",
         }));
@@ -724,6 +724,7 @@ export default function StepperForm() {
         const wData = data.experiences.map((exp) => ({
           position: exp.title || "",
           company: exp.company || "",
+          
           startDate: exp.starts_at
             ? new Date(
               exp.starts_at.year,
@@ -804,18 +805,22 @@ export default function StepperForm() {
         setModalFormData({
           position: itemData.position || "",
           company: itemData.company || "",
+          companyLogo:
+           itemData.companyLogo || "",  
           startDate: itemData.startDate || "",
           endDate: itemData.endDate || "",
           description: itemData.description || "",
         });
-      } else if (type.toLowerCase() === "project") {
+      }else if (type.toLowerCase() === "project") {
         setModalFormData({
           projectName: itemData.projectName || "",
           duration: itemData.duration || "",
           liveLink: itemData.liveLink || "",
           description: itemData.description || "",
+          projectLogo: itemData.projectLogo || "", // Include project logo
         });
-      } else if (type.toLowerCase() === "service") {
+      }
+      else if (type.toLowerCase() === "service") {
         setModalFormData({
           serviceName: itemData.serviceName || "",
           serviceDescription: itemData.serviceDescription || "",
@@ -846,6 +851,7 @@ export default function StepperForm() {
   const saveDetail = async (type, dataObj, index) => {
     setSaving(true);
     const lower = type.toLowerCase();
+  
     if (lower === "education") {
       if (index !== null) {
         const newArr = [...Education];
@@ -855,33 +861,72 @@ export default function StepperForm() {
         setEducation([...Education, dataObj]);
       }
     } else if (lower === "work") {
-      if (index !== null) {
-        const newArr = [...Work];
-        newArr[index] = dataObj;
-        setWork(newArr);
-      } else {
-        setWork([...Work, dataObj]);
-      }
-    } else if (lower === "skill") {
-      if (index !== null) {
-        const newArr = [...Skills];
-        newArr[index] = dataObj;
-        setSkills(newArr);
-      } else {
-        setSkills([...Skills, dataObj]);
+      try {
+        let logoUrl = null;
+  
+        // Upload company logo if it's a new file
+        if (dataObj.companyLogo instanceof File) {
+          const storageRef = ref(
+            storage,
+            `company-logos/${Date.now()}_${dataObj.companyLogo.name}`
+          );
+          await uploadBytes(storageRef, dataObj.companyLogo);
+          logoUrl = await getDownloadURL(storageRef);
+        } else if (typeof dataObj.companyLogo === "string") {
+          logoUrl = dataObj.companyLogo;
+        }
+  
+        const workData = { ...dataObj, companyLogo: logoUrl };
+  
+        const updatedWork = index !== null ? [...Work] : [...Work, workData];
+  
+        if (index !== null) updatedWork[index] = workData;
+        setWork(updatedWork);
+  
+        await saveProfileData({ work: updatedWork });
+      } catch (error) {
+        console.error("Error uploading company logo:", error);
+        toast.error("Failed to save work experience");
       }
     } else if (lower === "project") {
-      if (index !== null) {
-        const newArr = [...Projects];
-        newArr[index] = dataObj;
-        setProjects(newArr);
-      } else {
-        setProjects([...Projects, dataObj]);
+      try {
+        let logoUrl = null;
+        
+        // Upload project logo if it's a new file
+        if (dataObj.projectLogo instanceof File) {
+          const storageRef = ref(
+            storage,
+            `project-logos/${Date.now()}_${dataObj.projectLogo.name}`
+          );
+          await uploadBytes(storageRef, dataObj.projectLogo);
+          logoUrl = await getDownloadURL(storageRef);
+          console.log("logoUrl",logoUrl);
+        } else if (typeof dataObj.projectLogo === "string") {
+          logoUrl = dataObj.projectLogo;
+        }
+  
+        // Prepare project data with logo URL
+        const projectData = {
+          ...dataObj,
+          projectLogo: logoUrl,
+          createdAt: new Date().toISOString(),
+        };
+  
+        const updatedProjects = index !== null ? [...Projects] : [...Projects, projectData];
+        console.log("project...",updatedProjects);
+        if (index !== null) updatedProjects[index] = projectData;
+        setProjects(updatedProjects);
+        
+        await saveProfileData({ projects: updatedProjects });
+      } catch (error) {
+        console.error("Error uploading project logo:", error);
+        toast.error("Failed to save project details");
       }
     } else if (lower === "service") {
       try {
         console.log("dataObj", dataObj);
-        let videoUrl = dataObj.serviceVideo;;
+        let videoUrl = dataObj.serviceVideo;
+  
         // Handle video upload only if it's a new file
         if (dataObj.serviceVideo instanceof File) {
           const storageRef = ref(
@@ -890,12 +935,10 @@ export default function StepperForm() {
           );
           await uploadBytes(storageRef, dataObj.serviceVideo);
           videoUrl = await getDownloadURL(storageRef);
-          console.log("Video URL:", videoUrl);
         }
-
+  
         const imageUrls = await Promise.all(
           dataObj.images.map(async (image) => {
-            // If it's a File object, upload to storage
             if (image instanceof File) {
               const storageRef = ref(
                 storage,
@@ -904,11 +947,7 @@ export default function StepperForm() {
               await uploadBytes(storageRef, image);
               return await getDownloadURL(storageRef);
             }
-            // If it's already a string URL, return as is
-            if (typeof image === 'string') {
-              return image;
-            }
-            // If it's an object with file and preview, upload the file
+            if (typeof image === "string") return image;
             if (image.file instanceof File) {
               const storageRef = ref(
                 storage,
@@ -920,33 +959,29 @@ export default function StepperForm() {
             return null;
           })
         );
-
-        // Filter out any null values
-        const filteredImageUrls = imageUrls.filter(url => url !== null);
-
-
+  
+        const filteredImageUrls = imageUrls.filter((url) => url !== null);
+  
         console.log("Image URLs:", imageUrls);
         const serviceData = {
           ...dataObj,
           serviceVideo: videoUrl,
-          images: imageUrls,
+          images: filteredImageUrls,
         };
-
-        console.log("serviceData", serviceData);
-        if (index !== null) {
-          const newArr = [...Services];
-          newArr[index] = serviceData;
-          setServices(newArr);
-        } else {
-          setServices([...Services, serviceData]);
-        }
+  
+        const updatedServices = index !== null ? [...Services] : [...Services, serviceData];
+  
+        if (index !== null) updatedServices[index] = serviceData;
+        setServices(updatedServices);
       } catch (error) {
         console.error("Error uploading video:", error);
         toast.error("Failed to save service details");
       }
     }
+  
     setSaving(false);
   };
+  
 
   // Modify image preview and upload in the component
   const handleImageUpload = (e) => {
@@ -1005,7 +1040,7 @@ export default function StepperForm() {
       setLoadingg(false);
       return;
     }
-    console.log("Services", Services);
+    console.log("Services", Services,Projects);
     // Gather data
     const data = {
       profileImage: profileImg,
@@ -1048,8 +1083,28 @@ export default function StepperForm() {
   // Submit the modal form
   const handleModalSubmit = async (e) => {
     e.preventDefault();
-    await saveDetail(modalType, modalFormData, editIndex);
-    closeModal();
+    setSaving(true);
+    try {
+      if (modalType === "Project" && modalFormData.projectLogo instanceof File) {
+        const storageRef = ref(
+          storage,
+          `project-logos/${Date.now()}_${modalFormData.projectLogo.name}`
+        );
+        await uploadBytes(storageRef, modalFormData.projectLogo);
+        const logoUrl = await getDownloadURL(storageRef);
+        setModalFormData((prev) => ({
+          ...prev,
+          projectLogo: logoUrl,
+        }));
+      }
+      await saveDetail(modalType, modalFormData, editIndex);
+      closeModal();
+    } catch (error) {
+      console.error("Error saving project:", error);
+      toast.error("Failed to save project");
+    } finally {
+      setSaving(false);
+    }
   };
 
   // Load recommended services based on Xpert role
@@ -1566,6 +1621,13 @@ export default function StepperForm() {
             <FiTrash color="red" size={16} />
           </IconButton>
           <Box>
+                      {item.companyLogo && (
+                          <img
+                            src={item.companyLogo}
+                            alt="Company Logo"
+                            style={{ width: 50, height: 50, borderRadius: 4, marginBottom: 8 }}
+                          />
+                        )}
             <Typography variant="subtitle1">
               <strong>{item.position}</strong> at {item.company}
             </Typography>
@@ -1630,49 +1692,71 @@ export default function StepperForm() {
                 />
                 <Divider />
                 <CardContent sx={{ padding: 2 }}>
-                  {Projects.map((item, index) => (
-                    <Box key={index} sx={{ mb: 3, position: "relative" }}>
-                      <IconButton
-                        size="small"
-                        sx={{ position: "absolute", top: 0, right: 30 }}
-                        onClick={() => openModal("Project", index, item)}
+                {Projects.map((item, index) => (
+                  <Box key={index} sx={{ mb: 3, position: "relative", display: "flex", alignItems: "center", gap: 2 }}>
+                    
+                    {/* Edit and Delete Buttons */}
+                    <IconButton
+                      size="small"
+                      sx={{ position: "absolute", top: 0, right: 30 }}
+                      onClick={() => openModal("Project", index, item)}
+                    >
+                      <FiEdit color="blue" size={16} />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      sx={{ position: "absolute", top: 0, right: 0 }}
+                      onClick={() => deleteDetail("project", index)}
+                    >
+                      <FiTrash color="red" size={16} />
+                    </IconButton>
+
+
+                    {item.projectLogo && (
+                      <Box
+                        sx={{
+                          width: 70,
+                          height: 70,
+                          borderRadius: 4,
+                          overflow: "hidden",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor: "#f0f0f0",
+                          borderRadius:"50%",
+                        }}
                       >
-                        <FiEdit color="blue" size={16} />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        sx={{ position: "absolute", top: 0, right: 0 }}
-                        onClick={() => deleteDetail("project", index)}
-                      >
-                        <FiTrash color="red" size={16} />
-                      </IconButton>
-                      <Box>
-                        <Typography variant="subtitle1">
-                          <strong>{item.projectName}</strong>
-                        </Typography>
-                        {/* If you want to show the date range:
-                          <Typography variant="body2">
-                            {item.startDate} - {item.endDate || "Present"}
-                          </Typography> */}
-                        <Typography variant="body2">{item.duration}</Typography>
-                        {item.liveLink && (
-                          <Typography variant="body2" color="primary">
-                            <a
-                              href={item.liveLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Live Link
-                            </a>
-                          </Typography>
-                        )}
-                        <Typography variant="body2">
-                          {item.description}
-                        </Typography>
+                        <img
+                          src={item.projectLogo}
+                          alt="Project Logo"
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                          onError={(e) => (e.target.style.display = "none")} // Hide if image fails to load
+                        />
                       </Box>
+                    )}
+
+                    {/* Project Details (Right Side) */}
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="subtitle1">
+                        <strong>
+                          <h3>{item.projectName}</h3>
+                        </strong>
+                      </Typography>
+                      <Typography variant="body2">{item.duration}</Typography>
+                      {item.liveLink && (
+                        <Typography variant="body2" color="primary">
+                          <Button href={item.liveLink} target="_blank" rel="noopener noreferrer">
+                            Live Link
+                          </Button>
+                        </Typography>
+                      )}
+                      <Typography variant="body2">{item.description}</Typography>
                     </Box>
-                  ))}
-                </CardContent>
+
+                  </Box>
+                ))}
+              </CardContent>
+
               </Card>
             </Grid>
 
@@ -2246,6 +2330,60 @@ export default function StepperForm() {
                       }
                     />
                   </Grid>
+                  {/* Add Company Logo Upload */}
+                  <Grid item xs={12}> 
+
+                    <input
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      id="company-logo-upload"
+                      type="file"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            setModalFormData((prev) => ({
+                              ...prev,
+                              companyLogo: file,
+                              companyLogoPreview: reader.result,
+                            }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+
+                    {/* Dotted Upload Box */}
+                    <label htmlFor="company-logo-upload" className="image-upload-box">
+                      {modalFormData.companyLogoPreview ? (
+                        <img src={modalFormData.companyLogoPreview} alt="Company Logo Preview" />
+                      ) : (
+                        <div className="upload-text">
+                                <span className="upload">Company</span>
+                                <span className="Image">Logo</span>
+                              </div>
+                      )}
+                    </label>
+
+                    {/* Remove Button */}
+                    {modalFormData.companyLogoPreview && (
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          setModalFormData((prev) => ({
+                            ...prev,
+                            companyLogo: null,
+                            companyLogoPreview: null,
+                          }))
+                        }
+                        sx={{ ml: 1 }}
+                      >
+                        <ClearIcon fontSize="small" />
+                      </IconButton>
+                    )}
+                  </Grid>
+
                   <Grid item xs={12} sm={6}>
                     <TextField
                       label="Start Date"
@@ -2339,7 +2477,6 @@ export default function StepperForm() {
                       }
                     />
                   </Grid>
-                  {/* If you want start/end date fields, you can add them here. */}
                   <Grid item xs={12}>
                     <TextField
                       label="Duration eg 2 Months"
@@ -2372,6 +2509,42 @@ export default function StepperForm() {
                       }
                     />
                   </Grid>
+                  <Grid item xs={12}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }} // Hide default input
+                      id="fileInput"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+                          if (!allowedTypes.includes(file.type)) {
+                            toast.error("Only PNG, JPG, and JPEG files are allowed.");
+                            return;
+                          }
+
+                          setModalFormData((prev) => ({
+                            ...prev,
+                            projectLogo: file,
+                            previewLogo: URL.createObjectURL(file),
+                          }));
+                        }
+                      }}
+                    />
+
+                    <label htmlFor="fileInput" className="image-upload-box" placeholder="Upload Image">
+                      {modalFormData.previewLogo ? (
+                        <img src={modalFormData.previewLogo} alt="Project Logo Preview" />
+                      ) : (
+                              <div className="upload-text">
+                                <span className="upload">Upload</span>
+                                <span className="Image">Image</span>
+                              </div>
+                      )}
+                    </label>
+                  </Grid>
+
                   <Grid item xs={12}>
                     <TextField
                       label="Description"

@@ -23,6 +23,90 @@
 
   /* background-color: #f7f7f7; */
 }
+.view-description {
+  background: #009ded;
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 4px 7px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-top: 5px;
+}
+
+.view-description:hover {
+  background: #0281c0;
+  transform: scale(1.05);
+}
+
+.view-description:active {
+  background: linear-gradient(135deg, #3a2a91, #7a73ea); 
+  transform: scale(0.98);
+}
+
+.project-des {
+  background: #009ded;
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 4px 7px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-top: 5px;
+}
+
+.project-des:hover {
+  background: #0281c0;
+  transform: scale(1.05);
+}
+
+.project-des:active {
+  background: linear-gradient(135deg, #3a2a91, #7a73ea); 
+  transform: scale(0.98);
+}
+.No-work {
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center;
+  margin-top: 20px;
+}
+
+.No-work svg {
+  display: block;
+  margin-bottom: 10px; 
+}
+
+.live-link-button {
+  background: #f94e4e;
+  border: none;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 4px 7px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-top: 5px;
+  
+}
+
+.live-link-button:hover {
+  background: #f51010;
+  transform: scale(1.05);
+}
+
 
 .profile-img-info-container {
   width: 100%;
@@ -58,6 +142,13 @@
   min-width: 190px; /* Adjust the width to your preference */
   padding: 10px 20px; /* Add some padding for balance */
 }
+.educ-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover; 
+  border-radius: 50%;
+}
+
 
 
 .schedule-btn {
