@@ -26,9 +26,8 @@ import LocationOnIcon from "@mui/icons-material/LocationOn"
 import PersonIcon from "@mui/icons-material/Person"
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import Carousel from "react-material-ui-carousel";
-import ReactPlayer from "react-player";
-import Layout from "../../../components/SEO/Layout";
 import EditServiceModal from './EditServiceModal';
+import updateReviewInFirebase from "./updateReviewInFirebase";
 
 const db = getFirestore();
 
@@ -54,6 +53,9 @@ const ProjectDetails = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [serviceProvider, setServiceProvider] = useState(null);
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [editedReviewText, setEditedReviewText] = useState("");
+  const [editedRating, setEditedRating] = useState(0);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -84,6 +86,30 @@ const ProjectDetails = () => {
   };
 
 
+  const handleEditReviewClick = (review) => {
+    setEditingReviewId(review.id);
+    setEditedReviewText(review.review);
+    setEditedRating(review.rating);
+  };
+
+  const handleUpdateReview = async () => {
+    if (!editingReviewId) return;
+    
+    // Update review in Firebase (Replace with your update function)
+    await updateReviewInFirebase(editingReviewId, editedReviewText, editedRating);
+    
+    // Update UI
+    setReviews((prevReviews) =>
+      prevReviews.map((r) =>
+        r.id === editingReviewId ? { ...r, review: editedReviewText, rating: editedRating } : r
+      )
+    );
+    
+    setEditingReviewId(null);
+    setEditedReviewText("");
+    setEditedRating(0);
+  };
+
   useEffect(() => {
     const fetchItem = async () => {
       setPageLoading(true);
@@ -111,59 +137,6 @@ const ProjectDetails = () => {
   const handleBuyNowClick = () => {
     setShowModal(true);
   };
-
-  // const handleVideoUpload = async () => {
-  //   if (!selectedFile) {
-  //     alert("Please select a file before uploading.");
-  //     return;
-  //   }
-
-  //   const file = selectedFile;
-
-  //   if (file.size > 10 * 1024 * 1024) {
-  //     alert("File size should not exceed 10 MB.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
-  //     const storage = getStorage();
-  //     const storageRef = ref(storage, `videos/${sanitizedFileName}`);
-  //     const snapshot = await uploadBytes(storageRef, file);
-  //     const serviceVideo = await getDownloadURL(snapshot.ref);
-
-  //     const auth = getAuth();
-  //     const currentUser = auth.currentUser;
-
-  //     if (!currentUser) {
-  //       alert("You must be logged in to upload a video.");
-  //       return;
-  //     }
-
-  //     const serviceNameData = {
-  //       serviceName: item?.serviceName || "Unknown Service",
-  //       userId: currentUser.uid,
-  //       serviceVideo,
-  //       timestamp: new Date(),
-  //     };
-
-  //     await setDoc(
-  //       doc(db, "services", projectId),
-  //       {
-  //         serviceVideo: serviceVideo,
-  //       },
-  //       { merge: true }
-  //     );
-
-  //     setVideoFile(serviceVideo);
-  //     setSelectedFile(null);
-  //     document.querySelector("input[type='file']").value = "";
-  //   } catch (error) {
-  //     console.error("Error uploading video:", error);
-  //     alert("Failed to upload video. Please try again.");
-  //   }
-  // };
-
   const handleReviewTabClick = () => {
     setShowReviews(true);
     fetchReviews();
@@ -220,14 +193,6 @@ const ProjectDetails = () => {
 
   const fetchReviews = async () => {
     try {
-      // const auth = getAuth();
-      // const currentUser = auth.currentUser;
-
-      // if (!currentUser) {
-      //   console.error("User is not logged in.");
-      //   setReviews([]);
-      //   return;
-      // }
 
       const reviewsRef = collection(db, "reviews");
       const q = query(reviewsRef, where("serviceId", "==", projectId));
@@ -303,34 +268,26 @@ const ProjectDetails = () => {
 
 
   return (
-    <>
-    <Layout title={item?.serviceName? item.serviceName : "User Service"} />
-    <div className="des-project-detail-container max-h-screen overflow-y-auto">
+    <div className="des-project-detail-container">
       <ViewModal
         open={modalOpen}
         media={media}
         onClose={() => setModalOpen(false)}
         current={currentMedia}
-      />
-      
+      ></ViewModal>
       <section id="single-description-screen1">
-        <div className="des-first-desc-img-sec !m-0 !px-4 !flex !flex-col md:!flex-row gap-6">
-          
-          {/* Left Column - Media and Service Provider */}
-          <div className="hero-img-desc w-full md:w-1/2">
+        <div className="des-first-desc-img-sec !m-0 !px-4 !flex !flex-col md:!flex-row">
+          <div className="hero-img-desc">
             <div className="d-flex justify-content-center">
-              <div className="rounded-md w-full md:w-[400px] h-fit overflow-hidden relative">
-                {pageLoading ? (
-                  <Skeleton variant="rectangular" width="100%" height={225} className="rounded-md" />
-                ) : (
-                  Array.isArray(media) && media.length > 0 ? (
-                    <Carousel
-                      onChange={(e) => setCurrentMedia(e)}
-                      autoPlay={false}
-                      navButtonsAlwaysVisible
-                      animation="slide"
-                      className="w-full md:w-[400px] h-fit rounded-md"
-                    >
+              <div className="rounded-md w-[400px] h-fit overflow-hidden relative">
+                {Array.isArray(media) && media.length > 0 ? (
+                  <Carousel
+                    onChange={(e) => setCurrentMedia(e)}
+                    autoPlay={false}
+                    navButtonsAlwaysVisible
+                    animation="slide"
+                    className="w-full md:w-[400px] h-fit rounded-md"
+                  >
                     {media.map((mediaItem, index) => (
                       <div
                         key={`image-slide-${index}`}
@@ -365,24 +322,12 @@ const ProjectDetails = () => {
                   <div className="flex items-center justify-center h-48">
                     No Video/Images Available
                   </div>
-                )
                 )}
               </div>
             </div>
 
             {/* Service Provider Card Below Media */}
-            {pageLoading ? (
-              <div className="mt-4 p-4 border rounded-lg bg-gray-50 shadow-md">
-                <Skeleton variant="text" width={150} height={32} className="mx-auto mb-4" />
-                <div className="flex items-start gap-4">
-                  <Skeleton variant="circular" width={64} height={64} />
-                  <div className="flex flex-col flex-grow">
-                    <Skeleton variant="text" width={150} height={24} />
-                    <Skeleton variant="text" width={200} height={20} />
-                  </div>
-                </div>
-              </div>
-            ) : serviceProvider && (
+            {serviceProvider && (
               <div className="mt-4 p-4 border rounded-lg bg-gray-50 shadow-md">
                 <Typography variant="h6" className="font-medium text-center mb-4">
                   Service Provider
@@ -450,26 +395,12 @@ const ProjectDetails = () => {
 
 
 
-           {/* Right Column - Description */}
-           <div className="desc-container !min-w-0 !w-full md:w-1/2">
+          <div className="desc-container !min-w-0 !w-full !md:w-1/2">
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <div className="relative mb-4">
                   {pageLoading ? (
-                    <Box>
-                      <div className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap">
-                        <div className="flex-grow">
-                          <Skeleton variant="text" width={300} height={48} />
-                        </div>
-                        <div className="w-full md:w-auto">
-                          <Skeleton variant="text" width={100} height={40} />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4 mt-4">
-                        <Skeleton variant="text" width={120} height={24} />
-                        <Skeleton variant="text" width={120} height={24} />
-                      </div>
-                    </Box>
+                    <Skeleton height={40} width={200} variant="text" />
                   ) : (
                     <Box>
                       <div className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap">
@@ -518,14 +449,7 @@ const ProjectDetails = () => {
 
 
 
-             {/* Description Tabs */}
-            {pageLoading ? (
-              <div className="mt-8">
-                <Skeleton variant="text" width={200} height={32} />
-                <Skeleton variant="rectangular" height={200} className="mt-4" />
-              </div>
-            ) : (
-              <div className="fifth-decs-sec mt-8">
+            <div className="fifth-decs-sec mt-32">
               <div className="fifth-decs-sec-wrap">
                 <ul className="nav nav-pills single-courses-tab">
                   <li className="nav-item">
@@ -604,7 +528,6 @@ const ProjectDetails = () => {
                   <div className="tab-pane fade" id="review-content">
                     <div className="review-content-wrap mt-24">
                       <h2 className="review-heading">What Our Users Say</h2>
-
                       {item &&
                         userData &&
                         item?.userRef?.id !== userData.uid &&
@@ -649,25 +572,47 @@ const ProjectDetails = () => {
 
                       {showReviews && reviews.length > 0 ? (
                         <div className="review-list-container">
-                          <div className="review-list">
-                            {reviews.map((review) => (
-                              <div className="review-item" key={review.id}>
-                                <img
-                                  src={review.photoURL}
-                                  alt={`${review.name}'s profile`}
-                                  className="review-profile-pic"
+                           <div className="review-list">
+                      {reviews.map((review) => (
+                        <div className="review-item" key={review.id}>
+                          <img src={review.photoURL} alt={review.name} className="review-profile-pic" />
+                          <div className="review-details">
+                            <h4 className="review-name">{review.name}</h4>
+                            {editingReviewId === review.id ? (
+                              <>
+                                <textarea
+                                  value={editedReviewText}
+                                  onChange={(e) => setEditedReviewText(e.target.value)}
+                                  className="review-textarea"
                                 />
-                                <div className="review-details">
-                                  <h4 className="review-name">
-                                    {review.name}
-                                  </h4>
-                                  <p className="review-text">
-                                    {review.review}
-                                  </p>
-                                  <div className="review-stars">
+                                <div className="rating-input">
+                                {Array.from({ length: 5 }).map(
+                                        (_, index) => (
+                                          <span key={index} onClick={() => setEditedRating(index + 1)}>
+                                            {index < editedRating ? (
+                                              <StarRateIcon
+                                                sx={{ color: "#0a65fc" }}
+                                              />
+                                            ) : (
+                                              <StarBorderIcon
+                                                sx={{ color: "#0a65fc" }}
+                                              />
+                                            )}
+                                          </span>
+                                        )
+                                      )}
+                                </div>
+                                <button className="update-review-btn" onClick={handleUpdateReview}>
+                                  Update
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                          <p className="review-text">{review.review}</p>
+                          <div className="review-stars">
                                     {Array.from({ length: 5 }).map(
                                       (_, index) => (
-                                        <span key={index}>
+                                        <span key={index} onClick={() => setEditedRating(index + 1)}>
                                           {index < review.rating ? (
                                             <StarRateIcon
                                               sx={{ color: "#0a65fc" }}
@@ -681,6 +626,13 @@ const ProjectDetails = () => {
                                       )
                                     )}
                                   </div>
+                                      {userData && review.userId === userData.uid && (
+                                        <button className="edit-review-btn" onClick={() => handleEditReviewClick(review)}>
+                                          Edit Review
+                                        </button>
+                                      )}
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             ))}
@@ -696,9 +648,7 @@ const ProjectDetails = () => {
                 </div>
               </div>
             </div>
-            )}
           </div>
-
         </div>
 
 
@@ -720,7 +670,6 @@ const ProjectDetails = () => {
         onSaveSuccess={handleSaveSuccess}
       />
     </div>
-    </>
   );
 };
 

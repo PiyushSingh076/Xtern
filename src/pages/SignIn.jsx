@@ -297,7 +297,7 @@ const SignIn = () => {
 
       {/* <!-- Footer start --> */}
 
-      <Footer link="/signup" />
+      <Footer link="/signup" type="signin" />
     </>
   );
 };

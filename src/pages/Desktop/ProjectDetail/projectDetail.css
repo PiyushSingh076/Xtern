@@ -603,3 +603,42 @@ video {
   flex-grow: 1; /* Distribute nav items evenly */
   text-align: center; /* Center-align the text in tabs */
 }
+
+.update-review-btn {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  width: 100px; 
+  height: 50px;
+}
+
+
+.update-review-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.edit-review-btn{
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  width: 80px; 
+  height: 60px; 
+}
+
+.edit-review-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}

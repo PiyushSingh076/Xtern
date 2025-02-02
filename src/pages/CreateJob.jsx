@@ -26,7 +26,7 @@ const CreateJob = () => {
   return (
     <>
     <Layout
-    title={"Create Job Posting"}
+    title={"CreateJob"}
         description={"Create and Publish Job Postings to Hire Talent"}
         keywords={"Create Job Posting, Hire Employees, Recruitment, Job Listings, Employer"}/>
     <div className="flex flex-col">
