@@ -28,6 +28,8 @@ import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import Carousel from "react-material-ui-carousel";
 import EditServiceModal from './EditServiceModal';
 import updateReviewInFirebase from "./updateReviewInFirebase";
+import { Star } from "lucide-react";
+import ProjectDetailsSkeleton from "./ProjectDetailsSkeleton ";
 
 const db = getFirestore();
 
@@ -56,6 +58,7 @@ const ProjectDetails = () => {
   const [editingReviewId, setEditingReviewId] = useState(null);
   const [editedReviewText, setEditedReviewText] = useState("");
   const [editedRating, setEditedRating] = useState(0);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -94,35 +97,35 @@ const ProjectDetails = () => {
 
   const handleUpdateReview = async () => {
     if (!editingReviewId) return;
-    
+
     // Update review in Firebase (Replace with your update function)
     await updateReviewInFirebase(editingReviewId, editedReviewText, editedRating);
-    
+
     // Update UI
     setReviews((prevReviews) =>
       prevReviews.map((r) =>
         r.id === editingReviewId ? { ...r, review: editedReviewText, rating: editedRating } : r
       )
     );
-    
+
     setEditingReviewId(null);
     setEditedReviewText("");
     setEditedRating(0);
   };
 
-  useEffect(() => {
-    const fetchItem = async () => {
-      setPageLoading(true);
-      const serviceSnapshot = await getDoc(doc(db, "services", projectId));
+  // useEffect(() => {
+  //   const fetchItem = async () => {
+  //     setPageLoading(true);
+  //     const serviceSnapshot = await getDoc(doc(db, "services", projectId));
 
-      if (serviceSnapshot.exists()) {
-        console.log("service data", serviceSnapshot.data());
-        setItem(serviceSnapshot.data());
-      }
-      setPageLoading(false);
-    };
-    fetchItem();
-  }, []);
+  //     if (serviceSnapshot.exists()) {
+  //       console.log("service data", serviceSnapshot.data());
+  //       setItem(serviceSnapshot.data());
+  //     }
+  //     setPageLoading(false);
+  //   };
+  //   fetchItem();
+  // }, []);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -144,6 +147,7 @@ const ProjectDetails = () => {
 
   const handleReviewSubmit = async () => {
     try {
+      setIsSubmittingReview(true);
       const auth = getAuth();
       const currentUser = auth.currentUser;
 
@@ -188,6 +192,8 @@ const ProjectDetails = () => {
       setCanReview(false);
     } catch (error) {
       console.error("Failed to save review:", error);
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -229,6 +235,57 @@ const ProjectDetails = () => {
     fetchReviews();
   }, []);
 
+  useEffect(() => {
+    const fetchItemAndReviews = async () => {
+      setPageLoading(true);
+      try {
+        const serviceSnapshot = await getDoc(doc(db, "services", projectId));
+
+        if (serviceSnapshot.exists()) {
+          const serviceData = serviceSnapshot.data();
+          setItem(serviceData);
+
+          // Fetch service provider details
+          if (serviceData.userRef) {
+            const userDoc = await getDoc(serviceData.userRef);
+            if (userDoc.exists()) {
+              setServiceProvider(userDoc.data());
+            }
+          }
+
+          // Fetch reviews immediately
+          const reviewsRef = collection(db, "reviews");
+          const q = query(reviewsRef, where("serviceId", "==", projectId));
+          const querySnapshot = await getDocs(q);
+
+          const userReviews = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          let canUserReview = true;
+          if (userData) {
+            canUserReview = !userReviews.some(review => review.userId === userData.uid);
+          }
+          setCanReview(canUserReview);
+          setReviews(userReviews);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+      setPageLoading(false);
+    };
+
+    fetchItemAndReviews();
+  }, [projectId, userData]);
+
+  const calculateAverageRating = () => {
+    if (reviews.length === 0) return 0
+    const sum = reviews.reduce((acc, review) => acc + review.rating, 0)
+    return sum / reviews.length
+  }
+
+
   const [media, setMedia] = useState([]);
   useEffect(() => {
     if (item) {
@@ -266,9 +323,12 @@ const ProjectDetails = () => {
     setEditModalOpen(false);
   };
 
+  if (pageLoading) {
+    return <ProjectDetailsSkeleton />;
+  }
 
   return (
-    <div className="des-project-detail-container">
+    <div className="des-project-detail-container overflow-y-auto max-h-screen pb-8">
       <ViewModal
         open={modalOpen}
         media={media}
@@ -399,9 +459,9 @@ const ProjectDetails = () => {
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <div className="relative mb-4">
-                  {pageLoading ? (
+                   {/* {pageLoading ? (
                     <Skeleton height={40} width={200} variant="text" />
-                  ) : (
+                  ) : (  */}
                     <Box>
                       <div className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap">
                         {/* Service Name and Edit Button */}
@@ -440,9 +500,27 @@ const ProjectDetails = () => {
                             {item.duration} {item.durationType}
                           </Typography>
                         </div>
+                        <div className="flex items-center gap-2">
+                          <Typography variant="body2" className="font-medium flex items-center">
+                            {/* <StarRateIcon sx={{ color: "#0a65fc", fontSize: "20px", marginRight: "4px" }} /> */}
+                            Rating:
+                          </Typography>
+                          {Array.from({ length: 5 }).map((_, index) => (
+                            <StarRateIcon
+                              key={index}
+                              sx={{
+                                color: index < Math.round(calculateAverageRating(reviews)) ? "#0a65fc" : "#e0e0e0",
+                                fontSize: "20px",
+                              }}
+                            />
+                          ))}
+                          <Typography variant="body2">
+                            ({reviews.length} {reviews.length === 1 ? "review" : "reviews"})
+                          </Typography>
+                        </div>
                       </div>
                     </Box>
-                  )}
+                   {/* )} */}
                 </div>
               </Grid>
             </Grid>
@@ -480,13 +558,13 @@ const ProjectDetails = () => {
                   >
                     <div className="description-content-wrap mt-24">
                       <h3 className="des-con-txt1">Details</h3>
-                      {pageLoading === true ? (
+                      {/* {pageLoading === true ? (
                         <Skeleton
                           variant="text"
                           width={300}
                           height={40}
                         ></Skeleton>
-                      ) : (
+                      ) : ( */}
                         <>
                           <p className="des-text">
                             <div
@@ -496,7 +574,7 @@ const ProjectDetails = () => {
                             ></div>
                           </p>
                         </>
-                      )}
+                      {/* )} */}
 
                       {auth ? (
                         <div className="des-buy-now-description">
@@ -527,7 +605,7 @@ const ProjectDetails = () => {
 
                   <div className="tab-pane fade" id="review-content">
                     <div className="review-content-wrap mt-24">
-                      <h2 className="review-heading">What Our Users Say</h2>
+                      <h2 className="review-heading pb-3">What Our Users Say</h2>
                       {item &&
                         userData &&
                         item?.userRef?.id !== userData.uid &&
@@ -561,85 +639,117 @@ const ProjectDetails = () => {
                                 ))}
                               </div>
                               <button
-                                className="submit-review-btn"
+                                className="submit-review-btn relative"
                                 onClick={handleReviewSubmit}
+                                disabled={isSubmittingReview}
                               >
-                                Submit Review
+                                {isSubmittingReview ? (
+                                  <>
+                                    <span className="opacity-0">Submit Review</span>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                  </>
+                                ) : (
+                                  "Submit Review"
+                                )}
                               </button>
                             </div>
                           </>
                         )}
 
-                      {showReviews && reviews.length > 0 ? (
+                      {reviews.length > 0 ? (
                         <div className="review-list-container">
-                           <div className="review-list">
-                      {reviews.map((review) => (
-                        <div className="review-item" key={review.id}>
-                          <img src={review.photoURL} alt={review.name} className="review-profile-pic" />
-                          <div className="review-details">
-                            <h4 className="review-name">{review.name}</h4>
-                            {editingReviewId === review.id ? (
-                              <>
-                                <textarea
-                                  value={editedReviewText}
-                                  onChange={(e) => setEditedReviewText(e.target.value)}
-                                  className="review-textarea"
-                                />
-                                <div className="rating-input">
-                                {Array.from({ length: 5 }).map(
-                                        (_, index) => (
-                                          <span key={index} onClick={() => setEditedRating(index + 1)}>
-                                            {index < editedRating ? (
-                                              <StarRateIcon
-                                                sx={{ color: "#0a65fc" }}
-                                              />
-                                            ) : (
-                                              <StarBorderIcon
-                                                sx={{ color: "#0a65fc" }}
-                                              />
-                                            )}
-                                          </span>
-                                        )
-                                      )}
-                                </div>
-                                <button className="update-review-btn" onClick={handleUpdateReview}>
-                                  Update
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                          <p className="review-text">{review.review}</p>
-                          <div className="review-stars">
-                                    {Array.from({ length: 5 }).map(
-                                      (_, index) => (
-                                        <span key={index} onClick={() => setEditedRating(index + 1)}>
+                          <div className="review-list">
+                            {reviews
+                              .sort((a, b) => (a.userId === userData?.uid ? -1 : 1))
+                              .map((review) => (
+                                <div className="review-item p-4 border-b last:border-b-0" key={review.id}>
+                                  <div className="flex flex-col gap-3">
+                                    {/* Profile picture and name in one line */}
+                                    <div className="flex items-center gap-3">
+                                      <img
+                                        src={review.photoURL}
+                                        alt={review.name}
+                                        className="w-12 h-12 rounded-full object-cover"
+                                      />
+                                      <div className="flex items-center gap-2 min-w-0">
+                                        <h4 className="font-semibold text-lg truncate">{review.name}</h4>
+                                        {userData && review.userId === userData.uid && (
+                                          <button
+                                            onClick={() => handleEditReviewClick(review)}
+                                            className="text-gray-500 hover:text-blue-500 transition-colors"
+                                          >
+                                            <FiEdit size={14} />
+                                          </button>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Star rating below */}
+                                    <div className="review-stars flex">
+                                      {Array.from({ length: 5 }).map((_, index) => (
+                                        <span key={index}>
                                           {index < review.rating ? (
-                                            <StarRateIcon
-                                              sx={{ color: "#0a65fc" }}
-                                            />
+                                            <StarRateIcon sx={{ color: "#0a65fc", fontSize: "20px" }} />
                                           ) : (
-                                            <StarBorderIcon
-                                              sx={{ color: "#0a65fc" }}
-                                            />
+                                            <StarBorderIcon sx={{ color: "#0a65fc", fontSize: "20px" }} />
                                           )}
                                         </span>
-                                      )
+                                      ))}
+                                    </div>
+
+                                    {/* Review content or edit form */}
+                                    {editingReviewId === review.id ? (
+                                      <div className="edit-review-container space-y-3">
+                                        <div className="flex items-center gap-2 mb-2">
+                                          <div className="rating-input flex">
+                                            {Array.from({ length: 5 }).map((_, index) => (
+                                              <span
+                                                key={index}
+                                                onClick={() => setEditedRating(index + 1)}
+                                                className="cursor-pointer"
+                                              >
+                                                {index < editedRating ? (
+                                                  <StarRateIcon sx={{ color: "#0a65fc", fontSize: "20px" }} />
+                                                ) : (
+                                                  <StarBorderIcon sx={{ color: "#0a65fc", fontSize: "20px" }} />
+                                                )}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                        <textarea
+                                          value={editedReviewText}
+                                          onChange={(e) => setEditedReviewText(e.target.value)}
+                                          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                                          placeholder="Edit your review..."
+                                        />
+                                        <div className="flex justify-end gap-2">
+                                          <button
+                                            className="px-4 py-2 text-gray-600 border rounded-md hover:bg-gray-50"
+                                            onClick={() => setEditingReviewId(null)}
+                                          >
+                                            Cancel
+                                          </button>
+                                          <button
+                                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                            onClick={handleUpdateReview}
+                                          >
+                                            Update
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <p className="text-gray-700">{review.review}</p>
                                     )}
                                   </div>
-                                      {userData && review.userId === userData.uid && (
-                                        <button className="edit-review-btn" onClick={() => handleEditReviewClick(review)}>
-                                          Edit Review
-                                        </button>
-                                      )}
-                                    </>
-                                  )}
                                 </div>
-                              </div>
-                            ))}
+                              ))}
                           </div>
                         </div>
                       ) : (
-                        <div className="w-full py-6 flex items-center justify-center">
+                        <div className="w-full py-6 flex items-center justify-center text-gray-500">
                           No reviews yet
                         </div>
                       )}
