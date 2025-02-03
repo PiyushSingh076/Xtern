@@ -140,6 +140,11 @@ const WalletPage = () => {
                 }}
               />
             </Box>
+              <div className="flex gap-2 mt-2">
+                <Button onClick={() => setAmount((prev) => Number(prev)+100)} sx={{borderRadius: "100px"}} variant="outlined">+100</Button>
+                <Button onClick={() => setAmount((prev) => Number(prev)+500)} sx={{borderRadius: "100px"}} variant="outlined">+500</Button>
+                <Button onClick={() => setAmount((prev) => Number(prev)+1000)} sx={{borderRadius: "100px"}} variant="outlined">+1000</Button>
+              </div>
           </DialogContent>
           <DialogActions>
             <Button onClick={onClose} variant="outlined" color="inherit">
@@ -160,6 +165,7 @@ const WalletPage = () => {
                 "Add Funds"
               )}
             </Button>
+            
           </DialogActions>
         </Dialog>
       </>
@@ -517,7 +523,7 @@ const WalletPage = () => {
                           <TableRow>
                             <TableCell>Amount</TableCell>
                             <TableCell>Description</TableCell>
-                            <TableCell className="!hidden sm:!table-cell">
+                            <TableCell className="!hidden sm:!table-cell shrink-0 w-[150px]">
                               Date
                             </TableCell>
                             <TableCell align="center">Transaction ID</TableCell>
