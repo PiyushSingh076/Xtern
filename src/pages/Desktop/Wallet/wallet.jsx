@@ -21,7 +21,7 @@ import {
   Grid,
   Skeleton,
 } from "@mui/material";
-import { Plus, ArrowDownCircle, X } from "lucide-react";
+import { Plus, ArrowDownCircle, X, Check, CheckCircle } from "lucide-react";
 import Layout from "../../../components/SEO/Layout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
@@ -34,9 +34,11 @@ import WalletPageSkeleton from "./WalletPageSkeleton";
 const WalletPage = () => {
   const { userData } = useFetchUserData();
   const isEntrepreneur = (userData?.type ?? "") === ENTREPRENEUR_ROLE;
+  const [paymentError, setPaymentError] = useState(false)
   const { initiatePayment } = useTransactions();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [transactionId, setTransactionId] = useState(null);
   const [showRequestWithdrawModal, setShowRequestWithdrawModal] =
     useState(false);
 
@@ -44,6 +46,7 @@ const WalletPage = () => {
   const { wallet, loaded, getTransactions, getAmountInWallet } = useWallet();
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(0);
+  const [showConfirmation, setShowConfirmation] = useState(false)
 
   useEffect(() => {
     if (loaded === true) {
@@ -79,8 +82,10 @@ const WalletPage = () => {
     const { initiatePayment } = useTransactions();
 
     const [loading, setLoading] = useState(false);
-    async function paymentHandler() {
+    async function paymentHandler(transactionId) {
+      setTransactionId(transactionId);
       setPageLoading(true);
+      setShowConfirmation(true)
       const updateAmount = await getAmountInWallet(userData.uid);
       setBalance(updateAmount);
       await fetchTransactions(userData.uid);
@@ -140,6 +145,11 @@ const WalletPage = () => {
                 }}
               />
             </Box>
+              <div className="flex gap-2 mt-2">
+                <Button onClick={() => setAmount((prev) => Number(prev)+100)} sx={{borderRadius: "100px"}} variant="outlined">+100</Button>
+                <Button onClick={() => setAmount((prev) => Number(prev)+500)} sx={{borderRadius: "100px"}} variant="outlined">+500</Button>
+                <Button onClick={() => setAmount((prev) => Number(prev)+1000)} sx={{borderRadius: "100px"}} variant="outlined">+1000</Button>
+              </div>
           </DialogContent>
           <DialogActions>
             <Button onClick={onClose} variant="outlined" color="inherit">
@@ -160,6 +170,7 @@ const WalletPage = () => {
                 "Add Funds"
               )}
             </Button>
+            
           </DialogActions>
         </Dialog>
       </>
@@ -517,7 +528,7 @@ const WalletPage = () => {
                           <TableRow>
                             <TableCell>Amount</TableCell>
                             <TableCell>Description</TableCell>
-                            <TableCell className="!hidden sm:!table-cell">
+                            <TableCell className="!hidden sm:!table-cell shrink-0 w-[150px]">
                               Date
                             </TableCell>
                             <TableCell align="center">Transaction ID</TableCell>
@@ -652,7 +663,25 @@ const WalletPage = () => {
           )}
         </Paper>
 
+
         {/* Modals */}
+          <Dialog open={showConfirmation} onClose={() => setShowConfirmation(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>Payment Confirmation</DialogTitle>
+            <DialogContent>
+              <div className="size-full flex flex-col gap-2 min-h-[50vh] items-center justify-center" >
+                <div className="" ><CheckCircle color="green" className="!fill-success !stroke-success" size={80}></CheckCircle></div>
+                <div className="text-2xl text-success font-bold " >Transaction successful!</div>
+                <div className="text-lg font-bold text-black/70" >ID: {transactionId}</div>
+                <div>The money should be in your wallet shortly</div>
+                {/* <div className="text-lg font-bold text-black/70" >Amount: </div> */}
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowConfirmation(false)} sx={{ color: "success.main" }} >Close</Button>
+            </DialogActions>
+              
+          </Dialog>
+
 
         <AddFundsModal
           userData={userData}
