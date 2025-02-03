@@ -7,6 +7,7 @@ import { addDoc, collection, getDocs } from "firebase/firestore";
 import Stepper from "../components/Stepper.jsx";
 import useImageUpload from "../hooks/Auth/useImageUpload"; // Custom hook for image upload
 import { getAuth } from "firebase/auth";
+import Layout from "../components/SEO/Layout.jsx";
 
 const CreateJob = () => {
   const navigate = useNavigate();
@@ -23,6 +24,11 @@ const CreateJob = () => {
   // }, [])
   
   return (
+    <>
+    <Layout
+    title={"CreateJob"}
+        description={"Create and Publish Job Postings to Hire Talent"}
+        keywords={"Create Job Posting, Hire Employees, Recruitment, Job Listings, Employer"}/>
     <div className="flex flex-col">
       {/* Header */}
       <header id="top-navbar" className="top-navbar">
@@ -49,6 +55,7 @@ const CreateJob = () => {
       </header>
        <Stepper/>
     </div>
+    </>
   );
 };
 

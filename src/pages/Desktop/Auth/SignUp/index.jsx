@@ -11,6 +11,7 @@ import SignInWithSocial from "../../../../components/SignInWithSocial";
 import Footer from "../../../../components/Footer";
 import "./SignUp.css";
 import useFetchUserData from "../../../../hooks/Auth/useFetchUserData";
+import Layout from "../../../../components/SEO/Layout";
 
 const SignUp = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -86,6 +87,10 @@ const SignUp = () => {
 
   return (
     <>
+     <Layout
+    title={"signup"}
+        description={"Create a new account to access job listings and start applying"}
+        keywords={"Sign Up, Register, New Account, Job Portal, Create Account, User Registration"}/>
       {/* <!-- Header start --> */}
 
       {/* <!-- Header end --> */}

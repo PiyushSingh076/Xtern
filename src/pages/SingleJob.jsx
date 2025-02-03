@@ -27,6 +27,7 @@ import Schedule from "@mui/icons-material/Schedule";
 import { MapPin } from "lucide-react";
 import { LocationSearchingRounded } from "@mui/icons-material";
 import { useFetchJob } from "../hooks/Jobs/useFetchJob";
+import Layout from "../components/SEO/Layout";
 
 const SingleJob = () => {
   const { jobId } = useParams();
@@ -75,12 +76,78 @@ const SingleJob = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Skeleton variant="rectangular" width="100%" height={200} />
-        <Skeleton variant="text" sx={{ mt: 2 }} />
-        <Skeleton variant="text" />
-        <Skeleton variant="text" />
-      </Container>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Grid container spacing={4}>
+        {/* Left Column - Image and Stats */}
+        <Grid item xs={12} md={4}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {/* Image placeholder */}
+            <Skeleton 
+              variant="rectangular" 
+              width={350} 
+              height={350} 
+              sx={{ borderRadius: 2, mb: 4 }}
+            />
+            
+            {/* Stats grid */}
+            <Grid container spacing={2}>
+              {[...Array(4)].map((_, index) => (
+                <Grid item xs={6} key={index}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Skeleton variant="circular" width={24} height={24} />
+                    <Skeleton variant="text" width={100} />
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </Grid>
+
+        {/* Right Column - Content */}
+        <Grid item xs={12} md={8}>
+          {/* Title and Company */}
+          <Skeleton variant="text" width="80%" height={60} sx={{ mb: 2 }} />
+          
+          {/* Skills */}
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 4 }}>
+            {[...Array(4)].map((_, index) => (
+              <Skeleton 
+                key={index} 
+                variant="rounded" 
+                width={80} 
+                height={32}
+              />
+            ))}
+          </Box>
+
+          {/* Tabs */}
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+              <Skeleton variant="rounded" width={120} height={40} />
+              <Skeleton variant="rounded" width={120} height={40} />
+            </Box>
+          </Box>
+
+          {/* Content Area */}
+          <Box>
+            <Skeleton variant="text" width="40%" height={32} sx={{ mb: 2 }} />
+            {[...Array(6)].map((_, index) => (
+              <Skeleton 
+                key={index}
+                variant="text" 
+                width="100%" 
+                sx={{ mb: 1 }}
+              />
+            ))}
+          </Box>
+
+          {/* Apply Button */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Skeleton variant="rounded" width={200} height={48} />
+          </Box>
+        </Grid>
+      </Grid>
+    </Container>
     );
   }
 
@@ -94,6 +161,10 @@ const SingleJob = () => {
 
   return (
     <>
+     <Layout
+        title={job.title==null ? "Jobpage": job.title}
+        description={"Browse and Explore Job Opportunities"}
+        keywords={"View Jobs, Job Listings, Career Opportunities, Employment, Hiring"} ></Layout>
       <section id="single-description-screen">
         <div className="container !shadow-none !border-none !bg-white !max-w-full mx-8">
           <Grid container spacing={2}>

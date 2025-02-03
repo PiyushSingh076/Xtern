@@ -7,6 +7,7 @@ import {
   getDoc,
   getDocs,
   increment,
+  orderBy,
   setDoc,
   updateDoc,
   where,
@@ -43,16 +44,14 @@ export const useWallet = () => {
   async function getTransactions(uid) {
     const q = query(
       collection(db, "transactions"),
-      where("walletId", "==", uid)
+      where("walletId", "==", uid),
+      orderBy("date", "desc")
     );
-    const querySnapshot = await getDocs(q);
-    const transactions = querySnapshot.docs.map((doc) => doc.data());
-    transactions.sort((a, b) => {
-      if (!a.date && !b.date) return 0; // Both dates are null
-      if (!a.date) return 1; // a.date is null, push it to the end
-      if (!b.date) return -1; // b.date is null, push it to the end
-      return b.date.toMillis() - a.date.toMillis(); // Compare non-null dates
+    const querySnapshot = await getDocs(q, );
+    const transactions = querySnapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
     });
+    
   
     return transactions;
   }

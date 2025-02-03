@@ -40,7 +40,7 @@ export function useTransactions() {
 
   async function verifyPayment(orderId, paymentId, signature, amount) {
     try {
-      const verifyOrder = httpsCallable(functions, "verifyPayment");
+      // const verifyOrder = httpsCallable(functions, "verifyPayment");
       // const result = await verifyOrder({
       //   order_id: orderId,
       //   payment_id: paymentId,
@@ -84,7 +84,7 @@ export function useTransactions() {
     }
 
     const options = {
-      key_id: process.env.REACT_APP_RAZORPAY_KEY_SECRET,
+      key: process.env.REACT_APP_RAZORPAY_KEY_ID,
       key_secret: process.env.REACT_APP_RAZORPAY_KEY_SECRET,
       amount: amount * 100,
       currency: "INR",
@@ -93,7 +93,7 @@ export function useTransactions() {
       order_id: orderId,
       handler: async function (response) {
         loader.start()
-        // console.log("Payment Successful:", response);
+        console.log("Payment Successful:", response);
         const success = await verifyPayment(
           orderId,
           response.razorpay_payment_id,
@@ -124,7 +124,7 @@ export function useTransactions() {
       },
     };
 
-    console.log("Razorpay options: ", options);
+    console.log("Razorpay order options: ", options);
 
     const rzp = new window.Razorpay(options);
     rzp.on('payment.failed', function (response) {

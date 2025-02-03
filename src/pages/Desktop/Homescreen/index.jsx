@@ -21,6 +21,7 @@ import phonics_english from "../../../assets/images/homescreen/book.png";
 
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useAuthState from "../../../hooks/Authentication/useAuthState";
+import Layout from "../../../components/SEO/Layout";
 
 export default function HomeScreen() {
   const { userData } = useFetchUserData();
@@ -141,7 +142,13 @@ export default function HomeScreen() {
 
   const navigate = useNavigate();
   return (
+    <>
     <div className="main-Home-Screen-container">
+    <Layout 
+        title={"Home-Xpert"} 
+        keywords={"Home-Xpert,dashboard, main page, user interface, homepage, navigation, start screen"} 
+        description={"This is the home page of Xtern"} 
+      />
       {!userData?.linkedInProfile && !user && (
         <>
           <div
@@ -199,5 +206,6 @@ export default function HomeScreen() {
         </div>
       </div>
     </div>
+    </>
   );
 }
