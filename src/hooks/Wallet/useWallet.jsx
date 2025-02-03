@@ -74,6 +74,8 @@ export const useWallet = () => {
         },
         { merge: true }
       );
+
+      return transaction.id;
     } catch (error) {
       toast.error("Error creating transaction");
     }

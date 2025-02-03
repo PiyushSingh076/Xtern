@@ -59,7 +59,9 @@ export function useTransactions() {
 
       if (result.data.success) {
         console.log("Payment verified successfully:", result.data.message);
-        toast.success("Payment verified successfully!");
+        toast.success("Payment verified successfully!", {
+          duration: 5000
+        });
         return true;
       } else {
         console.error("Failed to verify payment:", result.data.message);
@@ -100,8 +102,9 @@ export function useTransactions() {
           response.razorpay_signature,
           amount
         );
+        let transactionId;
         if (success) {
-          await createTransaction(
+          transactionId = await createTransaction(
             userId,
             amount,
             "CREDIT",
@@ -115,7 +118,7 @@ export function useTransactions() {
         //   amount: increment(amount),
         // });
 
-        await handler();
+        await handler(transactionId);
         loader.stop()
       },
       prefill: {},
