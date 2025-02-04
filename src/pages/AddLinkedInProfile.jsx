@@ -52,7 +52,6 @@ const AddLinkedInProfile = () => {
         profileId,
         userUid,
       });
-      console.log("response---", response);
       if (response.data.success) {
         toast.success(
           "LinkedIn profile fetched and saved:",

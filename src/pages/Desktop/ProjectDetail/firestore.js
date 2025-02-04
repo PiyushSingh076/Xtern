@@ -5,10 +5,8 @@ import { db } from "../../../firebaseConfig";
 export const saveReview = async (reviewData) => {
   try {
     const docRef = await addDoc(collection(db, "reviews"), reviewData);
-    console.log("Review saved with ID:", docRef.id);
     return docRef.id;
   } catch (error) {
-    console.error("Error saving review:", error);
     throw error;
   }
 };

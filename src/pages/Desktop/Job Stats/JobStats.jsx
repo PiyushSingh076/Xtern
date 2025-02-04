@@ -59,8 +59,6 @@ const JobStats = () => {
 
     setLoadingDetails(true);
     const user = await fetchApplicantDetails(applicant.uid);
-    console.log("User", user);
-    console.log("Applicant", applicant);
     const subscribed = await isSubscribed(applicant.uid);
     setSelectedUser({ ...applicant, user: user, subscribed: subscribed });
     setLoadingDetails(false);
@@ -79,7 +77,6 @@ const JobStats = () => {
       subscribed: !prev.subscribed,
     }));
     const s = await toggleSubscribeToXpert(selectedUser.uid);
-    console.log("Subscribed", s);
     setSelectedUser({ ...selectedUser, subscribed: s });
   };
 

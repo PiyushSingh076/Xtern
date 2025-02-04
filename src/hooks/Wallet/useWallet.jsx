@@ -115,7 +115,6 @@ export const useWallet = () => {
       );
       toast.success("Amount debited successfully");
     } catch (error) {
-      console.log(error);
       toast.error("An error occurred");
     }
   }
@@ -130,7 +129,6 @@ export const useWallet = () => {
     const walletSnapshot = await getDoc(doc(db, "wallet", uid));
     if (walletSnapshot.exists()) {
       const walletData = walletSnapshot.data();
-      console.log("Latest wallet data", walletData);
       return walletData.amount;
     }
   }

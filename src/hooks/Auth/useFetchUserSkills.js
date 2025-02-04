@@ -17,7 +17,6 @@ const useFetchUserSkills = () => {
         if (userDoc.exists) {
           const userData = userDoc.data();
           setUserSkills(userData.skillSet || []);
-          console.log(userData, "....");
         }
       } catch (error) {
         console.error("Error fetching user skills:", error);

@@ -12,11 +12,6 @@ const Profile = () => {
   const { userData, loading, error } = useFetchUserData();
 
 
-  useEffect(() => {
-    console.log(userData)
-  }, [])
-
-
 
   if (loading) {
     return <Loading />;

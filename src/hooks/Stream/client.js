@@ -39,7 +39,6 @@ const useRegisterUser = (userData, loading, error) => {
           dp,
         });
 
-        console.log("Registration Successful:", response.data);
         setRegistrationStatus({
           success: true,
           message: "Registration successful",
