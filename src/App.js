@@ -13,16 +13,11 @@ import DesktopHomeScreen from "./pages/Desktop/Homescreen/index.jsx";
 import DesktopLandingPage from "./pages/Desktop/LandingScreen/index";
 import Header from "./pages/Desktop/Header/Header";
 import DesktopProjectDetails from "./pages/Desktop/ProjectDetail";
-import DesktopBuyDetails from "./pages/Desktop/ProjectDetail/Checkout";
-import DesktopCreateProject from "./pages/Desktop/ProjectDetail/ApplyProject";
 import DesktopProfile from "./pages/Desktop/Profile/index.jsx";
 import DesktopPrefferRole from "./pages/Desktop/Prefference/XpertRole.jsx";
 import DesktopSignIn from "./pages/Desktop/Auth/SignIn";
 import DesktopSignUp from "./pages/Desktop/Auth/SignUp";
 import DesktopPrefferedServiceIntern from "./pages/Desktop/Prefference/PrefferServiceIntern.jsx";
-import DesktopPrefferServiceVenture from "./pages/Desktop/Prefference/PrefferServiceVenture.jsx";
-import DesktopPrefferServiceMentor from "./pages/Desktop/Prefference/PrefferServiceMentor.jsx";
-import DesktopAllProjects from "./pages/Desktop/ProjectDetail/AllProjects.jsx";
 import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iffat
 // import DesktopProfileDetails from "./pages/Desktop/FilterScreen/ProfileDetails.jsx";
 import DesktopCard from "./pages/Desktop/Card/CardList.jsx";
@@ -40,8 +35,6 @@ import MyVideoCall from "./pages/Desktop/MyVideoCall/MyVideoCall.jsx";
 import UserType from "./pages/UserType.jsx";
 import MobHeader from "./components/MobHeader.jsx";
 import Teams from "./pages/Teams/Teams.jsx";
-import PrefferedServiceVenture from "./pages/PrefferedServiceVenture.jsx";
-import PrefferedServiceMentor from "./pages/PrefferedServiceMentor.jsx";
 import PrefferedServiceIntern from "./pages/PrefferedServiceIntern.jsx";
 import LetYouScreen from "./pages/LetYouScreen";
 import SignUp from "./pages/SignUp";
@@ -52,21 +45,15 @@ import ResetPasswordScreen from "./pages/ResetPasswordScreen";
 import VerifyScreen from "./pages/VerifyScreen";
 import NotificationAllow from "./pages/NotificationAllow";
 import PreferredLanguage from "./pages/PreferredLanguage";
-import SpendLearning from "./pages/SpendLearning";
 import SelectSkills from "./pages/SkillSelectionScreen";
-import SelectCoursesScreen from "./pages/SelectCoursesScreen";
 import HomeScreen from "./pages/MobLandingScreen/index.jsx";
 import Notification from "./pages/Notification";
-import CategoryScreen from "./pages/CategoryScreen";
-import Business from "./pages/Business";
 import TrendingCourse from "./pages/TrendingCourse";
 import CheckOutScreen from "./pages/CheckOutScreen";
 import PaymentScreen from "./pages/PaymentScreen";
 import PaymentSuccessfulScreen from "./pages/PaymentSuccessfulScreen";
 import ApplyCoupon from "./pages/ApplyCoupon";
-import MentorScreen from "./pages/MentorScreen";
 import FilterScreen from "./pages/FilterScreen";
-import NewReleaseCourse from "./pages/NewReleaseCourse";
 import Bookmark from "./pages/Bookmark";
 import CourseOngoingScreen from "./pages/CourseOngoingScreen";
 import SingleCourseOngoing from "./pages/SingleCourseOngoing";
@@ -75,7 +62,6 @@ import SingleChatScreen from "./pages/SingleChatScreen";
 import Profile from "./pages/MyProfile/Index.jsx";
 import ProfileEdit from "./pages/ProfileEdit";
 import WalletScreen from "./pages/Desktop/Wallet/wallet.jsx";
-import SingleMentor from "./pages/SingleMentor";
 import NotificationOption from "./pages/NotificationOption";
 import Language from "./pages/Language";
 import Currency from "./pages/Currency";
@@ -94,10 +80,8 @@ import ProtectedRoute from "./Protected/ProtectedRoute";
 import Footer from "./components/Footer";
 import AddLinkedInProfile from "./pages/AddLinkedInProfile";
 import UserProfile from "./pages/UserProfile";
-import ApplyProject from "./pages/ApplyProject";
 import SingleJobDescription from "./pages/SingleJobDescription";
 import ApplyInternship from "./pages/ApplyInternship";
-import CreateProject from "./pages/CreateProject";
 import ProjectDetails from "./pages/ProjectDetail";
 import CreateJob from "./pages/CreateJob";
 import Jobs from "./pages/jobs.jsx";
@@ -107,7 +91,6 @@ import ApplyJob from "./pages/Applyjob.jsx";
 import { useEffect, useState } from "react";
 import PrefferedRole from "./pages/PrefferedRole.jsx";
 
-import BottomNavigationVenture from "./components/BottomNavigationVenture";
 import { RouteRounded } from "@mui/icons-material";
 import LandingBanner from "./pages/Desktop/LandingScreen/LandingBanner.jsx";
 import LandingPage from "./pages/MobLandingScreen/LandingPage.jsx";
@@ -253,27 +236,6 @@ function App() {
               )
             }
           />
-          <Route
-            path={ROUTES.MENTOR}
-            element={
-              isMobileView ? (
-                <PrefferedServiceMentor />
-              ) : (
-                <DesktopPrefferServiceMentor />
-              )
-            }
-          />
-
-          <Route
-            path={ROUTES.VENTURE}
-            element={
-              isMobileView ? (
-                <PrefferedServiceVenture />
-              ) : (
-                <DesktopPrefferServiceVenture />
-              )
-            }
-          />
 
           {/* Protected Routes */}
           <Route
@@ -343,30 +305,6 @@ function App() {
           />
 
           <Route
-            path={ROUTES.SPEND_LEARNING}
-            element={
-              <ProtectedRoute>
-                <SpendLearning />
-              </ProtectedRoute>
-            }
-          />
-          {/* <Route
-        path={ROUTES.INTEREST_SCREEN}
-        element={
-          <ProtectedRoute allowedRoles={["Intern"]}>
-            <SelectSkills />
-          </ProtectedRoute>
-        }
-      /> */}
-          <Route
-            path={ROUTES.SELECT_COURSES_SCREEN}
-            element={
-              <ProtectedRoute>
-                <SelectCoursesScreen />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path={ROUTES.LANDING_PAGE}
             element={
               <>{isMobileView ? <HomeScreen /> : <DesktopLandingPage />}</>
@@ -383,14 +321,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path={ROUTES.CATEGORY_SCREEN}
-            element={
-              <ProtectedRoute>
-                <CategoryScreen />
-              </ProtectedRoute>
-            }
-          />
+
 
           <Route
             path={ROUTES.USER_TYPE}
@@ -398,22 +329,7 @@ function App() {
               isMobileView ? <UserType /> : <div>This Page only for Mobile</div>
             }
           />
-          <Route
-            path={ROUTES.BUSINESS}
-            element={
-              <ProtectedRoute>
-                <Business />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.CREATE_PROJECT}
-            element={
-              <ProtectedRoute>
-                {isMobileView ? <CreateProject /> : null}
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path={ROUTES.SINGLE_COURSE_DESCRIPTION}
             element={
@@ -423,22 +339,7 @@ function App() {
               </>
             }
           />
-          <Route
-            path={ROUTES.BUY_CARD}
-            element={
-              <ProtectedRoute>
-                <DesktopBuyDetails />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.APPLY_PROJECT + "/:projectId"}
-            element={
-              <ProtectedRoute>
-                {isMobileView ? <ApplyProject /> : <DesktopCreateProject />}
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path={ROUTES.INTERNSHIP + "/:internshipId"}
             element={
@@ -497,14 +398,6 @@ function App() {
             }
           />
           <Route
-            path={ROUTES.MENTOR_SCREEN}
-            element={
-              <ProtectedRoute>
-                <MentorScreen />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path={ROUTES.FILTER_SCREEN}
             element={
               <ProtectedRoute>
@@ -512,14 +405,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path={ROUTES.NEW_RELEASE_COURSE}
-            element={
-              <ProtectedRoute>
-                {isMobileView ? <NewReleaseCourse /> : <DesktopAllProjects />}
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path={ROUTES.BOOKMARK}
             element={
@@ -636,14 +522,6 @@ function App() {
               </ProtectedRoute>
             }
           ></Route>
-          <Route
-            path={ROUTES.SINGLE_MENTOR + "/:uid"}
-            element={
-              <ProtectedRoute>
-                <SingleMentor />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path={ROUTES.NOTIFICATION_OPTION}
             element={
@@ -762,19 +640,7 @@ function App() {
           <Route path="" element={<Footer />} />
         </Routes>
 
-        {/* {isMobileView &&
-      location.pathname !== ROUTES.SIGN_IN &&
-      location.pathname !== ROUTES.SIGN_UP &&
-      location.pathname !== ROUTES.INTERN &&
-      location.pathname !== ROUTES.MENTOR &&
-      location.pathname !== ROUTES.VENTURE && (
-        <>
-          {selectedRole === "venture" && <BottomNavigationVenture />}
-          {selectedRole === "intern" && <BottomNavigation />}
-          {selectedRole === "mentor" && <BottomNavigationVenture />}
-          {selectedRole === "" && <BottomNavigation />}
-        </>
-      )} */}
+      
       </div>
     </AuthProvider>
   );
