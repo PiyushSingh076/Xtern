@@ -393,35 +393,41 @@
 .desc-view-btn-container {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start; /* Corrected from 'start' to 'flex-start' */
 }
 
-.desc-btn {
-  border: none;
-  margin-top: 5px;
-  font-size: 16px;
-  color: #3374ae;
-  cursor: pointer;
-  background-color: transparent;
-  padding: 0;
-  margin-left: 0;
-}
-
+.desc-btn,
 .link-btn {
-  text-decoration: none;
   border: none;
-
   margin-top: 10px;
+  margin-left: 0;
+  padding: 10px 20px; 
   font-size: 16px;
+  font-family: Arial, sans-serif; 
   color: #3374ae;
-  cursor: pointer;
-  border-radius: 10px;
-
   background-color: transparent;
+  cursor: pointer;
+  border-radius: 5px; 
+  transition: background-color 0.3s, color 0.3s; 
+  text-decoration: none; 
 }
 
+.desc-btn:hover,
 .link-btn:hover {
-  text-decoration: underline;
+  background-color: #e0f0ff; 
+  color: #235a85; 
+}
+
+.desc-btn:focus,
+.link-btn:focus {
+  outline: 2px solid #3374ae;
+  outline-offset: 2px;
+}
+
+.desc-btn:active,
+.link-btn:active {
+  background-color: #cce4f7; 
+  color: #1d4f75;
 }
 
 .schedule-interview-container {
