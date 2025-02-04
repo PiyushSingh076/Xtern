@@ -153,6 +153,7 @@ const useSaveProfileData = () => {
         const workDocs = data.work.map((w) => ({
           companyName: w.company || "",
           description: w.description || "",
+          companyLogo: w.companyLogo || "",
           // Store dates as strings
           startDate: w.startDate || "",
           endDate: w.endDate || "",
@@ -169,6 +170,7 @@ const useSaveProfileData = () => {
           liveDemo: proj.liveLink || "",
           description: proj.description || "",
           duration: proj.duration || "",
+          projectLogo: proj.projectLogo|| "",
           // Store dates as strings if needed
         }));
         await batchAddDocuments(

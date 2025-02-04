@@ -3,23 +3,21 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   Container,
   Typography,
-  Paper,
   Grid,
   Chip,
   Button,
-  Box,
   Skeleton,
 } from "@mui/material";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import Layout from "../../../components/SEO/Layout";
 import HeaderImg from "../../../assets/images/single-courses/header-img.png";
-
 import StudentIcon from "../../../assets/images/single-courses/student-icon.svg";
 import TimeIcon from "../../../assets/images/single-courses/time-icon.svg";
 
 import AccessTime from "@mui/icons-material/AccessTime";
-import Schedule from "@mui/icons-material/Schedule";
+
+
 import { LocationSearchingRounded } from "@mui/icons-material";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import toast from "react-hot-toast";
@@ -79,10 +77,11 @@ const SingleJob = () => {
 
   return (
     <>
-    <Layout
-     title={"Viewjob"}
-         description={"Browse and Explore Job Opportunities"}
-         keywords={"View Jobs, Job Listings, Career Opportunities, Employment, Hiring"}/>
+      <Layout
+        title={"viewjobs"}
+        description={"Browse and Explore Job Opportunities"}
+        keywords={"View Jobs, Job Listings, Career Opportunities, Employment, Hiring"}
+      />
       <section id="single-description-screen">
         <div className="container !shadow-none !border-none !bg-white !max-w-full mx-8">
           <Grid container spacing={2}>
@@ -124,7 +123,9 @@ const SingleJob = () => {
                   <span className="student-img mr-8">
                     <img src={TimeIcon} alt="student-icon" />
                   </span>
-                  <span className="second-txt2">Duration: {job.duration} months</span>
+                  <span className="second-txt2">
+                    Duration: {job.duration} months
+                  </span>
                 </div>
               </div>
             </div>

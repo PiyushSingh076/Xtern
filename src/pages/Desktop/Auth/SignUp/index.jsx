@@ -88,7 +88,7 @@ const SignUp = () => {
   return (
     <>
      <Layout
-    title={"Create a New Account"}
+    title={"signup"}
         description={"Create a new account to access job listings and start applying"}
         keywords={"Sign Up, Register, New Account, Job Portal, Create Account, User Registration"}/>
       {/* <!-- Header start --> */}

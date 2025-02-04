@@ -27,6 +27,7 @@ import Schedule from "@mui/icons-material/Schedule";
 import { MapPin } from "lucide-react";
 import { LocationSearchingRounded } from "@mui/icons-material";
 import { useFetchJob } from "../hooks/Jobs/useFetchJob";
+import Layout from "../components/SEO/Layout";
 
 const SingleJob = () => {
   const { jobId } = useParams();
@@ -158,6 +159,10 @@ const SingleJob = () => {
 
   return (
     <>
+     <Layout
+        title={job.title==null ? "Jobpage": job.title}
+        description={"Browse and Explore Job Opportunities"}
+        keywords={"View Jobs, Job Listings, Career Opportunities, Employment, Hiring"} ></Layout>
       <section id="single-description-screen">
         <div className="container !shadow-none !border-none !bg-white !max-w-full mx-8">
           <Grid container spacing={2}>
