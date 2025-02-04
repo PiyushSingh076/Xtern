@@ -43,9 +43,8 @@ const SingleJob = () => {
             navigate("/homescreen");
           }
           setJob(jobDoc.data());
-          console.log(jobDoc.data());
         } else {
-          console.log("No such job!");
+          toast.error("Job not found.");
         }
       } catch (error) {
         console.error("Error fetching job:", error);

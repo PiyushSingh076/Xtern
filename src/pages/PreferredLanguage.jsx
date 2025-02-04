@@ -32,9 +32,7 @@ const PreferredLanguage = () => {
   useEffect(() => {
     // Set up the auth state change listener
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log(user);
       if (user) {
-        console.log(user);
         setUserId(user.uid); // Store the user ID
         setUserName(user.displayName || user?.email || "User"); // Default to "User" if displayName is not available
       } else {

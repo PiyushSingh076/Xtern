@@ -29,7 +29,6 @@ const ProjectDetails = () => {
 
   const auth = useSelector((state) => state.role.auth);
 
-  console.log(auth);
 
   const location = useLocation();
   const [item, setItem] = useState({})

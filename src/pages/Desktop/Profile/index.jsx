@@ -105,7 +105,6 @@ const SingleMentor = () => {
 
   useEffect(() => {
     if (profileData) {
-      console.log(profileData);
       if (profileData.type == "entrepreneur") {
         navigate(`/entrepreneur/${profileData.uid}`);
       }
@@ -318,10 +317,8 @@ const SingleMentor = () => {
 
   // If user clicks "Service" item
   const handleService = (item) => {
-    console.log("Service:", item);
     const serializableItem = JSON.parse(JSON.stringify(item));
     serializableItem.uid = uid;
-    console.log("displaying si before navigating ", serializableItem);
     navigate("/service/" + item.id, { state: { item: serializableItem } });
   };
   // Show/hide calls

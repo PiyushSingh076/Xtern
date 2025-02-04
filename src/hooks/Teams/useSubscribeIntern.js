@@ -83,7 +83,6 @@ const useSubscribeIntern = () => {
         // Assuming only one document matches; delete it
         const docToDelete = querySnapshot.docs[0];
         await deleteDoc(doc(db, "shortlistedInterns", docToDelete.id));
-        console.log("Successfully removed intern from shortlist.");
       } else {
         console.warn("No matching document found in shortlistedInterns.");
       }

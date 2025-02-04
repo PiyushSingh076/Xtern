@@ -66,7 +66,6 @@ const SingleMentor = () => {
 
   useEffect(() => {
     if(profileData){
-      // console.log(profileData);
       if(profileData.type !== "entrepreneur"){
         toast.error("Entrepreneur not found")
         navigate("/homescreen/")

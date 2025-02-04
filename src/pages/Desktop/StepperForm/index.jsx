@@ -782,7 +782,6 @@ export default function StepperForm() {
     setModalType(type);
     setIsModalOpen(true);
     setEditIndex(index);
-    console.log(itemData);
 
     if (itemData && Object.keys(itemData).length > 0) {
       // Prefill modalFormData based on the type
@@ -880,7 +879,6 @@ export default function StepperForm() {
       }
     } else if (lower === "service") {
       try {
-        console.log("dataObj", dataObj);
         let videoUrl = dataObj.serviceVideo;;
         // Handle video upload only if it's a new file
         if (dataObj.serviceVideo instanceof File) {
@@ -890,7 +888,6 @@ export default function StepperForm() {
           );
           await uploadBytes(storageRef, dataObj.serviceVideo);
           videoUrl = await getDownloadURL(storageRef);
-          console.log("Video URL:", videoUrl);
         }
 
         const imageUrls = await Promise.all(
@@ -925,14 +922,12 @@ export default function StepperForm() {
         const filteredImageUrls = imageUrls.filter(url => url !== null);
 
 
-        console.log("Image URLs:", imageUrls);
         const serviceData = {
           ...dataObj,
           serviceVideo: videoUrl,
           images: imageUrls,
         };
 
-        console.log("serviceData", serviceData);
         if (index !== null) {
           const newArr = [...Services];
           newArr[index] = serviceData;
@@ -982,9 +977,7 @@ export default function StepperForm() {
     }
   };
 
-  useEffect(() => {
-    console.log("Active Step changed to:", activeStep);
-  }, [activeStep]);
+
 
   // Final Submit of the entire form
   const handleSubmitInfo = async (e) => {
@@ -1005,7 +998,6 @@ export default function StepperForm() {
       setLoadingg(false);
       return;
     }
-    console.log("Services", Services);
     // Gather data
     const data = {
       profileImage: profileImg,
@@ -1025,7 +1017,6 @@ export default function StepperForm() {
       consultingDurationType: ConsultingDurationType,
     };
 
-    console.log("Before setting step:", activeStep);
 
     try {
       dispatch(setDetail(data));
@@ -1036,10 +1027,8 @@ export default function StepperForm() {
       setTimeout(() => {
         refreshUser();
       }, 200);
-      console.log("After setting step:", 3); // Debug log
     } catch (err) {
       toast.error(`Error saving data: ${err.message}`);
-      console.log(err);
     } finally {
       setLoadingg(false);
     }

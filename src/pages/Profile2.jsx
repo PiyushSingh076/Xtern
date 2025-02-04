@@ -29,7 +29,6 @@ const SingleMentor = () => {
     // Custom hooks and Redux state
     const { userData, loading, error } = useFetchUserData();
     const internInfo = useSelector((state) => state.internInfo);
-    console.log(internInfo);
 
     // Event handlers
     const toggleBookmark = () => {

@@ -45,7 +45,6 @@ const SingleJob = () => {
       try {
         const jobDoc = await getDoc(doc(db, "jobPosting", jobId));
         if (jobDoc.exists()) {
-          // console.log("Job page",jobDoc.data().applicants, userData.uid);
           if (userData) {
             jobDoc.data().applicants.forEach((applicant) => {
               if (applicant.uid == userData.uid) {
@@ -57,10 +56,9 @@ const SingleJob = () => {
           //   setIsApplied(true);
           // }
           setJob(jobDoc.data());
-          console.log(jobDoc.data());
         } else {
-          console.log("No such job!");
-        }
+          toast.error("No such job found!"); // Better user feedback
+      }
       } catch (error) {
         console.error("Error fetching job:", error);
       } finally {

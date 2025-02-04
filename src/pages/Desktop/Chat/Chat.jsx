@@ -30,7 +30,6 @@ const fetchToken = async (userId) => {
 };
 
 const fetchOrCreateChannel = async (user1, user2, createdById) => {
-  console.log(user1, user2, createdById);
   const response = await fetch("https://us-central1-startup-a54cf.cloudfunctions.net/api/getChannel", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

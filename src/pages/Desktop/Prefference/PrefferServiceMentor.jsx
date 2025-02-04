@@ -96,7 +96,6 @@ export default function PreferredService() {
       currentRole: currentRole,
     };
 
-    console.log("Mentor Info:", mentorInfo);
     alert("Mentor Info Submitted");
     navigate("/profile");
   };

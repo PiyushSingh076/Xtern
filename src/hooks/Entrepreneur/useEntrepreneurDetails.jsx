@@ -12,12 +12,10 @@ export const useEntrepreneurDetails =  (uid) => {
                 setLoading(true)
             const data = (await getDoc(doc(db, "users",uid ))).data();
             if(data === undefined || data===null){
-                console.log("error occured entrepreneur")
                 setError(true)
                 setLoading(false)
                 return
             }
-            console.log(data);
             setUserData(data);
             setLoading(false);
             } catch (error) {

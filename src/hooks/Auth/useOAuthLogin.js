@@ -22,9 +22,7 @@ const useOAuthLogin = () => {
 
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        // console.log("User data auth:", userData);
         // Check if the phone number is verified
-        console.log("User data auth:", userData);
         if (!userDoc.exists() || userData?.isPhoneVerified === false || userData?.isPhoneVerified === null) {
           toast("Please verify your phone number", { position: "bottom-left" });
           navigate("/verifyscreen");

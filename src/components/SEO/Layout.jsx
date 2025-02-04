@@ -3,7 +3,6 @@ import React from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 
 const Layout = ({ title, description, keywords }) => {
-  console.log("SEO Description:", description);
   return (
     <HelmetProvider>
       <Helmet>

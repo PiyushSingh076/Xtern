@@ -80,7 +80,6 @@ const ProjectDetails = () => {
       setPageLoading(false);
     };
     fetchItem();
-    console.log('service provider', serviceProvider);
 
   }, []);
 
@@ -177,7 +176,6 @@ const ProjectDetails = () => {
         timestamp: new Date(),
       };
 
-      console.log("Submitting review:", reviewData);
 
       const reviewId = await saveReview(reviewData);
 
@@ -211,16 +209,13 @@ const ProjectDetails = () => {
 
 
 
-      console.log("Reviews", userReviews);
 
       let counter = 0;
       userReviews.forEach((review) => {
-        console.log(review.userId, userData.uid);
         if (review.userId !== userData.uid) {
           counter++;
         }
       });
-      console.log("Counter", counter, userReviews.length);
       if (counter == userReviews.length) {
         setCanReview(true);
       }
@@ -290,7 +285,6 @@ const ProjectDetails = () => {
   useEffect(() => {
     if (item) {
       const newMedia = [];
-      console.log("item", item);
       if (item.serviceVideo) {
         newMedia.push({
           type: "video",
@@ -307,7 +301,6 @@ const ProjectDetails = () => {
         });
       }
 
-      console.log("newMedia", newMedia);
       setMedia(newMedia); // Directly set new media instead of merging
 
     }

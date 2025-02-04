@@ -41,7 +41,6 @@ const useFetchShortlistedInterns = () => {
               // Fetch intern details using the `internRef` directly as a document reference
               const internDoc = await getDoc(internRef);
               if (internDoc.exists()) {
-                console.log("Fetched intern details for:", internRef.id);
                 return { id: docSnapshot.id, ...internDoc.data() };
               } else {
                 console.warn(
@@ -63,7 +62,6 @@ const useFetchShortlistedInterns = () => {
         );
 
         setShortlistedInterns(internsData.filter(Boolean));
-        console.log("Shortlisted interns data:", internsData.filter(Boolean));
       } catch (error) {
         console.error("Error fetching shortlisted interns:", error);
       } finally {

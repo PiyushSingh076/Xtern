@@ -33,9 +33,7 @@ export default function Homepage() {
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(userData?.uid);
-  console.log("profileData", profileData, profileError);
 
-  console.log(Role);
 
   useEffect(() => {
     if (userData) {

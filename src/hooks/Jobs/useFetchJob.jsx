@@ -37,7 +37,6 @@ export const useFetchJob = (id) => {
 
   async function fetchJob() {
     const jobSnapshot = await getDoc(doc(db, "jobPosting", id));
-    // console.log("Job", jobSnapshot.data());
     if (!jobSnapshot.exists()) {
       toast.error("Job not found");
       throw new Error("Job not found");
@@ -52,7 +51,6 @@ export const useFetchJob = (id) => {
       ...applicant
     }));
 
-    // console.log(data)
     // delete data["applicants"];
     return data;
   }
@@ -67,7 +65,6 @@ export const useFetchJob = (id) => {
 
     const applications = applicationsSnapshot.docs.map((doc) => doc.data());
 
-    // console.log("Applications", applications);
 
     return applications;
     

@@ -11,16 +11,14 @@ const usePhoneNumberVerification = () => {
   // Ensure ReCAPTCHA is initialized properly
   const ensureRecaptcha = () => {
     if (!window.recaptchaVerifier) {
-      console.log("Initializing ReCAPTCHA...");
       window.recaptchaVerifier = new window.firebase.auth.RecaptchaVerifier(
         "recaptcha-container",
         {
           size: "invisible",
           callback: (response) => {
-            console.log("ReCAPTCHA verified successfully.");
           },
           "expired-callback": () => {
-            console.log("ReCAPTCHA expired. Please try again.");
+            toast.error("ReCAPTCHA expired. Please try again.");
           },
         },
         auth
@@ -30,9 +28,7 @@ const usePhoneNumberVerification = () => {
       window.recaptchaVerifier.render().then((widgetId) => {
         window.recaptchaWidgetId = widgetId;
       });
-    } else {
-      console.log("ReCAPTCHA already initialized.");
-    }
+    } 
   };
 
   // Send OTP to the user's phone number

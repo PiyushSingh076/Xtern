@@ -48,7 +48,6 @@ const WalletPage = () => {
 
   useEffect(() => {
     if (loaded === true) {
-      console.log(wallet.amount);
       setLoading(false);
       setBalance(wallet.amount);
     }
@@ -59,7 +58,6 @@ const WalletPage = () => {
   const fetchTransactions = async (uid) => {
     const data = await getTransactions(uid);
     setTransactionsData(data);
-    console.log("Transactions",data);
   };
   useEffect(() => {
     if (userData) {
@@ -69,7 +67,6 @@ const WalletPage = () => {
 
   useEffect(() => {
     if (loaded === true) {
-      console.log(wallet);
       setLoading(false);
       setBalance(wallet.amount);
     }
@@ -97,9 +94,7 @@ const WalletPage = () => {
           start: () => setPageLoading(true),
           stop: () => setPageLoading(false),
         });
-        // console.log("Funds added successfully");
-        // const updateAmount = await getAmountInWallet(userData.uid);
-        // setBalance(updateAmount)
+
 
         onClose();
       } catch (error) {
@@ -191,7 +186,6 @@ const WalletPage = () => {
       if (!bankName.trim()) newErrors.bankName = "Bank name is required.";
       if (!ifscCode.trim()) newErrors.ifscCode = "IFSC code is required.";
       const withdrawAmount = parseFloat(amount);
-      console.log(`wa: ${withdrawAmount}, blance: ${balance}`);
 
       if (!amount.trim() || isNaN(withdrawAmount) || withdrawAmount <= 0)
         newErrors.amount = "Enter a valid amount.";
@@ -212,12 +206,7 @@ const WalletPage = () => {
         });
         // Logic for withdrawal (e.g., API call)
         onClose();
-        console.log({
-          accountNumber,
-          bankName,
-          ifscCode,
-          amount: parseFloat(amount),
-        });
+
         // setAccountNumber("");
         // setBankName("");
         // setIfscCode("");
