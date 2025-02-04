@@ -26,7 +26,6 @@ export function useTransactions() {
       );
 
       if (result.data.success) {
-        console.log("Order created successfully:", result.data.orderId);
         return result.data.orderId;
       } else {
         toast.error("Failed to create payment order. Please try again.");
@@ -40,7 +39,7 @@ export function useTransactions() {
 
   async function verifyPayment(orderId, paymentId, signature, amount) {
     try {
-      const verifyOrder = httpsCallable(functions, "verifyPayment");
+      // const verifyOrder = httpsCallable(functions, "verifyPayment");
       // const result = await verifyOrder({
       //   order_id: orderId,
       //   payment_id: paymentId,
@@ -58,8 +57,11 @@ export function useTransactions() {
       );
 
       if (result.data.success) {
-        console.log("Payment verified successfully:", result.data.message);
-        toast.success("Payment verified successfully!");
+
+        toast.success("Payment verified successfully!", {
+          duration: 5000
+        });
+
         return true;
       } else {
         console.error("Failed to verify payment:", result.data.message);
@@ -75,7 +77,6 @@ export function useTransactions() {
   async function initiatePayment(userId, amount, handler, loader) {
     const orderId = await createPaymentOrder(userId, amount, "INR");
 
-    console.log("Order iD:", orderId);
 
     if (!orderId) {
       console.error("Failed to create Razorpay order");
@@ -84,7 +85,7 @@ export function useTransactions() {
     }
 
     const options = {
-      key_id: process.env.REACT_APP_RAZORPAY_KEY_SECRET,
+      key: process.env.REACT_APP_RAZORPAY_KEY_ID,
       key_secret: process.env.REACT_APP_RAZORPAY_KEY_SECRET,
       amount: amount * 100,
       currency: "INR",
@@ -93,15 +94,15 @@ export function useTransactions() {
       order_id: orderId,
       handler: async function (response) {
         loader.start()
-        console.log("Payment Successful:", response);
         const success = await verifyPayment(
           orderId,
           response.razorpay_payment_id,
           response.razorpay_signature,
           amount
         );
+        let transactionId;
         if (success) {
-          await createTransaction(
+          transactionId = await createTransaction(
             userId,
             amount,
             "CREDIT",
@@ -115,7 +116,7 @@ export function useTransactions() {
         //   amount: increment(amount),
         // });
 
-        await handler();
+        await handler(transactionId);
         loader.stop()
       },
       prefill: {},
@@ -124,7 +125,6 @@ export function useTransactions() {
       },
     };
 
-    console.log("Razorpay options: ", options);
 
     const rzp = new window.Razorpay(options);
     rzp.on('payment.failed', function (response) {

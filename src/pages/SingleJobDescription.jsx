@@ -20,7 +20,6 @@ const SingleJobDescription = () => {
   const toggleBookmark = () => {
     setIsBookmarked(!isBookmarked);
   };
-  console.log(userData, "dsdfsdf");
   const { internshipId } = useParams();
   const { internshipData, loading, error } =
     useFetchInternshipData(internshipId);
@@ -28,7 +27,6 @@ const SingleJobDescription = () => {
   const handleBackClick = () => {
     navigate(-1);
   };
-  console.log(internshipData, "lllllll");
   if (loading) {
     return <Loading />;
   }

@@ -41,18 +41,14 @@ const useSaveEntrepreneurDetails = () => {
 
 
       // Debugging to check data
-      console.log("Normalized Data:", normalizedData);
       // Check if user document exists
       // const testUser = await getDoc(userRef);
-      // console.log(testUser.data());
       
       // Save or overwrite the document in Firestore
-      console.log("Saving entrepreneur details...");
       try {
         await setDoc(userRef, normalizedData, { merge: true });
         auth2.setRegistrationStatus("logged_in");
         
-        console.log("Data successfully saved to Firestore.");
       } catch (error) {
         console.error("Error while saving data to Firestore: ", error);
         throw new Error("Failed to save data to Firestore");

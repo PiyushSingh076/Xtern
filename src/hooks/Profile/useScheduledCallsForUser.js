@@ -25,7 +25,6 @@ const useScheduledCallsForUser = (userId) => {
 
   useEffect(() => {
     
-    console.log("userData", userId);
   
     setLoading(true);
     setError(null);
@@ -56,7 +55,6 @@ const useScheduledCallsForUser = (userId) => {
               };
             })
           );
-          console.log("callsData", callsData);
           setCalls(callsData);
           setLoading(false);
         } catch (err) {

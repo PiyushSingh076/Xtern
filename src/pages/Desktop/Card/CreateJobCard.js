@@ -7,7 +7,6 @@ const CreateJobCard = () => {
   const navigate = useNavigate();
 
   const handleCreateJobClick = () => {
-    console.log("Create Job clicked");
     // Navigate to the create job page
     navigate("/createjob");
   };

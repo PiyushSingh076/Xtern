@@ -57,7 +57,6 @@ const HomeScreen = () => {
   const { handleLogout, loading: logoutloading } = useOAuthLogout(); // Use the logout hook
 
   const filteredJobs = useFetchFilteredJobs(userSkills, activeSkill);
-  console.log("filteredJobs", filteredJobs);
 
   const handleSkillClick = useCallback(
     (skill) => {

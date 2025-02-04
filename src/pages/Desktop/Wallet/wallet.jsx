@@ -21,7 +21,7 @@ import {
   Grid,
   Skeleton,
 } from "@mui/material";
-import { Plus, ArrowDownCircle, X,  } from "lucide-react";
+import { Plus, ArrowDownCircle, X, Check, CheckCircle } from "lucide-react";
 import Layout from "../../../components/SEO/Layout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
@@ -29,26 +29,27 @@ import useWallet from "../../../hooks/Wallet/useWallet";
 import { useTransactions } from "../../../hooks/Wallet/useTransactions";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import WalletPageSkeleton from './WalletPageSkeleton';
-
-
+import WalletPageSkeleton from "./WalletPageSkeleton";
 
 const WalletPage = () => {
   const { userData } = useFetchUserData();
   const isEntrepreneur = (userData?.type ?? "") === ENTREPRENEUR_ROLE;
+  const [paymentError, setPaymentError] = useState(false)
   const { initiatePayment } = useTransactions();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [transactionId, setTransactionId] = useState(null);
   const [showRequestWithdrawModal, setShowRequestWithdrawModal] =
     useState(false);
 
   const [balance, setBalance] = useState(10);
   const { wallet, loaded, getTransactions, getAmountInWallet } = useWallet();
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState(0);
+  const [showConfirmation, setShowConfirmation] = useState(false)
 
   useEffect(() => {
     if (loaded === true) {
-      console.log(wallet.amount);
       setLoading(false);
       setBalance(wallet.amount);
     }
@@ -59,7 +60,7 @@ const WalletPage = () => {
   const fetchTransactions = async (uid) => {
     const data = await getTransactions(uid);
     setTransactionsData(data);
-    console.log("Transactions",data);
+
   };
   useEffect(() => {
     if (userData) {
@@ -69,7 +70,6 @@ const WalletPage = () => {
 
   useEffect(() => {
     if (loaded === true) {
-      console.log(wallet);
       setLoading(false);
       setBalance(wallet.amount);
     }
@@ -80,8 +80,10 @@ const WalletPage = () => {
     const { initiatePayment } = useTransactions();
 
     const [loading, setLoading] = useState(false);
-    async function paymentHandler() {
+    async function paymentHandler(transactionId) {
+      setTransactionId(transactionId);
       setPageLoading(true);
+      setShowConfirmation(true)
       const updateAmount = await getAmountInWallet(userData.uid);
       setBalance(updateAmount);
       await fetchTransactions(userData.uid);
@@ -97,9 +99,7 @@ const WalletPage = () => {
           start: () => setPageLoading(true),
           stop: () => setPageLoading(false),
         });
-        // console.log("Funds added successfully");
-        // const updateAmount = await getAmountInWallet(userData.uid);
-        // setBalance(updateAmount)
+
 
         onClose();
       } catch (error) {
@@ -108,62 +108,67 @@ const WalletPage = () => {
       }
     };
 
-    
-
     return (
       <>
-      <Layout 
-         title={"Wallet"}
-         description={"Add Funds to your Wallet and Withdraw Funds Securly"}
-         keywords={"Withdraw,Add Funds,Transactions"}/>
-      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Add Funds</DialogTitle>
-        <DialogContent>
-          <Box sx={{ position: "relative", mt: 2 }}>
-            <Typography
-              sx={{
-                position: "absolute",
-                left: "14px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "text.secondary",
-              }}
+        <Layout
+          title={"Wallet"}
+          description={"Add Funds to your Wallet and Withdraw Funds Securly"}
+          keywords={"Withdraw,Add Funds,Transactions"}
+        />
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+          <DialogTitle>Add Funds</DialogTitle>
+          <DialogContent>
+            <Box sx={{ position: "relative", mt: 2 }}>
+              <Typography
+                sx={{
+                  position: "absolute",
+                  left: "14px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "text.secondary",
+                }}
+              >
+                ₹
+              </Typography>
+              <TextField
+                fullWidth
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount"
+                InputProps={{
+                  sx: { paddingLeft: "24px" },
+                }}
+              />
+            </Box>
+              <div className="flex gap-2 mt-2">
+                <Button onClick={() => setAmount((prev) => Number(prev)+100)} sx={{borderRadius: "100px"}} variant="outlined">+100</Button>
+                <Button onClick={() => setAmount((prev) => Number(prev)+500)} sx={{borderRadius: "100px"}} variant="outlined">+500</Button>
+                <Button onClick={() => setAmount((prev) => Number(prev)+1000)} sx={{borderRadius: "100px"}} variant="outlined">+1000</Button>
+              </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onClose} variant="outlined" color="inherit">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddFunds}
+              variant="contained"
+              className="flex gap-2"
+              color="primary"
             >
-              ₹
-            </Typography>
-            <TextField
-              fullWidth
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter amount"
-              InputProps={{
-                sx: { paddingLeft: "24px" },
-              }}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} variant="outlined" color="inherit">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleAddFunds}
-            variant="contained"
-            className="flex gap-2"
-            color="primary"
-          >
-            {loading ? (
-              <>
-                Please Wait
-                <div className="spinner-border-sm spinner-border"></div>
-              </>
-            ) : (
-              "Add Funds"
-            )}
-          </Button>
-        </DialogActions>
-      </Dialog>
+              {loading ? (
+                <>
+                  Please Wait
+                  <div className="spinner-border-sm spinner-border"></div>
+                </>
+              ) : (
+                "Add Funds"
+              )}
+            </Button>
+            
+          </DialogActions>
+        </Dialog>
       </>
     );
   };
@@ -191,7 +196,6 @@ const WalletPage = () => {
       if (!bankName.trim()) newErrors.bankName = "Bank name is required.";
       if (!ifscCode.trim()) newErrors.ifscCode = "IFSC code is required.";
       const withdrawAmount = parseFloat(amount);
-      console.log(`wa: ${withdrawAmount}, blance: ${balance}`);
 
       if (!amount.trim() || isNaN(withdrawAmount) || withdrawAmount <= 0)
         newErrors.amount = "Enter a valid amount.";
@@ -212,19 +216,14 @@ const WalletPage = () => {
         });
         // Logic for withdrawal (e.g., API call)
         onClose();
-        console.log({
-          accountNumber,
-          bankName,
-          ifscCode,
-          amount: parseFloat(amount),
-        });
+
         // setAccountNumber("");
         // setBankName("");
         // setIfscCode("");
         // setAmount("");
         // setErrors({});
       }
-      setPageLoading(true)
+      setPageLoading(true);
       const updateAmount = await getAmountInWallet(userData.uid);
       setBalance(updateAmount);
       await fetchTransactions(userData.uid);
@@ -398,8 +397,6 @@ const WalletPage = () => {
     return <WalletPageSkeleton />;
   }
 
-  
-
   return (
     <Box
       sx={{ p: 3, bgcolor: "#f5f5f5" }}
@@ -490,78 +487,191 @@ const WalletPage = () => {
         </Paper>
 
         {/* Right Section */}
-        <Paper sx={{ flex: 1, p: 3, borderRadius: 2 }}>
-          <Typography variant="h6" fontWeight="medium" sx={{ mb: 3 }}>
-            Transaction History
-          </Typography>
-
-          {transactionsData && (
+        <Paper className="h-[80vh]" sx={{ flex: 1, p: 3, borderRadius: 2 }}>
+          <div className="flex w-full ">
+            <button
+              onClick={() => setTab(0)}
+              className={`px-4 py-2 shrink-0 text-black/60 transition-all hover:text-blue-500 border-b-2 ${
+                tab == 0 && "border-blue-500 text-blue-500"
+              } font-bold`}
+            >
+              Transactions
+            </button>
+            <button
+              onClick={() => setTab(1)}
+              className={`px-4 py-2 shrink-0 hover:text-blue-500 transition-all  text-black/60 border-b-2 ${
+                tab == 1 && "border-blue-500 text-blue-500"
+              } font-bold`}
+            >
+              Order History
+            </button>
+            <div className="w-full border-b-2 border-gray-200"></div>
+          </div>
+          {tab == 0 ? (
             <>
-              <TableContainer className="max-h-[400px] ">
-                <Table stickyHeader className="relative">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Amount</TableCell>
-                      <TableCell>Description</TableCell>
-                      <TableCell className="!hidden sm:!table-cell">
-                        Date
-                      </TableCell>
-                      <TableCell align="center">Transaction ID</TableCell>
-                      <TableCell align="center">Type</TableCell>
-                    </TableRow>
-                  </TableHead>
-
+              <div id="transaction-history" className="">
+                {transactionsData && (
                   <>
-                    <TableBody>
-                      {pageLoading && (
-                        <>
+                    <TableContainer className="max-h-[400px] ">
+                      <Table stickyHeader className="relative">
+                        <TableHead>
                           <TableRow>
-                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
-                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
-                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
-                            <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                            <TableCell>Amount</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell className="!hidden sm:!table-cell shrink-0 w-[150px]">
+                              Date
+                            </TableCell>
+                            <TableCell align="center">Transaction ID</TableCell>
+                            <TableCell align="center">Type</TableCell>
                           </TableRow>
-                        </>
-                      )}
-                      {transactionsData.map((transaction, index) => (
-                        <TableRow key={index} hover>
-                          <TableCell>₹{transaction.amount}</TableCell>
-                          <TableCell>{transaction.description}</TableCell>
-                          <TableCell className="!hidden sm:!table-cell" l>
-                            {transaction.date
-                              ? dayjs(
-                                  new Timestamp(
-                                    transaction.date.seconds,
-                                    transaction.date.nanoseconds
-                                  ).toDate()
-                                ).format("DD-MM-YYYY")
-                              : "N/A"}
-                          </TableCell>
-                          <TableCell align="center">{transaction.id}</TableCell>
-                          <TableCell align="center">
-                            {transaction.type === "CREDIT" ? (
-                              <Chip label="CREDIT" color="success"></Chip>
-                            ) : transaction.type === "DEBIT" ? (
+                        </TableHead>
+
+                        <>
+                          <TableBody>
+                            {pageLoading && (
                               <>
-                                <Chip label="DEBIT" color="error"></Chip>
-                              </>
-                            ) : (
-                              <>
-                                <Chip label="PENDING" color="info"></Chip>
+                                <TableRow>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                </TableRow>
                               </>
                             )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
+                            {transactionsData.map((transaction, index) => (
+                              <TableRow key={index} hover>
+                                <TableCell>₹{transaction.amount}</TableCell>
+                                <TableCell>{transaction.description}</TableCell>
+                                <TableCell className="!hidden sm:!table-cell" l>
+                                  {transaction.date
+                                    ? dayjs(
+                                        new Timestamp(
+                                          transaction.date.seconds,
+                                          transaction.date.nanoseconds
+                                        ).toDate()
+                                      ).format("DD-MM-YYYY")
+                                    : "N/A"}
+                                </TableCell>
+                                <TableCell align="center">
+                                  {transaction.id}
+                                </TableCell>
+                                <TableCell align="center">
+                                  {transaction.type === "CREDIT" ? (
+                                    <Chip label="CREDIT" color="success"></Chip>
+                                  ) : transaction.type === "DEBIT" ? (
+                                    <>
+                                      <Chip label="DEBIT" color="error"></Chip>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Chip label="PENDING" color="info"></Chip>
+                                    </>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </>
+                      </Table>
+                    </TableContainer>
                   </>
-                </Table>
-              </TableContainer>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <div id="order-history" className="">
+                {transactionsData && (
+                  <>
+                    <TableContainer className="max-h-[400px] ">
+                      <Table stickyHeader className="relative">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Amount</TableCell>
+
+                            <TableCell className="!hidden sm:!table-cell">
+                              Date
+                            </TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell align="center">Transaction ID</TableCell>
+                          </TableRow>
+                        </TableHead>
+
+                        <>
+                          <TableBody>
+                            {pageLoading && (
+                              <>
+                                <TableRow>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+
+                                  <Skeleton className="!table-cell w-[100px] mx-4 h-14"></Skeleton>
+                                </TableRow>
+                              </>
+                            )}
+                            {transactionsData.map((transaction, index) => {
+                              if (transaction.type === "DEBIT") {
+                                return (
+                                  <>
+                                    <TableRow key={index} hover>
+                                      <TableCell>
+                                        ₹{transaction.amount}
+                                      </TableCell>
+
+                                      <TableCell
+                                        className="!hidden sm:!table-cell"
+                                        l
+                                      >
+                                        {transaction.date
+                                          ? dayjs(
+                                              new Timestamp(
+                                                transaction.date.seconds,
+                                                transaction.date.nanoseconds
+                                              ).toDate()
+                                            ).format("DD-MM-YYYY")
+                                          : "N/A"}
+                                      </TableCell>
+                                      <TableCell>
+                                        {transaction.description}
+                                      </TableCell>
+                                      <TableCell align="center">
+                                        {transaction.id}
+                                      </TableCell>
+                                    </TableRow>
+                                  </>
+                                );
+                              }
+                            })}
+                          </TableBody>
+                        </>
+                      </Table>
+                    </TableContainer>
+                  </>
+                )}
+              </div>
             </>
           )}
         </Paper>
 
+
         {/* Modals */}
+          <Dialog open={showConfirmation} onClose={() => setShowConfirmation(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>Payment Confirmation</DialogTitle>
+            <DialogContent>
+              <div className="size-full flex flex-col gap-2 min-h-[50vh] items-center justify-center" >
+                <div className="" ><CheckCircle color="green" className="!fill-success !stroke-success" size={80}></CheckCircle></div>
+                <div className="text-2xl text-success font-bold " >Transaction successful!</div>
+                <div className="text-lg font-bold text-black/70" >ID: {transactionId}</div>
+                <div>The money should be in your wallet shortly</div>
+                {/* <div className="text-lg font-bold text-black/70" >Amount: </div> */}
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowConfirmation(false)} sx={{ color: "success.main" }} >Close</Button>
+            </DialogActions>
+              
+          </Dialog>
+
 
         <AddFundsModal
           userData={userData}

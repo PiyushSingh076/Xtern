@@ -37,7 +37,6 @@ const useFetchUserJobs = () => {
         querySnapshot.forEach((doc) => {
           jobData.push({ id: doc.id, ...doc.data() });
         });
-        console.log(jobData, ".........");
         setJobs(jobData);
         setLoading(false);
       } catch (err) {

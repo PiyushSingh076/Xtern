@@ -3,7 +3,6 @@ import profile from "../../assets/images/banner/mentor.png";
 import { FaRegEnvelopeOpen } from "react-icons/fa";
 
 export default function Invites({ invites, loading }) {
-  console.log(invites);
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">

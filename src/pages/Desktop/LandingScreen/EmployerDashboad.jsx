@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 
 export default function Org({data}) {
 
-    console.log(data, 'sd')
 
   return (
  

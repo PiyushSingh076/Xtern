@@ -107,7 +107,6 @@ const Stepper = ({ data }) => {
   const removeSkill = (index) => {
     setSkills(skills.filter((_, i) => i !== index));
   };
-  // console.log(data);
   const validateForm = () => {
     const errors = {};
     if (!projectImage && !dImage) {
@@ -168,7 +167,6 @@ const Stepper = ({ data }) => {
 
     setSubmitLoading(true);
     const imageURL = await uploadImage();
-    // console.log(imageURL, imagePreviewUrl);
     if (!imageURL && data == null) {
       setSubmitLoading(false);
       return;
@@ -195,7 +193,6 @@ const Stepper = ({ data }) => {
         uploadedAt: new Date(),
       };
 
-      // console.log(file_data);
       if (data) {
         const isUploaded = await updateJob(data.jobId, {
           currentUser,
@@ -222,20 +219,6 @@ const Stepper = ({ data }) => {
           toast.error("Failed to update job.");
         }
       } else {
-        console.log({
-          currentUser,
-          jobTitle,
-          companyName,
-          description,
-          location,
-          skills,
-          experienceLevel,
-          assessmentDetail,
-          assessmentDuration,
-          duration,
-          imageURL: imageURL ,
-          file: file_data.fileName ? file_data : null,
-        });
         const isSaved = await saveJob({
           currentUser,
           jobTitle,
@@ -282,7 +265,6 @@ const Stepper = ({ data }) => {
         setFile(uploadedFile);
         setFileName(uploadedFile.name);
         setFilePreview(URL.createObjectURL(uploadedFile));
-        console.log(filePreview);
         toast.success("File uploaded successfully!");
       }
     }
