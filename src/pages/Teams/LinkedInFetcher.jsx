@@ -35,7 +35,6 @@ const LinkedInFetcher = ({ onFetchSuccess, close }) => {
     }
     const data = await fetchLinkedInProfile(profileUrl);
     if (data && onFetchSuccess) {
-      console.log("Fetched LinkedIn Data:", data); // Debugging
       onFetchSuccess(data.linkedInData); // Passing the linkedInData directly
     }
   };

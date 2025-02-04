@@ -276,7 +276,6 @@ export default function EntrepreneurProfileForm() {
   const handleCompanyDialogSave = async () => {
     try {
       if (companyDetails.logo.file) {
-        console.log("Uploading logo:", companyDetails.logo.file); // Add your upload logic here
         // Simulate the upload to Firebase (or any backend)
         const fileURL = "fakeFileURL"; // Replace with actual file URL after upload
         setCompanyDetails((prev) => ({
@@ -287,7 +286,6 @@ export default function EntrepreneurProfileForm() {
       }
 
       // Save company details to the backend (this could be your API call)
-      // console.log("Saving company details:", companyDetails);
       closeModal();
     } catch (error) {
       toast.error("Failed to save company details.");
@@ -319,7 +317,6 @@ export default function EntrepreneurProfileForm() {
         }
       }
 
-      // console.log(imageURL)
 
 
       const missingFields = [];
@@ -351,7 +348,6 @@ export default function EntrepreneurProfileForm() {
 
         dispatch(setEntrepreneurDetails(entrepreneurData));
 
-        console.log("Entrepreneur Data:", entrepreneurData);
 
         try {
           const userId = await saveEntrepreneurDetails(entrepreneurData);

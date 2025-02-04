@@ -18,7 +18,6 @@ const useGoogleCalendar = () => {
    * Initialize the Google API client for Calendar
    */
   const initClient = () => {
-    console.log("Initializing Google Calendar API...");
     gapi.load("client:auth2", async () => {
       try {
         await gapi.client.init({
@@ -34,7 +33,6 @@ const useGoogleCalendar = () => {
         const authInstance = gapi.auth2.getAuthInstance();
         setIsAuthenticated(authInstance.isSignedIn.get());
         setIsInitialized(true);
-        console.log("Google Calendar API initialized successfully.");
       } catch (error) {
         console.error("Error initializing Google API client:", error);
         toast.error("Failed to initialize Google Calendar.");
@@ -54,9 +52,7 @@ const useGoogleCalendar = () => {
       } catch (error) {
         console.error("Error during sign-in:", error);
       }
-    } else {
-      console.log("User is already authenticated.");
-    }
+    } 
   };
 
   /**

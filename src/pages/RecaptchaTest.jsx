@@ -12,10 +12,10 @@ const RecaptchaTest = () => {
           {
             size: "normal",
             callback: (response) => {
-              console.log("reCAPTCHA solved:", response);
+              // console.log("reCAPTCHA solved:", response);
             },
             "expired-callback": () => {
-              console.log("reCAPTCHA expired. Resetting...");
+              toast.error("reCAPTCHA expired. Please verify again.");
               window.recaptchaVerifier.reset();
             },
           },
@@ -25,10 +25,9 @@ const RecaptchaTest = () => {
         window.recaptchaVerifier
           .render()
           .then((widgetId) => {
-            console.log("reCAPTCHA rendered with widget ID:", widgetId);
           })
           .catch((error) => {
-            console.error("Error rendering reCAPTCHA:", error);
+            toast.error("Failed to load reCAPTCHA. Please try again.");
           });
       }
     };

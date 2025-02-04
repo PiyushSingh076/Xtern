@@ -36,7 +36,6 @@ const orgMenu = [
 export default function Dashboard() {
 
     const { userData } = useFetchUserData()
-    console.log(userData)
 
   return (
     <div className='mob-dashboard-container'>

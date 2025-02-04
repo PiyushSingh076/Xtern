@@ -9,7 +9,6 @@ const useFetchOrganizationMembers = () => {
 
   useEffect(() => {
     const fetchOrganizationMembers = async (organizationId) => {
-      console.log("Fetching members for organization ID:", organizationId);
 
       try {
         // Fetch the organization document
@@ -23,7 +22,6 @@ const useFetchOrganizationMembers = () => {
         }
 
         const memberRefs = orgDoc.data().members;
-        console.log("Member references:", memberRefs);
 
         // Fetch each member's details using the references
         const membersData = await Promise.all(

@@ -47,7 +47,6 @@ const useSaveJob = () => {
         }, {merge: true});
 
         const test = await getDoc(doc(db, "users", currentUser.uid));
-        console.log(test.data());
       }
 
       const docRef = await addDoc(collection(db, "jobPosting"), {
@@ -71,11 +70,6 @@ const useSaveJob = () => {
       const docSnapshot = await getDoc(doc(db, "jobPosting", docRef.id));
 
       if (docSnapshot.exists()) {
-        // console.log("Job added successfully!");
-        // console.log("Created Job:", {
-        //   id: docSnapshot.id,
-        //   ...docSnapshot.data(),
-        // });
         addJobToEntrepreneur(docRef.id);
       } else {
         console.error("No such document!");

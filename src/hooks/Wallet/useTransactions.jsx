@@ -26,7 +26,6 @@ export function useTransactions() {
       );
 
       if (result.data.success) {
-        console.log("Order created successfully:", result.data.orderId);
         return result.data.orderId;
       } else {
         toast.error("Failed to create payment order. Please try again.");
@@ -58,7 +57,6 @@ export function useTransactions() {
       );
 
       if (result.data.success) {
-        console.log("Payment verified successfully:", result.data.message);
         toast.success("Payment verified successfully!");
         return true;
       } else {
@@ -75,7 +73,6 @@ export function useTransactions() {
   async function initiatePayment(userId, amount, handler, loader) {
     const orderId = await createPaymentOrder(userId, amount, "INR");
 
-    console.log("Order iD:", orderId);
 
     if (!orderId) {
       console.error("Failed to create Razorpay order");
@@ -93,7 +90,6 @@ export function useTransactions() {
       order_id: orderId,
       handler: async function (response) {
         loader.start()
-        console.log("Payment Successful:", response);
         const success = await verifyPayment(
           orderId,
           response.razorpay_payment_id,
@@ -124,7 +120,6 @@ export function useTransactions() {
       },
     };
 
-    console.log("Razorpay options: ", options);
 
     const rzp = new window.Razorpay(options);
     rzp.on('payment.failed', function (response) {

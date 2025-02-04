@@ -24,7 +24,6 @@ const Jobs = () => {
       setLoading(true);
       const jobs = await getDocs(collection(db, "jobPosting"), { limit: 10 });
       const jobData = jobs.docs.map((doc) => doc.data());
-      console.log(jobData);
       setJobs(
         jobs.docs.map((doc) => {
           return {

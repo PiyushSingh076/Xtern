@@ -220,10 +220,8 @@ const LeaveReviewBox = ({ projectId, onCancel }) => {
         timestamp: new Date(),
       };
 
-      console.log("Submitting review:", reviewData);
 
       const reviewId = await saveReview(reviewData);
-      console.log("Review saved successfully:", reviewId);
 
       const fetchReviews = async () => {
         try {

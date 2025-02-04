@@ -44,7 +44,6 @@ const SingleMentor = () => {
   const { uid } = useParams();
 
   const { userData, loading, error } = useUserProfileData(uid);
-  console.log(userData, "lllllllllll");
   return (
     <>
       {/* <!-- Header start --> */}
