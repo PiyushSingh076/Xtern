@@ -899,7 +899,6 @@ export default function StepperForm() {
           );
           await uploadBytes(storageRef, dataObj.projectLogo);
           logoUrl = await getDownloadURL(storageRef);
-          console.log("logoUrl",logoUrl);
         } else if (typeof dataObj.projectLogo === "string") {
           logoUrl = dataObj.projectLogo;
         }
@@ -912,7 +911,6 @@ export default function StepperForm() {
         };
   
         const updatedProjects = index !== null ? [...Projects] : [...Projects, projectData];
-        console.log("project...",updatedProjects);
         if (index !== null) updatedProjects[index] = projectData;
         setProjects(updatedProjects);
         
