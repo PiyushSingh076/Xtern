@@ -39,7 +39,7 @@ export function useTransactions() {
 
   async function verifyPayment(orderId, paymentId, signature, amount) {
     try {
-      const verifyOrder = httpsCallable(functions, "verifyPayment");
+      // const verifyOrder = httpsCallable(functions, "verifyPayment");
       // const result = await verifyOrder({
       //   order_id: orderId,
       //   payment_id: paymentId,
@@ -57,7 +57,11 @@ export function useTransactions() {
       );
 
       if (result.data.success) {
-        toast.success("Payment verified successfully!");
+
+        toast.success("Payment verified successfully!", {
+          duration: 5000
+        });
+
         return true;
       } else {
         console.error("Failed to verify payment:", result.data.message);
@@ -81,7 +85,7 @@ export function useTransactions() {
     }
 
     const options = {
-      key_id: process.env.REACT_APP_RAZORPAY_KEY_SECRET,
+      key: process.env.REACT_APP_RAZORPAY_KEY_ID,
       key_secret: process.env.REACT_APP_RAZORPAY_KEY_SECRET,
       amount: amount * 100,
       currency: "INR",
@@ -96,8 +100,9 @@ export function useTransactions() {
           response.razorpay_signature,
           amount
         );
+        let transactionId;
         if (success) {
-          await createTransaction(
+          transactionId = await createTransaction(
             userId,
             amount,
             "CREDIT",
@@ -111,7 +116,7 @@ export function useTransactions() {
         //   amount: increment(amount),
         // });
 
-        await handler();
+        await handler(transactionId);
         loader.stop()
       },
       prefill: {},
