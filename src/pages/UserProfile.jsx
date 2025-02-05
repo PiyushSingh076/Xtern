@@ -56,7 +56,7 @@ const UserProfile = () => {
                 const querySnapshot = await getDocs(userQuery);
 
                 if (querySnapshot.empty) {
-                    console.log("No user found with this UID");
+                    toast.warn("No user found."); // Using react-hot-toast for better UX
                     return;
                 }
 
@@ -68,7 +68,6 @@ const UserProfile = () => {
                     const workerSnapshot = await getDocs(workerQuery);
 
                     const experiences = workerSnapshot.docs.map((workerDoc) => workerDoc.data());
-                    console.log("experiences--", experiences);
                     setWorkExperiences(experiences);
                 });
             } catch (error) {

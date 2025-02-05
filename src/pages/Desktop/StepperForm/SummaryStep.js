@@ -104,7 +104,6 @@ const SummaryStep = ({
   
       if (userDoc.exists()) {
         const userData = userDoc.data(); // Get user data from Firestore
-        console.log("User Data:", userData);
       }
   
       const shareableLink = `https://xpert.works/profile/${userId}`;

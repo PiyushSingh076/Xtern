@@ -52,9 +52,7 @@ const Jobs = () => {
   const {userData} = useFetchUserData();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(userData)
-  }, [userData])
+
   
 
   useEffect(() => {

@@ -48,7 +48,6 @@ const SignIn = () => {
       if (user) {
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
-        console.log("email password",userDoc.data(), userDocRef);
   
         if (userDoc.exists()) {
           const userData = userDoc.data();

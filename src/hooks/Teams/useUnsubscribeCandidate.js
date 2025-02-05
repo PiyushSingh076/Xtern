@@ -54,7 +54,6 @@ const useUnsubscribeCandidate = () => {
         console.warn("No matching documents found in stripeSubscription.");
       } else {
         for (const docSnapshot of querySnapshot.docs) {
-          console.log("Deleting document:", docSnapshot.id);
           await deleteDoc(docSnapshot.ref);
         }
       }

@@ -9,7 +9,6 @@ const useSendOtp = () => {
   const initializeRecaptcha = useCallback(() => {
     try {
       // Only initialize if it doesn't exist
-      console.log(window.recaptchaVerifier)
       if (window.recaptchaVerifier) {
         window.recaptchaVerifier.clear();
         window.recaptchaVerifier = null;
@@ -19,10 +18,8 @@ const useSendOtp = () => {
           {
             size: "invisible",
             callback: (response) => {
-              console.log("reCAPTCHA solved:", response);
             },
             'expired-callback': () => {
-              console.log("reCAPTCHA expired");
               // Reset instead of creating new instance
               if (window.recaptchaVerifier) {
                 window.recaptchaVerifier.reset();
@@ -36,7 +33,6 @@ const useSendOtp = () => {
       // No need to render - it will be rendered automatically when needed
       return Promise.resolve(window.recaptchaVerifier);
     } catch (error) {
-      console.error("reCAPTCHA initialization error:", error);
       throw error;
     }
   }, []);
@@ -50,7 +46,6 @@ const useSendOtp = () => {
         ? phoneNumber 
         : `+${phoneNumber}`;
 
-      console.log("Initializing reCAPTCHA...");
       // const verifier = await initializeRecaptcha();
       
      

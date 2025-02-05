@@ -38,7 +38,6 @@ const SignIn = () => {
 
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          console.log("Sign in: ",userData);
           if(userData.isPhoneVerified === null || userData.isPhoneVerified === false){
             navigate("/verifyscreen")
           }

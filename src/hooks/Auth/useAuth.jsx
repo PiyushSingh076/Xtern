@@ -15,9 +15,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log("Phone verify", phoneVerified, user);
-  }, [phoneVerified]);
 
   function verifyPhone() {
     localStorage.setItem("phone-verified", true);

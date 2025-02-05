@@ -14,7 +14,6 @@ import toast from "react-hot-toast";
  * Otherwise, returns the experience followed by " Yr".
  */
 function formatExperience(expValue) {
-  // console.log("Experience Value:", expValue);
 
   // Attempt to parse the experience value
   const parsed = parseInt(expValue, 10);

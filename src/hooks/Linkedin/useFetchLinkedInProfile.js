@@ -30,7 +30,6 @@ const useFetchLinkedInProfile = () => {
 
       // Get Firebase ID token for the current user
       const idToken = await user.getIdToken();
-      console.log("User ID Token:", idToken);
 
       // Call Firebase Cloud Function
       const response = await axios.post(
@@ -39,14 +38,12 @@ const useFetchLinkedInProfile = () => {
         { headers: { Authorization: `Bearer ${idToken}` } }
       );
 
-      console.log("Firebase Function Response:", response.data);
 
       if (response.status === 200) {
         setSuccessMessage(
           response.data.message || "Profile fetched and saved successfully!"
         );
         setLinkedInData(response.data.linkedInData);
-        console.log("LinkedIn Data Set:", response.data.linkedInData);
         return response.data;
       } else {
         setError(response.data.error || "Unexpected error occurred.");

@@ -63,7 +63,6 @@ const useVerifyOtp = () => {
       toast.success("Phone number verified and linked successfully!");
       verifyPhone()
       const userSnapshot = await getDoc(userDocRef);
-          console.log("userSnapshot", userSnapshot.data());
       const userData = userSnapshot.data();
       if(userData.type == null){
         navigate("/choosetype");
@@ -116,7 +115,6 @@ const useVerifyOtp = () => {
           verifyPhone()
 
           const userSnapshot = await getDoc(userDocRef);
-          console.log("userSnapshot", userSnapshot.data());
 
 
           navigate("/homescreen"); // Redirect to dashboard or home page

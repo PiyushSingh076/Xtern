@@ -13,7 +13,6 @@ const updateReviewInFirebase = async (userId, updatedReview, updatedRating) => {
         rating: updatedRating,
         timestamp: new Date(), 
       });
-      console.log("Review updated successfully!");
     } else {
       console.error("No review found for this user!");
     }

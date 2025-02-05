@@ -16,10 +16,8 @@ export default function Shortlisted() {
 
   const handleSubscribe = (intern) => {
     subscribeIntern(intern.uid); // Pass intern's ID as `internRef`
-    console.log(intern.uid, "pppppppp");
   };
 
-  console.log(shortlistedInterns, "lllllllll");
 
   if (loading) {
     <div className="d-flex justify-content-center align-items-center vh-100">

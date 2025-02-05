@@ -36,7 +36,6 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      console.log("user", user);
       if (user) {
         setIsAuthenticated(true);
       } else {

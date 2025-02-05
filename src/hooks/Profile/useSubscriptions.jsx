@@ -9,8 +9,7 @@ export const useSubscriptions = () => {
     async function isSubscribed(xpertId) {
         setLoading(true)
       const entrepreneurId = auth.currentUser.uid;
-      console.log("entrepreneurId", entrepreneurId);
-      console.log("xpertId", xpertId);
+
       const entrepreneurDocRef = doc(db, "users", entrepreneurId);
       const entrepreneurDoc = await getDoc(entrepreneurDocRef);
       const subs = entrepreneurDoc.data().subs || [];

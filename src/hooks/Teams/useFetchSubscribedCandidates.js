@@ -30,7 +30,6 @@ const useFetchSubscribedCandidates = () => {
             const internRef = docSnapshot.data().internRef;
             const createdAt = docSnapshot.data().createdAt;
 
-            console.log("Found internRef:", internRef);
 
             if (!internRef) {
               console.warn(
@@ -44,7 +43,6 @@ const useFetchSubscribedCandidates = () => {
               // Fetch intern details using the `internRef` directly as a document reference
               const internDoc = await getDoc(internRef);
               if (internDoc.exists()) {
-                console.log("Fetched intern details for:", internRef.id);
                 return {
                   id: docSnapshot.id,
                   createdAt: createdAt,
@@ -71,10 +69,7 @@ const useFetchSubscribedCandidates = () => {
         );
 
         setSubscribedCandidates(candidatesData.filter(Boolean));
-        console.log(
-          "Subscribed candidates data:",
-          candidatesData.filter(Boolean)
-        );
+
       } catch (error) {
         console.error("Error fetching subscribed candidates:", error);
       } finally {

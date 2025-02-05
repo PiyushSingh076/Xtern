@@ -15,8 +15,6 @@ const EditJob = () => {
   const navigate = useNavigate();
   const { jobId } = useParams();
 
-  console.log(jobId);
-
   const job = useFetchJob(jobId);
   const {userData} = useFetchUserData()
 
