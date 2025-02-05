@@ -13,7 +13,7 @@ export function useNotifications() {
     const inviteData= invites.docs.map((doc)=>{
       return {...doc.data()};
     })
-
+    console.log("InviteData",inviteData);
     return inviteData;
   };
 

@@ -19,6 +19,8 @@ import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
 import { Skeleton } from "@mui/material";
 import { useAuth } from "../../../hooks/Auth/useAuth";
 import { useNotifications } from "../../../hooks/useNotifications";
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 export default function Header() {
   const data = useSelector((state) => state.user);
@@ -32,8 +34,24 @@ export default function Header() {
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
   const notificationRef = useRef(null);
-
+  const [open, setOpen] = useState(false);
+  const [invites, setInvites] = useState([]);  // State to store fetched invites
   const { refreshUser, refresh } = useAuth();
+
+  // Fetch invites when user data is available
+  useEffect(() => {
+    if (userData?.uid) {
+      fetchInvites(userData.uid);
+    }
+  }, [userData?.uid]);
+
+  async function fetchInvites(uid) {
+    if (!uid) return;
+    const q = query(collection(db, "notifications"), where("uid", "==", uid), where("type", "==", "INVITE"));
+    const invitesSnapshot = await getDocs(q);
+    const inviteData = invitesSnapshot.docs.map((doc) => doc.data());
+    setInvites(inviteData); // Set invites state with the fetched data
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -122,17 +140,19 @@ export default function Header() {
               <div className="notification-container">
                 <button ref={notificationRef} className="notification-btn" onClick={handleNotificationToggle}>
                   <AiOutlineBell style={{ fontSize: "1.5rem", cursor: "pointer" }} />
-                  {notifications?.length > 0 && <span className="notification-badge">{notifications?.length}</span>}
+                  {invites?.length > 0 && <span className="notification-badge">{invites?.length}</span>}
                 </button>
 
                 {notificationOpen && (
                   <div className="notification-dropdown">
-                    {notifications?.length > 0 ? (
-                      notifications.map((notification) => (
-                        <div key={notification.id} className="notification-item">
-                          <p>{notification.data}</p>
-                          <button className="accept-btn" onClick={() => acceptInvite(notification.id)}>Accept</button>
-                          <button className="decline-btn" onClick={() => declineInvite(notification.id)}>Decline</button>
+                    {invites?.length > 0 ? (
+                      invites.map((invite, index) => (
+                        <div key={index} className="notification-item">
+                          <p>
+                            <strong>{invite.from || "Unknown"}</strong> invited you.
+                          </p>
+                          <button className="accept-btn" onClick={() => acceptInvite(invite.id)}>Accept</button>
+                          <button className="decline-btn" onClick={() => declineInvite(invite.id)}>Decline</button>
                         </div>
                       ))
                     ) : (
@@ -140,6 +160,7 @@ export default function Header() {
                     )}
                   </div>
                 )}
+
               </div>
 
               {/* Profile Menu */}

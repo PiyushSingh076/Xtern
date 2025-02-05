@@ -710,7 +710,7 @@ const SingleMentor = () => {
                       <ul>
                         {invitations.map((invite) => (
                           <li key={invite.id} className="invite-item">
-                            <span className="inviter-name">{invite.name}</span> invited you.
+                            <span className="inviter-name">{invite.from}</span> invited you.
                           </li>
                         ))}
                       </ul>
