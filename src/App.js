@@ -34,7 +34,7 @@ import MyVideoCall from "./pages/Desktop/MyVideoCall/MyVideoCall.jsx";
 // Mobile View
 import UserType from "./pages/UserType.jsx";
 import MobHeader from "./components/MobHeader.jsx";
-import Teams from "./pages/Teams/Teams.jsx";
+import TeamsPage from "./pages/Teams/index.jsx";
 import PrefferedServiceIntern from "./pages/PrefferedServiceIntern.jsx";
 import LetYouScreen from "./pages/LetYouScreen";
 import SignUp from "./pages/SignUp";
@@ -102,6 +102,7 @@ import ChooseType from "./pages/Desktop/Auth/SignUp/ChooseType.jsx";
 import EditJob from "./pages/EditJob.jsx";
 import { AuthProvider } from "./hooks/Auth/useAuth.jsx";
 import EntrepreneurMobile from "./pages/MyProfile/EntrepreneurMobile.jsx";
+import SuperUserDashboard from "./pages/SuperUser/index.jsx";
 
 
 function App() {
@@ -622,7 +623,15 @@ function App() {
             path={ROUTES.TEAMS}
             element={
               <ProtectedRoute>
-                <Teams />
+                <TeamsPage />
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path={ROUTES.SUPER_USER}
+            element={
+              <ProtectedRoute>
+                <SuperUserDashboard />
               </ProtectedRoute>
             }
           />
