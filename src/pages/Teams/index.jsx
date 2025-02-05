@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ShortlistedUsers from "./ShortlistedUsers";
 import TeamMembers from "./TeamMembers";
 import { Subscribed } from "./Subscribed";
+import Payments from "./Payments";
 
 
 const dummyTeamMembers = [
@@ -96,7 +97,7 @@ const TeamPage = () => {
                             const userDoc = await getDoc(userDocRef);
 
                             if (userDoc.exists()) {
-                                return { id: uid, ...userDoc.data() };
+                                return { id: uid, ...userDoc.data(), salary: teamData.members.find(member => member.uid === uid).stipend };
                             }
                             return null;
                         })
@@ -153,7 +154,7 @@ const TeamPage = () => {
                             const userDoc = await getDoc(userDocRef);
 
                             if (userDoc.exists()) {
-                                return { id: uid, ...userDoc.data() };
+                                return { id: uid, ...userDoc.data(), salary: teamDoc.data().members.find(member => member.uid === uid).stipend };
                             }
                             return null;
                         })
@@ -371,9 +372,7 @@ const TeamPage = () => {
                 )}
 
                 {activeTab === "payments" && (
-                    <div className="text-center text-xs sm:text-sm text-gray-500">
-                        No payment information available
-                    </div>
+                    <Payments members={teamMembers} ></Payments>
                 )}
             </div>
             <SubscriptionModal
