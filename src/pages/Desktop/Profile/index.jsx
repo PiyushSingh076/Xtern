@@ -38,6 +38,10 @@ import {
   ProgressBar,
 } from "react-bootstrap";
 import { useInvites } from "../../../hooks/Teams/useInvites";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
+import { Bell } from "lucide-react";
+
 
 /**
  * Utility to safely format Firestore Timestamp or "Present"/string.
@@ -70,10 +74,12 @@ function formatExperience(expValue) {
   return `${parsed} Yr`;
 }
 
+
 const SingleMentor = () => {
   const navigate = useNavigate();
   const { uid } = useParams();
   const { user, loading } = useAuthState();
+
 
   // For scheduling calls
   const [interviewScheduled, setInterviewScheduled] = useState(false);
@@ -88,6 +94,19 @@ const SingleMentor = () => {
   const [workOpen, setWorkOpen] = useState({});
   const [projectOpen, setProjectOpen] = useState({});
   const [serviceOpen, setServiceOpen] = useState({}); // New state for Services
+  const [invitations, setInvitations] = useState([]);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchInvites = async () => {
+      if (!uid) return;
+      const q = query(collection(db, "invites"), where("to", "==", uid));
+      const querySnapshot = await getDocs(q);
+      const invites = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setInvitations(invites);
+    };
+    fetchInvites();
+  }, [uid]);
 
   const toggleWorkDesc = (index) =>
     setWorkOpen((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -382,6 +401,7 @@ const SingleMentor = () => {
           "user profile, account, settings, personal details, dashboard"
         }
       />
+      
 
       <div key={uid} className="desktop-profile-container">
         <section id="profile-details-section">
@@ -675,7 +695,7 @@ const SingleMentor = () => {
                   </span>
                 )}
               </div>
-
+              
               {profileLoading === false &&
                 currentUserLoading == false &&
                 currentUser?.uid === uid && (

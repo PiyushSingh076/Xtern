@@ -5,7 +5,8 @@ import {
   AiOutlineQuestionCircle,
   AiOutlineLogout,
   AiOutlineCalendar,
-  AiOutlineMessage
+  AiOutlineMessage,
+  AiOutlineBell,
 } from "react-icons/ai";
 import { FaBriefcase, FaWallet } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -15,33 +16,72 @@ import { ROUTES } from "../../../constants/routes";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
-import { Spinner } from "react-bootstrap";
+import { Button, Skeleton } from "@mui/material";
 import { useAuth } from "../../../hooks/Auth/useAuth";
-import { Skeleton } from "@mui/material";
+import { useNotifications } from "../../../hooks/useNotifications";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 export default function Header() {
   const data = useSelector((state) => state.user);
-  const isDetailEmpty = Object.keys(data.detail).length === 0;
   const { userData, loading } = useFetchUserData();
   const { handleLogout } = useOAuthLogout();
   const navigate = useNavigate();
+  const { notifications, acceptInvite, declineInvite } = useNotifications(
+    userData?.uid
+  );
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
-
+  const notificationRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [invites, setInvites] = useState([]); // State to store fetched invites
   const { refreshUser, refresh } = useAuth();
+  // const [loadingInvites, setLoadingInvites] = useState()
+
+  // Fetch invites when user data is available
+  useEffect(() => {
+    if (userData) {
+      fetchInvites(userData.uid);
+    }
+  }, [userData]);
+
+  async function fetchInvites(uid) {
+    const q = query(
+      collection(db, "notifications"),
+      where("uid", "==", uid),
+      where("type", "==", "INVITE")
+    );
+    const invitesSnapshot = await getDocs(q);
+    const inviteData = invitesSnapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data(), loading: false };
+    });
+    setInvites(inviteData); // Set invites state with the fetched data
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside both menu AND profile button
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target) &&
         profileButtonRef.current &&
         !profileButtonRef.current.contains(event.target)
       ) {
-        setMenuOpen(false);
+        // setMenuOpen(false);
+      }
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        // setNotificationOpen(false);
       }
     };
 
@@ -51,7 +91,6 @@ export default function Header() {
     };
   }, []);
 
-  // Decide if we have a valid userPhoto
   const hasUserPhoto =
     userData?.photo_url &&
     typeof userData.photo_url === "string" &&
@@ -66,25 +105,51 @@ export default function Header() {
     }
   };
 
+  async function handleAcceptInvite(e, invite) {
+    setInvites((prevInvites) => {
+      return prevInvites.map((i) => {
+        if (i.data.inviteId === invite.data.inviteId) {
+          return { ...i, loading: true };
+        }
+        return i;
+      });
+    });
+    
+    console.log("tes");
+    e.stopPropagation();
+    await acceptInvite(invite.data.inviteId, invite.id);
+    setInvites((prevInvites) => {
+      return prevInvites.map((i) => {
+        if (i.data.inviteId === invite.data.inviteId) {
+          return { ...i, loading: false, status: "ACCEPTED" };
+        }
+        return i;
+      });
+    });
+  }
+
   const handleMenuOptionClick = () => {
     setMenuOpen(false);
     if (userData.type === ENTREPRENEUR_ROLE) {
-      navigate("/jobpostings"); // Redirect for entrepreneurs
+      navigate("/jobpostings");
     } else {
-      navigate("/jobs"); // Redirect for other users
+      navigate("/jobs");
     }
   };
 
   const handleWalletClick = () => {
     setMenuOpen(false);
-    // if (userData.type === ENTREPRENEUR_ROLE) {
-      navigate("/wallet-screen"); // Redirect for entrepreneurs
-    // }
+    navigate("/wallet-screen");
   };
 
   const handleMenuToggle = (event) => {
     event.stopPropagation();
     setMenuOpen(!menuOpen);
+  };
+
+  const handleNotificationToggle = (event) => {
+    event.stopPropagation();
+    setNotificationOpen(!notificationOpen);
   };
 
   return (
@@ -107,100 +172,131 @@ export default function Header() {
 
         {loading ? (
           <div className="profile-menu-container">
-            <div className="overflow-auto h-[45px] mr-[10px] w-[100px] rounded-full" >
-              <Skeleton variant="rectangular"  width={100} height={45}></Skeleton>
+            <div className="overflow-auto h-[45px] mr-[10px] w-[100px] rounded-full">
+              <Skeleton
+                variant="rectangular"
+                width={100}
+                height={45}
+              ></Skeleton>
             </div>
           </div>
         ) : (
           userData && (
             <>
-              <>
-                <div className="profile-menu-container">
-                  <button
-                    ref={profileButtonRef}
-                    className="profile-container"
-                    onClick={handleMenuToggle}
-                  >
-                    {hasUserPhoto ? (
+              {/* Notification Bell */}
+              <div className="notification-container">
+                <button
+                  ref={notificationRef}
+                  className="notification-btn"
+                  onClick={handleNotificationToggle}
+                >
+                  <AiOutlineBell
+                    style={{ fontSize: "1.5rem", cursor: "pointer" }}
+                  />
+                  {/* {invites?.length > 0 && <span className="notification-badge">{invites?.length}</span>} */}
+                </button>
+
+                {notificationOpen && (
+                  <div className="notification-dropdown">
+                    {invites?.length > 0 ? (
+                      invites.map((invite, index) => (
+                        <div key={index} className="notification-item">
+                          <p>
+                            <strong>{invite.data.from || "Unknown"}</strong>{" "}
+                            invited you to join their team.
+                            
+                          </p>
+                          <Button
+                          disabled={invite.loading || invite.status === "ACCEPTED"}
+                            className="accept-btn !flex !gap-2 !items-center "
+                            onClick={(e) => handleAcceptInvite(e, invite)}
+                          >
+                            {invite.loading && (
+                              <div className="spinner-border  spinner-border-sm" ></div>
+                            )}
+                            {invite.status === "ACCEPTED" ? "Accepted" : "Accept"}
+                          </Button>
+                          {/* <button className="decline-btn" onClick={() => declineInvite(invite.id)}>Decline</button> */}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="no-notifications">No new notifications</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Profile Menu */}
+              <div className="profile-menu-container">
+                <button
+                  ref={profileButtonRef}
+                  className="profile-container"
+                  onClick={handleMenuToggle}
+                >
+                  {hasUserPhoto ? (
+                    <div className="size-[30px] relative overflow-hidden rounded-full ">
                       <img
                         src={userData.photo_url}
                         width="30px"
                         height="30px"
-                        className="border size-[30px] object-cover"
+                        className="border  object-cover absolute left-0 top-0 size-full"
                         style={{ borderRadius: "50%", cursor: "pointer" }}
                         alt={userData?.firstName || "User"}
                       />
-                    ) : (
-                      <AiOutlineUser
-                        style={{ fontSize: "1.5rem", marginRight: "5px" }}
-                      />
-                    )}
-                    <span className="profile-name !text-black hover:!text-black">
-                      {userData?.firstName}
-                    </span>
-                  </button>
-
-                  {menuOpen && (
-                    <div className="dropdown-menu" ref={menuRef}>
-                      <div
-                        className="dropdown-item"
-                        onClick={handleMenuProfileClick}
-                      >
-                        <AiOutlineUser className="menu-icon" />
-                        Profile
-                      </div>
-                      <div
-                        className="dropdown-item"
-                        onClick={() => handleMenuOptionClick("/jobs")}
-                      >
-                        <FaBriefcase className="menu-icon" />
-                        Jobs
-                      </div>
-                      <div
-                        className="dropdown-item"
-                        onClick={() => navigate("/wallet-screen")}
-                      >
-                        <FaWallet className="menu-icon" />
-                        Wallet
-                      </div>
-                      {/* <div
-                className="dropdown-item"
-                onClick={() => handleMenuOptionClick("/wallet")}
-              >
-                <AiOutlineWallet className="menu-icon" />
-                Wallet
-              </div>
-              <div
-                className="dropdown-item"
-                onClick={() => handleMenuOptionClick("/support")}
-              >
-                <AiOutlineQuestionCircle className="menu-icon" />
-                Support
-              </div> */}
-                      <div
-                        className="dropdown-item"
-                        onClick={handleMenuOptionClick}
-                      >
-                        <AiOutlineQuestionCircle className="menu-icon" />
-                        My{" "}
-                        {userData.type === ENTREPRENEUR_ROLE
-                          ? "Jobs"
-                          : "Schedule"}
-                      </div>
-                      <div
-                        className="dropdown-item logout"
-                        onClick={() => {
-                          handleLogout();
-                          setMenuOpen(false);
-                        }}
-                      >
-                        <AiOutlineLogout className="menu-icon" />
-                        Log Out
-                      </div>
                     </div>
+                  ) : (
+                    <AiOutlineUser
+                      style={{ fontSize: "1.5rem", marginRight: "5px" }}
+                    />
                   )}
-                </div>
-              </>
+                  <span className="profile-name !text-black hover:!text-black">
+                    {userData?.firstName}
+                  </span>
+                </button>
+
+                {menuOpen && (
+                  <div className="dropdown-menu" ref={menuRef}>
+                    <div
+                      className="dropdown-item"
+                      onClick={handleMenuProfileClick}
+                    >
+                      <AiOutlineUser className="menu-icon" />
+                      Profile
+                    </div>
+                    <div
+                      className="dropdown-item"
+                      onClick={() => handleMenuOptionClick("/jobs")}
+                    >
+                      <FaBriefcase className="menu-icon" />
+                      Jobs
+                    </div>
+                    <div className="dropdown-item" onClick={handleWalletClick}>
+                      <FaWallet className="menu-icon" />
+                      Wallet
+                    </div>
+                    <div
+                      className="dropdown-item"
+                      onClick={handleMenuOptionClick}
+                    >
+                      <AiOutlineQuestionCircle className="menu-icon" />
+                      My{" "}
+                      {userData.type === ENTREPRENEUR_ROLE
+                        ? "Jobs"
+                        : "Schedule"}
+                    </div>
+                    <div
+                      className="dropdown-item logout"
+                      onClick={() => {
+                        handleLogout();
+                        setMenuOpen(false);
+                      }}
+                    >
+                      <AiOutlineLogout className="menu-icon" />
+                      Log Out
+                    </div>
+                  </div>
+                )}
+              </div>
             </>
           )
         )}
