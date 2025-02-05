@@ -91,6 +91,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "dotenv": "^16.4.7",
     "stylelint": "^16.12.0",
