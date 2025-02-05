@@ -695,31 +695,7 @@ const SingleMentor = () => {
                   </span>
                 )}
               </div>
-              <div className="relative">
-                <button className="bell-button" onClick={() => setOpen(!open)}>
-                  <Bell className="w-6 h-6" />
-                  {invitations.length > 0 && (
-                    <span className="bell">{invitations.length}</span>
-                  )}
-                </button>
-
-                {open && (
-                  <div className="notifications">
-                    <h3 className="invitations">Invitations</h3>
-                    {invitations.length > 0 ? (
-                      <ul>
-                        {invitations.map((invite) => (
-                          <li key={invite.id} className="invite-item">
-                            <span className="inviter-name">{invite.from}</span> invited you.
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="no-invitations">No invitations</p>
-                    )}
-                  </div>
-                )}
-              </div>
+              
               {profileLoading === false &&
                 currentUserLoading == false &&
                 currentUser?.uid === uid && (
