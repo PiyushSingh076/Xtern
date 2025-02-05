@@ -411,6 +411,115 @@
   transition: background-color 0.3s, color 0.3s; 
   text-decoration: none; 
 }
+.bell-button {
+  position: relative;
+  background: #f3f4f6;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  margin-top: 10px;
+}
+
+.bell-button:hover {
+  background: #e5e7eb;
+}
+
+.bell {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #ef4444;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notifications {
+  position: absolute;
+  right: 0;
+  width: 300px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 10;
+}
+
+.invitations {
+  padding: 12px;
+  font-weight: bold;
+  background: #f9fafb;
+  border-bottom: 1px solid #ddd;
+}
+
+.notifications ul {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.invite-item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+
+.invite-item:hover {
+  background: #f3f4f6;
+}
+
+.inviter-name {
+  font-weight: bold;
+  color: #374151;
+}
+
+.invite-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.accept-button {
+  background-color: #10b981;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.accept-button:hover {
+  background-color: #059669;
+}
+
+.decline-button {
+  background-color: #ef4444;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.decline-button:hover {
+  background-color: #dc2626;
+}
+
+.no-invitations {
+  padding: 12px;
+  text-align: center;
+  color: #6b7280;
+}
 
 .desc-btn:hover,
 .link-btn:hover {
