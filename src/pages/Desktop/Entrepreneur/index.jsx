@@ -424,6 +424,7 @@ const SingleMentor = () => {
                   <span className="service-name">Consulting Now</span>
                 )}
               </div>
+              
 
               <div className="consulting-btn !w-full !mb-0">
                 {currentUser.uid === uid && (
@@ -435,6 +436,7 @@ const SingleMentor = () => {
                       Create job
                     </button>
                     <button onClick={() => navigate("/jobpostings")} className="chat-btn">View jobs</button>
+                    <button onClick={() => navigate("/teams")} className="chat-btn">View Team</button>
                   </>
                 )}
                 {/* <button
