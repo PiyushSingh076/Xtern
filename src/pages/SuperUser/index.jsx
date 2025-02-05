@@ -21,7 +21,7 @@ const dummyData = [
   {
     id: 1,
     avatar: "https://i.pravatar.cc/40?img=1",
-    fullName: "John Doe",
+    firstName: "John Doe",
     role: "Premium User",
     email: "john@example.com",
     accountDetails: "****1234",
@@ -32,7 +32,7 @@ const dummyData = [
   {
     id: 2,
     avatar: "https://i.pravatar.cc/40?img=2",
-    fullName: "Jane Smith",
+    firstName: "Jane Smith",
     role: "Basic User",
     email: "jane@example.com",
     accountDetails: "****5678",
@@ -43,7 +43,7 @@ const dummyData = [
   {
     id: 3,
     avatar: "https://i.pravatar.cc/40?img=3",
-    fullName: "Bob Johnson",
+    firstName: "Bob Johnson",
     role: "Premium User",
     email: "bob@example.com",
     accountDetails: "****9012",
@@ -54,7 +54,7 @@ const dummyData = [
   {
     id: 4,
     avatar: "https://i.pravatar.cc/40?img=4",
-    fullName: "Alice Brown",
+    firstName: "Alice Brown",
     role: "Basic User",
     email: "alice@example.com",
     accountDetails: "****3456",
@@ -160,7 +160,7 @@ const SuperUserDashboard = () => {
 
   const filteredTransactions = transactions?.filter((item) => {
     const matchesSearch =
-      item.user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
       statusFilter === "All" ||
@@ -338,11 +338,11 @@ const SuperUserDashboard = () => {
                                   src={
                                     item.user.photo_url || "/placeholder.svg"
                                   }
-                                  alt={item.user.fullName}
+                                  alt={item.user.firstName}
                                   className="aspect-square h-10 shrink-0 rounded-full mr-3"
                                 />
                                 <span className="font-medium text-gray-900">
-                                  {item.user.fullName}
+                                  {item.user.firstName}
                                 </span>
                               </div>
                             </td>
