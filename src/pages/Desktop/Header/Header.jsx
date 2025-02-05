@@ -16,10 +16,16 @@ import { ROUTES } from "../../../constants/routes";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
-import { Skeleton } from "@mui/material";
+import { Button, Skeleton } from "@mui/material";
 import { useAuth } from "../../../hooks/Auth/useAuth";
 import { useNotifications } from "../../../hooks/useNotifications";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 export default function Header() {
@@ -27,44 +33,55 @@ export default function Header() {
   const { userData, loading } = useFetchUserData();
   const { handleLogout } = useOAuthLogout();
   const navigate = useNavigate();
-  const { notifications, acceptInvite, declineInvite } = useNotifications(userData?.uid);
-  
+  const { notifications, acceptInvite, declineInvite } = useNotifications(
+    userData?.uid
+  );
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
   const notificationRef = useRef(null);
   const [open, setOpen] = useState(false);
-  const [invites, setInvites] = useState([]);  // State to store fetched invites
+  const [invites, setInvites] = useState([]); // State to store fetched invites
   const { refreshUser, refresh } = useAuth();
+  // const [loadingInvites, setLoadingInvites] = useState()
 
   // Fetch invites when user data is available
   useEffect(() => {
-    if (userData?.uid) {
+    if (userData) {
       fetchInvites(userData.uid);
     }
-  }, [userData?.uid]);
+  }, [userData]);
 
   async function fetchInvites(uid) {
-    if (!uid) return;
-    const q = query(collection(db, "notifications"), where("uid", "==", uid), where("type", "==", "INVITE"));
+    const q = query(
+      collection(db, "notifications"),
+      where("uid", "==", uid),
+      where("type", "==", "INVITE")
+    );
     const invitesSnapshot = await getDocs(q);
-    const inviteData = invitesSnapshot.docs.map((doc) => doc.data());
+    const inviteData = invitesSnapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data(), loading: false };
+    });
     setInvites(inviteData); // Set invites state with the fetched data
-  };
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        menuRef.current && !menuRef.current.contains(event.target) &&
-        profileButtonRef.current && !profileButtonRef.current.contains(event.target)
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        profileButtonRef.current &&
+        !profileButtonRef.current.contains(event.target)
       ) {
-        setMenuOpen(false);
+        // setMenuOpen(false);
       }
       if (
-        notificationRef.current && !notificationRef.current.contains(event.target)
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
       ) {
-        setNotificationOpen(false);
+        // setNotificationOpen(false);
       }
     };
 
@@ -87,6 +104,29 @@ export default function Header() {
       navigate(`/profile/${userData?.uid}`);
     }
   };
+
+  async function handleAcceptInvite(e, invite) {
+    setInvites((prevInvites) => {
+      return prevInvites.map((i) => {
+        if (i.data.inviteId === invite.data.inviteId) {
+          return { ...i, loading: true };
+        }
+        return i;
+      });
+    });
+    
+    console.log("tes");
+    e.stopPropagation();
+    await acceptInvite(invite.data.inviteId, invite.id);
+    setInvites((prevInvites) => {
+      return prevInvites.map((i) => {
+        if (i.data.inviteId === invite.data.inviteId) {
+          return { ...i, loading: false, status: "ACCEPTED" };
+        }
+        return i;
+      });
+    });
+  }
 
   const handleMenuOptionClick = () => {
     setMenuOpen(false);
@@ -122,7 +162,10 @@ export default function Header() {
 
       <div className="hire-btns">
         {userData == null && !loading && (
-          <button onClick={() => navigate(ROUTES.SIGN_IN)} className="hire-xpert-btn">
+          <button
+            onClick={() => navigate(ROUTES.SIGN_IN)}
+            className="hire-xpert-btn"
+          >
             Log in
           </button>
         )}
@@ -130,7 +173,11 @@ export default function Header() {
         {loading ? (
           <div className="profile-menu-container">
             <div className="overflow-auto h-[45px] mr-[10px] w-[100px] rounded-full">
-              <Skeleton variant="rectangular" width={100} height={45}></Skeleton>
+              <Skeleton
+                variant="rectangular"
+                width={100}
+                height={45}
+              ></Skeleton>
             </div>
           </div>
         ) : (
@@ -138,9 +185,15 @@ export default function Header() {
             <>
               {/* Notification Bell */}
               <div className="notification-container">
-                <button ref={notificationRef} className="notification-btn" onClick={handleNotificationToggle}>
-                  <AiOutlineBell style={{ fontSize: "1.5rem", cursor: "pointer" }} />
-                  {invites?.length > 0 && <span className="notification-badge">{invites?.length}</span>}
+                <button
+                  ref={notificationRef}
+                  className="notification-btn"
+                  onClick={handleNotificationToggle}
+                >
+                  <AiOutlineBell
+                    style={{ fontSize: "1.5rem", cursor: "pointer" }}
+                  />
+                  {/* {invites?.length > 0 && <span className="notification-badge">{invites?.length}</span>} */}
                 </button>
 
                 {notificationOpen && (
@@ -149,39 +202,70 @@ export default function Header() {
                       invites.map((invite, index) => (
                         <div key={index} className="notification-item">
                           <p>
-                            <strong>{invite.from || "Unknown"}</strong> invited you.
+                            <strong>{invite.data.from || "Unknown"}</strong>{" "}
+                            invited you to join their team.
                           </p>
-                          <button className="accept-btn" onClick={() => acceptInvite(invite.id)}>Accept</button>
-                          <button className="decline-btn" onClick={() => declineInvite(invite.id)}>Decline</button>
+                          <Button
+                          disabled={invite.loading || invite.status === "ACCEPTED"}
+                            className="accept-btn !flex !gap-2 !items-center "
+                            onClick={(e) => handleAcceptInvite(e, invite)}
+                          >
+                            {invite.loading && (
+                              <div className="spinner-border  spinner-border-sm" ></div>
+                            )}
+                            {invite.status === "ACCEPTED" ? "Accepted" : "Accept"}
+                          </Button>
+                          {/* <button className="decline-btn" onClick={() => declineInvite(invite.id)}>Decline</button> */}
                         </div>
                       ))
                     ) : (
-                      <p className="no-notifications">No new invites</p>
+                      <p className="no-notifications">No new notifications</p>
                     )}
                   </div>
                 )}
-
               </div>
 
               {/* Profile Menu */}
               <div className="profile-menu-container">
-                <button ref={profileButtonRef} className="profile-container" onClick={handleMenuToggle}>
+                <button
+                  ref={profileButtonRef}
+                  className="profile-container"
+                  onClick={handleMenuToggle}
+                >
                   {hasUserPhoto ? (
-                    <img src={userData.photo_url} width="30px" height="30px" className="border size-[30px] object-cover"
-                      style={{ borderRadius: "50%", cursor: "pointer" }} alt={userData?.firstName || "User"} />
+                    <div className="size-[30px] relative overflow-hidden rounded-full ">
+                      <img
+                        src={userData.photo_url}
+                        width="30px"
+                        height="30px"
+                        className="border  object-cover absolute left-0 top-0 size-full"
+                        style={{ borderRadius: "50%", cursor: "pointer" }}
+                        alt={userData?.firstName || "User"}
+                      />
+                    </div>
                   ) : (
-                    <AiOutlineUser style={{ fontSize: "1.5rem", marginRight: "5px" }} />
+                    <AiOutlineUser
+                      style={{ fontSize: "1.5rem", marginRight: "5px" }}
+                    />
                   )}
-                  <span className="profile-name !text-black hover:!text-black">{userData?.firstName}</span>
+                  <span className="profile-name !text-black hover:!text-black">
+                    {userData?.firstName}
+                  </span>
                 </button>
 
                 {menuOpen && (
                   <div className="dropdown-menu" ref={menuRef}>
-                    <div className="dropdown-item" onClick={handleMenuProfileClick}>
+                    <div
+                      className="dropdown-item"
+                      onClick={handleMenuProfileClick}
+                    >
                       <AiOutlineUser className="menu-icon" />
                       Profile
                     </div>
-                    <div className="dropdown-item" onClick={() => handleMenuOptionClick("/jobs")}>
+                    <div
+                      className="dropdown-item"
+                      onClick={() => handleMenuOptionClick("/jobs")}
+                    >
                       <FaBriefcase className="menu-icon" />
                       Jobs
                     </div>
@@ -189,14 +273,23 @@ export default function Header() {
                       <FaWallet className="menu-icon" />
                       Wallet
                     </div>
-                    <div className="dropdown-item" onClick={handleMenuOptionClick}>
+                    <div
+                      className="dropdown-item"
+                      onClick={handleMenuOptionClick}
+                    >
                       <AiOutlineQuestionCircle className="menu-icon" />
-                      My {userData.type === ENTREPRENEUR_ROLE ? "Jobs" : "Schedule"}
+                      My{" "}
+                      {userData.type === ENTREPRENEUR_ROLE
+                        ? "Jobs"
+                        : "Schedule"}
                     </div>
-                    <div className="dropdown-item logout" onClick={() => {
-                      handleLogout();
-                      setMenuOpen(false);
-                    }}>
+                    <div
+                      className="dropdown-item logout"
+                      onClick={() => {
+                        handleLogout();
+                        setMenuOpen(false);
+                      }}
+                    >
                       <AiOutlineLogout className="menu-icon" />
                       Log Out
                     </div>
