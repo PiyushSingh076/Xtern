@@ -204,6 +204,7 @@ export default function Header() {
                           <p>
                             <strong>{invite.data.from || "Unknown"}</strong>{" "}
                             invited you to join their team.
+                            
                           </p>
                           <Button
                           disabled={invite.loading || invite.status === "ACCEPTED"}
