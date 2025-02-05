@@ -3,12 +3,50 @@ import useFetchUserData from "../../hooks/Auth/useFetchUserData";
 import { db } from "../../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import ShortlistedUsers from "./ShortlistedUsers";
+import TeamMembers from "./TeamMembers";
+import { Subscribed } from "./Subscribed";
+
+const dummyUsers = [
+    {
+      id: 1,
+      display_name: "John Doe",
+      phone_number: "+1 234 567 890",
+      photo_url: "https://via.placeholder.com/50",
+    },
+    {
+      id: 2,
+      display_name: "Jane Smith",
+      phone_number: "+1 987 654 321",
+      photo_url: "https://via.placeholder.com/50",
+    },
+  ];
+  
+  const dummyTeamMembers = [
+    {
+      id: 1,
+      display_name: "Alice Johnson",
+      phone_number: "+1 555 444 333",
+      email: "alice@example.com",
+      photo_url: "https://via.placeholder.com/50",
+    },
+    {
+      id: 2,
+      display_name: "Bob Williams",
+      phone_number: "+1 111 222 333",
+      email: "bob@example.com",
+      photo_url: "https://via.placeholder.com/50",
+    },
+  ];
+
 
 const TeamPage = () => {
   const [activeTab, setActiveTab] = useState("subscribed");
   const [authorizedUsers, setAuthorizedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const { userData, loading: userDataLoading, error: userDataError } = useFetchUserData();
+  const [shortlistedUsers, setShortlistedUsers] = useState([]);
+const [teamMembers, setTeamMembers] = useState([]);
   const navigate = useNavigate();
 
   const handleProfileClick = (userId) => {
@@ -42,6 +80,43 @@ const TeamPage = () => {
   };
 
   useEffect(() => {
+    async function fetchShortlistedUsers() {
+      if (!userData || !userData.uid) return;
+  
+      try {
+        const teamDocRef = doc(db, "teams", userData.uid);
+        const teamDoc = await getDoc(teamDocRef);
+  
+        if (teamDoc.exists()) {
+          const teamData = teamDoc.data();
+          const shortlistedUids = teamData.members
+            ?.filter(member => member.status === "SHORTLIST")
+            .map(member => member.uid) || [];
+  
+          const shortlistedUserDetails = await Promise.all(
+            shortlistedUids.map(async (uid) => {
+              const userDocRef = doc(db, "users", uid);
+              const userDoc = await getDoc(userDocRef);
+  
+              if (userDoc.exists()) {
+                return { id: uid, ...userDoc.data() };
+              }
+              return null;
+            })
+          );
+  
+          setShortlistedUsers(shortlistedUserDetails.filter(user => user !== null));
+        }
+      } catch (error) {
+        console.error("Error fetching shortlisted users:", error);
+      }
+    }
+  
+    fetchShortlistedUsers();
+  }, [userData]);
+  
+
+  useEffect(() => {
     async function loadSubscribers() {
       if (userData && userData.type === "entrepreneur" && userData.subs) {
         setLoading(true);
@@ -61,6 +136,23 @@ const TeamPage = () => {
 
     loadSubscribers();
   }, [userData]);
+
+  const handleSubscribe = async (userId) => {
+    try {
+      // Add your Firebase logic here to update the user's subscription status
+      // and add them to team members
+      
+      // Update the UI
+      const updatedUser = shortlistedUsers.find(user => user.id === userId);
+      setTeamMembers(prev => [...prev, updatedUser]);
+      setShortlistedUsers(prev => prev.filter(user => user.id !== userId));
+      
+      // Show success message
+    } catch (error) {
+      console.error('Error subscribing user:', error);
+      // Show error message
+    }
+  };
 
   // Loading and error states remain the same...
   if (userDataLoading || loading) {
@@ -102,7 +194,7 @@ const TeamPage = () => {
   const UserCard = ({ user }) => (
     <div
       onClick={() => handleProfileClick(user.id)}
-      className="flex items-center space-x-2 sm:space-x-4 p-2 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg transition-colors hover:bg-gray-100 cursor-pointer"
+      className="flex items-center space-x-2 sm:space-x-4  sm:p-4 p-4 bg-white border border-gray-200 rounded-lg transition-colors hover:bg-gray-100 cursor-pointer"
     >
       <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex-shrink-0">
         <img 
@@ -121,7 +213,7 @@ const TeamPage = () => {
           </span>
         </div>
         <p className="text-xs text-gray-500 truncate">
-          {user.email || 'No email provided'}
+        {user.phone_number || 'No Phone provided'} | {user.email || 'No email provided'}
         </p>
       </div>
     </div>
@@ -138,6 +230,14 @@ const TeamPage = () => {
           }`}
         >
           Subscribed Users ({authorizedUsers.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("shortlisted")}
+          className={`flex-1 py-2 sm:py-3 text-center ${
+            activeTab === "shortlisted" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"
+          }`}
+        >
+          Shortlisted
         </button>
         <button
           onClick={() => setActiveTab("team")}
@@ -162,7 +262,8 @@ const TeamPage = () => {
         {activeTab === "subscribed" && (
           <div className="space-y-3">
             {authorizedUsers.map((user) => (
-              <UserCard key={user.id} user={user} />
+            //   <UserCard key={user.id} user={user} />
+            <Subscribed key={user.id} user={user}   />
             ))}
             {authorizedUsers.length === 0 && (
               <div className="text-center text-gray-500 py-4">
@@ -172,18 +273,16 @@ const TeamPage = () => {
           </div>
         )}
 
-        {activeTab === "team" && (
-          <div className="space-y-3">
-            {authorizedUsers.map((user) => (
-              <UserCard key={user.id} user={user} />
-            ))}
-            {authorizedUsers.length === 0 && (
-              <div className="text-center text-gray-500 py-4">
-                No team members found
-              </div>
-            )}
-          </div>
-        )}
+{activeTab === "shortlisted" && (
+  <ShortlistedUsers 
+    users={shortlistedUsers} 
+    onSubscribe={handleSubscribe} 
+  />
+)}
+
+{activeTab === "team" && (
+  <TeamMembers members={dummyTeamMembers} />
+)}
 
         {activeTab === "payments" && (
           <div className="text-center text-xs sm:text-sm text-gray-500">
