@@ -6,50 +6,15 @@ import useFetchSubscribedCandidates from "../../hooks/Teams/useFetchSubscribedCa
 import useUnsubscribeCandidate from "../../hooks/Teams/useUnsubscribeCandidate";
 import { FaRegSadCry } from "react-icons/fa";
 
-export default function Xtern({ userAccessRole }) {
-  const { subscribedCandidates, loading } = useFetchSubscribedCandidates();
-  const { unsubscribeCandidate, loading: unsubscribeLoading } =
-    useUnsubscribeCandidate();
-  const [loadingIds, setLoadingIds] = useState({}); // Track loading for specific candidates
-
-  if (loading) {
-    <div className="d-flex justify-content-center align-items-center vh-100">
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
-    </div>;
-  }
-
-  const handleUnsubscribe = async (candidate) => {
-    setLoadingIds((prev) => ({ ...prev, [candidate.internDetails.uid]: true }));
-    await unsubscribeCandidate(candidate);
-    setLoadingIds((prev) => ({
-      ...prev,
-      [candidate.internDetails.uid]: false,
-    }));
-  };
+export default function Xtern({ user }) {
 
   return (
     <div className="info-card-container">
-      {/* Conditionally render payment section based on accessRole */}
-
-      {/* Display "No Data" message if subscribedCandidates is empty */}
-      {subscribedCandidates.length === 0 ? (
-        <div
-          className="no-data"
-          style={{ textAlign: "center", marginTop: "50px" }}
-        >
-          <FaRegSadCry size={50} color="#ccc" />
-          <p style={{ fontSize: "18px", color: "#555" }}>
-            No subscribed candidates found.
-          </p>
-        </div>
-      ) : (
-        subscribedCandidates.map((candidate, index) => (
-          <div className="info-card-xtern" key={index}>
+    
+          <div className="info-card-xtern">
             <div className="info-card-img-section">
               <img
-                src={candidate.internDetails.photo_url || profile}
+                src={user.photo_url || "/placeholder.svg"} 
                 className="info-card-img rounded-circle"
                 alt="profile"
                 width={"70px"}
@@ -58,20 +23,17 @@ export default function Xtern({ userAccessRole }) {
             <div className="info-card-content">
               <div className="info-card-name-section">
                 <h4>
-                  {candidate.internDetails.display_name || "No Name Available"}
-                </h4>
-                <div className="medal-section">
+                {user.display_name || 'Anonymous User'} ({user.type})                </h4>
+                {/* <div className="medal-section">
                   <img src={medal} alt="medal" width={"15px"} /> Brown
-                </div>
+                </div> */}
               </div>
               <span className="subscribed-tag">Subscribed</span>
               <div className="info-card-action-section">
-                {userAccessRole === "management" && (
                   <>
-                    <button className="replace-btn">Replace</button>
-                    <button
+                    {/* <button
                       className="unsubscribe-btn"
-                      onClick={() => handleUnsubscribe(candidate)}
+                      // onClick={() => handleUnsubscribe(candidate)}
                       disabled={
                         unsubscribeLoading ||
                         loadingIds[candidate.internDetails.uid]
@@ -80,18 +42,17 @@ export default function Xtern({ userAccessRole }) {
                       {loadingIds[candidate.internDetails.uid]
                         ? "Unsubscribing..."
                         : "Unsubscribe"}
-                    </button>
+                    </button> */}
                   </>
-                )}
+                
               </div>
               <span className="info-card-phone-number">
                 Phone Number:{" "}
-                {candidate.internDetails.phone_number || "Not Available"}
+                {user.phone_number || "Not Available"}
               </span>
             </div>
           </div>
-        ))
-      )}
+ 
     </div>
   );
 }
