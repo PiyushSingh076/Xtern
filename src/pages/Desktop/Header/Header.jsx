@@ -5,7 +5,8 @@ import {
   AiOutlineQuestionCircle,
   AiOutlineLogout,
   AiOutlineCalendar,
-  AiOutlineMessage
+  AiOutlineMessage,
+  AiOutlineBell,
 } from "react-icons/ai";
 import { FaBriefcase, FaWallet } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -15,33 +16,37 @@ import { ROUTES } from "../../../constants/routes";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import useOAuthLogout from "../../../hooks/Auth/useOAuthLogout";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
-import { Spinner } from "react-bootstrap";
-import { useAuth } from "../../../hooks/Auth/useAuth";
 import { Skeleton } from "@mui/material";
+import { useAuth } from "../../../hooks/Auth/useAuth";
+import { useNotifications } from "../../../hooks/useNotifications";
 
 export default function Header() {
   const data = useSelector((state) => state.user);
-  const isDetailEmpty = Object.keys(data.detail).length === 0;
   const { userData, loading } = useFetchUserData();
   const { handleLogout } = useOAuthLogout();
   const navigate = useNavigate();
-
+  const { notifications, acceptInvite, declineInvite } = useNotifications(userData?.uid);
+  
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const profileButtonRef = useRef(null);
   const menuRef = useRef(null);
+  const notificationRef = useRef(null);
 
   const { refreshUser, refresh } = useAuth();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside both menu AND profile button
       if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target) &&
-        profileButtonRef.current &&
-        !profileButtonRef.current.contains(event.target)
+        menuRef.current && !menuRef.current.contains(event.target) &&
+        profileButtonRef.current && !profileButtonRef.current.contains(event.target)
       ) {
         setMenuOpen(false);
+      }
+      if (
+        notificationRef.current && !notificationRef.current.contains(event.target)
+      ) {
+        setNotificationOpen(false);
       }
     };
 
@@ -51,7 +56,6 @@ export default function Header() {
     };
   }, []);
 
-  // Decide if we have a valid userPhoto
   const hasUserPhoto =
     userData?.photo_url &&
     typeof userData.photo_url === "string" &&
@@ -69,22 +73,25 @@ export default function Header() {
   const handleMenuOptionClick = () => {
     setMenuOpen(false);
     if (userData.type === ENTREPRENEUR_ROLE) {
-      navigate("/jobpostings"); // Redirect for entrepreneurs
+      navigate("/jobpostings");
     } else {
-      navigate("/jobs"); // Redirect for other users
+      navigate("/jobs");
     }
   };
 
   const handleWalletClick = () => {
     setMenuOpen(false);
-    // if (userData.type === ENTREPRENEUR_ROLE) {
-      navigate("/wallet-screen"); // Redirect for entrepreneurs
-    // }
+    navigate("/wallet-screen");
   };
 
   const handleMenuToggle = (event) => {
     event.stopPropagation();
     setMenuOpen(!menuOpen);
+  };
+
+  const handleNotificationToggle = (event) => {
+    event.stopPropagation();
+    setNotificationOpen(!notificationOpen);
   };
 
   return (
@@ -97,110 +104,84 @@ export default function Header() {
 
       <div className="hire-btns">
         {userData == null && !loading && (
-          <button
-            onClick={() => navigate(ROUTES.SIGN_IN)}
-            className="hire-xpert-btn"
-          >
+          <button onClick={() => navigate(ROUTES.SIGN_IN)} className="hire-xpert-btn">
             Log in
           </button>
         )}
 
         {loading ? (
           <div className="profile-menu-container">
-            <div className="overflow-auto h-[45px] mr-[10px] w-[100px] rounded-full" >
-              <Skeleton variant="rectangular"  width={100} height={45}></Skeleton>
+            <div className="overflow-auto h-[45px] mr-[10px] w-[100px] rounded-full">
+              <Skeleton variant="rectangular" width={100} height={45}></Skeleton>
             </div>
           </div>
         ) : (
           userData && (
             <>
-              <>
-                <div className="profile-menu-container">
-                  <button
-                    ref={profileButtonRef}
-                    className="profile-container"
-                    onClick={handleMenuToggle}
-                  >
-                    {hasUserPhoto ? (
-                      <img
-                        src={userData.photo_url}
-                        width="30px"
-                        height="30px"
-                        className="border size-[30px] object-cover"
-                        style={{ borderRadius: "50%", cursor: "pointer" }}
-                        alt={userData?.firstName || "User"}
-                      />
-                    ) : (
-                      <AiOutlineUser
-                        style={{ fontSize: "1.5rem", marginRight: "5px" }}
-                      />
-                    )}
-                    <span className="profile-name !text-black hover:!text-black">
-                      {userData?.firstName}
-                    </span>
-                  </button>
+              {/* Notification Bell */}
+              <div className="notification-container">
+                <button ref={notificationRef} className="notification-btn" onClick={handleNotificationToggle}>
+                  <AiOutlineBell style={{ fontSize: "1.5rem", cursor: "pointer" }} />
+                  {notifications?.length > 0 && <span className="notification-badge">{notifications?.length}</span>}
+                </button>
 
-                  {menuOpen && (
-                    <div className="dropdown-menu" ref={menuRef}>
-                      <div
-                        className="dropdown-item"
-                        onClick={handleMenuProfileClick}
-                      >
-                        <AiOutlineUser className="menu-icon" />
-                        Profile
-                      </div>
-                      <div
-                        className="dropdown-item"
-                        onClick={() => handleMenuOptionClick("/jobs")}
-                      >
-                        <FaBriefcase className="menu-icon" />
-                        Jobs
-                      </div>
-                      <div
-                        className="dropdown-item"
-                        onClick={() => navigate("/wallet-screen")}
-                      >
-                        <FaWallet className="menu-icon" />
-                        Wallet
-                      </div>
-                      {/* <div
-                className="dropdown-item"
-                onClick={() => handleMenuOptionClick("/wallet")}
-              >
-                <AiOutlineWallet className="menu-icon" />
-                Wallet
+                {notificationOpen && (
+                  <div className="notification-dropdown">
+                    {notifications?.length > 0 ? (
+                      notifications.map((notification) => (
+                        <div key={notification.id} className="notification-item">
+                          <p>{notification.data}</p>
+                          <button className="accept-btn" onClick={() => acceptInvite(notification.id)}>Accept</button>
+                          <button className="decline-btn" onClick={() => declineInvite(notification.id)}>Decline</button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="no-notifications">No new invites</p>
+                    )}
+                  </div>
+                )}
               </div>
-              <div
-                className="dropdown-item"
-                onClick={() => handleMenuOptionClick("/support")}
-              >
-                <AiOutlineQuestionCircle className="menu-icon" />
-                Support
-              </div> */}
-                      <div
-                        className="dropdown-item"
-                        onClick={handleMenuOptionClick}
-                      >
-                        <AiOutlineQuestionCircle className="menu-icon" />
-                        My{" "}
-                        {userData.type === ENTREPRENEUR_ROLE
-                          ? "Jobs"
-                          : "Schedule"}
-                      </div>
-                      <div
-                        className="dropdown-item logout"
-                        onClick={() => {
-                          handleLogout();
-                          setMenuOpen(false);
-                        }}
-                      >
-                        <AiOutlineLogout className="menu-icon" />
-                        Log Out
-                      </div>
-                    </div>
+
+              {/* Profile Menu */}
+              <div className="profile-menu-container">
+                <button ref={profileButtonRef} className="profile-container" onClick={handleMenuToggle}>
+                  {hasUserPhoto ? (
+                    <img src={userData.photo_url} width="30px" height="30px" className="border size-[30px] object-cover"
+                      style={{ borderRadius: "50%", cursor: "pointer" }} alt={userData?.firstName || "User"} />
+                  ) : (
+                    <AiOutlineUser style={{ fontSize: "1.5rem", marginRight: "5px" }} />
                   )}
-                </div>
-              </>
+                  <span className="profile-name !text-black hover:!text-black">{userData?.firstName}</span>
+                </button>
+
+                {menuOpen && (
+                  <div className="dropdown-menu" ref={menuRef}>
+                    <div className="dropdown-item" onClick={handleMenuProfileClick}>
+                      <AiOutlineUser className="menu-icon" />
+                      Profile
+                    </div>
+                    <div className="dropdown-item" onClick={() => handleMenuOptionClick("/jobs")}>
+                      <FaBriefcase className="menu-icon" />
+                      Jobs
+                    </div>
+                    <div className="dropdown-item" onClick={handleWalletClick}>
+                      <FaWallet className="menu-icon" />
+                      Wallet
+                    </div>
+                    <div className="dropdown-item" onClick={handleMenuOptionClick}>
+                      <AiOutlineQuestionCircle className="menu-icon" />
+                      My {userData.type === ENTREPRENEUR_ROLE ? "Jobs" : "Schedule"}
+                    </div>
+                    <div className="dropdown-item logout" onClick={() => {
+                      handleLogout();
+                      setMenuOpen(false);
+                    }}>
+                      <AiOutlineLogout className="menu-icon" />
+                      Log Out
+                    </div>
+                  </div>
+                )}
+              </div>
             </>
           )
         )}
