@@ -3,11 +3,12 @@ import { Button } from "@mui/material"
 import { Phone } from 'lucide-react';
 
 const ShortlistedUsers = ({ users = [], onSubscribe }) => {
-  const handleSubscribe = (userId) => {
-    if (onSubscribe) {
-      onSubscribe(userId);
-    }
-  };
+ const handleSubscribe = (user) => {
+  if (onSubscribe) {
+    onSubscribe(user);
+  }
+};
+
 
   return (
     <div className="space-y-4">
@@ -40,13 +41,14 @@ const ShortlistedUsers = ({ users = [], onSubscribe }) => {
               </div>
             </div>
             <div className="flex items-center justify-end space-x-2">
-              <Button
-                onClick={() => handleSubscribe(user.id)}
-                size="sm"
-                className="w-full sm:w-auto"
-              >
-                Subscribe
-              </Button>
+            <Button
+  onClick={() => handleSubscribe(user)}
+  size="sm"
+  className="w-full sm:w-auto"
+>
+  Subscribe
+</Button>
+
             </div>
           </div>
         ))
