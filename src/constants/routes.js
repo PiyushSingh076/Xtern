@@ -17,7 +17,6 @@ export const ROUTES = {
   TEAMS: "/teams",
   LANDING_PAGE: "/",
   NOTIFICATION: "/notification",
-  BUSINESS: "/business",
   SINGLE_COURSE_DESCRIPTION: "/service/:projectId",
 
   TRENDING_COURSE: "/trending-course",
@@ -68,4 +67,5 @@ export const ROUTES = {
   VIEWJOB: "/viewjob/:jobId",
   CHOOSETYPE: "/choosetype",
   EDITJOB: "/editjob/:jobId",
+  SUPER_USER: "/superuser"
 };
