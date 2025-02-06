@@ -78,33 +78,37 @@ const Payments = ({ members = [] }) => {
         </Table>
       </TableContainer>
 
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Payment Details</DialogTitle>
-        <DialogContent>
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle className="bg-blue-500 text-white">
+          Payment Details
+        </DialogTitle>
+        <DialogContent className="space-y-4 py-6 mt-3">
           {selectedMember && (
             <>
-              <div className="flex flex-col gap-1">
-                <div className="text-sm font-bold text-black/50">
-                  Account number
+              <div className="flex flex-col gap-2">
+                <div className="text-sm font-bold text-gray-500">
+                  Account Number
                 </div>
-                <div>1012801254</div>
+                <div className="text-lg text-gray-800">1012801254</div>
               </div>
-              <div className="flex flex-col gap-1">
-                <div className="text-sm font-bold text-black/50">Bank Name</div>
-                <div>Canara Bank</div>
+              <div className="flex flex-col gap-2">
+                <div className="text-sm font-bold text-gray-500">Bank Name</div>
+                <div className="text-lg text-gray-800">Canara Bank</div>
               </div>
-              <div className="flex flex-col gap-1">
-                <div className="text-sm font-bold text-black/50">IFSC Code</div>
-                <div>912759801278958125</div>
+              <div className="flex flex-col gap-2">
+                <div className="text-sm font-bold text-gray-500">IFSC Code</div>
+                <div className="text-lg text-gray-800">
+                  912759801278958125
+                </div>
               </div>
             </>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
+        <DialogActions className="px-6 py-4">
+          <Button onClick={handleClose} color="secondary" variant="outlined" className="w-full sm:w-auto">
             Close
           </Button>
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" className="w-full sm:w-auto">
             Confirm Payment
           </Button>
         </DialogActions>

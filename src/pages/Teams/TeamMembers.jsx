@@ -43,7 +43,7 @@ const TeamMembers = ({ members = [] }) => {
                   </div>
                   <div className="flex items-center text-xs text-gray-500 space-x-2">
                     <Banknote size={14} />
-                    <span> Stipend: </span> <span>₹ {member.stipend || 'No stipend provided'}</span>
+                    <span> Stipend: </span> <span>₹ {member.salary || 'No stipend provided'}</span>
                   </div>
                 </div>
               </div>
