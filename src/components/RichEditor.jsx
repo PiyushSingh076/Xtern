@@ -16,7 +16,6 @@ export const RichEditor = ({ placeholder, onChange, value }) => {
         "underline",
         "strikethrough",
         "align",
-
         "link",
         "unlink",
       ],

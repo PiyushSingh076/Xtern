@@ -8,6 +8,7 @@ import TeamMembers from "./TeamMembers";
 import { Subscribed } from "./Subscribed";
 import SubscriptionModal from "./SubscriptionModal";
 import Payments from "./Payments";
+import { useNotifications } from "../../hooks/useNotifications";
 
 const TeamPage = () => {
     const [activeTab, setActiveTab] = useState("subscribed");
@@ -20,7 +21,7 @@ const TeamPage = () => {
     const [stipend, setStipend] = useState("");
     const [description, setDescription] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const { createNotification,createInvite } = useNotifications();
     const navigate = useNavigate();
 
 
@@ -160,27 +161,39 @@ const TeamPage = () => {
     const handleSubmitSubscription = async () => {
         if (!selectedUser || stipend.trim() === "") return;
         setLoading(true); // Start loading
-
     
         try {
             const teamDocRef = doc(db, "teams", userData.uid);
             const teamDoc = await getDoc(teamDocRef);
     
             if (teamDoc.exists()) {
-                // Update members list in Firestore
+    
                 const updatedMembers = teamDoc.data().members.map(member =>
                     member.uid === selectedUser.id
                         ? { ...member, status: "ACCEPTED", stipend }
                         : member
                 );
-
+    
                 await updateDoc(teamDocRef, { members: updatedMembers });
     
-                // Move user to team members
                 setTeamMembers(prev => [...prev, { ...selectedUser, stipend }]);
                 setShortlistedUsers(prev => prev.filter(user => user.id !== selectedUser.id));
     
-                setIsModalOpen(false);
+                // Send subscription notification
+                await createNotification(
+                    "SUBSCRIPTION",
+                    {
+                        stipend: stipend,
+                        description: description,
+                        from: userData.firstName + " " + userData.lastName,
+                        teamName: userData.companyDetails.name,
+                        teamLogo: userData.companyDetails.logo,
+                    },
+                    selectedUser.id
+                );
+    
+                // Send invite to the selected user
+                
             }
         } catch (error) {
             console.error("Error updating subscription:", error);
@@ -188,45 +201,7 @@ const TeamPage = () => {
             setLoading(false); // Stop loading
         }
     };
-
-
-    // Loading and error states remain the same...
-    if (userDataLoading || loading) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="bg-white rounded-lg shadow p-4">
-                    <p className="text-center text-gray-500">
-                        Loading user information...
-                    </p>
-                </div>
-            </div>
-        );
-    }
-
-    if (userDataError) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="bg-white rounded-lg shadow p-4">
-                    <p className="text-center text-red-500">
-                        Error loading user data: {userDataError}
-                    </p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!userData || userData.type !== "entrepreneur") {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="bg-white rounded-lg shadow p-4">
-                    <p className="text-center text-gray-500">
-                        You need entrepreneur access to view this page. Current type: {userData?.type || "none"}
-                    </p>
-                </div>
-            </div>
-        );
-    }
-
+    
 
     return (
         <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">

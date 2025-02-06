@@ -58,8 +58,8 @@ export default function Header() {
   async function fetchInvites(uid) {
     const q = query(
       collection(db, "notifications"),
-      where("uid", "==", uid),
-      where("type", "==", "INVITE")
+      where("userId", "==", uid),
+      where("type", "==", "SUBSCRIPTION")
     );
     const invitesSnapshot = await getDocs(q);
     const inviteData = invitesSnapshot.docs.map((doc) => {
@@ -108,31 +108,38 @@ export default function Header() {
   };
 
   async function handleAcceptInvite(e, invite) {
-    setIsAcceptClicked(true); // Set to true when Accept button is clicked
-    setInvites((prevInvites) => {
-      return prevInvites.map((i) => {
-        if (i.data.inviteId === invite.data.inviteId) {
-          return { ...i, loading: true };
-        }
-        return i;
-      });
-    });
-
-    console.log("tes");
     e.stopPropagation();
-    await acceptInvite(invite.data.inviteId, invite.id);
-    setInvites((prevInvites) => {
-      return prevInvites.map((i) => {
-        if (i.data.inviteId === invite.data.inviteId) {
-          return { ...i, loading: false, status: "ACCEPTED" };
-        }
-        return i;
-      });
-    });
-
-    setIsAcceptClicked(false); // Reset the flag after the action
+    setIsAcceptClicked(true);
+  
+    try {
+      // Update the invite's loading state
+      setInvites((prevInvites) =>
+        prevInvites.map((i) =>
+          i.id === invite.id ? { ...i, loading: true } : i
+        )
+      );
+  
+      // Call the acceptInvite function
+      await acceptInvite(invite.data.inviteId, invite.id);
+  
+      // Update the invite's status to "ACCEPTED"
+      setInvites((prevInvites) =>
+        prevInvites.map((i) =>
+          i.id === invite.id ? { ...i, loading: false, status: "ACCEPTED" } : i
+        )
+      );
+    } catch (error) {
+      console.error("Error accepting invite:", error);
+      // Reset the loading state if an error occurs
+      setInvites((prevInvites) =>
+        prevInvites.map((i) =>
+          i.id === invite.id ? { ...i, loading: false } : i
+        )
+      );
+    } finally {
+      setIsAcceptClicked(false);
+    }
   }
-
 
   const handleMenuOptionClick = () => {
     setMenuOpen(false);
@@ -198,7 +205,6 @@ export default function Header() {
               >
                 <AiOutlineBell style={{ fontSize: "1.5rem", cursor: "pointer" }} />
                 
-                {/* Show badge only if there are pending invites */}
                 {invites?.length > 0 && (
                   <span className="notification-badge">{invites.length}</span>
                 )}
@@ -212,7 +218,8 @@ export default function Header() {
                         <p>
                           <strong>{invite.data.from || "Unknown"}</strong> invited you to join their team.
                         </p>
-                          <p>{invite.data.description}</p>
+                          <p className="invite-description">{invite.data.description}</p>
+                          <p className="invite-stipend">{invite.data.stipend}</p>
                         <Button
                           disabled={invite.loading || invite.status === "ACCEPTED"}
                           className="accept-btn !flex !gap-2 !items-center"
