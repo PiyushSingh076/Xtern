@@ -6,25 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ShortlistedUsers from "./ShortlistedUsers";
 import TeamMembers from "./TeamMembers";
 import { Subscribed } from "./Subscribed";
-
-
-const dummyTeamMembers = [
-    {
-        id: 1,
-        display_name: "Alice Johnson",
-        phone_number: "+1 555 444 333",
-        email: "alice@example.com",
-        photo_url: "https://via.placeholder.com/50",
-    },
-    {
-        id: 2,
-        display_name: "Bob Williams",
-        phone_number: "+1 111 222 333",
-        email: "bob@example.com",
-        photo_url: "https://via.placeholder.com/50",
-    },
-];
-
+import SubscriptionModal from "./SubscriptionModal";
 
 const TeamPage = () => {
     const [activeTab, setActiveTab] = useState("subscribed");
@@ -44,12 +26,6 @@ const TeamPage = () => {
         setStipend("");
         setIsModalOpen(true);
     };
-
-
-    const handleProfileClick = (userId) => {
-        navigate(`/profile/${userId}`);
-    };
-
     // Fetch subscriber details
     const fetchSubscriberDetails = async (subscriberIds) => {
         try {
@@ -178,11 +154,11 @@ const TeamPage = () => {
     const handleSubmitSubscription = async () => {
         if (!selectedUser || stipend.trim() === "") return;
         setLoading(true); // Start loading
-    
+
         try {
             const teamDocRef = doc(db, "teams", userData.uid);
             const teamDoc = await getDoc(teamDocRef);
-    
+
             if (teamDoc.exists()) {
                 // Update members list in Firestore
                 const updatedMembers = teamDoc.data().members.map(member =>
@@ -190,13 +166,13 @@ const TeamPage = () => {
                         ? { ...member, status: "ACCEPTED", stipend }
                         : member
                 );
-    
+
                 await updateDoc(teamDocRef, { members: updatedMembers });
-    
+
                 // Move user to team members
                 setTeamMembers(prev => [...prev, { ...selectedUser, stipend }]);
                 setShortlistedUsers(prev => prev.filter(user => user.id !== selectedUser.id));
-    
+
                 setIsModalOpen(false);
             }
         } catch (error) {
@@ -205,43 +181,6 @@ const TeamPage = () => {
             setLoading(false); // Stop loading
         }
     };
-
-    const SubscriptionModal = ({ isOpen, onClose, stipend, setStipend, onSubmit }) => {
-        if (!isOpen) return null;
-
-        return (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                    <h2 className="text-lg font-semibold mb-3">Enter Stipend Amount</h2>
-                    <input
-                        type="number"
-                        value={stipend}
-                        onChange={(e) => setStipend(e.target.value)}
-                        className="w-full border px-3 py-2 rounded"
-                        placeholder="Enter stipend"
-                    />
-                    <div className="flex justify-end mt-4 space-x-2">
-                        <button onClick={onClose} className="px-3 py-1 bg-gray-300 rounded">Cancel</button>
-                        <button 
-    onClick={onSubmit} 
-    disabled={loading}
-    className={`px-3 py-1 rounded ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 text-white"}`}
->
-    {loading ? (
-        <span className="flex items-center">
-            <svg className="animate-spin h-4 w-4 mr-2 border-t-2 border-white rounded-full" viewBox="0 0 24 24"></svg>
-            Submitting...
-        </span>
-    ) : (
-        "Submit"
-    )}
-</button>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
 
 
     // Loading and error states remain the same...
@@ -280,34 +219,6 @@ const TeamPage = () => {
             </div>
         );
     }
-
-    const UserCard = ({ user }) => (
-        <div
-            onClick={() => handleProfileClick(user.id)}
-            className="flex items-center space-x-2 sm:space-x-4  sm:p-4 p-4 bg-white border border-gray-200 rounded-lg transition-colors hover:bg-gray-100 cursor-pointer"
-        >
-            <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex-shrink-0">
-                <img
-                    src={user.photo_url || "/placeholder.svg"}
-                    alt={user.display_name || 'User'}
-                    className="object-cover w-full h-full"
-                />
-            </div>
-            <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-xs sm:text-sm font-medium truncate">
-                        {user.display_name || 'Anonymous User'} ({user.type})
-                    </h3>
-                    <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                        Subscribed
-                    </span>
-                </div>
-                <p className="text-xs text-gray-500 truncate">
-                    {user.phone_number || 'No Phone provided'} | {user.email || 'No email provided'}
-                </p>
-            </div>
-        </div>
-    );
 
     return (
         <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
@@ -382,6 +293,7 @@ const TeamPage = () => {
                 stipend={stipend}
                 setStipend={setStipend}
                 onSubmit={handleSubmitSubscription}
+                loading={loading}
             />
         </div>
 
