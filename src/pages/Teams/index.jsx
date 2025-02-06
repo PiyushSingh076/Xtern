@@ -18,6 +18,7 @@ const TeamPage = () => {
     const [teamMembers, setTeamMembers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [stipend, setStipend] = useState("");
+    const [description, setDescription] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const navigate = useNavigate();
@@ -293,15 +294,15 @@ const TeamPage = () => {
                 )}
             </div>
             <SubscriptionModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                stipend={stipend}
-                setStipend={setStipend}
-                onSubmit={handleSubmitSubscription}
-
-                loading={loading}
-
-            />
+    isOpen={isModalOpen}
+    onClose={() => setIsModalOpen(false)}
+    stipend={stipend}
+    setStipend={setStipend}
+    description={description}
+    setDescription={setDescription}
+    onSubmit={handleSubmitSubscription}
+    loading={loading}
+/>
         </div>
 
     );

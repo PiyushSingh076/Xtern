@@ -206,6 +206,7 @@ export default function Header() {
                             invited you to join their team.
                             
                           </p>
+                          <p>{invite.data.description}</p>
                           <Button
                           disabled={invite.loading || invite.status === "ACCEPTED"}
                             className="accept-btn !flex !gap-2 !items-center "
