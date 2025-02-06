@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
 import CreateJobCard from "./CreateJobCard";
-import { ShimmerCard } from "./Card"; // Import ShimmerCard
+import { ShimmerCard } from "./Card";
 import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
 import { State, City } from "country-state-city";
 import {
@@ -16,10 +16,15 @@ import {
   IconButton,
   Tooltip,
   Paper,
+  Menu,
+  ListSubheader,
+  Divider
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import SortIcon from '@mui/icons-material/Sort';
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import PopupDetails from "./PopupDetails";
 import { ENTREPRENEUR_ROLE } from "../../../constants/Roles/professionals";
@@ -34,11 +39,53 @@ const CardList = ({ profession }) => {
   const [experience, setExperience] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [sortConfig, setSortConfig] = useState({ criteria: "experience", order: "desc" });
 
-  const [hoveredCardId, setHoveredCardId] = useState(null); // New state to track hovered card ID
+  const [hoveredCardId, setHoveredCardId] = useState(null);
+
+  // Menu states
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const sortData = (data, config) => {
+    return [...data].sort((a, b) => {
+      let compareValueA, compareValueB;
+
+      switch (config.criteria) {
+        case 'experience':
+          compareValueA = a.experience || 0;
+          compareValueB = b.experience || 0;
+          break;
+        case 'projectsCompleted':
+          compareValueA = a.projectsCompleted || 0;
+          compareValueB = b.projectsCompleted || 0;
+          break;
+        case 'completionRate':
+          compareValueA = a.projectCompletionRate || 0;
+          compareValueB = b.projectCompletionRate || 0;
+          break;
+        case 'hasProfilePicture':
+          compareValueA = a.profilePicture ? 1 : 0;
+          compareValueB = b.profilePicture ? 1 : 0;
+          break;
+        default:
+          return 0;
+      }
+
+      return config.order === "asc" ? compareValueA - compareValueB : compareValueB - compareValueA;
+    });
+  };
 
   useEffect(() => {
-    const filtered = users?.filter((user) => {
+    let filtered = users?.filter((user) => {
       const matchesSkill =
         !searchSkill ||
         user.skillSet?.some((skill) =>
@@ -58,8 +105,12 @@ const CardList = ({ profession }) => {
       return matchesSkill && matchesExperience && matchesCity && matchesState;
     });
 
+    if (filtered) {
+      filtered = sortData(filtered, sortConfig);
+    }
+
     setFilteredUsers(filtered);
-  }, [users, searchSkill, experience, selectedCity, selectedState]);
+  }, [users, searchSkill, experience, selectedCity, selectedState, sortConfig]);
 
   const handleStateChange = (stateCode) => {
     setSelectedState(stateCode);
@@ -71,6 +122,23 @@ const CardList = ({ profession }) => {
     setExperience("");
     setSelectedState("");
     setSelectedCity("");
+    setSortConfig({ criteria: "experience", order: "desc" });
+  };
+
+  const handleSort = (criteria, order) => {
+    setSortConfig({ criteria, order });
+    handleClose();
+  };
+
+  // Get the current sort label
+  const getSortLabel = () => {
+    const labels = {
+      experience: "Experience",
+      projectsCompleted: "Projects Completed",
+      completionRate: "Completion Rate",
+      hasProfilePicture: "Profile Picture"
+    };
+    return `Sort by: ${labels[sortConfig.criteria]} (${sortConfig.order === "asc" ? "Low to High" : "High to Low"})`;
   };
 
   return (
@@ -156,6 +224,7 @@ const CardList = ({ profession }) => {
           </Select>
         </FormControl>
 
+        {/* Select City */}
         {selectedState && (
           <FormControl
             size="small"
@@ -182,6 +251,42 @@ const CardList = ({ profession }) => {
           </FormControl>
         )}
 
+        {/* Combined Sort Button */}
+        <FormControl
+          size="small"
+          sx={{
+            minWidth: { xs: "180px", sm: "220px" },
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "15px",
+            },
+          }}
+        >
+          <Select
+            value={`${sortConfig.criteria}-${sortConfig.order}`}
+            onChange={(e) => {
+              const [criteria, order] = e.target.value.split('-');
+              handleSort(criteria, order);
+            }}
+            displayEmpty
+            startAdornment={<SortIcon sx={{ color: "#1976d2", mr: 1 }} />}
+          >
+            <ListSubheader>Experience</ListSubheader>
+            <MenuItem value="experience-desc">Experience (High to Low)</MenuItem>
+            <MenuItem value="experience-asc">Experience (Low to High)</MenuItem>
+            
+            <ListSubheader>Projects</ListSubheader>
+            <MenuItem value="projectsCompleted-desc">Projects Completed (High to Low)</MenuItem>
+            <MenuItem value="projectsCompleted-asc">Projects Completed (Low to High)</MenuItem>
+            
+            <ListSubheader>Completion Rate</ListSubheader>
+            <MenuItem value="completionRate-desc">Completion Rate (High to Low)</MenuItem>
+            <MenuItem value="completionRate-asc">Completion Rate (Low to High)</MenuItem>
+            
+            <ListSubheader>Profile</ListSubheader>
+            <MenuItem value="hasProfilePicture-desc">With Profile Picture First</MenuItem>
+          </Select>
+        </FormControl>
+
         {/* Reset Filters Button */}
         <Tooltip title="Reset Filters">
           <IconButton
@@ -201,44 +306,39 @@ const CardList = ({ profession }) => {
       <Box>
         {loading ? (
           <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "repeat(auto-fill, minmax(150px, 1fr))",
-              sm: "repeat(auto-fill, minmax(300px, 1fr))",
-            },
-            gap: 3,
-          }}
-        >
-          {/* Show 6 shimmer cards while loading */}
-          {[...Array(6)].map((_, index) => (
-            <ShimmerCard key={`shimmer-${index}`} />
-          ))}
-        </Box>
-        ) : filteredUsers?.length > 0 ? (
-          <Box
-          classNam="card-list"
             sx={{
               display: "grid",
               gridTemplateColumns: {
-                xs: "repeat(auto-fill, minmax(150px, 1fr))", // Smaller cards for mobile
+                xs: "repeat(auto-fill, minmax(150px, 1fr))",
                 sm: "repeat(auto-fill, minmax(300px, 1fr))",
               },
               gap: 3,
-               position: "relative",
-        padding: 4,
             }}
           >
-            {/* this card is displayed only for users whose role is entrepreneur */}
+            {[...Array(6)].map((_, index) => (
+              <ShimmerCard key={`shimmer-${index}`} />
+            ))}
+          </Box>
+        ) : filteredUsers?.length > 0 ? (
+          <Box
+            className="card-list"
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "repeat(auto-fill, minmax(150px, 1fr))",
+                sm: "repeat(auto-fill, minmax(300px, 1fr))",
+              },
+              gap: 3,
+              position: "relative",
+              padding: 4,
+            }}
+          >
             {(userData?.type ?? "") === ENTREPRENEUR_ROLE && <CreateJobCard />}
-
-            {/* <div className="card-list"> */}
-      {users?.map((data, index) => (
-        <div className="card-wrapper" key={index}>
-          <Card data={data} />
-        </div>
-      ))}
-    {/* </div> */}
+            {filteredUsers.map((data, index) => (
+              <div className="card-wrapper" key={index}>
+                <Card data={data} />
+              </div>
+            ))}
           </Box>
         ) : (
           <Box

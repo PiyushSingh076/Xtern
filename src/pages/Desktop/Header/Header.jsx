@@ -8,7 +8,7 @@ import {
   AiOutlineMessage,
   AiOutlineBell,
 } from "react-icons/ai";
-import { FaBriefcase, FaWallet } from "react-icons/fa";
+import { FaBriefcase, FaUser, FaWallet } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./Header.css";
@@ -212,6 +212,7 @@ export default function Header() {
                         <p>
                           <strong>{invite.data.from || "Unknown"}</strong> invited you to join their team.
                         </p>
+                          <p>{invite.data.description}</p>
                         <Button
                           disabled={invite.loading || invite.status === "ACCEPTED"}
                           className="accept-btn !flex !gap-2 !items-center"
@@ -261,6 +262,10 @@ export default function Header() {
 
                 {menuOpen && (
                   <div className="dropdown-menu" ref={menuRef}>
+                    {userData.role === "superuser" && <><div className="dropdown-item" onClick={() => navigate("/superuser")}>
+                      <FaUser className="menu-icon" />
+                      Superuser Dashboard
+                    </div></>}
                     <div
                       className="dropdown-item"
                       onClick={handleMenuProfileClick}
@@ -275,6 +280,7 @@ export default function Header() {
                       <FaBriefcase className="menu-icon" />
                       Jobs
                     </div>
+                    
                     <div className="dropdown-item" onClick={handleWalletClick}>
                       <FaWallet className="menu-icon" />
                       Wallet

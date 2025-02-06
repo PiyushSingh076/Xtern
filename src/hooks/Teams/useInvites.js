@@ -31,7 +31,7 @@ export function useInvites() {
 
     return false;
   }
-  async function sendInvite(uid, entrepreneurId) {
+  async function sendInvite(uid, entrepreneurId, shortlistDescription) {
     try {
       const entrepreneur = (
         await getDoc(doc(db, "users", entrepreneurId))
@@ -40,7 +40,7 @@ export function useInvites() {
       const invite = await addDoc(collection(db, "invites"), {
         to: uid,
         from: entrepreneurId,
-
+        description: shortlistDescription,
         status: "PENDING",
       });
       await createNotification(
@@ -51,6 +51,7 @@ export function useInvites() {
           teamDescription: entrepreneur.companyDetails.description,
           teamLogo: entrepreneur.companyDetails.logo,
           from: entrepreneur.firstName + " " + entrepreneur.lastName,
+          description: shortlistDescription
         },
         uid
       );
