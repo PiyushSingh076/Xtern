@@ -19,6 +19,13 @@ import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../../hooks/Profile/useScheduledCallsForUser";
 import toast from "react-hot-toast";
 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
+
 import ScheduledCallsModal from "./ScheduledCallsModal";
 import { Box, Tooltip, IconButton, Chip } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
@@ -159,13 +166,29 @@ const SingleMentor = () => {
   const [meetDescription, setMeetDescription] = useState("");
   const [currentMeetStep, setCurrentMeetStep] = useState(1);
   const [inviting, setInviting] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [shortlistDescription, setShortlistDescription] = useState("");
 
-  async function handleSendInvite() {
+  const handleSendInvite = async () => {
     setInviting(true);
-    await sendInvite(uid, currentUser.uid);
-    setIsInvited(true);
-    setInviting(false);
-  }
+    try {
+      await sendInvite(uid, currentUser.uid, shortlistDescription);
+      setIsInvited(true);
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error sending invite:", error);
+    } finally {
+      setInviting(false);
+    }
+  };
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setShortlistDescription("");
+  };
 
   // Modify handleMeetClick to open meet scheduling modal
   const handleMeetClick = () => {
@@ -313,9 +336,8 @@ const SingleMentor = () => {
       const eventData = {
         title: "XTERN Mentorship Call",
         description: `
-          Mentorship Call with ${profileData?.firstName} ${
-          profileData?.lastName
-        }
+          Mentorship Call with ${profileData?.firstName} ${profileData?.lastName
+          }
           Host: ${currentUser?.firstName} ${currentUser?.lastName}
           Date: ${interviewDate.format("D MMM YYYY")}
           Time: ${interviewTime.format("h:mm A")}
@@ -401,7 +423,7 @@ const SingleMentor = () => {
           "user profile, account, settings, personal details, dashboard"
         }
       />
-      
+
 
       <div key={uid} className="desktop-profile-container">
         <section id="profile-details-section">
@@ -507,13 +529,13 @@ const SingleMentor = () => {
                           variant="contained"
                           disabled
                         >
-                          Invited
+                          Shortlisted
                         </ButtonM>
                       ) : (
                         <>
                           <ButtonM
                             disabled={inviting}
-                            onClick={() => handleSendInvite()}
+                            onClick={handleOpenModal}
                             variant="contained"
                             sx={{
                               marginTop: "10px",
@@ -527,8 +549,46 @@ const SingleMentor = () => {
                                 <div className="spinner-border spinner-border-sm"></div>
                               </>
                             )}
-                            Invite to team
+                            Shortlist
                           </ButtonM>
+                          <Dialog
+                            open={isModalOpen}
+                            onClose={handleCloseModal}
+                            maxWidth="sm"
+                            fullWidth
+                          >
+                            <DialogTitle>Add Shortlist Description</DialogTitle>
+                            <DialogContent>
+                              <TextField
+                                autoFocus
+                                margin="dense"
+                                label="Description"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                value={shortlistDescription}
+                                onChange={(e) => setShortlistDescription(e.target.value)}
+                                variant="outlined"
+                                placeholder="Enter description for the shortlist invitation..."
+                              />
+                            </DialogContent>
+                            <DialogActions sx={{ padding: 2, gap: 1 }}>
+                              <Button
+                                onClick={handleCloseModal}
+                                variant="outlined"
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                onClick={handleSendInvite}
+                                variant="contained"
+                                disabled={inviting || !shortlistDescription.trim()}
+                                startIcon={inviting ? <CircularProgress size={20} /> : null}
+                              >
+                                {inviting ? 'Sending...' : 'Send Invite'}
+                              </Button>
+                            </DialogActions>
+                          </Dialog>
                         </>
                       )}
                     </>
@@ -695,7 +755,7 @@ const SingleMentor = () => {
                   </span>
                 )}
               </div>
-              
+
               {profileLoading === false &&
                 currentUserLoading == false &&
                 currentUser?.uid === uid && (
@@ -727,7 +787,7 @@ const SingleMentor = () => {
                   {profileData.serviceDetails.map((item, index) => {
                     const isRestricted =
                       SERVICE_CLICK_RESTRICTIONS[
-                        profileData?.type?.toLowerCase()
+                      profileData?.type?.toLowerCase()
                       ];
 
                     return (
@@ -759,11 +819,10 @@ const SingleMentor = () => {
                         {profileData?.type?.toLowerCase() === "intern" ? (
                           /* **1. Compact Badge for Interns** */
                           <Chip
-                            label={`Avail: ${item.availability}, ${
-                              item.hoursPerDay
-                            }h/day | ${formatDateGeneric(
-                              item.startDate
-                            )}, ${formatDateGeneric(item.endDate)}`}
+                            label={`Avail: ${item.availability}, ${item.hoursPerDay
+                              }h/day | ${formatDateGeneric(
+                                item.startDate
+                              )}, ${formatDateGeneric(item.endDate)}`}
                             size="small"
                             color="primary"
                             sx={{
