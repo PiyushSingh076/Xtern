@@ -35,7 +35,7 @@ const WalletPage = () => {
   const { userData } = useFetchUserData();
   const isEntrepreneur = (userData?.type ?? "") === ENTREPRENEUR_ROLE;
   const [paymentError, setPaymentError] = useState(false)
-  const { initiatePayment } = useTransactions();
+  const { fetchWithdrawals } = useTransactions();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [transactionId, setTransactionId] = useState(null);
@@ -54,6 +54,10 @@ const WalletPage = () => {
       setBalance(wallet.amount);
     }
   }, [loaded]);
+
+  useEffect(() => {
+    fetchWithdrawals()
+  }, [])
 
   const [transactionsData, setTransactionsData] = useState(null);
   const [pageLoading, setPageLoading] = useState(false);

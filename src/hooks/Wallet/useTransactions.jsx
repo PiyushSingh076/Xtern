@@ -3,14 +3,23 @@ import toast from "react-hot-toast";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import axios from "axios";
 import useWallet from "./useWallet";
-import { doc, increment, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  increment,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { useEffect } from "react";
 
 export function useTransactions() {
   const functions = getFunctions();
   const { createTransaction } = useWallet();
-
 
   async function createPaymentOrder(userId, amount, currency) {
     try {
@@ -37,6 +46,39 @@ export function useTransactions() {
     }
   }
 
+  async function fetchWithdrawals() {
+    try {
+      const q = query(
+        collection(db, "transactions"),
+        where("type", "==", "WITHDRAW"),
+        // orderBy("date", "desc")  
+      );
+      const transactions = await getDocs(q);
+
+      
+
+      const transactionsData = transactions.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() };
+      });
+
+      console.log(transactionsData)
+      const finalTransactions = await Promise.all(
+        transactionsData.map(async (transaction) => {
+          const walletId = transaction.walletId;
+          const userSnap = await getDoc(doc(db, "users", walletId));
+          const userData = userSnap.exists() ? userSnap.data() : null;
+
+          return { ...transaction, user: userData };
+        })
+      );
+      console.log("Transactions", finalTransactions);
+
+      return finalTransactions
+    } catch (error) {
+      
+    }
+  }
+
   async function verifyPayment(orderId, paymentId, signature, amount) {
     try {
       // const verifyOrder = httpsCallable(functions, "verifyPayment");
@@ -59,7 +101,7 @@ export function useTransactions() {
       if (result.data.success) {
 
         toast.success("Payment verified successfully!", {
-          duration: 5000
+          duration: 5000,
         });
 
         return true;
@@ -93,7 +135,8 @@ export function useTransactions() {
       description: "Add funds to wallet",
       order_id: orderId,
       handler: async function (response) {
-        loader.start()
+        loader.start();
+        console.log("Payment Successful:", response);
         const success = await verifyPayment(
           orderId,
           response.razorpay_payment_id,
@@ -108,8 +151,7 @@ export function useTransactions() {
             "CREDIT",
             "Add Funds to Account"
           );
-        }
-        else{
+        } else {
           toast.error("An error occurred during payment.");
         }
         // await updateDoc(doc(db, "wallet", userId), {
@@ -117,7 +159,7 @@ export function useTransactions() {
         // });
 
         await handler(transactionId);
-        loader.stop()
+        loader.stop();
       },
       prefill: {},
       theme: {
@@ -127,12 +169,12 @@ export function useTransactions() {
 
 
     const rzp = new window.Razorpay(options);
-    rzp.on('payment.failed', function (response) {
+    rzp.on("payment.failed", function (response) {
       console.error("Payment Failed:", response);
       toast.error(`Payment Failed.`);
     });
     rzp.open();
   }
 
-  return { initiatePayment };
+  return { initiatePayment, fetchWithdrawals };
 }

@@ -22,6 +22,7 @@ export const useWallet = () => {
   const [wallet, setWallet] = useState();
   const [loaded, setLoaded] = useState(false);
   const { refresh } = useAuth();
+
   
 
   async function creditWallet(uid, amount, description){
@@ -64,7 +65,8 @@ export const useWallet = () => {
         type: type,
         description: description,
         date: new Date(),
-        details: details || {}
+        details: details || {},
+        status: type === "WITHDRAW" ? "PENDING" : "APPROVED",
       });
       await setDoc(
         doc(db, "wallet", uid),
@@ -86,7 +88,7 @@ export const useWallet = () => {
       await updateDoc(doc(db, "wallet", uid), {
         amount: increment(-amount),
       })
-      await createTransaction(uid, amount, "PENDING", "Withdrawal request", bankDetails);
+      await createTransaction(uid, amount, "WITHDRAW", "Withdrawal request", bankDetails);
 
       toast.success("Withdrawal request created successfully, please wait for approval");
     } catch (error) {

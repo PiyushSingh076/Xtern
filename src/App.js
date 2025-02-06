@@ -34,51 +34,36 @@ import MyVideoCall from "./pages/Desktop/MyVideoCall/MyVideoCall.jsx";
 // Mobile View
 import UserType from "./pages/UserType.jsx";
 import MobHeader from "./components/MobHeader.jsx";
-import Teams from "./pages/Teams/Teams.jsx";
+import TeamsPage from "./pages/Teams/index.jsx";
 import PrefferedServiceIntern from "./pages/PrefferedServiceIntern.jsx";
 import LetYouScreen from "./pages/LetYouScreen";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import ForgetPassword from "./pages/ForgetPassword";
-import CheckMailScreen from "./pages/CheckMailScreen";
-import ResetPasswordScreen from "./pages/ResetPasswordScreen";
 import VerifyScreen from "./pages/VerifyScreen";
 import NotificationAllow from "./pages/NotificationAllow";
 import PreferredLanguage from "./pages/PreferredLanguage";
 import SelectSkills from "./pages/SkillSelectionScreen";
 import HomeScreen from "./pages/MobLandingScreen/index.jsx";
 import Notification from "./pages/Notification";
-import TrendingCourse from "./pages/TrendingCourse";
-import CheckOutScreen from "./pages/CheckOutScreen";
-import PaymentScreen from "./pages/PaymentScreen";
-import PaymentSuccessfulScreen from "./pages/PaymentSuccessfulScreen";
 import ApplyCoupon from "./pages/ApplyCoupon";
 import FilterScreen from "./pages/FilterScreen";
 import Bookmark from "./pages/Bookmark";
-import CourseOngoingScreen from "./pages/CourseOngoingScreen";
-import SingleCourseOngoing from "./pages/SingleCourseOngoing";
 import ChatScreen from "./pages/ChatScreen";
 import SingleChatScreen from "./pages/SingleChatScreen";
 import Profile from "./pages/MyProfile/Index.jsx";
 import ProfileEdit from "./pages/ProfileEdit";
 import WalletScreen from "./pages/Desktop/Wallet/wallet.jsx";
 import NotificationOption from "./pages/NotificationOption";
-import Language from "./pages/Language";
-import Currency from "./pages/Currency";
 import AboutUsScreen from "./pages/AboutUsScreen";
 import PolicyScreen from "./pages/PolicyScreen";
 import FaqScreen from "./pages/FaqScreen";
 import FeedBackScreen from "./pages/FeedBackScreen";
-import CompleteCourseRating from "./pages/CompleteCourseRating";
 import ReviewScreen from "./pages/ReviewScreen";
-import SearchResultFound from "./pages/SearchResultFound";
-import SingleCourseComplete from "./pages/SingleCourseComplete";
-import SearchNoResultScreen from "./pages/SearchNoResultScreen";
 import BottomNavigation from "./components/BottomNavigation";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./Protected/ProtectedRoute";
 import Footer from "./components/Footer";
-import AddLinkedInProfile from "./pages/AddLinkedInProfile";
 import UserProfile from "./pages/UserProfile";
 import SingleJobDescription from "./pages/SingleJobDescription";
 import ApplyInternship from "./pages/ApplyInternship";
@@ -102,6 +87,7 @@ import ChooseType from "./pages/Desktop/Auth/SignUp/ChooseType.jsx";
 import EditJob from "./pages/EditJob.jsx";
 import { AuthProvider } from "./hooks/Auth/useAuth.jsx";
 import EntrepreneurMobile from "./pages/MyProfile/EntrepreneurMobile.jsx";
+import SuperUserDashboard from "./pages/SuperUser/index.jsx";
 
 
 function App() {
@@ -200,14 +186,7 @@ function App() {
           />
           <Route path={ROUTES.FORGET_PASSWORD} element={<ForgetPassword />} />
           <Route path="/insta" element={<InstaPull />} />
-          <Route
-            path={ROUTES.CHECK_MAIL_SCREEN}
-            element={<CheckMailScreen />}
-          />
-          <Route
-            path={ROUTES.RESET_PASSWORD_SCREEN}
-            element={<ResetPasswordScreen />}
-          />
+
           <Route path={ROUTES.VERIFY_SCREEN} element={<VerifyScreen />} />
 
           <Route
@@ -356,39 +335,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path={ROUTES.TRENDING_COURSE}
-            element={
-              <ProtectedRoute>
-                <TrendingCourse />
-              </ProtectedRoute>
-            }
-          />
 
-          <Route
-            path={ROUTES.CHECKOUT_SCREEN}
-            element={
-              <ProtectedRoute>
-                <CheckOutScreen />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.PAYMENT_SCREEN}
-            element={
-              <ProtectedRoute>
-                <PaymentScreen />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.PAYMENT_SUCCESSFUL_SCREEN}
-            element={
-              <ProtectedRoute>
-                <PaymentSuccessfulScreen />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path={ROUTES.APPLY_COUPON}
             element={
@@ -414,30 +361,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path={ROUTES.COURSE_ONGOING_SCREEN}
-            element={
-              <ProtectedRoute>
-                <CourseOngoingScreen />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.SINGLE_COURSE_ONGOING}
-            element={
-              <ProtectedRoute>
-                <SingleCourseOngoing />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.SINGLE_COURSE_COMPLETE}
-            element={
-              <ProtectedRoute>
-                <SingleCourseComplete />
-              </ProtectedRoute>
-            }
-          />
+ 
           <Route
             path={ROUTES.CHAT_SCREEN}
             element={
@@ -498,14 +422,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path={ROUTES.ADD_LINKEDIN_PROFILE}
-            element={
-              <ProtectedRoute>
-                <AddLinkedInProfile />
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path={ROUTES.USER_PROFILE}
             element={
@@ -531,14 +448,6 @@ function App() {
             }
           />
           <Route
-            path={ROUTES.LANGUAGE}
-            element={
-              <ProtectedRoute>
-                <Language />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path={ROUTES.VIEWJOB}
             element={
               <ProtectedRoute allowedRoles={["entrepreneur"]}>
@@ -546,14 +455,6 @@ function App() {
               </ProtectedRoute>
             }
           ></Route>
-          <Route
-            path={ROUTES.CURRENCY}
-            element={
-              <ProtectedRoute>
-                <Currency />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path={ROUTES.ABOUT_US_SCREEN}
             element={
@@ -586,14 +487,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path={ROUTES.COMPLETE_COURSE_RATING}
-            element={
-              <ProtectedRoute>
-                <CompleteCourseRating />
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path={ROUTES.REVIEW_SCREEN}
             element={
@@ -602,27 +496,20 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path={ROUTES.SEARCH_RESULT_FOUND}
-            element={
-              <ProtectedRoute>
-                <SearchResultFound />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.SEARCH_NO_RESULT_SCREEN}
-            element={
-              <ProtectedRoute>
-                <SearchNoResultScreen />
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path={ROUTES.TEAMS}
             element={
               <ProtectedRoute>
-                <Teams />
+                <TeamsPage />
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path={ROUTES.SUPER_USER}
+            element={
+              <ProtectedRoute>
+                <SuperUserDashboard />
               </ProtectedRoute>
             }
           />
