@@ -573,21 +573,36 @@ const SingleMentor = () => {
                               />
                             </DialogContent>
                             <DialogActions sx={{ padding: 2, gap: 1 }}>
-                              <Button
-                                onClick={handleCloseModal}
-                                variant="outlined"
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                onClick={handleSendInvite}
-                                variant="contained"
-                                disabled={inviting || !shortlistDescription.trim()}
-                                startIcon={inviting ? <CircularProgress size={20} /> : null}
-                              >
-                                {inviting ? 'Sending...' : 'Send Invite'}
-                              </Button>
-                            </DialogActions>
+  <ButtonM
+    onClick={handleCloseModal}
+    variant="contained"
+    sx={{
+      backgroundColor: 'red',
+      color: 'white',
+      '&:hover': {
+        backgroundColor: 'darkred',
+      },
+    }}
+  >
+    Cancel
+  </ButtonM>
+  <ButtonM
+    onClick={handleSendInvite}
+    variant="contained"
+    disabled={inviting || !shortlistDescription.trim()}
+    startIcon={inviting ? <CircularProgress size={20} /> : null}
+    sx={{
+      backgroundColor: 'blue',
+      color: 'white',
+      '&:hover': {
+        backgroundColor: 'darkblue',
+      },
+    }}
+  >
+    {inviting ? 'Sending...' : 'Send Invite'}
+  </ButtonM>
+</DialogActions>
+
                           </Dialog>
                         </>
                       )}
