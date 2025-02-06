@@ -30,6 +30,9 @@ import { useTransactions } from "../../../hooks/Wallet/useTransactions";
 import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
 import WalletPageSkeleton from "./WalletPageSkeleton";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
+import { Edit2 } from 'lucide-react';
 
 const WalletPage = () => {
   const { userData } = useFetchUserData();
@@ -77,6 +80,148 @@ const WalletPage = () => {
       setBalance(wallet.amount);
     }
   }, [loaded]);
+
+
+  const [showBankDetailsModal, setShowBankDetailsModal] = useState(false);
+
+  const BankDetailsModal = ({ open, onClose, userData }) => {
+    const [accountNumber, setAccountNumber] = useState("");
+    const [bankName, setBankName] = useState("");
+    const [ifscCode, setIfscCode] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [hasDetails, setHasDetails] = useState(false);
+    const [errors, setErrors] = useState({});
+  
+    useEffect(() => {
+      if (open && userData?.uid) {
+        fetchBankDetails();
+      }
+    }, [open, userData]);
+  
+    const fetchBankDetails = async () => {
+      try {
+        const walletRef = doc(db, "wallet", userData.uid);
+        const walletDoc = await getDoc(walletRef);
+        const bankDetails = walletDoc.data()?.bankDetails;
+  
+        if (bankDetails) {
+          setAccountNumber(bankDetails.accountNumber);
+          setBankName(bankDetails.bankName);
+          setIfscCode(bankDetails.ifscCode);
+          setHasDetails(true);
+          setIsEditing(false);
+        } else {
+          setHasDetails(false);
+          setIsEditing(true);
+        }
+      } catch (error) {
+        console.error("Error fetching bank details:", error);
+      }
+    };
+  
+    const validateFields = () => {
+      const newErrors = {};
+      if (!accountNumber.trim()) newErrors.accountNumber = "Account number is required";
+      if (!bankName.trim()) newErrors.bankName = "Bank name is required";
+      if (!ifscCode.trim()) newErrors.ifscCode = "IFSC code is required";
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    };
+  
+    const handleSaveBankDetails = async () => {
+      if (!validateFields()) return;
+      
+      setLoading(true);
+      try {
+        const walletRef = doc(db, "wallet", userData.uid);
+        const walletDoc = await getDoc(walletRef);
+        const currentData = walletDoc.data();
+        
+        await updateDoc(walletRef, {
+          ...currentData,
+          bankDetails: {
+            accountNumber,
+            bankName,
+            ifscCode,
+            updatedAt: new Date()
+          }
+        });
+        setHasDetails(true);
+        setIsEditing(false);
+      } catch (error) {
+        console.error("Error saving bank details:", error);
+        setErrors({ submit: "Failed to save bank details" });
+      }
+      setLoading(false);
+    };
+  
+    return (
+      <Dialog open={open} onClose={onClose}>
+        <DialogTitle className="flex justify-between items-center">
+          Bank Details
+          {hasDetails && !isEditing && (
+            <Button 
+              onClick={() => setIsEditing(true)}
+              variant="outlined"
+              className="flex items-center gap-2"
+            >
+              <Edit2 size={16} />
+              Edit
+            </Button>
+          )}
+        </DialogTitle>
+        <DialogContent>
+          <Box className="space-y-4 mt-4">
+            <TextField
+              fullWidth
+              label="Account Number"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+              error={!!errors.accountNumber}
+              helperText={errors.accountNumber}
+              disabled={!isEditing}
+            />
+            <TextField
+              fullWidth
+              label="Bank Name"
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+              error={!!errors.bankName}
+              helperText={errors.bankName}
+              disabled={!isEditing}
+            />
+            <TextField
+              fullWidth
+              label="IFSC Code"
+              value={ifscCode}
+              onChange={(e) => setIfscCode(e.target.value)}
+              error={!!errors.ifscCode}
+              helperText={errors.ifscCode}
+              disabled={!isEditing}
+            />
+            {errors.submit && (
+              <Typography color="error" variant="body2">
+                {errors.submit}
+              </Typography>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} variant="outlined">Cancel</Button>
+          {isEditing && (
+            <Button
+              onClick={handleSaveBankDetails}
+              variant="contained"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : (hasDetails ? "Update Details" : "Save Details")}
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
+    );
+  };
 
   const AddFundsModal = ({ open, onClose, userData }) => {
     const [amount, setAmount] = useState("");
@@ -532,6 +677,13 @@ const WalletPage = () => {
                 Request Withdraw
               </Button>
             )}
+             <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => setShowBankDetailsModal(true)}
+            >
+              Bank Details
+            </Button>
           </Box>
         </Paper>
 
@@ -781,6 +933,11 @@ const WalletPage = () => {
         <RequestWithdrawModal
           open={showRequestWithdrawModal}
           onClose={() => setShowRequestWithdrawModal(false)}
+        />
+          <BankDetailsModal
+          open={showBankDetailsModal}
+          onClose={() => setShowBankDetailsModal(false)}
+          userData={userData}
         />
       </Box>
     </Box>
