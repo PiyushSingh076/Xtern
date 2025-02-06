@@ -737,6 +737,13 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
+import { Button as ButtonM } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import toast from "react-hot-toast";
 import useUserProfileData from "../../hooks/Profile/useUserProfileData";
@@ -746,6 +753,7 @@ import useGoogleCalendar from "../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../hooks/Profile/useScheduledCallsForUser";
 import ScheduledCallsModal from "../Desktop/Profile/ScheduledCallsModal";
 import Layout from "../../components/SEO/Layout";
+import { useInvites } from "../../hooks/Teams/useInvites";
 
 const MobileSingleMentor = () => {
   const navigate = useNavigate();
@@ -772,6 +780,7 @@ const MobileSingleMentor = () => {
     setProjectOpen((prev) => ({ ...prev, [index]: !prev[index] }));
   const toggleServiceDesc = (index) =>
     setServiceOpen((prev) => ({ ...prev, [index]: !prev[index] }));
+const [isInvited, setIsInvited] = useState(false);
 
   // Hooks for data fetching
   const {
@@ -780,13 +789,35 @@ const MobileSingleMentor = () => {
     error: profileError,
   } = useUserProfileData(uid);
 
+  
+  useEffect(() => {
+    if (profileData) {
+      if (profileData.type == "entrepreneur") {
+        navigate(`/entrepreneur/${profileData.uid}`);
+      }
+    }
+  }, [profileData]);
+  const { sendInvite, checkInvited } = useInvites();
+  const { userData: currentUser, loading: currentUserLoading } =
+    useFetchUserData();
+
+  useEffect(() => {
+    async function checkIfInvited() {
+      const inv = await checkInvited(uid, currentUser.uid);
+      setIsInvited(inv);
+    }
+    if (currentUser) {
+      checkIfInvited();
+    }
+  }, [currentUser]);
+
   const {
     users,
     loading: usersLoading,
     error: usersError,
   } = useFetchUsersByType("Developer");
 
-  const { userData: currentUser } = useFetchUserData();
+  // const { userData: currentUser } = useFetchUserData();
 
   const {
     signIn,
@@ -801,6 +832,32 @@ const MobileSingleMentor = () => {
     loading: callsLoading,
     error: callsError,
   } = useScheduledCallsForUser(uid);
+
+
+    const [inviting, setInviting] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [shortlistDescription, setShortlistDescription] = useState("");
+  
+    const handleSendInvite = async () => {
+      setInviting(true);
+      try {
+        await sendInvite(uid, currentUser.uid, shortlistDescription);
+        setIsInvited(true);
+        handleCloseModal();
+      } catch (error) {
+        console.error("Error sending invite:", error);
+      } finally {
+        setInviting(false);
+      }
+    };
+    const handleOpenModal = () => {
+      setIsModalOpen(true);
+    };
+  
+    const handleCloseModal = () => {
+      setIsModalOpen(false);
+      setShortlistDescription("");
+    };
 
   // Editable state
   const [editable, setEditable] = useState(false);
@@ -961,6 +1018,7 @@ const MobileSingleMentor = () => {
           {profileLoading ? (
             <Skeleton variant="rounded" width={"100%"} height={"300px"} />
           ) : (
+            <>
             <MainProfile
               userdata={profileData}
               loading={profileLoading}
@@ -968,6 +1026,94 @@ const MobileSingleMentor = () => {
               handleShare={handleShare}
               editable={editable} // Pass editable state as a prop
             />
+            {currentUser?.type === "entrepreneur" && (
+                    <>
+                      {isInvited ? (
+                        <ButtonM
+                          sx={{ marginTop: "10px" }}
+                          variant="contained"
+                          disabled
+                        >
+                          Shortlisted
+                        </ButtonM>
+                      ) : (
+                        <>
+                          <ButtonM
+                            disabled={inviting}
+                            onClick={handleOpenModal}
+                            variant="contained"
+                            sx={{
+                              marginTop: "10px",
+                              display: "flex",
+                              gap: "5px",
+                              alignItems: "center",
+                            }}
+                          >
+                            {inviting && (
+                              <>
+                                <div className="spinner-border spinner-border-sm"></div>
+                              </>
+                            )}
+                            Shortlist
+                          </ButtonM>
+                          <Dialog
+                            open={isModalOpen}
+                            onClose={handleCloseModal}
+                            maxWidth="sm"
+                            fullWidth
+                          >
+                            <DialogTitle>Add Shortlist Description</DialogTitle>
+                            <DialogContent>
+                              <TextField
+                                autoFocus
+                                margin="dense"
+                                label="Description"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                value={shortlistDescription}
+                                onChange={(e) => setShortlistDescription(e.target.value)}
+                                variant="outlined"
+                                placeholder="Enter description for the shortlist invitation..."
+                              />
+                            </DialogContent>
+                            <DialogActions sx={{ padding: 2, gap: 1 }}>
+                              <ButtonM
+                                onClick={handleCloseModal}
+                                variant="contained"
+                                sx={{
+                                  backgroundColor: 'red',
+                                  color: 'white',
+                                  '&:hover': {
+                                    backgroundColor: 'darkred',
+                                  },
+                                }}
+                              >
+                                Cancel
+                              </ButtonM>
+                              <ButtonM
+                                onClick={handleSendInvite}
+                                variant="contained"
+                                disabled={inviting || !shortlistDescription.trim()}
+                                startIcon={inviting ? <CircularProgress size={20} /> : null}
+                                sx={{
+                                  backgroundColor: 'blue',
+                                  color: 'white',
+                                  '&:hover': {
+                                    backgroundColor: 'darkblue',
+                                  },
+                                }}
+                              >
+                                {inviting ? 'Sending...' : 'Send Invite'}
+                              </ButtonM>
+                            </DialogActions>
+
+                          </Dialog>
+                        </>
+                      )}
+                    </>
+                  )}
+            </>
           )}
 
           {/* Consulting Section */}
