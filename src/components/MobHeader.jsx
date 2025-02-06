@@ -15,7 +15,7 @@ import {
   AiOutlineCalendar,
   AiOutlineLogin,
 } from "react-icons/ai";
-import { FaBriefcase } from "react-icons/fa";
+import { FaBriefcase, FaUser } from "react-icons/fa";
 
 export default function MobHeader() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,9 +32,9 @@ export default function MobHeader() {
         setIsOpen(false);
       }
     };
-  
+
     document.addEventListener("click", handleBackgroundClick);
-  
+
     return () => {
       document.removeEventListener("click", handleBackgroundClick);
     };
@@ -63,10 +63,13 @@ export default function MobHeader() {
     <div
       className="mob-header-container !z-[100]"
       onClick={handleBackgroundClick}
-    // style={{ border: isOpen && "none" }}
+      // style={{ border: isOpen && "none" }}
     >
       <div className="menu-btn-container">
-        <button className="menu-btn flex items-center" onClick={handleMenuClick}>
+        <button
+          className="menu-btn flex items-center"
+          onClick={handleMenuClick}
+        >
           <img src={menu} width={"20px"} />
         </button>
       </div>
@@ -105,14 +108,24 @@ export default function MobHeader() {
           }}
           onClick={(e) => e.stopPropagation()}
         >
+          {userData?.role === "superuser" && (
+            <>
+              <div
+                className="dropdown-item"
+                onClick={() => navigate("/superuser")}
+              >
+                <FaUser className="menu-icon" />
+                Superuser
+              </div>
+            </>
+          )}
           <div
             className="dropdown-item"
             onClick={() => {
               if (userData?.type === "entrepreneur") {
-                handleMenuOptionClick(`entrepreneur/${userData?.uid}`)
-              }
-              else {
-                handleMenuOptionClick(`profile/${userData?.uid}`)
+                handleMenuOptionClick(`entrepreneur/${userData?.uid}`);
+              } else {
+                handleMenuOptionClick(`profile/${userData?.uid}`);
               }
             }}
           >
@@ -172,107 +185,115 @@ export default function MobHeader() {
               }}
               onClick={() => setIsOpen(false)}
               className="fixed z-[40] size-full left-0 top-0 bg-black/10"
-                ></motion.div>
-                      <motion.div
-                        initial={{ x: "-100%" }}
-                            animate={{ x: "0%" }}
-                            exit={{ x: "-100%" }}
-                            transition={{
-                              ease: "circInOut",
-                            }}
-                            className="fixed z-50 left-0 bg-white items-center !w-[60vw] !h-dvh  flex flex-col"
-                          >
-                            <div
-                              onClick={() => navigate("/homescreen")}
-                              className="px-2 my-2"
-                            >
-                              <span style={{ color: "#0d6efd", fontSize: "28px" }}>X</span>
-                              pert
-                            </div>
-              
-                            {userData ? (
-                              <>
-                                <MenuLink
-                                  close={() => setIsOpen(false)}
-                                  title="Profile"
-                                  icon={<AiOutlineUser></AiOutlineUser>}
-                                  href={userData.type === "entrepreneur" ? `entrepreneur/${userData.uid}` : `profile/${userData.uid}`}
-                                ></MenuLink>
-                                <MenuLink
-                                  close={() => setIsOpen(false)}
-                                  title={userData.type === "entrepreneur" ? `My Jobs` : `Jobs`}
-                                  icon={<FaBriefcase></FaBriefcase>}
-                                  href={userData.type === "entrepreneur" ? `/jobpostings` : `jobs`}
-                                ></MenuLink>
-                                <MenuLink
-                                  close={() => setIsOpen(false)}
-                                  title="My Schedule"
-                                  icon={<AiOutlineCalendar></AiOutlineCalendar>}
-                                  href="/"
-                                ></MenuLink>
-                                <button
-                                  close={() => setIsOpen(false)}
-                                  onClick={() => {
-                                    handleLogout();
-                                    setIsOpen(false);
-                                  }}
-                                  className="h-[5vh] p-2 flex items-center gap-2 text-xl text-red-800 w-full active:bg-red-900/20"
-                                >
-                                  <AiOutlineLogout></AiOutlineLogout>
-                                  <span className="text-red-800">Log out</span>
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                <button
-                                  onClick={() => {
-                                    navigate("/signin");
-                                    setIsOpen(false);
-                                  }}
-                                  className="h-[5vh] p-2 flex rounded-full text-white justify-center bg-[#0d6efd] w-[calc(100%-16px)] items-center gap-2 text-base"
-                                >
-                                  Log in
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    navigate("/signup");
-                                    setIsOpen(false);
-                                  }}
-                                  className="h-[5vh] mt-2 p-2 flex rounded-full text-white justify-center bg-[#0d6efd] w-[calc(100%-16px)] items-center gap-2 text-base"
-                                >
-                                  Sign up
-                                </button>
-                              </>
-                            )}
-                            <div className="mt-auto flex w-full flex-col p-2 no-underline">
-                              <div>Quick Links</div>
-                              <Link to="/homescreen" className="no-underline">
-                                Home
-                              </Link>
-                              <Link to="/homescreen" className="no-underline">
-                                About
-                              </Link>
-                              <Link to="/homescreen" className="no-underline">
-                                Contact
-                              </Link>
-                            </div>
-                          </motion.div>
-                        </>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                );
-              }
-              
-              function MenuLink({ title, icon, href, close }) {
-                return (
-                  <Link
-                    onClick={() => close()}
-                    className="w-full p-2 active:bg-gray-100 h-[5vh] text-xl no-underline text-black flex gap-2 items-center "
-                    to={href}
+            ></motion.div>
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: "0%" }}
+              exit={{ x: "-100%" }}
+              transition={{
+                ease: "circInOut",
+              }}
+              className="fixed z-50 left-0 bg-white items-center !w-[60vw] !h-dvh  flex flex-col"
+            >
+              <div
+                onClick={() => navigate("/homescreen")}
+                className="px-2 my-2"
+              >
+                <span style={{ color: "#0d6efd", fontSize: "28px" }}>X</span>
+                pert
+              </div>
+
+              {userData ? (
+                <>
+                  <MenuLink
+                    close={() => setIsOpen(false)}
+                    title="Profile"
+                    icon={<AiOutlineUser></AiOutlineUser>}
+                    href={
+                      userData.type === "entrepreneur"
+                        ? `entrepreneur/${userData.uid}`
+                        : `profile/${userData.uid}`
+                    }
+                  ></MenuLink>
+                  <MenuLink
+                    close={() => setIsOpen(false)}
+                    title={
+                      userData.type === "entrepreneur" ? `My Jobs` : `Jobs`
+                    }
+                    icon={<FaBriefcase></FaBriefcase>}
+                    href={
+                      userData.type === "entrepreneur" ? `/jobpostings` : `jobs`
+                    }
+                  ></MenuLink>
+                  <MenuLink
+                    close={() => setIsOpen(false)}
+                    title="My Schedule"
+                    icon={<AiOutlineCalendar></AiOutlineCalendar>}
+                    href="/"
+                  ></MenuLink>
+                  <button
+                    close={() => setIsOpen(false)}
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="h-[5vh] p-2 flex items-center gap-2 text-xl text-red-800 w-full active:bg-red-900/20"
                   >
-                    <div className="text-[rgb(13,110,253)]">{icon}</div>
-                    {title}
-                  </Link>
-                );
-              }                         
+                    <AiOutlineLogout></AiOutlineLogout>
+                    <span className="text-red-800">Log out</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      navigate("/signin");
+                      setIsOpen(false);
+                    }}
+                    className="h-[5vh] p-2 flex rounded-full text-white justify-center bg-[#0d6efd] w-[calc(100%-16px)] items-center gap-2 text-base"
+                  >
+                    Log in
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate("/signup");
+                      setIsOpen(false);
+                    }}
+                    className="h-[5vh] mt-2 p-2 flex rounded-full text-white justify-center bg-[#0d6efd] w-[calc(100%-16px)] items-center gap-2 text-base"
+                  >
+                    Sign up
+                  </button>
+                </>
+              )}
+              <div className="mt-auto flex w-full flex-col p-2 no-underline">
+                <div>Quick Links</div>
+                <Link to="/homescreen" className="no-underline">
+                  Home
+                </Link>
+                <Link to="/homescreen" className="no-underline">
+                  About
+                </Link>
+                <Link to="/homescreen" className="no-underline">
+                  Contact
+                </Link>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function MenuLink({ title, icon, href, close }) {
+  return (
+    <Link
+      onClick={() => close()}
+      className="w-full p-2 active:bg-gray-100 h-[5vh] text-xl no-underline text-black flex gap-2 items-center "
+      to={href}
+    >
+      <div className="text-[rgb(13,110,253)]">{icon}</div>
+      {title}
+    </Link>
+  );
+}

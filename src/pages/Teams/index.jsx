@@ -7,6 +7,7 @@ import ShortlistedUsers from "./ShortlistedUsers";
 import TeamMembers from "./TeamMembers";
 import { Subscribed } from "./Subscribed";
 import SubscriptionModal from "./SubscriptionModal";
+import Payments from "./Payments";
 
 const TeamPage = () => {
     const [activeTab, setActiveTab] = useState("subscribed");
@@ -21,11 +22,13 @@ const TeamPage = () => {
 
     const navigate = useNavigate();
 
+
     const openModal = (user) => {
         setSelectedUser(user);
         setStipend("");
         setIsModalOpen(true);
     };
+
     // Fetch subscriber details
     const fetchSubscriberDetails = async (subscriberIds) => {
         try {
@@ -72,7 +75,8 @@ const TeamPage = () => {
                             const userDoc = await getDoc(userDocRef);
 
                             if (userDoc.exists()) {
-                                return { id: uid, ...userDoc.data() };
+
+                                return { id: uid, ...userDoc.data(), salary: teamData.members.find(member => member.uid === uid).stipend };
                             }
                             return null;
                         })
@@ -129,7 +133,8 @@ const TeamPage = () => {
                             const userDoc = await getDoc(userDocRef);
 
                             if (userDoc.exists()) {
-                                return { id: uid, ...userDoc.data() };
+
+                                return { id: uid, ...userDoc.data(), salary: teamDoc.data().members.find(member => member.uid === uid).stipend };
                             }
                             return null;
                         })
@@ -155,10 +160,11 @@ const TeamPage = () => {
         if (!selectedUser || stipend.trim() === "") return;
         setLoading(true); // Start loading
 
+    
         try {
             const teamDocRef = doc(db, "teams", userData.uid);
             const teamDoc = await getDoc(teamDocRef);
-
+    
             if (teamDoc.exists()) {
                 // Update members list in Firestore
                 const updatedMembers = teamDoc.data().members.map(member =>
@@ -168,11 +174,11 @@ const TeamPage = () => {
                 );
 
                 await updateDoc(teamDocRef, { members: updatedMembers });
-
+    
                 // Move user to team members
                 setTeamMembers(prev => [...prev, { ...selectedUser, stipend }]);
                 setShortlistedUsers(prev => prev.filter(user => user.id !== selectedUser.id));
-
+    
                 setIsModalOpen(false);
             }
         } catch (error) {
@@ -220,6 +226,7 @@ const TeamPage = () => {
         );
     }
 
+
     return (
         <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
             {/* Tabs */}
@@ -253,7 +260,6 @@ const TeamPage = () => {
                     Payments
                 </button>
             </div>
-
             {/* Content */}
             <div className="bg-white rounded-lg shadow p-4">
                 {activeTab === "subscribed" && (
@@ -282,9 +288,8 @@ const TeamPage = () => {
                 )}
 
                 {activeTab === "payments" && (
-                    <div className="text-center text-xs sm:text-sm text-gray-500">
-                        No payment information available
-                    </div>
+
+                    <Payments members={teamMembers} ></Payments>
                 )}
             </div>
             <SubscriptionModal
@@ -293,7 +298,9 @@ const TeamPage = () => {
                 stipend={stipend}
                 setStipend={setStipend}
                 onSubmit={handleSubmitSubscription}
+
                 loading={loading}
+
             />
         </div>
 
