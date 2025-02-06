@@ -45,6 +45,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [invites, setInvites] = useState([]); // State to store fetched invites
   const { refreshUser, refresh } = useAuth();
+  const [isAcceptClicked, setIsAcceptClicked] = useState(false);
   // const [loadingInvites, setLoadingInvites] = useState()
 
   // Fetch invites when user data is available
@@ -57,8 +58,8 @@ export default function Header() {
   async function fetchInvites(uid) {
     const q = query(
       collection(db, "notifications"),
-      where("uid", "==", uid),
-      where("type", "==", "INVITE")
+      where("userId", "==", uid),
+      where("type", "==", "SUBSCRIPTION")
     );
     const invitesSnapshot = await getDocs(q);
     const inviteData = invitesSnapshot.docs.map((doc) => {
@@ -78,10 +79,10 @@ export default function Header() {
         // setMenuOpen(false);
       }
       if (
-        notificationRef.current &&
-        !notificationRef.current.contains(event.target)
+        
+        isAcceptClicked 
       ) {
-        // setNotificationOpen(false);
+        setNotificationOpen(true);
       }
     };
 
@@ -89,7 +90,8 @@ export default function Header() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isAcceptClicked]);
+
 
   const hasUserPhoto =
     userData?.photo_url &&
@@ -106,26 +108,37 @@ export default function Header() {
   };
 
   async function handleAcceptInvite(e, invite) {
-    setInvites((prevInvites) => {
-      return prevInvites.map((i) => {
-        if (i.data.inviteId === invite.data.inviteId) {
-          return { ...i, loading: true };
-        }
-        return i;
-      });
-    });
-    
-    console.log("tes");
     e.stopPropagation();
-    await acceptInvite(invite.data.inviteId, invite.id);
-    setInvites((prevInvites) => {
-      return prevInvites.map((i) => {
-        if (i.data.inviteId === invite.data.inviteId) {
-          return { ...i, loading: false, status: "ACCEPTED" };
-        }
-        return i;
-      });
-    });
+    setIsAcceptClicked(true);
+  
+    try {
+      // Update the invite's loading state
+      setInvites((prevInvites) =>
+        prevInvites.map((i) =>
+          i.id === invite.id ? { ...i, loading: true } : i
+        )
+      );
+  
+      // Call the acceptInvite function
+      await acceptInvite(invite.data.inviteId, invite.id);
+  
+      // Update the invite's status to "ACCEPTED"
+      setInvites((prevInvites) =>
+        prevInvites.map((i) =>
+          i.id === invite.id ? { ...i, loading: false, status: "ACCEPTED" } : i
+        )
+      );
+    } catch (error) {
+      console.error("Error accepting invite:", error);
+      // Reset the loading state if an error occurs
+      setInvites((prevInvites) =>
+        prevInvites.map((i) =>
+          i.id === invite.id ? { ...i, loading: false } : i
+        )
+      );
+    } finally {
+      setIsAcceptClicked(false);
+    }
   }
 
   const handleMenuOptionClick = () => {
@@ -184,48 +197,47 @@ export default function Header() {
           userData && (
             <>
               {/* Notification Bell */}
-              <div className="notification-container">
-                <button
-                  ref={notificationRef}
-                  className="notification-btn"
-                  onClick={handleNotificationToggle}
-                >
-                  <AiOutlineBell
-                    style={{ fontSize: "1.5rem", cursor: "pointer" }}
-                  />
-                  {/* {invites?.length > 0 && <span className="notification-badge">{invites?.length}</span>} */}
-                </button>
-
-                {notificationOpen && (
-                  <div className="notification-dropdown">
-                    {invites?.length > 0 ? (
-                      invites.map((invite, index) => (
-                        <div key={index} className="notification-item">
-                          <p>
-                            <strong>{invite.data.from || "Unknown"}</strong>{" "}
-                            invited you to join their team.
-                            
-                          </p>
-                          <p>{invite.data.description}</p>
-                          <Button
-                          disabled={invite.loading || invite.status === "ACCEPTED"}
-                            className="accept-btn !flex !gap-2 !items-center "
-                            onClick={(e) => handleAcceptInvite(e, invite)}
-                          >
-                            {invite.loading && (
-                              <div className="spinner-border  spinner-border-sm" ></div>
-                            )}
-                            {invite.status === "ACCEPTED" ? "Accepted" : "Accept"}
-                          </Button>
-                          {/* <button className="decline-btn" onClick={() => declineInvite(invite.id)}>Decline</button> */}
-                        </div>
-                      ))
-                    ) : (
-                      <p className="no-notifications">No new notifications</p>
-                    )}
-                  </div>
+            <div className="notification-container">
+              <button
+                ref={notificationRef}
+                className="notification-btn"
+                onClick={handleNotificationToggle}
+              >
+                <AiOutlineBell style={{ fontSize: "1.5rem", cursor: "pointer" }} />
+                
+                {invites?.length > 0 && (
+                  <span className="notification-badge">{invites.length}</span>
                 )}
-              </div>
+              </button>
+
+              {notificationOpen && (
+                <div className="notification-dropdown">
+                  {invites?.length > 0 ? (
+                    invites.map((invite, index) => (
+                      <div key={index} className="notification-item">
+                        <p>
+                          <strong>{invite.data.from || "Unknown"}</strong> invited you to join their team.
+                        </p>
+                          <p className="invite-description">{invite.data.description}</p>
+                          <p className="invite-stipend">{invite.data.stipend}</p>
+                        <Button
+                          disabled={invite.loading || invite.status === "ACCEPTED"}
+                          className="accept-btn !flex !gap-2 !items-center"
+                          onClick={(e) => handleAcceptInvite(e, invite)}
+                        >
+                          {invite.loading && (
+                            <div className="spinner-border spinner-border-sm"></div>
+                          )}
+                          {invite.status === "ACCEPTED" ? "Accepted" : "Accept"}
+                        </Button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="no-notifications">No new notifications</p>
+                  )}
+                </div>
+              )}
+            </div>
 
               {/* Profile Menu */}
               <div className="profile-menu-container">

@@ -27,7 +27,7 @@
   justify-content: space-between;
   margin-right: 10px;
   color: black;
-  overflow: hidden; /* Prevent overflow */
+  overflow: hidden; 
 }
 
 .profile-container:hover {
@@ -36,10 +36,10 @@
 
 .profile-name {
   color: inherit;
-  max-width: 120px; /* Set a maximum width */
-  white-space: nowrap; /* Prevent text wrapping */
+  max-width: 120px;
+  white-space: nowrap; 
   overflow: hidden;
-  text-overflow: ellipsis; /* Show '...' if the text overflows */
+  text-overflow: ellipsis; 
 }
 
 .logo-search-container {
@@ -155,81 +155,180 @@
   position: relative;
   background: none;
   border: none;
+  margin-right: 5px;
+  margin-top: 15px;
+  padding: 0; 
   cursor: pointer;
-  font-size: 22px; /* Increase the size of the bell */
-  color: #0d6efd; /* Ensure the bell icon color stands out */
-}
-
-.notification-badge {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: red;
-  color: white;
-  border-radius: 50%;
-  font-size: 0.8rem;
-  padding: 2px 6px;
+  font-size: 22px; 
+  color: #0d6efd;
 }
 
 .notification-dropdown {
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   position: absolute;
-  background: white;
-  border: 1px solid #ddd;
-  padding: 10px;
-  width: 250px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  top: calc(100% + 2px); 
+  right: 0;
+  margin-right: 10px;
+  background: rgb(231, 226, 226);
+  border-radius: 10px;
+  width: 300px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   z-index: 2000;
-  max-width: 90vw; /* Limit width to 90% of the viewport */
-  left: auto;
-  right: 0; /* Align the right edge of the dropdown to the right edge of the container */
-  transform: translateX(0); /* Ensure the dropdown stays within bounds */
-  overflow-x: hidden; /* Prevent horizontal overflow */
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+
+.notification-header {
+  background: #0a65fc;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
 }
 
 .notification-container {
-  position: relative;
-  max-width: 100%; /* Ensure the notification container fits the screen */
-  width: 100%;
+  max-height: 350px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
 }
 
+.notification-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.notification-container::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 5px;
+}
+/* Notification container styling */
 .notification-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 10px;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+ 
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
 
 .notification-item p {
-  font-size: 14px;
-  margin: 0;
+  margin: 5px 0;
+  color: #333;
 }
 
-.notification-item .accept-btn,
-.notification-item .decline-btn {
-  font-size: 12px;
+.invite-message {
+  font-weight: bold;
+  color: #4caf50; /* Green for the inviter */
+}
+
+.invite-description {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.invite-stipend {
+  font-size: 0.9rem;
+  color: #777;
   margin-top: 5px;
-  padding: 5px;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
-.notification-item .accept-btn {
-  background-color: #4CAF50;
+
+.accept-btn {
+  margin-top: 10px;
+  background-color: #007bff;
   color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.accept-btn:hover {
+  background-color: #0056b3;
+}
+
+.accept-btn:disabled {
+  background-color: #cfd8dc;
+  cursor: not-allowed;
+}
+
+.accept-btn .spinner-border {
+  margin-right: 8px;
+}
+
+.no-notifications {
+  font-size: 1rem;
+  color: #777;
+  text-align: center;
+}
+
+.notification-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.notification-actions button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.accept-btn {
+  background-color:white;
+  color: #0a65fc;
   border: none;
 }
 
-.notification-item .decline-btn {
+.decline-btn {
   background-color: #f44336;
   color: white;
   border: none;
 }
 
-.notification-item .accept-btn:hover {
-  background-color: #45a049;
+.accept-btn:hover {
+  background-color: #2369ea;
+  color:white;
 }
 
-.notification-item .decline-btn:hover {
-  background-color: #e53935;
+.decline-btn:hover {
+  background-color: #d32f2f;
+}
+
+.no-notifications {
+  text-align: center;
+  padding: 15px;
+  font-size: 14px;
+  color: #777;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 12px;
+  min-height: 12px;
+}
+
+@media (max-width: 480px) {
+  .notification-dropdown {
+    width: 90vw;
+  }
 }

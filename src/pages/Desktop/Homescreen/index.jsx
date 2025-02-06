@@ -148,7 +148,8 @@ export default function HomeScreen() {
         title={"Home-Xpert"} 
         keywords={"Home-Xpert,dashboard, main page, user interface, homepage, navigation, start screen"} 
         description={"This is the home page of Xtern"} 
-      />
+        
+    />
       {!userData?.linkedInProfile && !user && (
         <>
           <div
