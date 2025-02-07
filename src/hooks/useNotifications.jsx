@@ -72,69 +72,63 @@ export function useNotifications() {
     }
   }
   
+  async function acceptInvite(inviteId, notificationId) {
+    try {
+      // Fetch the invite document
+      const inviteDoc = await getDoc(doc(db, "notifications", notificationId));
+      if (!inviteDoc.exists()) {
+        throw new Error("Invite document does not exist");
+      }
   
-
-  // Accept an invite and update related documents
-  // Accept an invite and update related documents
-async function acceptInvite(inviteId, notificationId) {
-  try {
-    // Fetch the invite document
-    const inviteDoc = await getDoc(doc(db, "notifications", notificationId));
-    if (!inviteDoc.exists()) {
-      throw new Error("Invite document does not exist");
-    }
-
-    const inviteData = inviteDoc.data();
-    console.log("Invite Data:", inviteData);
-
-    // Validate required fields
-    if (!inviteData.from || !inviteData.to) {
-      throw new Error("Invite data is missing required fields");
-    }
-
-    // Update notification status to "ACCEPTED"
-    await updateDoc(doc(db, "notifications", notificationId), {
-      status: "ACCEPTED",
-    });
-
-    
-    await updateDoc(doc(db, "invites", inviteId), {
-      status: "ACCEPTED",
-    });
-
-    
-    const teamDocRef = doc(db, "teams", inviteData.from);
-    const teamDoc = await getDoc(teamDocRef);
-
-    if (!teamDoc.exists()) {
-      throw new Error("Team does not exist");
-    }
-
-    const teamData = teamDoc.data();
-    const members = teamData.members || [];
-
-    // Check if the user is already in the team
-    if (members.some((member) => member.uid === inviteData.to)) {
-      console.log("User is already a member of the team");
-    } else {
-      // Add the user to the team
-      await updateDoc(teamDocRef, {
-        members: arrayUnion({
-          uid: inviteData.to,
-          status: "SHORTLIST", // Adjust status if needed
-        }),
+      const inviteData = inviteDoc.data();
+      console.log("Invite Data:", inviteData);
+  
+      // Validate required fields
+      if (!inviteData.entrepreneurId || !inviteData.userId) {
+        throw new Error("Invite data is missing required fields");
+      }
+  
+      await updateDoc(doc(db, "notifications", notificationId), {
+        status: "ACCEPTED",
       });
-
-      console.log("User added to the team successfully");
+  
+      await updateDoc(doc(db, "invites", inviteId), {
+        status: "ACCEPTED",
+      });
+  
+      
+      const teamDocRef = doc(db, "teams", inviteData.entrepreneurId);
+      const teamDoc = await getDoc(teamDocRef);
+  
+      if (!teamDoc.exists()) {
+        throw new Error("Team does not exist");
+      }
+  
+      const teamData = teamDoc.data();
+      const members = teamData.members || []; // Ensure members is an array, even if undefined
+  
+      // Check if the user is already in the team
+      if (members.some((member) => member.uid === inviteData.userId)) {
+        console.log("User is already a member of the team");
+      } else {
+        // Add the user to the team
+        await updateDoc(teamDocRef, {
+          members: arrayUnion({
+            uid: inviteData.userId,
+            status: "SHORTLIST", // Adjust status if needed
+          }),
+        });
+  
+        console.log("User added to the team successfully");
+      }
+  
+      console.log("Invite accepted successfully");
+    } catch (error) {
+      console.error("Error accepting invite:", error);
+      throw error; 
     }
-
-    console.log("Invite accepted successfully");
-  } catch (error) {
-    console.error("Error accepting invite:", error);
-    throw error; // Re-throw the error for handling in the UI
   }
-}
-
+  
 
   // Decline an invite
   async function declineInvite(id) {

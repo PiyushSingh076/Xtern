@@ -67,6 +67,17 @@ export default function Header() {
     });
     setInvites(inviteData); // Set invites state with the fetched data
   }
+  const handleAcceptInvite = async (event, invite) => {
+    event.stopPropagation();
+    try {
+      await acceptInvite(invite.id, invite.notificationId);  
+      setInvites((prevInvites) =>
+        prevInvites.filter((item) => item.id !== invite.id)  
+      );
+    } catch (error) {
+      console.error("Error accepting invite:", error);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -107,39 +118,7 @@ export default function Header() {
     }
   };
 
-  async function handleAcceptInvite(e, invite) {
-    e.stopPropagation();
-    setIsAcceptClicked(true);
   
-    try {
-      // Update the invite's loading state
-      setInvites((prevInvites) =>
-        prevInvites.map((i) =>
-          i.entrepreneurId === invite.entrepreneurId ? { ...i, loading: true } : i
-        )
-      );
-  
-      // Call the acceptInvite function
-      await acceptInvite(invite.data.inviteId, invite.id);
-  
-      // Update the invite's status to "ACCEPTED"
-      setInvites((prevInvites) =>
-        prevInvites.map((i) =>
-          i.id === invite.id ? { ...i, loading: false, status: "ACCEPTED" } : i
-        )
-      );
-    } catch (error) {
-      console.error("Error accepting invite:", error);
-      // Reset the loading state if an error occurs
-      setInvites((prevInvites) =>
-        prevInvites.map((i) =>
-          i.id === invite.id ? { ...i, loading: false } : i
-        )
-      );
-    } finally {
-      setIsAcceptClicked(false);
-    }
-  }
 
   const handleMenuOptionClick = () => {
     setMenuOpen(false);
