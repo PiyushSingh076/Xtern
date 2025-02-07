@@ -17,6 +17,7 @@ export const ROUTES = {
   NOTIFICATION: "/notification",
   SINGLE_COURSE_DESCRIPTION: "/service/:projectId",
 
+  EVENT : "/event",
   APPLY_COUPON: "/apply-coupon",
   FILTER_SCREEN: "/filter-screen",
   BOOKMARK: "/bookmark",

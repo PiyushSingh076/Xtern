@@ -144,10 +144,17 @@ export default function Header() {
   const handleMenuOptionClick = () => {
     setMenuOpen(false);
     if (userData.type === ENTREPRENEUR_ROLE) {
-      navigate("/jobpostings");
-    } else {
       navigate("/jobs");
+    } else {
+      navigate("/event");
     }
+  };
+
+  const handleJobClick = () => {
+    setMenuOpen(false);
+    // if (userData.type === ENTREPRENEUR_ROLE) {
+      navigate("/jobs"); // Redirect for entrepreneurs
+    // }
   };
 
   const handleWalletClick = () => {
@@ -282,7 +289,7 @@ export default function Header() {
                     </div>
                     <div
                       className="dropdown-item"
-                      onClick={() => handleMenuOptionClick("/jobs")}
+                      onClick={() => handleJobClick("/jobs")}
                     >
                       <FaBriefcase className="menu-icon" />
                       Jobs
