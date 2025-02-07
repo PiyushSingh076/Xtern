@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import './Homescreen.css'
 
 import men from "../../../assets/images/xtern-images/men-01.png";
+import { Layout } from 'lucide-react';
 
 export default function Xperts() {
   const navigate = useNavigate();
@@ -17,6 +18,8 @@ export default function Xperts() {
   ]
 
   return (
+    <>
+
     <div className="Xperts-container">
       <div className="Xperts-content-section">
         <div className="Xpert-text-area">
@@ -43,5 +46,7 @@ export default function Xperts() {
         </button> 
        </div>
     </div>
+    </>
   );
+  
 }
