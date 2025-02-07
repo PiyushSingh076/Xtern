@@ -155,7 +155,7 @@ export default function MobHeader() {
           </div>
           <div
             className="dropdown-item"
-            onClick={() => handleMenuOptionClick("/support")}
+            onClick={() => handleMenuOptionClick("/event")}
           >
             <AiOutlineQuestionCircle className="menu-icon" />
             My Schedule

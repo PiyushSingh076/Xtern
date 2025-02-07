@@ -23,7 +23,7 @@ import DesktopFilterScreen from "./pages/Desktop/FilterScreen/filter.jsx"; //iff
 import DesktopCard from "./pages/Desktop/Card/CardList.jsx";
 import DesktopStepperForm from "./pages/Desktop/StepperForm/index.jsx";
 import EntrepreneurDetailsForm from "./pages/Desktop/StepperForm/EntrepreneurDetailsForm.js";
-
+import Event from "./pages/Desktop/Event/Event.jsx"// for My Schedule
 // chat
 import Chat from "./pages/Desktop/Chat/Chat.jsx";
 import MyChat from "./pages/Desktop/MyChats/Mychats.jsx";
@@ -255,6 +255,14 @@ function App() {
               <ProtectedRoute>
                 <CreateJob />
               </ProtectedRoute>
+            }
+          />
+           <Route
+            path={ROUTES.EVENT}
+            element={
+             
+                <Event/>
+              
             }
           />
           <Route
