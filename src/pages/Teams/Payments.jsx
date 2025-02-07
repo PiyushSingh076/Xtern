@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail } from "lucide-react";
+import { ContentCopy, CheckCircle, Mail } from "@mui/icons-material";
 import {
   Button,
   Table,
@@ -13,12 +13,24 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Alert,
+  IconButton,
+  Typography,
+  Divider,
+  Box,
 } from "@mui/material";
 
 const Payments = ({ members = [] }) => {
   const [open, setOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
+  const [copiedFields, setCopiedFields] = useState({
+    accountNumber: false,
+    bankName: false,
+    ifscCode: false
+  });
 
+  // Calculate total salary
+  const totalSalary = members.reduce((sum, member) => sum + (member.salary || 0), 0);
   const handleClickOpen = (member) => {
     setSelectedMember(member);
     setOpen(true);
@@ -27,7 +39,44 @@ const Payments = ({ members = [] }) => {
   const handleClose = () => {
     setOpen(false);
     setSelectedMember(null);
+    setCopiedFields({
+      accountNumber: false,
+      bankName: false,
+      ifscCode: false
+    });
   };
+
+  const handleCopy = async (field, value) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedFields(prev => ({ ...prev, [field]: true }));
+      setTimeout(() => {
+        setCopiedFields(prev => ({ ...prev, [field]: false }));
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const DetailRow = ({ label, value, field }) => (
+    <div style={{ marginBottom: '1rem' }}>
+      <Typography variant="caption" color="textSecondary" style={{ fontWeight: 'bold' }}>
+        {label}
+      </Typography>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem' }}>
+        <Typography variant="body1" style={{ color: '#333' }}>
+          {value}
+        </Typography>
+        <IconButton
+          size="small"
+          onClick={() => handleCopy(field, value)}
+          color={copiedFields[field] ? "success" : "default"}
+        >
+          {copiedFields[field] ? <CheckCircle fontSize="small" /> : <ContentCopy fontSize="small" />}
+        </IconButton>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -39,7 +88,7 @@ const Payments = ({ members = [] }) => {
               <TableCell>Email</TableCell>
               <TableCell>Salary</TableCell>
               <TableCell>Last Paid At</TableCell>
-              <TableCell align="center">Pay</TableCell>
+              <TableCell align="center">Bank Details</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -53,9 +102,13 @@ const Payments = ({ members = [] }) => {
               members.map((member) => (
                 <TableRow key={member.id}>
                   <TableCell>
-                    <div className="flex items-center gap-2 ">
-                      <div className="size-[30px] rounded-full relative overflow-hidden" >
-                        <img src={member.photo_url} className="size-full absolute left-0 top-0" alt="" />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '30px', height: '30px', borderRadius: '50%', overflow: 'hidden', position: 'relative' }}>
+                        <img
+                          src={member.photo_url}
+                          style={{ width: '100%', height: '100%', position: 'absolute', left: 0, top: 0 }}
+                          alt=""
+                        />
                       </div>
                       <div>{member.display_name || "Anonymous Member"}</div>
                     </div>
@@ -67,8 +120,9 @@ const Payments = ({ members = [] }) => {
                     <Button
                       variant="contained"
                       onClick={() => handleClickOpen(member)}
+                      disabled={!member.bankDetails}
                     >
-                      Pay now
+                      Show Bank Details
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -79,37 +133,50 @@ const Payments = ({ members = [] }) => {
       </TableContainer>
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle className="bg-blue-500 text-white">
+        <DialogTitle style={{ backgroundColor: '#1976d2', color: 'white' }}>
           Payment Details
         </DialogTitle>
-        <DialogContent className="space-y-4 py-6 mt-3">
+        <DialogContent style={{ paddingTop: '20px', marginTop: '20px' }}>
           {selectedMember && (
             <>
-              <div className="flex flex-col gap-2">
-                <div className="text-sm font-bold text-gray-500">
-                  Account Number
-                </div>
-                <div className="text-lg text-gray-800">1012801254</div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="text-sm font-bold text-gray-500">Bank Name</div>
-                <div className="text-lg text-gray-800">Canara Bank</div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="text-sm font-bold text-gray-500">IFSC Code</div>
-                <div className="text-lg text-gray-800">
-                  912759801278958125
-                </div>
-              </div>
+              {selectedMember.bankDetails ? (
+                <>
+                  <Box mb={3}>
+                    <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      Amount to Pay
+                    </Typography>
+                    <Typography variant="h4" color="primary" style={{ fontWeight: 500 }}>
+                      ₹{selectedMember.salary?.toLocaleString() || '0'}
+                    </Typography>
+                  </Box>
+                  <Divider style={{ margin: '16px 0' }} />
+                  <DetailRow
+                    label="Account Number"
+                    value={selectedMember.bankDetails.accountNumber}
+                    field="accountNumber"
+                  />
+                  <DetailRow
+                    label="Bank Name"
+                    value={selectedMember.bankDetails.bankName}
+                    field="bankName"
+                  />
+                  <DetailRow
+                    label="IFSC Code"
+                    value={selectedMember.bankDetails.ifscCode}
+                    field="ifscCode"
+                  />
+                </>
+              ) : (
+                <Alert severity="warning">
+                  This team member hasn't added their bank details yet.
+                </Alert>
+              )}
             </>
           )}
         </DialogContent>
-        <DialogActions className="px-6 py-4">
-          <Button onClick={handleClose} color="secondary" variant="outlined" className="w-full sm:w-auto">
+        <DialogActions style={{ padding: '16px 24px' }}>
+          <Button onClick={handleClose} color="inherit" variant="outlined">
             Close
-          </Button>
-          <Button variant="contained" color="primary" className="w-full sm:w-auto">
-            Confirm Payment
           </Button>
         </DialogActions>
       </Dialog>

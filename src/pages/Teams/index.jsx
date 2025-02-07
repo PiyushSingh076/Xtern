@@ -8,6 +8,9 @@ import TeamMembers from "./TeamMembers";
 import { Subscribed } from "./Subscribed";
 import SubscriptionModal from "./SubscriptionModal";
 import Payments from "./Payments";
+
+import { useInvites } from "../../hooks/Teams/useInvites";
+
 import { useNotifications } from "../../hooks/useNotifications";
 
 const TeamPage = () => {
@@ -23,7 +26,7 @@ const TeamPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { createNotification,createInvite } = useNotifications();
     const navigate = useNavigate();
-
+    const { sendTeamInvite } = useInvites();
 
     const openModal = (user) => {
         setSelectedUser(user);
@@ -119,29 +122,38 @@ const TeamPage = () => {
     useEffect(() => {
         async function fetchTeamMembers() {
             if (!userData || !userData.uid) return;
-
+        
             try {
                 const teamDocRef = doc(db, "teams", userData.uid);
                 const teamDoc = await getDoc(teamDocRef);
-
+        
                 if (teamDoc.exists()) {
                     const acceptedUids = teamDoc.data().members
                         ?.filter(member => member.status === "ACCEPTED")
                         .map(member => member.uid) || [];
-
+        
                     const acceptedUserDetails = await Promise.all(
                         acceptedUids.map(async (uid) => {
                             const userDocRef = doc(db, "users", uid);
                             const userDoc = await getDoc(userDocRef);
-
+                            
+                            // Fetch bank details from wallet
+                            const walletRef = doc(db, "wallet", uid);
+                            const walletDoc = await getDoc(walletRef);
+                            const bankDetails = walletDoc.data()?.bankDetails || null;
+        
                             if (userDoc.exists()) {
-
-                                return { id: uid, ...userDoc.data(), salary: teamDoc.data().members.find(member => member.uid === uid).stipend };
+                                return { 
+                                    id: uid, 
+                                    ...userDoc.data(), 
+                                    salary: teamDoc.data().members.find(member => member.uid === uid).stipend,
+                                    bankDetails // Add bank details to user object
+                                };
                             }
                             return null;
                         })
                     );
-
+        
                     setTeamMembers(acceptedUserDetails.filter(user => user !== null));
                 }
             } catch (error) {
@@ -158,6 +170,23 @@ const TeamPage = () => {
         openModal(user);
     };
 
+
+    // const teamDocRef = doc(db, "teams", userData.uid);
+            // const teamDoc = await getDoc(teamDocRef);
+    
+            // if (teamDoc.exists()) {
+    
+            //     const updatedMembers = teamDoc.data().members.map(member =>
+            //         member.uid === selectedUser.id
+            //             ? { ...member, status: "ACCEPTED", stipend }
+            //             : member
+            //     );
+    
+            //     await updateDoc(teamDocRef, { members: updatedMembers });
+    
+            //     setTeamMembers(prev => [...prev, { ...selectedUser, stipend }]);
+            //     setShortlistedUsers(prev => prev.filter(user => user.id !== selectedUser.id));
+
     const handleSubmitSubscription = async () => {
         if (!selectedUser || stipend.trim() === "") return;
         setLoading(true); // Start loading
@@ -166,7 +195,9 @@ const TeamPage = () => {
             const teamDocRef = doc(db, "teams", userData.uid);
             const teamDoc = await getDoc(teamDocRef);
     
+
             if (teamDoc.exists()) {
+
     
                 const updatedMembers = teamDoc.data().members.map(member =>
                     member.uid === selectedUser.id
@@ -178,6 +209,7 @@ const TeamPage = () => {
     
                 setTeamMembers(prev => [...prev, { ...selectedUser, stipend }]);
                 setShortlistedUsers(prev => prev.filter(user => user.id !== selectedUser.id));
+
     
                 // Send subscription notification
                 await createNotification(
@@ -194,6 +226,7 @@ const TeamPage = () => {
     
                 // Send invite to the selected user
                 
+
             }
         } catch (error) {
             console.error("Error updating subscription:", error);
