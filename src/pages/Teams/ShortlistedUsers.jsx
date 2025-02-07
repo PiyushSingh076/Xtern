@@ -3,6 +3,7 @@ import { Button } from "@mui/material"
 import { Phone } from 'lucide-react';
 
 const ShortlistedUsers = ({ users = [], onSubscribe }) => {
+    console.log(users)
     const handleSubscribe = (user) => {
         if (onSubscribe) {
             onSubscribe(user);
@@ -41,6 +42,10 @@ const ShortlistedUsers = ({ users = [], onSubscribe }) => {
                             </div>
                         </div>
                         <div className="flex items-center justify-end space-x-2">
+
+                            {
+                                user.status === "SHORTLIST" && 
+
                             <Button
                                 onClick={() => handleSubscribe(user)}
                                 size="sm"
@@ -48,6 +53,10 @@ const ShortlistedUsers = ({ users = [], onSubscribe }) => {
                             >
                                 Subscribe
                             </Button>
+                            }{
+                                user.status === "REQUEST" && <Button size="sm" className='w-full sm:w-auto' disabled >Requested</Button>
+                            }
+                            
 
                         </div>
                     </div>
