@@ -163,21 +163,21 @@ const TeamPage = () => {
         setLoading(true); // Start loading
     
         try {
-            const teamDocRef = doc(db, "teams", userData.uid);
-            const teamDoc = await getDoc(teamDocRef);
+            // const teamDocRef = doc(db, "teams", userData.uid);
+            // const teamDoc = await getDoc(teamDocRef);
     
-            if (teamDoc.exists()) {
+            // if (teamDoc.exists()) {
     
-                const updatedMembers = teamDoc.data().members.map(member =>
-                    member.uid === selectedUser.id
-                        ? { ...member, status: "ACCEPTED", stipend }
-                        : member
-                );
+            //     const updatedMembers = teamDoc.data().members.map(member =>
+            //         member.uid === selectedUser.id
+            //             ? { ...member, status: "ACCEPTED", stipend }
+            //             : member
+            //     );
     
-                await updateDoc(teamDocRef, { members: updatedMembers });
+            //     await updateDoc(teamDocRef, { members: updatedMembers });
     
-                setTeamMembers(prev => [...prev, { ...selectedUser, stipend }]);
-                setShortlistedUsers(prev => prev.filter(user => user.id !== selectedUser.id));
+            //     setTeamMembers(prev => [...prev, { ...selectedUser, stipend }]);
+            //     setShortlistedUsers(prev => prev.filter(user => user.id !== selectedUser.id));
     
                 // Send subscription notification
                 await createNotification(
@@ -194,7 +194,7 @@ const TeamPage = () => {
     
                 // Send invite to the selected user
                 
-            }
+            // }
         } catch (error) {
             console.error("Error updating subscription:", error);
         } finally {

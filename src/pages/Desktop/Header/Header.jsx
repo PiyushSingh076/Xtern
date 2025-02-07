@@ -115,7 +115,7 @@ export default function Header() {
       // Update the invite's loading state
       setInvites((prevInvites) =>
         prevInvites.map((i) =>
-          i.id === invite.id ? { ...i, loading: true } : i
+          i.entrepreneurId === invite.entrepreneurId ? { ...i, loading: true } : i
         )
       );
   
@@ -216,7 +216,7 @@ export default function Header() {
                     invites.map((invite, index) => (
                       <div key={index} className="notification-item">
                         <p>
-                          <strong>{invite.data.from || "Unknown"}</strong> invited you to join their team.
+                          <strong>{invite.data.entrepreneurName || "Unknown"}</strong> invited you to join their team.
                         </p>
                           <p className="invite-description">{invite.data.description}</p>
                           <p className="invite-stipend">{invite.data.stipend}</p>
