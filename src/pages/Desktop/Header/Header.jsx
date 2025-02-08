@@ -281,7 +281,8 @@ export default function Header() {
                 </button>
 
                 {notificationOpen && (
-                  <div className="notification-dropdown">
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-10 border border-gray-200">
+          <div className="py-2">
                     {invites?.length > 0 ? (
                       invites.map((invite, index) => {
                         console.log(index, invite.type);
@@ -361,6 +362,7 @@ export default function Header() {
                       <p className="no-notifications">No new notifications</p>
                     )}
                   </div>
+        </div>
                 )}
               </div>
 
