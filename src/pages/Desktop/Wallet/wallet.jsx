@@ -33,6 +33,7 @@ import WalletPageSkeleton from "./WalletPageSkeleton";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { Edit2 } from 'lucide-react';
+import { useLocation } from "react-router-dom";
 
 const WalletPage = () => {
   const { userData } = useFetchUserData();
@@ -50,6 +51,15 @@ const WalletPage = () => {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const location = useLocation();
+  const [highlight, setHighlight] = useState(false)
+
+  useEffect(() => {
+    if (location.state?.highlightButton) {
+      setHighlight(true);
+      setTimeout(() => setHighlight(false), 3000); // Remove highlight after 3 seconds
+    }
+  }, [location]);
 
   useEffect(() => {
     if (loaded === true) {
@@ -677,13 +687,14 @@ const WalletPage = () => {
                 Request Withdraw
               </Button>
             )}
-             <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => setShowBankDetailsModal(true)}
-            >
-              Bank Details
-            </Button>
+           <Button
+        fullWidth
+        variant="outlined"
+        onClick={() => setShowBankDetailsModal(true)}
+        className={highlight ? "highlight-button" : ""}
+      >
+        Bank Details
+      </Button>
           </Box>
         </Paper>
 
@@ -940,6 +951,24 @@ const WalletPage = () => {
           userData={userData}
         />
       </Box>
+      <style>
+        {`
+          .highlight-button {
+            border: 2px solid red !important;
+            box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.8);
+            animation: pulse 1s infinite alternate;
+          }
+
+          @keyframes pulse {
+            0% {
+              transform: scale(1);
+            }
+            100% {
+              transform: scale(1.05);
+            }
+          }
+        `}
+      </style>
     </Box>
   );
 };

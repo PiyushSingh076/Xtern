@@ -1,0 +1,251 @@
+[33mac38d96[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mMohammad-ikhlas[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #231 from SiddhantYerandkar/piyush
+[33ma5d54d9[m notification to user if subscribed
+[33mda00814[m Merge pull request #230 from SiddhantYerandkar/Mohammad-ikhlas
+[33m8b8182d[m[33m ([m[1;31morigin/Mohammad-ikhlas[m[33m)[m shorlist added to mobile screeen in profile
+[33m7ccef53[m Merge pull request #228 from SiddhantYerandkar/dev
+[33mc3d7ce4[m Merge pull request #227 from SiddhantYerandkar/Mohammad-ikhlas
+[33mfec5c52[m ui changed for payment tab in teams
+[33m1c3fa15[m Merge branch 'dev' of https://github.com/SiddhantYerandkar/Xtern into piyush
+[33m854e133[m badge_bell
+[33m7670ce5[m Merge pull request #226 from SiddhantYerandkar/dev
+[33ma33e48a[m Merge pull request #225 from SiddhantYerandkar/Mohammad-ikhlas
+[33mefc7b81[m added description while sending shorlist invite
+[33m6310255[m Merge pull request #224 from SiddhantYerandkar/dev
+[33m8588bef[m Merge branch 'main' into dev
+[33md4001e4[m Merge pull request #223 from SiddhantYerandkar/Mohammad-ikhlas
+[33m709189a[m small changes done in team page
+[33m63c7018[m Merge pull request #222 from SiddhantYerandkar:entrepreneur-dev
+[33ma311b48[m Update buildspec.yml
+[33m16c037d[m Added confirmation modal
+[33mee833da[m Merge pull request #221 from SiddhantYerandkar:entrepreneur-dev
+[33m508fdb7[m Add status column to wallet
+[33m357e683[m Update buildspec.yml
+[33mb13ebc7[m Merge pull request #220 from SiddhantYerandkar:entrepreneur-dev
+[33md2da51a[m Fix superuser page
+[33mfca093e[m Merge pull request #219 from SiddhantYerandkar:entrepreneur-dev
+[33m220b40f[m Add superuser redirect on header
+[33m7287c60[m Merge pull request #218 from SiddhantYerandkar:entrepreneur-dev
+[33m394587b[m Add payments tab
+[33md1e898e[m Merge pull request #217 from SiddhantYerandkar/entrepreneur-dev
+[33me4715cf[m Add tailwind back
+[33m82c8413[m Merge branch 'main' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33m10187f0[m Merge pull request #216 from SiddhantYerandkar/dev
+[33m1b430fa[m Merge branch 'main' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33m1d40d53[m Merge pull request #215 from SiddhantYerandkar/Mohammad-ikhlas
+[33mc84810d[m working team meambers in teams page
+[33m671633a[m Merge pull request #214 from SiddhantYerandkar:entrepreneur-dev
+[33m92a71d1[m Resolve conflicts with dev
+[33mda5840d[m Merge remote-tracking branch 'origin/dev' into entrepreneur-dev
+[33m0a51553[m Update notifications tray
+[33m95d8a4c[m Notification and invite
+[33m852e308[m Merge branch 'piyush' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33m991c650[m Merge pull request #213 from SiddhantYerandkar/piyush
+[33m0fcfbe4[m notification
+[33ma01f5e3[m Merge pull request #212 from SiddhantYerandkar/branch-raj
+[33m423dac2[m Merge pull request #211 from SiddhantYerandkar/dev
+[33m420b896[m Merge pull request #210 from SiddhantYerandkar/Mohammad-ikhlas
+[33mfa981ef[m shortlisted and team members added to teams page
+[33m67cf013[m Initial commit
+[33md676885[m Merge branch 'piyush' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33m8214555[m notification
+[33mdc4abc0[m Merge pull request #209 from SiddhantYerandkar:entrepreneur-dev
+[33m6bc73e4[m Add superuser page functioanlity
+[33mafd53b0[m Merge pull request #208 from SiddhantYerandkar/dev
+[33m50e18f3[m Merge pull request #207 from SiddhantYerandkar/Mohammad-ikhlas
+[33mf62c2ca[m deleted unused files
+[33meb3ab43[m Merge branch 'main' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33m5e54351[m Merge branch 'dev' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33mdaa1489[m Merge pull request #206 from SiddhantYerandkar/dev
+[33mc8eae00[m Merge pull request #205 from SiddhantYerandkar/Mohammad-ikhlas
+[33m9c97d6a[m team page and super user dashboard created
+[33m3c3c529[m Merge pull request #204 from SiddhantYerandkar:entrepreneur-dev
+[33m996ebf0[m Implement forget password page
+[33mc35952f[m pull dev
+[33m2f64f10[m pull
+[33m1537963[m Merge pull request #203 from SiddhantYerandkar/entrepreneur-dev
+[33m52cb9da[m Add invite to team functionality, and notification hooks
+[33me7dfac8[m Merge pull request #201 from SiddhantYerandkar/dev
+[33m5566d82[m Merge pull request #200 from SiddhantYerandkar/Mohammad-ikhlas
+[33m45c48b7[m deleted unused files
+[33m6bbbf75[m Merge pull request #199 from SiddhantYerandkar/dev
+[33m39e0c8e[m Merge branch 'main' into dev
+[33m78e0a2c[m Merge pull request #198 from SiddhantYerandkar/Mohammad-ikhlas
+[33m621c37b[m Merge branch 'dev' into Mohammad-ikhlas
+[33m97c8e66[m removed console log from every file
+[33m8ac64a0[m Merge pull request #197 from SiddhantYerandkar:entrepreneur-dev
+[33m71d50de[m Add confirmation modal
+[33m1cd8ea6[m Add suggestions to add funds modal
+[33mb3d7d7a[m Merge branch 'main' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33mffbfecf[m Merge pull request #196 from SiddhantYerandkar/entrepreneur-dev
+[33medee024[m Fix transactions hook
+[33mbef86b2[m Merge pull request #195 from SiddhantYerandkar/dev
+[33m44edb19[m Merge pull request #194 from SiddhantYerandkar/Mohammad-ikhlas
+[33m99f129f[m service review ui changed and rating added
+[33m354cfd4[m Merge pull request #193 from SiddhantYerandkar/entrepreneur-dev
+[33mee9fe85[m Merge branch 'dev' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33mfa70401[m Merge branch 'main' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33m284a75a[m Fix profile page
+[33mf2853b2[m Merge pull request #192 from SiddhantYerandkar/entrepreneur-dev
+[33m6f8409f[m Merge pull request #191 from SiddhantYerandkar/entrepreneur-dev
+[33mb597230[m Merge branch 'dev' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33m0b1a6d7[m Merge branch 'entrepreneur-dev' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33m37dd778[m Add transaction and order tabs to wallet page
+[33m5eb66f5[m Merge pull request #190 from SiddhantYerandkar/main
+[33m7d6ba8d[m Merge pull request #189 from SiddhantYerandkar/piyush
+[33mf8f78e0[m Merge branch 'main' of https://github.com/SiddhantYerandkar/Xtern into piyush
+[33m0d87428[m add logos and ui fix
+[33mcfb8329[m Merge pull request #188 from SiddhantYerandkar/dev
+[33mf8e8768[m[33m ([m[1;31morigin/dev[m[33m)[m Merge pull request #187 from SiddhantYerandkar/Mohammad-ikhlas
+[33mdfc211f[m hover over card ui changed
+[33m36e7e20[m Merge pull request #186 from SiddhantYerandkar/entrepreneur-dev
+[33m0c783f7[m Merge branch 'main' into entrepreneur-dev
+[33m5298d0b[m Merge pull request #185 from SiddhantYerandkar/entrepreneur-dev
+[33m2eb9f49[m Merge branch 'dev' into entrepreneur-dev
+[33me377a66[m Add loader to withdraw menu
+[33mf732f32[m Merge pull request #184 from SiddhantYerandkar/dev
+[33m2f07747[m Enable review edit and fix bugs
+[33m3a9881b[m Merge pull request #183 from SiddhantYerandkar:entrepreneur-dev
+[33me247123[m Fix mobile entrepreneur page
+[33m0e44589[m Merge pull request #182 from SiddhantYerandkar/raj
+[33md07c8f4[m Merge pull request #181 from SiddhantYerandkar:entrepreneur-dev
+[33m4871c3d[m Fix entrepreneur page
+[33meb91285[m Initial commit
+[33mbcd8196[m Merge pull request #180 from SiddhantYerandkar/dev
+[33mf53f05b[m Merge pull request #179 from SiddhantYerandkar/piyush
+[33m2c4b6fc[m service title
+[33mb53f50c[m service title
+[33m75f08f7[m service title
+[33mce35911[m Merge pull request #177 from SiddhantYerandkar/dev
+[33md486d91[m Merge pull request #176 from SiddhantYerandkar/Mohammad-ikhlas
+[33m79fc478[m desktopstepperform added to proteced route, fixed add service bug
+[33m376793f[m Merge pull request #167 from SiddhantYerandkar/piyush
+[33m9ce9fdb[m Merge branch 'main' into piyush
+[33med51dc0[m Merge pull request #175 from SiddhantYerandkar:entrepreneur-dev
+[33m092580f[m Hide upcoming meets if none present
+[33m819854f[m Merge pull request #174 from SiddhantYerandkar/raj
+[33m12dcd5a[m Merge pull request #173 from SiddhantYerandkar/entrepreneur-dev
+[33mec7fd8d[m Merge pull request #172 from SiddhantYerandkar/entrepreneur-dev
+[33m8cefe19[m Initial commit
+[33mcfebec5[m Fix mobile profile page
+[33m6195b94[m Merge pull request #171 from SiddhantYerandkar/rajkumar
+[33m71ebf9e[m Initial commit
+[33m6084b01[m meet
+[33m161d5dc[m Merge pull request #170 from SiddhantYerandkar/dev
+[33m9edeed8[m Merge pull request #169 from SiddhantYerandkar/entrepreneur-dev
+[33m65117c9[m Merge pull request #168 from SiddhantYerandkar/entrepreneur-dev
+[33m986f784[m Add links to profiles in schedules modal
+[33md36a5b4[m Add checking for upcoming meets modal, Add profile link to modal
+[33mb80eca1[m Add upcoming meets section
+[33mc2f84ee[m mob_landing page
+[33m9f54851[m Merge pull request #166 from SiddhantYerandkar/dev
+[33m37f0972[m Merge pull request #165 from SiddhantYerandkar/Mohammad-ikhlas
+[33m28b2db7[m Merge branch 'dev' into Mohammad-ikhlas
+[33mb5e2869[m shimmer ui added to singleJob, wallet
+[33ma137929[m Merge pull request #164 from SiddhantYerandkar/dev
+[33m80264cd[m Merge pull request #163 from SiddhantYerandkar/Mohammad-ikhlas
+[33m5fccebd[m shimmer ui added to jobs,wallet,filterscreen
+[33m6105962[m Piyush-first commit
+[33mf920659[m Merge pull request #162 from SiddhantYerandkar/dev
+[33m274dc52[m Merge pull request #161 from SiddhantYerandkar/entrepreneur-dev
+[33med5a238[m Fix fetch scheduled calls function
+[33m132deba[m Merge pull request #160 from SiddhantYerandkar/dev
+[33m0a8b1f6[m Merge pull request #159 from SiddhantYerandkar/Mohammad-ikhlas
+[33m43d7b42[m added shimmer ui for service page
+[33mca6a5e9[m Merge pull request #158 from SiddhantYerandkar/dev
+[33m8e510d7[m Merge pull request #157 from SiddhantYerandkar/Mohammad-ikhlas
+[33m299518f[m ui change for service page
+[33md67ff9b[m Merge pull request #156 from SiddhantYerandkar/dev
+[33m89aa86e[m Merge pull request #155 from SiddhantYerandkar/Mohammad-ikhlas
+[33m5e28185[m Mohammad-ikhlas
+[33md8464ee[m Fix review
+[33m77e0e03[m Merge pull request #154 from SiddhantYerandkar/dev
+[33m1fa4de1[m Merge pull request #153 from SiddhantYerandkar/entrepreneur-dev
+[33mfbbe3d2[m Add Layout.jsx file (react-helmet)
+[33m1b89fbc[m Merge pull request #152 from SiddhantYerandkar/entrepreneur-dev
+[33mb87531f[m Merge branch 'main' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33mc6ef854[m Merge pull request #151 from SiddhantYerandkar/entrepreneur-dev
+[33mf45a772[m Merge branch 'main' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33m274eb40[m Merge pull request #150 from SiddhantYerandkar/entrepreneur-dev
+[33mef5d209[m Fix useGoogleCalendar hook
+[33m170cfaf[m Merge pull request #149 from SiddhantYerandkar/Mohammad-ikhlas
+[33md7fb540[m Merge pull request #148 from SiddhantYerandkar/Mohammad-ikhlas
+[33mbf535c0[m close linkedFetch after fetching data
+[33md130eef[m Merge pull request #147 from SiddhantYerandkar/Mohammad-ikhlas
+[33m87e3a68[m Merge pull request #146 from SiddhantYerandkar/Mohammad-ikhlas
+[33m3ff3ab5[m share icon added to entreprenuer profile
+[33m64804cc[m Merge pull request #145 from SiddhantYerandkar/dev
+[33mf2b3e55[m Merge pull request #144 from SiddhantYerandkar/Mohammad-ikhlas
+[33mb7ce649[m made some ui fixed for mobile
+[33m2b3c707[m Merge pull request #143 from SiddhantYerandkar/entrepreneur-dev
+[33m26a6c7e[m Fix calendar epi keys and scopes
+[33m1e49073[m Merge pull request #142 from SiddhantYerandkar/dev
+[33ma066c4e[m Merge pull request #141 from SiddhantYerandkar/entrepreneur-dev
+[33mee54a00[m Fix view job page, Fix entrepeneur save hook
+[33m7cf5788[m Merge pull request #140 from SiddhantYerandkar/dev
+[33m1c8cb2a[m Merge pull request #139 from SiddhantYerandkar/entrepreneur-dev
+[33m1a07db7[m Fix mobile opportunities slider
+[33m22c79ee[m Change style of mobile landing page
+[33m752ce46[m Merge pull request #138 from SiddhantYerandkar/dev
+[33m703f55e[m Merge pull request #137 from SiddhantYerandkar/entrepreneur-dev
+[33m20ad89a[m Update view job page
+[33m362a5f5[m Merge pull request #136 from SiddhantYerandkar/entrepreneur-dev
+[33mc518b37[m Merge branch 'main' of https://github.com/SiddhantYerandkar/Xtern into entrepreneur-dev
+[33m0babdbb[m Added opportunities section
+[33m3bf838d[m Merge pull request #135 from SiddhantYerandkar/entrepreneur-dev
+[33m944a6f0[m Update view job ui, made it accessible
+[33mf6305ac[m Update index.html
+[33m8df26fe[m Merge pull request #134 from SiddhantYerandkar/Mohammad-ikhlas
+[33m88246de[m ui fixed
+[33m95841c5[m Merge pull request #133 from SiddhantYerandkar/Mohammad-ikhlas
+[33m5da52e7[m Merge pull request #132 from SiddhantYerandkar/Mohammad-ikhlas
+[33md44741e[m no img/video handled in service page
+[33m4d4665c[m Merge pull request #131 from SiddhantYerandkar/entrepreneur-dev
+[33mef006a5[m Add .env, Fix redirects, Change view job styles
+[33m20c3c75[m Add .env, Fix redirects, Change view job styles
+[33m7aed0f7[m Merge pull request #130 from SiddhantYerandkar/Mohammad-ikhlas
+[33ma9a0164[m edit icon added for mobile screen
+[33m4a0ffdb[m Merge pull request #129 from SiddhantYerandkar/entrepreneur-dev
+[33m5c6a34c[m Fix job stats modal
+[33m79a56f4[m Merge pull request #115 from SiddhantYerandkar/dev
+[33mcfbff32[m Merge pull request #128 from SiddhantYerandkar/entrepreneur-dev
+[33m2639a1a[m Merge dev and main
+[33m27e0f0f[m Merge pull request #127 from SiddhantYerandkar/entrepreneur-dev
+[33m0e5b36e[m Fix summary step description style
+[33m7b415d9[m Merge pull request #126 from SiddhantYerandkar/Mohammad-ikhlas
+[33me1cbbbf[m fixed upload video and added upload images
+[33m5525755[m Merge pull request #125 from SiddhantYerandkar/entrepreneur-dev
+[33m0ffd436[m Fix video
+[33mc03bd70[m Merge pull request #124 from SiddhantYerandkar/entrepreneur-dev
+[33m86b1b60[m Add media carousel to view service page
+[33mf6e4fef[m Merge pull request #123 from SiddhantYerandkar/entrepreneur-dev
+[33mf555bb6[m Make service page responsive
+[33m74f69e2[m Merge pull request #122 from SiddhantYerandkar/Mohammad-ikhlas
+[33m274e98b[m Merge branch 'dev' into Mohammad-ikhlas
+[33m8a1684c[m updated ui and added input to upload images
+[33m7cbcdc5[m Merge pull request #121 from SiddhantYerandkar/entrepreneur-dev
+[33m1e8d94b[m Fix review functionality
+[33m116a5ec[m Merge pull request #120 from SiddhantYerandkar/entrepreneur-dev
+[33m4834da1[m Add loading states to edit modal
+[33m8a3b200[m Merge pull request #119 from SiddhantYerandkar/entrepreneur-dev
+[33mc229c33[m Fix edit video
+[33m850a03e[m Merge pull request #118 from SiddhantYerandkar/Mohammad-ikhlas
+[33m2876365[m video upload and preview done for services
+[33m78f0b2b[m Merge pull request #117 from SiddhantYerandkar/Mohammad-ikhlas
+[33m9d8f808[m added model to schedule meet on google calander and fixed ui and allignment of buttons
+[33mf31dda9[m Merge pull request #116 from SiddhantYerandkar/Mohammad-ikhlas
+[33mba14b2b[m added image preview, changed rating ui, added cross button to remove the img
+[33m6a4f636[m Merge pull request #114 from SiddhantYerandkar/entrepreneur-dev
+[33m5032adc[m Remove buy button if created
+[33m5b86dc6[m Merge pull request #113 from SiddhantYerandkar/Mohammad-ikhlas
+[33mc482ebc[m job applicants bug fixed in single job
+[33m0feb894[m Merge pull request #112 from SiddhantYerandkar/Mohammad-ikhlas
+[33m954fd5c[m fixed filterscreen ui
+[33m7451737[m Merge pull request #111 from SiddhantYerandkar/entrepreneur-dev
+[33m82a4cb8[m Change description style on homescreeng
+[33mdd7aac0[m Merge pull request #110 from SiddhantYerandkar/entrepreneur-dev
+[33m33bb37a[m Add description to homescreen cards
+[33m9fde833[m Merge pull request #109 from SiddhantYerandkar/entrepreneur-dev
+[33m97c818d[m Fix responsiveness of homescreen
+[33mbb4b5cc[m Fix user verification of edit job
+[33mc4f3c07[m Fix protected routes and user verfication of job pages
+[33m40beb3b[m Merge pull request #108 from SiddhantYerandkar/entrepreneur-dev

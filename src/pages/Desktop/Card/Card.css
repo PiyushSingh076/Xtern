@@ -1,7 +1,4 @@
-/* Card.css */
-
 /* Card List Container */
-/* Flex container for all cards */
 .card-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -20,7 +17,6 @@
 /* Card base styles */
 .card {
   width: 100%;
-  height: 100%;
   border-radius: 20px;
   padding: 16px;
   background-color: #fff;
@@ -28,10 +24,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden; /* Ensures smooth visibility */
 }
 
-/* Expanded content styles */
+/* Expanded Content Inside the Card */
 .expanded-content {
   max-height: 0;
   opacity: 0;
@@ -40,8 +38,17 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: white;
   border-radius: 12px;
-  margin-top: 0;
+  margin-top: 0px;
+ 
 }
+/* Show expanded content on hover */
+.card:hover .expanded-content {
+  max-height: 200px;
+  opacity: 1;
+  padding: 16px;
+}
+
+
 
 /* Desktop hover effects */
 @media (min-width: 1024px) {
@@ -54,26 +61,23 @@
     transform: scale(1.1);
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
   }
-
-  .card-wrapper:hover .expanded-content {
-    max-height: 300px;
-    opacity: 1;
-    margin-top: 16px;
-    padding: 16px;
-    border: 1px solid #eee;
-  }
 }
 
-/* Keep existing mobile styles */
-@media (max-width: 1023px) {
-  .card-wrapper:hover .card {
-    transform: scale(1.05);
-  }
+.card-wrapper:hover .expanded-content{
+  max-height: 300px;
+  opacity: 1;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #eee;
 }
+
+
 /* Card Header (Profile Picture) */
 .card .profile-image img {
   width: 100px;
-  height: 100px;
+  height: 100%;
+  border-radius: 70%;
+
 }
 
 .card-header {
@@ -98,23 +102,22 @@
   font-weight: 500;
 }
 
-/* Card details (text) styling */
+/* Card details styling */
 .card-details {
   margin-top: 12px;
-  text-align: left; /* Align the content to the left */
+  text-align: left;
   font-size: 14px;
 }
 
-/* Ensure the text doesn't overlap and has proper line spacing */
 .card-details p {
   margin: 6px 0;
-  line-height: 1.5; /* Add space between lines for better readability */
+  line-height: 1.5;
 }
 
-/* Card Footer*/
+/* Card Footer */
 .card-footer {
-  height: 70px;
   width: 100%;
+  height: 70px;
   background-color: white;
   display: flex;
   justify-content: space-between;
@@ -123,44 +126,48 @@
 }
 
 .card-footer button {
-  width: 30%;
-  display: flex;
+  width: 80px;
+  height: 30px;
+  padding: 4px 18px; /* Ensures no extra spacing */
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
+  text-align: center; /* Centers text horizontally */
+  line-height: 30px;/* Matches button height for vertical centering */
   border: none;
-  border-radius: 20px;
+  border-radius: 30px;
   background-color: #007bff;
   color: white;
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease;
-}
+   /* Remove previous line-height setting */
 
-.card-footer button .footer-icon {
-  display: none;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  card-footer button.footer-icon{
+    display: none;
+    .card-footer button .footer-text{
+      display: inline-block;
+    }
+    
+  
+  
+  }
 }
-
-.card-footer button .footer-text {
-  display: inline;
-}
-
 .card-footer button:hover {
   background-color: #0056b3;
 }
-
-.card-footer button:focus {
+.card-footer button:focus{
   outline: none;
-  box-shadow: 0 0 0 2px #0056b3; /* Focused state */
+  box-shadow: 0 0 0 2px #0056b3;
 }
+
 .card-content {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
-.profile-image {
+.profile-image{
   width: 85px;
   height: 85px;
   border-radius: 50%;
@@ -171,13 +178,6 @@
   border: 1px solid #ccc;
   margin-bottom: 12px;
 }
-
-.profile-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .expanded-content {
   max-height: 0;
   opacity: 0;
@@ -227,22 +227,17 @@
   gap: 8px;
   justify-content: center;
 }
-
-
-/* Media Queries for responsiveness */
+/* Responsive Styles */
 @media (max-width: 768px) {
-  .card-list {
-    gap: 16px;
-    padding-top: 1rem;
-  }
-
   .card {
     width: 100%;
     max-width: 280px;
     padding: 12px;
-    /* margin-bottom: 8px; */
   }
-
+ .card-list{
+  gap: 16px;
+  padding-top: 1rem;
+ }
   .card-header {
     min-height: 80px;
     gap: 8px;
@@ -256,32 +251,29 @@
   .card-details {
     font-size: 12px;
   }
-
-  .card-details p {
-    margin: 4px 0;
-    line-height: 1.4;
-  }
-
+.card-details p{
+  margin: 4px 0;
+  line-height: 1.4;
+}
   .card-footer {
-    flex-direction: row; /* Ensure buttons stay in a row */
-    gap: 8px; /* Adjust spacing between buttons */
-    justify-content: space-around; /* Align buttons evenly */
+    flex-direction: row;
+    gap: 8px;
+    justify-content: space-around;
   }
 
   .card-footer button {
-    width: auto; /* Allow buttons to resize based on content */
-    flex-grow: 1; /* Ensure buttons distribute space equally */
-    padding: 6px 12px; /* Reduce padding for smaller screens */
-    font-size: 14px; /* Adjust font size */
+    width: auto;
+    flex-grow: 1;
+    padding: 6px 12px;
+    font-size: 14px;
   }
-  .card-footer button .footer-text {
-    display: inline; /* Keep text visible */
+  .card-footer button.footer-text{
+    display: inline;
   }
-
-  .card-footer button .footer-icon {
-    display: none; /* Hide icons in tablet view to save space */
+    .card-footer button .footer-icon{
+      display:none;
+    
   }
-  
 }
 
 @media (max-width: 480px) {
@@ -289,37 +281,30 @@
     max-width: 220px;
     padding: 8px;
   }
-
   .hover-content {
     padding: 0 8px;
   }
-
-  .hover-item {
+  .hover-item{
     padding: 6px 0;
     font-size: 12px;
   }
-
-  .card .profile-image img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-  }
-
+.card .profile-image img{
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
   .card-header {
     min-height: 60px;
     gap: 6px;
   }
-
-  .card-details {
+  .card-details{
     font-size: 11px;
   }
-
-  .card .location-details span {
-    font-size: 14px;
-  }
-
+.card .location-details span {
+  font-size: 14px;
+}
   .card-footer {
-    gap: 6px;
+    gap: 5px;
     height: auto;
     display: flex;
     flex-direction: row;
@@ -331,13 +316,11 @@
   .card-footer button {
     padding: 5px;
   }
-
-  .card-footer button .footer-icon {
+  .card-footer button .footer-icon{
     display: inline;
     font-size: 20px;
   }
-
-  .card-footer button .footer-text {
+  .card-footer button .footer-text{
     display: none;
   }
 }
