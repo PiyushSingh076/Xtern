@@ -68,7 +68,7 @@
   },
   "scripts": {
     "dev": "craco start",
-    "build": "NODE_OPTIONS='--max-old-space-size=16384' craco build --max-workers=4",
+    "build": "NODE_OPTIONS='--max-old-space-size=2048' craco build --max-workers=2",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
