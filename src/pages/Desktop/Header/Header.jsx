@@ -138,11 +138,13 @@ export default function Header() {
       );
     } finally {
       setIsAcceptClicked(false);
+      setNotificationOpen(false);
     }
   }
 
   const handleAcceptSubscription = async (e, subscription) => {
     e.preventDefault();
+    setNotificationOpen(false);
     try {
       setInvites((prevInvites) =>
         prevInvites.map((i) =>
@@ -155,7 +157,8 @@ export default function Header() {
       ).data();
 
       if (walletData?.bankDetails == null) {
-        toast.error("You need to enter bank details in wallet page first");
+        // toast.error("You need to enter bank details in wallet page first");
+        navigate("/wallet-screen", { state: { highlightButton: true } });
         return;
       }
 
@@ -194,6 +197,8 @@ export default function Header() {
           i.id === subscription.id ? { ...i, loading: false } : i,
         ),
       );
+      setNotificationOpen(false);
+
     }
   };
 
