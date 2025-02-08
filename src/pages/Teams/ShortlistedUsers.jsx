@@ -5,7 +5,7 @@ import { Phone } from 'lucide-react';
 const ShortlistedUsers = ({ users = [], onSubscribe }) => {
     console.log(users)
     const handleSubscribe = (user) => {
-        if (onSubscribe) {
+        if (onSubscribe && user.status !== "REQUEST") {
             onSubscribe(user);
         }
     };
