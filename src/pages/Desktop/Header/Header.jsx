@@ -144,7 +144,6 @@ export default function Header() {
 
   const handleAcceptSubscription = async (e, subscription) => {
     e.preventDefault();
-    setNotificationOpen(false);
     try {
       setInvites((prevInvites) =>
         prevInvites.map((i) =>
@@ -282,14 +281,13 @@ export default function Header() {
 
                 {notificationOpen && (
                   <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-10 border border-gray-200">
-          <div className="py-2">
-                    {invites?.length > 0 ? (
-                      invites.map((invite, index) => {
-                        console.log(index, invite.type);
-                        if (invite.type === "SUBSCRIPTION") {
-                          return (
-                            <>
-                              <div key={index} className="notification-item">
+                    <div className="py-2 max-h-[70vh] overflow-y-auto">
+                      {invites?.length > 0 ? (
+                        invites.map((invite, index) => {
+                          console.log(index, invite.type);
+                          if (invite.type === "SUBSCRIPTION") {
+                            return (
+                              <div key={index} className="notification-item px-4">
                                 <p>
                                   <strong>
                                     {invite.data.from || "Unknown"}
@@ -320,12 +318,10 @@ export default function Header() {
                                     : "Accept"}
                                 </Button>
                               </div>
-                            </>
-                          );
-                        } else if (invite.type === "INVITE") {
-                          return (
-                            <>
-                              <div key={index} className="notification-item">
+                            );
+                          } else if (invite.type === "INVITE") {
+                            return (
+                              <div key={index} className="notification-item px-4">
                                 <p>
                                   <strong>
                                     {invite.data.from || "Unknown"}
@@ -354,15 +350,14 @@ export default function Header() {
                                     : "Accept"}
                                 </Button>
                               </div>
-                            </>
-                          );
-                        }
-                      })
-                    ) : (
-                      <p className="no-notifications">No new notifications</p>
-                    )}
+                            );
+                          }
+                        })
+                      ) : (
+                        <p className="no-notifications px-4">No new notifications</p>
+                      )}
+                    </div>
                   </div>
-        </div>
                 )}
               </div>
 

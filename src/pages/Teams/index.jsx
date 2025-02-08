@@ -233,14 +233,20 @@ const TeamPage = () => {
 
         await updateDoc(teamDocRef, { members: updatedMembers });
 
-        setTeamMembers((prev) => [...prev, { ...selectedUser, stipend }]);
+        // Update local state to reflect changes
         setShortlistedUsers((prev) =>
-          prev.filter((user) => user.id !== selectedUser.id),
-        );
-
-        // Send subscription notification
-
-        // Send invite to the selected user
+            prev.map((user) =>
+              user.id === selectedUser.id
+                ? { ...user, status: "REQUEST", stipend }
+                : user,
+            ),
+          );
+  
+          // Close modal and reset form
+          setIsModalOpen(false);
+          setStipend("");
+          setDescription("");
+          setSelectedUser(null);
       }
     } catch (error) {
       console.error("Error updating subscription:", error);
@@ -263,7 +269,7 @@ const TeamPage = () => {
         >
           Shortlisted
         </button>
-        
+
         <button
           onClick={() => setActiveTab("subscribed")}
           className={`flex-1 py-2 sm:py-3 text-center ${
