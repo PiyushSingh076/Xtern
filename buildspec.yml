@@ -14,8 +14,9 @@ phases:
   build:
     commands:
       - echo "Build started on `date`"
-      # Increase Node.js memory limit to 8GB
-      - export NODE_OPTIONS="--max-old-space-size=8192"
+      # Increase Node.js memory limit to 16GB
+      - export NODE_OPTIONS="--max-old-space-size=16384"
+      - echo "Building the project..."
       - npm run build
   post_build:
     commands:
