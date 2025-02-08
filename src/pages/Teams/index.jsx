@@ -253,6 +253,17 @@ const TeamPage = () => {
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       {/* Tabs */}
       <div className="flex w-full mb-4 sm:mb-8 border-b text-xs sm:text-sm">
+      <button
+          onClick={() => setActiveTab("shortlisted")}
+          className={`flex-1 py-2 sm:py-3 text-center ${
+            activeTab === "shortlisted"
+              ? "border-b-2 border-blue-500 text-blue-500"
+              : "text-gray-500"
+          }`}
+        >
+          Shortlisted
+        </button>
+        
         <button
           onClick={() => setActiveTab("subscribed")}
           className={`flex-1 py-2 sm:py-3 text-center ${
@@ -263,16 +274,7 @@ const TeamPage = () => {
         >
           Subscribed Users ({authorizedUsers.length})
         </button>
-        <button
-          onClick={() => setActiveTab("shortlisted")}
-          className={`flex-1 py-2 sm:py-3 text-center ${
-            activeTab === "shortlisted"
-              ? "border-b-2 border-blue-500 text-blue-500"
-              : "text-gray-500"
-          }`}
-        >
-          Shortlisted
-        </button>
+\
         <button
           onClick={() => setActiveTab("team")}
           className={`flex-1 py-2 sm:py-3 text-center ${
@@ -296,6 +298,13 @@ const TeamPage = () => {
       </div>
       {/* Content */}
       <div className="bg-white rounded-lg shadow p-4">
+      {activeTab === "shortlisted" && (
+          <ShortlistedUsers
+            users={shortlistedUsers}
+            onSubscribe={handleSubscribe}
+          />
+        )}
+
         {activeTab === "subscribed" && (
           <div className="space-y-3">
             {authorizedUsers.map((user) => (
@@ -308,13 +317,6 @@ const TeamPage = () => {
               </div>
             )}
           </div>
-        )}
-
-        {activeTab === "shortlisted" && (
-          <ShortlistedUsers
-            users={shortlistedUsers}
-            onSubscribe={handleSubscribe}
-          />
         )}
 
         {activeTab === "team" && <TeamMembers members={teamMembers} />}
