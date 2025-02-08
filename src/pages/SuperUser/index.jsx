@@ -160,8 +160,8 @@ const SuperUserDashboard = () => {
 
   const filteredTransactions = transactions?.filter((item) => {
     const matchesSearch =
-      item.user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      item.user?.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.user?.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
       statusFilter === "All" ||
       item.status.toLowerCase() === statusFilter.toLowerCase();
