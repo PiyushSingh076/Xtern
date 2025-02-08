@@ -7,7 +7,18 @@ phases:
     commands:
       - echo "Checking AWS CLI version..."
       - aws --version
+      - echo "Retrieving environment secrets..."
+      - export ENV_VARS=$(aws ssm get-parameters-by-path --path "/amplify/d300co2au08o8y/main/" --with-decryption --query "Parameters[*].{Name:Name,Value:Value}" --output json)
+      - echo "Setting up environment variables..."
+      - for row in $(echo "${ENV_VARS}" | jq -r '.[] | @base64'); do
+          VAR_NAME=$(echo ${row} | base64 --decode | jq -r '.Name' | awk -F '/' '{print $NF}');
+          VAR_VALUE=$(echo ${row} | base64 --decode | jq -r '.Value');
+          echo "Exporting $VAR_NAME";
+          export "$VAR_NAME=$VAR_VALUE";
+        done
+      - echo "Cleaning up previous installations..."
       - rm -rf node_modules package-lock.json
+      - echo "Installing NPM dependencies..."
       - npm ci --legacy-peer-deps
 
   build:
