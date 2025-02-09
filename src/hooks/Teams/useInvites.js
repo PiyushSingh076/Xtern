@@ -43,12 +43,14 @@ export function useInvites() {
         from: entrepreneurId,
         description: shortlistDescription,
         status: "PENDING",
+        
       });
 
       await createNotification(
         "INVITE",
         {
           inviteId: invite.id,
+          name : invite.name,
           teamName: entrepreneur.companyDetails?.name || "Unknown",
           teamDescription: entrepreneur.companyDetails?.description || "No description",
           teamLogo: entrepreneur.companyDetails?.logo || "",

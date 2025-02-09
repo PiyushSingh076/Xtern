@@ -15,6 +15,7 @@ const ShortlistedUsers = () => {
   const [stipend, setStipend] = useState("");
   const [description, setDescription] = useState("");
   const [entrepreneurData, setEntrepreneurData] = useState(null);
+  const [subscribedUsers, setSubscribedUsers] = useState([]); // Track subscribed users
 
   useEffect(() => {
     const entrepreneurId = auth.currentUser?.uid;
@@ -55,21 +56,29 @@ const ShortlistedUsers = () => {
     }
 
     try {
-      await createNotification("SUBSCRIPTION", {
-        entrepreneurId,
-        entrepreneurFirstName: entrepreneurData.firstName || "",
-        entrepreneurLastName: entrepreneurData.lastName || "",
-        entrepreneurEmail: entrepreneurData.email || "",
-        stipend,
-        description,
-      }, selectedUser.id);
+      await createNotification(
+        "SUBSCRIPTION",
+        {
+          entrepreneurId,
+          entrepreneurFirstName: entrepreneurData.firstName || "",
+          entrepreneurLastName: entrepreneurData.lastName || "",
+          entrepreneurEmail: entrepreneurData.email || "",
+          stipend: stipend ?? "Not provided",
+          description: description ?? "No description",
+        },
+        selectedUser.id
+      );
 
       console.log(`Notification sent to ${selectedUser.display_name || "User"}`);
+
+      // Add the user to the list of subscribed users
+      setSubscribedUsers((prev) => [...prev, selectedUser.id]);
+
+      // Close the dialog
+      handleCloseDialog();
     } catch (error) {
       console.error("Error creating notification:", error);
     }
-
-    handleCloseDialog();
   };
 
   return (
@@ -95,8 +104,14 @@ const ShortlistedUsers = () => {
               </div>
             </div>
             <div className="flex items-center justify-end space-x-2">
-              <Button onClick={() => handleOpenDialog(user)} size="small" variant="contained" color="primary">
-                Subscribe
+              <Button
+                onClick={() => handleOpenDialog(user)}
+                size="small"
+                variant="contained"
+                color="primary"
+                disabled={subscribedUsers.includes(user.id)} // Disable if the user is already subscribed
+              >
+                {subscribedUsers.includes(user.id) ? "Invite Sent" : "Subscribe"}
               </Button>
             </div>
           </div>

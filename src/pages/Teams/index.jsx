@@ -126,7 +126,7 @@ const TeamPage = () => {
 
                 if (teamDoc.exists()) {
                     const acceptedUids = teamDoc.data().members
-                        ?.filter(member => member.status === "ACCEPTED")
+                        ?.filter(member => member.status === "SUBSCRIBED")
                         .map(member => member.uid) || [];
 
                     const acceptedUserDetails = await Promise.all(
@@ -163,22 +163,7 @@ const TeamPage = () => {
         setLoading(true); // Start loading
     
         try {
-            // const teamDocRef = doc(db, "teams", userData.uid);
-            // const teamDoc = await getDoc(teamDocRef);
-    
-            // if (teamDoc.exists()) {
-    
-            //     const updatedMembers = teamDoc.data().members.map(member =>
-            //         member.uid === selectedUser.id
-            //             ? { ...member, status: "ACCEPTED", stipend }
-            //             : member
-            //     );
-    
-            //     await updateDoc(teamDocRef, { members: updatedMembers });
-    
-            //     setTeamMembers(prev => [...prev, { ...selectedUser, stipend }]);
-            //     setShortlistedUsers(prev => prev.filter(user => user.id !== selectedUser.id));
-    
+            
                 // Send subscription notification
                 await createNotification(
                     "SUBSCRIPTION",

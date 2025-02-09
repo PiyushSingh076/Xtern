@@ -42,7 +42,10 @@ import XpertRole from "../Prefference/XpertRole";
 import LinkedInLogo from "../../../assets/svg/linkedin.png";
 import useSaveProfileData from "../../../hooks/Linkedin/useSaveProfileData";
 import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import toast from "react-hot-toast";
+
 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../firebaseConfig";
@@ -727,23 +730,23 @@ export default function StepperForm() {
           
           startDate: exp.starts_at
             ? new Date(
-              exp.starts_at.year,
-              exp.starts_at.month - 1,
-              exp.starts_at.day
-            )
+                exp.starts_at.year,
+                exp.starts_at.month - 1,
+                exp.starts_at.day
+              )
               .toISOString()
               ?.split("T")[0]
             : "",
           endDate: exp.ends_at
             ? new Date(exp.ends_at.year, exp.ends_at.month - 1, exp.ends_at.day)
-              .toISOString()
-              ?.split("T")[0]
-            : "",
+                .toISOString()
+                ?.split("T")[0]
+            : "Present", // Mark as "Present" if no end date is provided
           description: exp.description || "",
         }));
         setWork(wData);
       }
-
+      
       // Projects
       if (
         data.accomplishment_projects &&
@@ -804,8 +807,7 @@ export default function StepperForm() {
         setModalFormData({
           position: itemData.position || "",
           company: itemData.company || "",
-          companyLogo:
-           itemData.companyLogo || "",  
+          companyLogo: itemData.companyLogo || "", 
           startDate: itemData.startDate || "",
           endDate: itemData.endDate || "",
           description: itemData.description || "",
@@ -899,6 +901,7 @@ export default function StepperForm() {
           );
           await uploadBytes(storageRef, dataObj.projectLogo);
           logoUrl = await getDownloadURL(storageRef);
+          console.log("logoUrl",logoUrl);
         } else if (typeof dataObj.projectLogo === "string") {
           logoUrl = dataObj.projectLogo;
         }
@@ -911,6 +914,7 @@ export default function StepperForm() {
         };
   
         const updatedProjects = index !== null ? [...Projects] : [...Projects, projectData];
+        console.log("project...",updatedProjects);
         if (index !== null) updatedProjects[index] = projectData;
         setProjects(updatedProjects);
         
@@ -921,9 +925,9 @@ export default function StepperForm() {
       }
     } else if (lower === "service") {
       try {
-
-        let videoUrl = dataObj.serviceVideo;;
-
+        console.log("dataObj", dataObj);
+        let videoUrl = dataObj.serviceVideo;
+  
         // Handle video upload only if it's a new file
         if (dataObj.serviceVideo instanceof File) {
           const storageRef = ref(
@@ -956,17 +960,15 @@ export default function StepperForm() {
             return null;
           })
         );
-
-
-        // Filter out any null values
-        const filteredImageUrls = imageUrls.filter(url => url !== null);
-
+  
+        const filteredImageUrls = imageUrls.filter((url) => url !== null);
+  
+        console.log("Image URLs:", imageUrls);
         const serviceData = {
           ...dataObj,
           serviceVideo: videoUrl,
           images: filteredImageUrls,
         };
-
   
         const updatedServices = index !== null ? [...Services] : [...Services, serviceData];
   
@@ -1000,8 +1002,9 @@ export default function StepperForm() {
     }));
   };
 
-  // Delete item
+  
   const deleteDetail = (type, index) => {
+    if (!window.confirm("Are you sure you want to delete?")) return;
     const lower = type.toLowerCase();
     if (lower === "education") {
       setEducation(Education.filter((_, i) => i !== index));
@@ -1015,8 +1018,11 @@ export default function StepperForm() {
       setServices(Services.filter((_, i) => i !== index));
     }
   };
+  
 
-
+  useEffect(() => {
+    console.log("Active Step changed to:", activeStep);
+  }, [activeStep]);
 
   // Final Submit of the entire form
   const handleSubmitInfo = async (e) => {
@@ -1037,7 +1043,7 @@ export default function StepperForm() {
       setLoadingg(false);
       return;
     }
-
+    console.log("Services", Services,Projects);
     // Gather data
     const data = {
       profileImage: profileImg,
@@ -1057,6 +1063,7 @@ export default function StepperForm() {
       consultingDurationType: ConsultingDurationType,
     };
 
+    console.log("Before setting step:", activeStep);
 
     try {
       dispatch(setDetail(data));
@@ -1067,8 +1074,10 @@ export default function StepperForm() {
       setTimeout(() => {
         refreshUser();
       }, 200);
+      console.log("After setting step:", 3); // Debug log
     } catch (err) {
       toast.error(`Error saving data: ${err.message}`);
+      console.log(err);
     } finally {
       setLoadingg(false);
     }
@@ -1559,62 +1568,62 @@ export default function StepperForm() {
 
               {/* Work */}
               <Card sx={{ mb: 2, boxShadow: 2 }}>
-  <CardHeader
-    title="Work Experience"
-    titleTypographyProps={{
-      variant: "h6",
-      sx: {
-        fontSize: {
-          xs: "1rem", // Smaller font size for mobile
-          sm: "1.25rem", // Default font size for small screens and above
-        },
-      },
-    }}
-    action={
-      <Button
-        variant="contained"
-        startIcon={<AddCircleOutlineIcon />}
-        onClick={() => openModal("Work")}
-        size="small"
-        sx={{
-          fontSize: {
-            xs: "0.6rem", // Smaller font size for mobile
-            sm: "1rem", // Default font size for small screens and above
-          },
-          padding: {
-            xs: "6px 12px", // Smaller padding for mobile
-            sm: "8px 16px", // Default padding for small screens and above
-          },
-        }}
-      >
-        Add Experience
-      </Button>
-    }
-    sx={{ padding: 2 }}
-  />
-  <Divider />
-  <CardContent sx={{ padding: 2 }}>
-    {Work.map((item, index) => {
-      const isInvalidDate =
-        item.endDate && new Date(item.endDate) < new Date(item.startDate);
+              <CardHeader
+                title="Work Experience"
+                titleTypographyProps={{
+                  variant: "h6",
+                  sx: {
+                    fontSize: {
+                      xs: "1rem", // Smaller font size for mobile
+                      sm: "1.25rem", // Default font size for small screens and above
+                    },
+                  },
+                }}
+                action={
+                  <Button
+                    variant="contained"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={() => openModal("Work")}
+                    size="small"
+                    sx={{
+                      fontSize: {
+                        xs: "0.6rem", // Smaller font size for mobile
+                        sm: "1rem", // Default font size for small screens and above
+                      },
+                      padding: {
+                        xs: "6px 12px", // Smaller padding for mobile
+                        sm: "8px 16px", // Default padding for small screens and above
+                      },
+                    }}
+                  >
+                    Add Experience
+                  </Button>
+                }
+                sx={{ padding: 2 }}
+              />
+              <Divider />
+              <CardContent sx={{ padding: 2 }}>
+                {Work.map((item, index) => {
+                  const isInvalidDate =
+                    item.endDate && new Date(item.endDate) < new Date(item.startDate);
 
-      return (
-        <Box key={index} sx={{ mb: 3, position: "relative" }}>
-          <IconButton
-            size="small"
-            sx={{ position: "absolute", top: 0, right: 30 }}
-            onClick={() => openModal("Work", index, item)}
-          >
-            <FiEdit color="blue" size={16} />
-          </IconButton>
-          <IconButton
-            size="small"
-            sx={{ position: "absolute", top: 0, right: 0 }}
-            onClick={() => deleteDetail("work", index)}
-          >
-            <FiTrash color="red" size={16} />
-          </IconButton>
-          <Box>
+                  return (
+                    <Box key={index} sx={{ mb: 3, position: "relative" }}>
+                      <IconButton
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 30 }}
+                        onClick={() => openModal("Work", index, item)}
+                      >
+                        <FiEdit color="blue" size={16} />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        sx={{ position: "absolute", top: 0, right: 0 }}
+                        onClick={() => deleteDetail("work", index)}
+                      >
+                        <FiTrash color="red" size={16} />
+                      </IconButton>
+                      <Box>
                       {item.companyLogo && (
                           <img
                             src={item.companyLogo}
@@ -1622,70 +1631,69 @@ export default function StepperForm() {
                             style={{ width: 50, height: 50, borderRadius: 4, marginBottom: 8 }}
                           />
                         )}
-            <Typography variant="subtitle1">
-              <strong>{item.position}</strong> at {item.company}
-            </Typography>
-            <Typography variant="body2">
-              {item.startDate} - {item.endDate || "Present"}
-            </Typography>
+                    <Typography variant="subtitle1">
+                      <strong>{item.position}</strong> at {item.company}
+                    </Typography>
+                    <Typography variant="body2">
+                      {item.startDate} - {item.endDate || "Present"}
+                    </Typography>
 
-            {/* Error Message for Invalid Dates */}
-            {isInvalidDate && (
-              <Typography color="error" sx={{ mt: 1 }}>
-                End date cannot be earlier than the start date.
-              </Typography>
-            )}
+                      {/* Error Message for Invalid Dates */}
+                      {isInvalidDate && (
+                        <Typography color="error" sx={{ mt: 1 }}>
+                          End date cannot be earlier than the start date.
+                        </Typography>
+                      )}
 
-            {item.description && (
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                {item.description}
-              </Typography>
-            )}
-          </Box>
-        </Box>
-      );
-    })}
-  </CardContent>
-</Card>
+                      {item.description && (
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                          {item.description}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                );
+              })}
+            </CardContent>
+          </Card>
 
-              {/* Projects */}
-              <Card sx={{ mb: 2, boxShadow: 2 }}>
-                <CardHeader
-                  title="Projects/Assignments"
-                  titleTypographyProps={{
-                    variant: "h6",
-                    sx: {
-                      fontSize: {
-                        xs: "1rem", // Smaller font size for mobile
-                        sm: "1.25rem", // Default font size for small screens and above
-                      },
+             {/* Projects */}
+            <Card sx={{ mb: 2, boxShadow: 2 }}>
+              <CardHeader
+                title="Projects/Assignments"
+                titleTypographyProps={{
+                  variant: "h6",
+                  sx: {
+                    fontSize: {
+                      xs: "1rem", // Smaller font size for mobile
+                      sm: "1.25rem", // Default font size for small screens and above
                     },
-                  }}
-                  action={
-                    <Button
-                      variant="contained"
-                      startIcon={<AddCircleOutlineIcon />}
-                      onClick={() => openModal("Project")}
-                      size="small"
-                      sx={{
-                        fontSize: {
-                          xs: "0.6rem", // Smaller font size for mobile
-                          sm: "1rem", // Default font size for small screens and above
-                        },
-                        padding: {
-                          xs: "6px 12px", // Smaller padding for mobile
-                          sm: "8px 16px", // Default padding for small screens and above
-                        },
-                      }}
-                    >
-                      Add Project
-                    </Button>
-
-                  }
-                  sx={{ padding: 2 }}
-                />
-                <Divider />
-                <CardContent sx={{ padding: 2 }}>
+                  },
+                }}
+                action={
+                  <Button
+                    variant="contained"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={() => openModal("Project")}
+                    size="small"
+                    sx={{
+                      fontSize: {
+                        xs: "0.6rem", // Smaller font size for mobile
+                        sm: "1rem", // Default font size for small screens and above
+                      },
+                      padding: {
+                        xs: "6px 12px", // Smaller padding for mobile
+                        sm: "8px 16px", // Default padding for small screens and above
+                      },
+                    }}
+                  >
+                    Add Project
+                  </Button>
+                }
+                sx={{ padding: 2 }}
+              />
+              <Divider />
+              <CardContent sx={{ padding: 2 }}>
                 {Projects.map((item, index) => (
                   <Box key={index} sx={{ mb: 3, position: "relative", display: "flex", alignItems: "center", gap: 2 }}>
                     
@@ -1705,19 +1713,17 @@ export default function StepperForm() {
                       <FiTrash color="red" size={16} />
                     </IconButton>
 
-
                     {item.projectLogo && (
                       <Box
                         sx={{
                           width: 70,
                           height: 70,
-                          borderRadius: 4,
+                          borderRadius: "50%",
                           overflow: "hidden",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           backgroundColor: "#f0f0f0",
-                          borderRadius:"50%",
                         }}
                       >
                         <img
@@ -1733,25 +1739,75 @@ export default function StepperForm() {
                     <Box sx={{ flex: 1 }}>
                       <Typography variant="subtitle1">
                         <strong>
-                          <h3>{item.projectName}</h3>
+                          <h3  sx={{ style: "bold"}}>{item.projectName}</h3>
                         </strong>
                       </Typography>
                       <Typography variant="body2">{item.duration}</Typography>
+
+                      {/* Accordion for the description */}
+                      <Accordion sx={{ boxShadow: 3, borderRadius: 2, width: "80%"}}>
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
+                          aria-controls="panel1a-content"
+                          id="panel1a-header"
+                          sx={{
+                            backgroundColor: "transparent",
+                            "&:hover": {
+                              backgroundColor: "#e0e0e0",
+                              borderRadius:0,
+                            },
+                            borderRadius: 2,
+                          }}
+                        >
+                          <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                            Description
+                          </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails
+                          sx={{
+                            backgroundColor: "#fafafa",
+                            borderRadius: 1,
+                            padding: "16px",
+                            transition: "background-color 0.3s",
+                            "&:hover": {
+                              backgroundColor: "#eaeaea",
+                            },
+                          }}
+                        >
+                          <Typography variant="body2">{item.description}</Typography>
+                        </AccordionDetails>
+                      </Accordion>
+
+                      {/* Live Link Button */}
                       {item.liveLink && (
-                        <Typography variant="body2" color="primary">
-                          <Button href={item.liveLink} target="_blank" rel="noopener noreferrer">
+                        <Typography variant="body2" color="primary" sx={{ mt: 2 }}>
+                          <Button
+                            href={item.liveLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            variant="outlined"
+                            color="primary"
+                            sx={{
+                              fontSize: "0.875rem",
+                              padding: "4px 8px",
+                              borderRadius: "20px",
+                              textTransform: "none",
+                              marginTop: "10px",
+                              "&:hover": {
+                                backgroundColor: "#f1f1f1",
+                              },
+                            }}
+                          >
                             Live Link
                           </Button>
                         </Typography>
                       )}
-                      <Typography variant="body2">{item.description}</Typography>
                     </Box>
-
                   </Box>
                 ))}
               </CardContent>
+            </Card>
 
-              </Card>
             </Grid>
 
             {/* Step Navigation */}
@@ -2325,43 +2381,48 @@ export default function StepperForm() {
                     />
                   </Grid>
                   {/* Add Company Logo Upload */}
-                  <Grid item xs={12}> 
+                  <Grid item xs={12}>
+                  <input
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    id="company-logo-upload"
+                    type="file"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setModalFormData((prev) => ({
+                            ...prev,
+                            companyLogo: file,
+                            companyLogoPreview: reader.result,
+                          }));
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
 
-                    <input
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      id="company-logo-upload"
-                      type="file"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            setModalFormData((prev) => ({
-                              ...prev,
-                              companyLogo: file,
-                              companyLogoPreview: reader.result,
-                            }));
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                    />
-
-                    {/* Dotted Upload Box */}
-                    <label htmlFor="company-logo-upload" className="image-upload-box">
-                      {modalFormData.companyLogoPreview ? (
-                        <img src={modalFormData.companyLogoPreview} alt="Company Logo Preview" />
+                    
+              <label htmlFor="company-logo-upload" className="image-upload-box">
+                      {modalFormData.companyLogoPreview || modalFormData.companyLogo ? (
+                        <img
+                          src={
+                            modalFormData.companyLogoPreview ||
+                            modalFormData.companyLogo
+                          }
+                          alt="Company Logo Preview"
+                        />
                       ) : (
                         <div className="upload-text">
-                                <span className="upload">Company</span>
-                                <span className="Image">Logo</span>
-                              </div>
+                          <span className="upload">Company</span>
+                          <span className="Image">Logo</span>
+                        </div>
                       )}
                     </label>
 
                     {/* Remove Button */}
-                    {modalFormData.companyLogoPreview && (
+                    {(modalFormData.companyLogoPreview || modalFormData.companyLogo) && (
                       <IconButton
                         size="small"
                         onClick={() =>
@@ -2527,16 +2588,23 @@ export default function StepperForm() {
                       }}
                     />
 
-                    <label htmlFor="fileInput" className="image-upload-box" placeholder="Upload Image">
-                      {modalFormData.previewLogo ? (
-                        <img src={modalFormData.previewLogo} alt="Project Logo Preview" />
+              <label htmlFor="fileInput" className="image-upload-box">
+                      {modalFormData.previewLogo || modalFormData.projectLogo ? (
+                        <img
+                          src={
+                            modalFormData.previewLogo ||
+                            modalFormData.projectLogo
+                          }
+                          alt="Project Logo Preview"
+                        />
                       ) : (
-                              <div className="upload-text">
-                                <span className="upload">Upload</span>
-                                <span className="Image">Image</span>
-                              </div>
+                        <div className="upload-text">
+                          <span className="upload">Upload</span>
+                          <span className="Image">Image</span>
+                        </div>
                       )}
                     </label>
+
                   </Grid>
 
                   <Grid item xs={12}>

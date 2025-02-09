@@ -18,6 +18,9 @@ import useFetchUsersByType from "../../../hooks/Profile/useFetchUsersByType";
 import useGoogleCalendar from "../../../hooks/Profile/useGoogleCalendar";
 import useScheduledCallsForUser from "../../../hooks/Profile/useScheduledCallsForUser";
 import toast from "react-hot-toast";
+import { Accordion, AccordionSummary, AccordionDetails} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -573,35 +576,35 @@ const SingleMentor = () => {
                               />
                             </DialogContent>
                             <DialogActions sx={{ padding: 2, gap: 1 }}>
-  <ButtonM
-    onClick={handleCloseModal}
-    variant="contained"
-    sx={{
-      backgroundColor: 'red',
-      color: 'white',
-      '&:hover': {
-        backgroundColor: 'darkred',
-      },
-    }}
-  >
-    Cancel
-  </ButtonM>
-  <ButtonM
-    onClick={handleSendInvite}
-    variant="contained"
-    disabled={inviting || !shortlistDescription.trim()}
-    startIcon={inviting ? <CircularProgress size={20} /> : null}
-    sx={{
-      backgroundColor: 'blue',
-      color: 'white',
-      '&:hover': {
-        backgroundColor: 'darkblue',
-      },
-    }}
-  >
-    {inviting ? 'Sending...' : 'Send Invite'}
-  </ButtonM>
-</DialogActions>
+                            <ButtonM
+                              onClick={handleCloseModal}
+                              variant="contained"
+                              sx={{
+                                backgroundColor: 'red',
+                                color: 'white',
+                                '&:hover': {
+                                  backgroundColor: 'darkred',
+                                },
+                              }}
+                            >
+                              Cancel
+                            </ButtonM>
+                            <ButtonM
+                              onClick={handleSendInvite}
+                              variant="contained"
+                              disabled={inviting || !shortlistDescription.trim()}
+                              startIcon={inviting ? <CircularProgress size={20} /> : null}
+                              sx={{
+                                backgroundColor: 'blue',
+                                color: 'white',
+                                '&:hover': {
+                                  backgroundColor: 'darkblue',
+                                },
+                              }}
+                            >
+                              {inviting ? 'Sending...' : 'Send Invite'}
+                            </ButtonM>
+                          </DialogActions>
 
                           </Dialog>
                         </>
@@ -965,26 +968,29 @@ const SingleMentor = () => {
                               {formatDateGeneric(work?.startDate)} -{" "}
                               {formatDateGeneric(work?.endDate)}
                             </p>
-                            <Button
-                              className="view-description"
-                              title={
-                                work.description || "No description available"
-                              }
-                              arrow
-                              placement="top"
+                            <Accordion
+                            sx={{
+                              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", 
+                              borderRadius: "8px",
+                              backgroundColor: "#f8f9fa",  // Light grey for better contrast
+                              width: "100%", 
+                              marginTop: "8px",
+                              "&:before": { display: "none" } // Removes the default MUI divider line
+                            }}
+                          >
+                            <AccordionSummary
+                              expandIcon={<ExpandMoreIcon sx={{ fontSize: "18px", color: "#007bff" }} />}
+                              sx={{ padding: "2px 4px", fontWeight: "bold", color: "#333", borderRadius: "5px" }}
                             >
-                              <span
-                                className="desc-toggle-text"
-                                onClick={() => toggleWorkDesc(index)}
-                                style={{
-                                  cursor: "pointer",
-                                }}
-                              >
-                                {workOpen[index]
-                                  ? "Hide Description"
-                                  : "View Description"}
+                              <span style={{ fontSize: "14px", fontWeight: "500", color: "#007bff" }}>
+                                View Description
                               </span>
-                            </Button>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ padding: "8px", fontSize: "14px", color: "#444", backgroundColor: "#fff", borderRadius: "0 0 8px 8px" }}>
+                              {work?.description || "No description available"}
+                            </AccordionDetails>
+                          </Accordion>
+
                             {workOpen[index] && (
                               <div style={{ marginTop: 5 }}>
                                 {work?.description ||
@@ -1112,38 +1118,29 @@ const SingleMentor = () => {
                                   ))}
                                 </div>
                               )}
-                            <div className="desc-view-btn-container">
-                              {/* Tooltip for View Description */}
-                              <Button
-                                className="project-des"
-                                title={
-                                  project.description ||
-                                  "No description available"
-                                }
-                                arrow
-                                placement="top"
-                              >
-                                <span
-                                  className="desc-toggle-text"
-                                  onClick={() => toggleProjectDesc(index)}
-                                  style={{
-                                    color: "white",
-                                    cursor: "pointer",
-                                  }}
-                                >
-                                  {projectOpen[index]
-                                    ? "Hide Description"
-                                    : "View Description"}
-                                </span>
-                              </Button>
-                            </div>
+                             <Accordion
+                            sx={{
+                              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", 
+                              borderRadius: "8px",
+                              backgroundColor: "#f8f9fa",  // Light grey for better contrast
+                              width: "100%", 
+                              marginTop: "8px",
+                              "&:before": { display: "none" } // Removes the default MUI divider line
+                            }}
+                          >
+                            <AccordionSummary
+                              expandIcon={<ExpandMoreIcon sx={{ fontSize: "18px", color: "#007bff" }} />}
+                              sx={{ padding: "2px 4px", fontWeight: "bold", color: "#333", borderRadius: "5px" }}
+                            >
+                              <span style={{ fontSize: "14px", fontWeight: "500", color: "#007bff" }}>
+                                View Description
+                              </span>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ padding: "8px", fontSize: "14px", color: "#444", backgroundColor: "#fff", borderRadius: "0 0 8px 8px" }}>
+                              {project?.description || "No description available"}
+                            </AccordionDetails>
+                          </Accordion>
 
-                            {projectOpen[index] && (
-                              <div style={{ marginTop: 5 }}>
-                                {project?.description ||
-                                  "No description available"}
-                              </div>
-                            )}
                             {project?.liveDemo && (
                               <Tooltip
                                 title={project.liveDemo}
@@ -1156,7 +1153,8 @@ const SingleMentor = () => {
                                   rel="noopener noreferrer"
                                   className="live-link-button"
                                   style={{
-                                    marginRight: "10px", // Add spacing between link and description
+                                    
+                                    marginTop: "10px", // Add spacing between link and description
                                   }}
                                 >
                                   Live Link
