@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { auth, db } from "../../firebaseConfig"; // Adjust the path as necessary
+import { auth, db } from "../../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
 const useFetchUserSkills = () => {
@@ -10,23 +10,28 @@ const useFetchUserSkills = () => {
   useEffect(() => {
     const fetchUserSkills = async () => {
       try {
-        const user = auth?.currentUser;
+        const user = auth.currentUser;
+        if (!user) return;
+
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
 
-        if (userDoc.exists) {
+        if (userDoc.exists()) {
           const userData = userDoc.data();
-          setUserSkills(userData.skillSet || []);
+          setUserSkills(userData.skills || []);
+        } else {
+          setUserSkills([]);
         }
       } catch (error) {
         console.error("Error fetching user skills:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (auth?.currentUser) {
-      fetchUserSkills();
-    }
-  }, [auth?.currentUser]);
+    fetchUserSkills();
+  }, [auth.currentUser]);
 
   return { userSkills, loading, error };
 };

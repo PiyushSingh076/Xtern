@@ -43,7 +43,6 @@ export function useInvites() {
         from: entrepreneurId,
         description: shortlistDescription,
         status: "PENDING",
-        
       });
 
       await createNotification(

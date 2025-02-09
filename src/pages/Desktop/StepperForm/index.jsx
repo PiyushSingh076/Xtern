@@ -29,6 +29,9 @@ import {
   Rating,
 } from "@mui/material";
 import "./Form.css"
+import { db } from "../../../firebaseConfig"; 
+import { collection, doc, getDocs, addDoc, updateDoc, where, arrayUnion,query } from "firebase/firestore"; 
+
 import { FiTrash, FiEdit } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { setDetail } from "../../../Store/Slice/UserDetail";
@@ -45,8 +48,6 @@ import useFetchUserData from "../../../hooks/Auth/useFetchUserData";
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import toast from "react-hot-toast";
-
-
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../firebaseConfig";
 // import XpertRole from "../Prefference/XpertRole";
@@ -528,6 +529,26 @@ export default function StepperForm() {
   //   }
   // }
   // Profile image
+  useEffect(() => {
+    const fetchSkills = async () => {
+      if (!userData?.uid) return;
+  
+      try {
+        const q = query(collection(db, "skills"), where("userId", "==", userData.uid));
+        const querySnapshot = await getDocs(q);
+        const skillsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setSkills(skillsData);
+      } catch (error) {
+        console.error("Error fetching skills:", error);
+      }
+    };
+  
+    fetchSkills();
+  }, [userData]);
+
   const handleProfileImage = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -860,6 +881,28 @@ export default function StepperForm() {
         setEducation(newArr);
       } else {
         setEducation([...Education, dataObj]);
+      }
+    } 
+    else if (lower === "skill") {
+      try {
+        const skillData = {
+          skill: dataObj.skill,
+          skillRating: dataObj.skillRating,
+          userId: userData.uid, // Associate skill with the user
+          createdAt: new Date().toISOString(),
+        };
+  
+        const docRef = await addDoc(collection(db, "skill"), skillData);
+        const updatedSkills = [...Skills, { id: docRef.id, ...skillData }];
+        setSkills(updatedSkills);
+  
+        // Optionally, update the user's document in Firestore to include the skill
+        await updateDoc(doc(db, "users", userData.uid), {
+          skills: arrayUnion(skillData),
+        });
+      } catch (error) {
+        console.error("Error saving skill:", error);
+        toast.error("Failed to save skill");
       }
     } else if (lower === "work") {
       try {
@@ -1434,65 +1477,63 @@ export default function StepperForm() {
 
               {/* Skills */}
               <Card sx={{ mb: 2, boxShadow: 2 }}>
-                <CardHeader
-                  title="Skills"
-                  titleTypographyProps={{ variant: "h6" }}
-                  action={
-                    <Button
-                      variant="contained"
-                      startIcon={<AddCircleOutlineIcon />}
-                      onClick={() => openModal("Skill")}
-                      size="small"
-                    >
-                      Add Skill
-                    </Button>
-                  }
-                  sx={{ padding: 2 }}
-                />
-                <Divider />
-                <CardContent sx={{ padding: 2 }}>
-                  {Skills.map((item, index) => (
-                    <Box
-                      key={index}
-                      sx={{
-                        mb: 3,
-                        position: "relative",
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: "20px",
-                      }}
-                    >
-                      <IconButton
-                        size="small"
-                        sx={{ position: "absolute", top: 0, right: 30 }}
-                        onClick={() => openModal("Skill", index, item)}
-                      >
-                        <FiEdit color="blue" size={16} />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        sx={{ position: "absolute", top: 0, right: 0 }}
-                        onClick={() => deleteDetail("skill", index)}
-                      >
-                        <FiTrash color="red" size={16} />
-                      </IconButton>
-                      <Typography variant="body1">
-                        {item.skill.charAt(0).toUpperCase() +
-                          item.skill.slice(1)}
-                      </Typography>
-                      <Rating
-                        name={`skill-rating-${index}`}
-                        value={item.skillRating || 0}
-                        size="small"
-                        readOnly
-                        sx={{ color: "#3498db" }}
-                      />
-                    </Box>
-                  ))}
-                </CardContent>
-              </Card>
-
+            <CardHeader
+              title="Skills"
+              titleTypographyProps={{ variant: "h6" }}
+              action={
+                <Button
+                  variant="contained"
+                  startIcon={<AddCircleOutlineIcon />}
+                  onClick={() => openModal("Skill")}
+                  size="small"
+                >
+                  Add Skill
+                </Button>
+              }
+              sx={{ padding: 2 }}
+            />
+            <Divider />
+            <CardContent sx={{ padding: 2 }}>
+              {Skills.map((item, index) => (
+                <Box
+                  key={item.id} // Use the Firestore document ID as the key
+                  sx={{
+                    mb: 3,
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: "20px",
+                  }}
+                >
+                  <IconButton
+                    size="small"
+                    sx={{ position: "absolute", top: 0, right: 30 }}
+                    onClick={() => openModal("Skill", index, item)}
+                  >
+                    <FiEdit color="blue" size={16} />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    sx={{ position: "absolute", top: 0, right: 0 }}
+                    onClick={() => deleteDetail("skill", index)}
+                  >
+                    <FiTrash color="red" size={16} />
+                  </IconButton>
+                  <Typography variant="body1">
+                    {item.skill.charAt(0).toUpperCase() + item.skill.slice(1)}
+                  </Typography>
+                  <Rating
+                    name={`skill-rating-${index}`}
+                    value={item.skillRating || 0}
+                    size="small"
+                    readOnly
+                    sx={{ color: "#3498db" }}
+                  />
+                </Box>
+              ))}
+            </CardContent>
+          </Card>
               {/* Education */}
               <Card sx={{ mb: 2, boxShadow: 2 }}>
   <CardHeader

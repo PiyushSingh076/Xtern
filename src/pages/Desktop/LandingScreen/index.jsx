@@ -33,7 +33,9 @@ export default function Homepage() {
     loading: profileLoading,
     error: profileError,
   } = useUserProfileData(userData?.uid);
+  console.log("profileData", profileData, profileError);
 
+  console.log(Role);
 
   useEffect(() => {
     if (userData) {
@@ -48,7 +50,6 @@ export default function Homepage() {
       keywords={"expert marketplace, hire experts, freelance services, professional skills, expert hiring platform" }
       description={"Find top experts in various fields or offer your expertise to clients. Xpert connects professionals with opportunities." }
     />
-
     <div className="homescreen-container">
       {!userData && <LandingBanner pop={setShow} setRole={setRole} />}
       {profileData?.organization ? (
