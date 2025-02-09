@@ -19,13 +19,16 @@ import { useAuth } from "../../../hooks/Auth/useAuth";
 import { useNotifications } from "../../../hooks/useNotifications";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
+import toast from "react-hot-toast";
 
 export default function Header() {
   const data = useSelector((state) => state.user);
   const { userData, loading } = useFetchUserData();
   const { handleLogout } = useOAuthLogout();
   const navigate = useNavigate();
-  const { acceptInvite } = useNotifications(userData?.uid);
+  const { notifications, acceptInvite, declineInvite } = useNotifications(
+    userData?.uid
+  );
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -48,45 +51,14 @@ export default function Header() {
     const q = query(
       collection(db, "notifications"),
       where("userId", "==", uid),
-      where("type", "==", "SUBSCRIPTION")
     );
     const invitesSnapshot = await getDocs(q);
-    const inviteData = invitesSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-      loading: false,
-    }));
-    setInvites(inviteData);
+    const inviteData = invitesSnapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data(), loading: false };
+    });
+    setInvites(inviteData); // Set invites state with the fetched data
   }
 
-  // Handle accepting an invite
-  const handleAcceptInvite = async (event, invite) => {
-    event.stopPropagation();
-    setIsAcceptClicked(true);
-  
-    try {
-      // Update the invite's loading state
-      setInvites((prevInvites) =>
-        prevInvites.map((i) =>
-          i.id === invite.id ? { ...i, loading: true } : i
-        )
-      );
-  
-      // Call the acceptInvite function with only the notificationId
-      await acceptInvite(invite.id); // pass the notificationId
-  
-      // Remove the accepted invite from the UI
-      setInvites((prevInvites) =>
-        prevInvites.filter((i) => i.id !== invite.id)
-      );
-    } catch (error) {
-      console.error("Error accepting invite:", error);
-    } finally {
-      setIsAcceptClicked(false);
-    }
-  };
-  
-  // Handle clicks outside the dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -98,10 +70,10 @@ export default function Header() {
         setMenuOpen(false);
       }
       if (
-        notificationRef.current &&
-        !notificationRef.current.contains(event.target)
+        
+        isAcceptClicked 
       ) {
-        //setNotificationOpen(false);
+        setNotificationOpen(true);
       }
     };
 
@@ -109,7 +81,8 @@ export default function Header() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isAcceptClicked]);
+
 
   const hasUserPhoto =
     userData?.photo_url &&
@@ -125,13 +98,54 @@ export default function Header() {
     }
   };
 
+  async function handleAcceptInvite(e, invite) {
+    e.stopPropagation();
+    setIsAcceptClicked(true);
+  
+    try {
+      // Update the invite's loading state
+      setInvites((prevInvites) =>
+        prevInvites.map((i) =>
+          i.id === invite.id ? { ...i, loading: true } : i
+        )
+      );
+  
+      // Call the acceptInvite function
+      await acceptInvite(invite.data.inviteId, invite.id);
+  
+      // Update the invite's status to "ACCEPTED"
+      setInvites((prevInvites) =>
+        prevInvites.map((i) =>
+          i.id === invite.id ? { ...i, loading: false, status: "ACCEPTED" } : i
+        )
+      );
+    } catch (error) {
+      console.error("Error accepting invite:", error);
+      // Reset the loading state if an error occurs
+      setInvites((prevInvites) =>
+        prevInvites.map((i) =>
+          i.id === invite.id ? { ...i, loading: false } : i
+        )
+      );
+    } finally {
+      setIsAcceptClicked(false);
+    }
+  }
+
   const handleMenuOptionClick = () => {
     setMenuOpen(false);
     if (userData.type === ENTREPRENEUR_ROLE) {
-      navigate("/jobpostings");
-    } else {
       navigate("/jobs");
+    } else {
+      navigate("/event");
     }
+  };
+
+  const handleJobClick = () => {
+    setMenuOpen(false);
+    // if (userData.type === ENTREPRENEUR_ROLE) {
+    navigate("/jobs"); // Redirect for entrepreneurs
+    // }
   };
 
   const handleWalletClick = () => {
@@ -177,46 +191,47 @@ export default function Header() {
           userData && (
             <>
               {/* Notification Bell */}
-              <div className="notification-container">
-                <button
-                  ref={notificationRef}
-                  className="notification-btn"
-                  onClick={handleNotificationToggle}
-                >
-                  <AiOutlineBell style={{ fontSize: "1.5rem", cursor: "pointer" }} />
-                  {invites?.length > 0 && (
-                    <span className="notification-badge">{invites.length}</span>
-                  )}
-                </button>
-
-                {notificationOpen && (
-                  <div className="notification-dropdown">
-                    {invites?.length > 0 ? (
-                      invites.map((invite, index) => (
-                        <div key={index} className="notification-item">
-                          <p>
-                            <strong>{invite?.entrepreneurName || "Unknown"}</strong> invited you to join their team.
-                          </p>
-                          <p className="invite-description">{invite?.description}</p>
-                          <p className="invite-stipend">{invite?.stipend}</p>
-                          <Button
-                            disabled={invite.loading || invite.status === "ACCEPTED"}
-                            className="accept-btn !flex !gap-2 !items-center"
-                            onClick={(e) => handleAcceptInvite(e, invite)}
-                          >
-                            {invite.loading && (
-                              <div className="spinner-border spinner-border-sm"></div>
-                            )}
-                            {invite.status === "ACCEPTED" ? "Accepted" : "Accept"}
-                          </Button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="no-notifications">No new notifications</p>
-                    )}
-                  </div>
+            <div className="notification-container">
+              <button
+                ref={notificationRef}
+                className="notification-btn"
+                onClick={handleNotificationToggle}
+              >
+                <AiOutlineBell style={{ fontSize: "1.5rem", cursor: "pointer" }} />
+                
+                {invites?.length > 0 && (
+                  <span className="notification-badge">{invites.length}</span>
                 )}
-              </div>
+              </button>
+
+              {notificationOpen && (
+                <div className="notification-dropdown">
+                  {invites?.length > 0 ? (
+                    invites.map((invite, index) => (
+                      <div key={index} className="notification-item">
+                        <p>
+                          <strong>{invite.data.from || "Unknown"}</strong> invited you to join their team.
+                        </p>
+                          <p className="invite-description">{invite.data.description}</p>
+                          <p className="invite-stipend">{invite.data.stipend}</p>
+                        <Button
+                          disabled={invite.loading || invite.status === "ACCEPTED"}
+                          className="accept-btn !flex !gap-2 !items-center"
+                          onClick={(e) => handleAcceptInvite(e, invite)}
+                        >
+                          {invite.loading && (
+                            <div className="spinner-border spinner-border-sm"></div>
+                          )}
+                          {invite.status === "ACCEPTED" ? "Accepted" : "Accept"}
+                        </Button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="no-notifications">No new notifications</p>
+                  )}
+                </div>
+              )}
+            </div>
 
               {/* Profile Menu */}
               <div className="profile-menu-container">
@@ -246,20 +261,25 @@ export default function Header() {
 
                 {menuOpen && (
                   <div className="dropdown-menu" ref={menuRef}>
-                    {userData.role === "superuser" && (
-                      <div className="dropdown-item" onClick={() => navigate("/superuser")}>
-                        <FaUser className="menu-icon" />
-                        Superuser Dashboard
-                      </div>
-                    )}
-                    <div className="dropdown-item" onClick={handleMenuProfileClick}>
+                    {userData.role === "superuser" && <><div className="dropdown-item" onClick={() => navigate("/superuser")}>
+                      <FaUser className="menu-icon" />
+                      Superuser Dashboard
+                    </div></>}
+                    <div
+                      className="dropdown-item"
+                      onClick={handleMenuProfileClick}
+                    >
                       <AiOutlineUser className="menu-icon" />
                       Profile
                     </div>
-                    <div className="dropdown-item" onClick={handleMenuOptionClick}>
+                    <div
+                      className="dropdown-item"
+                      onClick={() => handleMenuOptionClick("/jobs")}
+                    >
                       <FaBriefcase className="menu-icon" />
                       Jobs
                     </div>
+                    
                     <div className="dropdown-item" onClick={handleWalletClick}>
                       <FaWallet className="menu-icon" />
                       Wallet

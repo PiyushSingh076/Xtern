@@ -7,16 +7,18 @@ phases:
     commands:
       - echo "Checking AWS CLI version..."
       - aws --version
-      - rm -rf node_modules
-      - rm -f package-lock.json
-      - echo "Installing NPM dependencies..."
-      - npm install --legacy-peer-deps
+      - echo "Cleaning up old dependencies..."
+      - rm -rf node_modules package-lock.json
+      - echo "Installing optimized dependencies..."
+      - npm ci --legacy-peer-deps
+
   build:
     commands:
       - echo "Build started on `date`"
-      # Increase Node.js memory limit to 8GB
-      - export NODE_OPTIONS="--max-old-space-size=8192"
-      - npm run build
+      - export NODE_OPTIONS="--max-old-space-size=2048"
+      - echo "Building the project with optimized memory for 3GB environment..."
+      - npm run build --max-workers=2
+
   post_build:
     commands:
       - echo "Invalidating CloudFront cache..."
@@ -26,3 +28,7 @@ artifacts:
   files:
     - '**/*'
   base-directory: build
+
+cache:
+  paths:
+    - node_modules

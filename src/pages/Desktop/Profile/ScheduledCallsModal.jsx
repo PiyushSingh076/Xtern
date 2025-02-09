@@ -92,32 +92,28 @@ const ScheduledCallsModal = ({
         setIsFetching(false);
         return;
       }
-
-      const updatedCalls = [];
-      for (const call of calls) {
-        if (call.recipientUserRef) {
-          const recipientSnap = await getDoc(
-            doc(db, "users", call.recipientUserId)
-          );
-          const recipientData = recipientSnap.exists()
-            ? recipientSnap.data()
-            : null;
-          updatedCalls.push({ ...call, recipient: recipientData });
-        } else {
-          updatedCalls.push(call);
-        }
-      }
+  
+      const updatedCalls = await Promise.all(
+        calls.map(async (call) => {
+          if (call.recipientUserId) {
+            const recipientSnap = await getDoc(doc(db, "users", call.recipientUserId));
+            const recipientData = recipientSnap.exists() ? recipientSnap.data() : null;
+            return { ...call, recipient: recipientData };
+          }
+          return call;
+        })
+      );
+  
       setCallsWithRecipients(updatedCalls);
-      setIsFetching(false); 
+      setIsFetching(false);
     };
-
+  
     if (open) {
       setIsFetching(true);
       fetchRecipients();
     }
-
-    fetchRecipients();
-  }, [calls,open]);
+  }, [calls, open]); // Ensure it updates when calls change
+  
 
   const handleDelete = async (call) => {
     try {
@@ -222,16 +218,29 @@ const ScheduledCallsModal = ({
                         />
                       </Box>
 
-                      {/* Call Details */}
+                     {/* Call Details */}
                       <Box sx={{ width: "100%", marginBottom: 1 }}>
-                        {/* <Typography variant="body2" color="text.secondary">
-                          <strong>Type:</strong> {call.callType}
-                        </Typography> */}
                         <Typography variant="body2" color="text.secondary">
-                          <strong>Date:</strong>{" "}
-                          {dateTime.format("D MMM YYYY, h:mm A")}
+                          <strong>Date:</strong> {dateTime.format("D MMM YYYY, h:mm A")}
+                        </Typography>
+                        
+                        {/* Call Status */}
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: "bold",
+                            color:
+                              call.status === "rejected"
+                                ? "red"
+                                : call.status === "accepted"
+                                ? "green"
+                                : "orange",
+                          }}
+                        >
+                          Status: {call.status}
                         </Typography>
                       </Box>
+
                       <div className="flex gap-1 w-full">
                         {call.eventLink && (
                           <StyledButton

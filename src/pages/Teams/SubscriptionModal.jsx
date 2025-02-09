@@ -51,7 +51,7 @@ const SubscriptionModal = ({ isOpen, onClose, stipend, setStipend, description, 
                                 Submitting...
                             </span>
                         ) : (
-                            "Submit"
+                            "Invite to team"
                         )}
                     </button>
                 </div>
