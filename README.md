@@ -18,7 +18,7 @@ Xpert is a **full-fledged expert marketplace** where professionals can offer the
 
 ### Clone the Repository  
 ```bash
-git clone https://github.com/yourusername/xpert.git
+git clone (https://github.com/PiyushSingh076/Xtern.git)
 cd xpert
 ```
 
