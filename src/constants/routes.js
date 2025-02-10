@@ -19,7 +19,7 @@ export const ROUTES = {
   INTERN: "/intern",
   VENTURE: "/venture",
   MENTOR: "/mentor",
-  TEAMS: "/teams/:options",
+  TEAMS: "/teams",
   SPEND_LEARNING: "/spendlearning",
   INTEREST_SCREEN: "/select-skills",
   SELECT_COURSES_SCREEN: "/select-courses-screen",
